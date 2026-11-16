@@ -32,7 +32,14 @@ python3 brand/make_icons.py brand/icon.svg docs/icons   # only when the icon cha
 python3 tests/e2e.py                             # Playwright pass at iPhone size, incl. offline reload
 ```
 
-`docs/` is what GitHub Pages serves. Every build gets a content-hash cache name, so installed apps pick up the new version and show an update prompt.
+GitHub Pages serves the `gh-pages` branch, which holds the contents of `docs/`. After committing a build on `main`, publish it:
+
+```sh
+git fetch origin gh-pages
+git push origin "$(git commit-tree HEAD:docs -p origin/gh-pages -m "Publish $(git rev-parse --short HEAD)")":refs/heads/gh-pages
+```
+
+Every build gets a content-hash cache name, so installed apps pick up the new version and show an update prompt.
 
 ## Layout
 
@@ -41,5 +48,5 @@ src/        app.js (UI and engine), data.js (content), style.css (design system)
 brand/      icon.svg and the PNG renderer
 fonts/      Nunito 600–900, latin subset (SIL Open Font License, see OFL.txt)
 tests/      end-to-end test
-docs/       built app (GitHub Pages)
+docs/       built app, published to the gh-pages branch
 ```
