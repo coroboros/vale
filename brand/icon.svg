@@ -1,17 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3F7BFF"/><stop offset="1" stop-color="#2452E6"/></linearGradient></defs>
-  <rect width="1024" height="1024" fill="url(#g)"/>
-  <g transform="translate(512 352)">
-    <g fill="#FFD36B">
-      <rect x="-20" y="-222" width="40" height="64" rx="20"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(36)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(72)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(108)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(144)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(180)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(216)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(252)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(288)"/><rect x="-20" y="-222" width="40" height="64" rx="20" transform="rotate(324)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- App icon: Bernard the hermit crab under the sun. Artwork kept inside the maskable safe zone (80%). -->
+  <rect width="512" height="512" fill="#1E5FD0"/>
+  <circle cx="372" cy="150" r="78" fill="#FFC23A"/>
+  <path d="M0 404 Q64 380 128 404 T256 404 T384 404 T512 404 V512 H0 Z" fill="#174CAD"/>
+  <g transform="translate(70 92) scale(3.05)">
+    <ellipse cx="60" cy="96" rx="40" ry="4.5" fill="#0E2F6E" opacity=".35"/>
+    <circle cx="73" cy="48" r="36" fill="#FFB21E" stroke="#D98A00" stroke-width="3"/>
+    <g fill="#16213E">
+      <circle cx="58" cy="28" r="4.2"/><circle cx="86" cy="34" r="4.2"/><circle cx="92" cy="56" r="4.2"/><circle cx="74" cy="72" r="4.2"/>
     </g>
-    <circle cy="14" r="150" fill="#E5920B"/>
-    <circle r="150" fill="#FFB21E"/>
-    <ellipse cx="-52" cy="-82" rx="58" ry="28" fill="#fff" opacity=".35" transform="rotate(-18 -52 -82)"/>
-    <ellipse cx="-50" cy="-8" rx="21" ry="27" fill="#222A3C"/><ellipse cx="50" cy="-8" rx="21" ry="27" fill="#222A3C"/>
-    <circle cx="-43" cy="-18" r="7" fill="#fff"/><circle cx="57" cy="-18" r="7" fill="#fff"/>
-    <circle cx="-95" cy="38" r="24" fill="#FF7A8A" opacity=".45"/><circle cx="95" cy="38" r="24" fill="#FF7A8A" opacity=".45"/>
-    <path d="M-46 42q46 42 92 0" fill="none" stroke="#222A3C" stroke-width="20" stroke-linecap="round"/>
+    <path d="M73 48 m-4 0 a4 4 0 1 1 8 0 a8 8 0 1 1 -16 0 a14 14 0 1 1 28 0 a20 20 0 1 1 -40 0" fill="none" stroke="#D98A00" stroke-width="3.4" stroke-linecap="round"/>
+    <ellipse cx="46" cy="66" rx="13" ry="15" fill="#D98A00"/>
+    <g stroke="#D9541A" stroke-width="3.4" stroke-linecap="round"><path d="M30 80 l-5 9"/><path d="M39 83 l-2 9"/><path d="M49 82 l3 9"/></g>
+    <ellipse cx="40" cy="70" rx="19" ry="15" fill="#FF7A3D" stroke="#D9541A" stroke-width="2.4"/>
+    <g stroke="#D9541A" stroke-width="3.6" stroke-linecap="round"><path d="M34 60 L30 38"/><path d="M45 59 L49 36"/></g>
+    <circle cx="29" cy="33" r="9" fill="#fff" stroke="#D9541A" stroke-width="2.2"/>
+    <circle cx="50" cy="31" r="9" fill="#fff" stroke="#D9541A" stroke-width="2.2"/>
+    <circle cx="29" cy="31.5" r="4.4" fill="#16213E"/><circle cx="50" cy="29.5" r="4.4" fill="#16213E"/>
+    <circle cx="30.6" cy="29.8" r="1.4" fill="#fff"/><circle cx="51.6" cy="27.8" r="1.4" fill="#fff"/>
+    <path d="M33 70 q7 8 14 0" fill="#16213E" stroke="#16213E" stroke-width="2.2" stroke-linecap="round"/>
+    <g fill="#FF7A3D" stroke="#D9541A" stroke-width="2.4" transform="rotate(-38 22 70)"><path d="M22 70 m-9 0 a9 9 0 1 0 9 -9 l0 6 a3 3 0 0 1 -3 3 z"/></g>
+    <g fill="#FF7A3D" stroke="#D9541A" stroke-width="2.4"><path d="M58 76 m-7 0 a7 7 0 1 0 7 -7 l0 4.6 a2.4 2.4 0 0 1 -2.4 2.4 z"/></g>
   </g>
-  <path d="M478 590q0-14 14-14h40q14 0 14 14l26 244q6 62-60 62t-60-62z" fill="#FFFFFF"/>
 </svg>

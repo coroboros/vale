@@ -1,4 +1,9 @@
-tests/shots/
-__pycache__/
 node_modules/
+dist/
+.e2e-dist/
+test-results/
+playwright-report/
+tests/shots/
+.wrangler/
+__pycache__/
 .DS_Store

@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "bagage-translate",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-16",
+  "observability": { "enabled": true },
+  "vars": {
+    // Origins allowed to call the service: the published app and the local dev servers.
+    "ALLOWED_ORIGINS": "https://coroboros.github.io,http://localhost:5173,http://localhost:4173",
+    "MODEL": "claude-sonnet-5-5",
+    "EFFORT": "medium"
+  },
+  // Created on the first deploy (automatic provisioning).
+  "kv_namespaces": [{ "binding": "CACHE" }],
+  "ratelimits": [
+    {
+      "name": "LIMITER",
+      "namespace_id": "1001",
+      // Per IP and per Cloudflare location. The period must be 10 or 60 seconds.
+      "simple": { "limit": 20, "period": 60 }
+    }
+  ]
+}

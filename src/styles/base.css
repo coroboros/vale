@@ -1,0 +1,123 @@
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    background: var(--page);
+  }
+
+  body {
+    font: 400 var(--step-0) / 1.5 var(--font-text);
+    color: var(--ink);
+    background: var(--page);
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  #app {
+    min-height: 100%;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 750;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--step-3);
+  }
+
+  h2 {
+    font-size: var(--step-2);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+  }
+
+  p {
+    margin: 0;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+    border: 0;
+    background: none;
+    padding: 0;
+  }
+
+  button:disabled {
+    cursor: default;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1rem);
+  }
+
+  a {
+    color: var(--sea);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--sea);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+
+  [lang] {
+    hyphens: manual;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      /* biome-ignore lint/complexity/noImportantStyles: reduced motion must override every animation */
+      animation-duration: 1ms !important;
+      /* biome-ignore lint/complexity/noImportantStyles: reduced motion must override every animation */
+      animation-iteration-count: 1 !important;
+      /* biome-ignore lint/complexity/noImportantStyles: reduced motion must override every transition */
+      transition-duration: 1ms !important;
+    }
+  }
+}

@@ -1,52 +1,103 @@
-# ¡Vale!
+# Bagage
 
-Survival Spanish (Spain) for French speakers. An installable web app that works 100 % offline once opened: no account, no ads, no tracking.
+**Parle dès l’atterrissage.** Survival phrases for French-speaking travellers, in Spanish and Italian
+for now. Bagage is an installable web app (PWA): it works fully offline, needs no account and shows no ads.
 
-**App:** https://coroboros.github.io/vale/
+Live: <https://coroboros.github.io/vale/>
 
-## Install on iPhone
+## What it does
 
-1. Open the link above in Safari.
-2. Share → *Sur l'écran d'accueil* → *Ajouter*.
-3. Launch it once from the home-screen icon while online. The whole app (one HTML file, ~280 KB) is then cached by the service worker; *Profil → Réglages* shows *Prête hors ligne*.
-4. Check in airplane mode: force-quit, relaunch, it opens.
+- **A trip, not a course.** You pick a destination and a departure date. The home screen shows how
+  much of what you learned you will still remember on landing day, from your own memory model.
+- **Spaced retrieval that adapts.** Every phrase has its own forgetting curve (FSRS-7). Exercises
+  move from recognising to producing as memory strengthens, aiming at about 85 % success.
+- **Real situations.** Café, restaurant, hotel, transport, shopping, pharmacy, emergencies, plus
+  role-play scenes, prices said aloud, a sounds lesson and regional packs (Catalan in Barcelona).
+- **Translate anything, keep it offline.** Type what you want to say; Claude translates it the way a
+  local would say it, with pronunciation written for French readers. Every translation stays in a
+  searchable history on the phone and can join your reviews.
+- **A survival card** to show in a restaurant: allergies and diet, in the local language.
+- **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
+  Bernard, a hermit crab whose shell changes with the country. Mistakes never block a lesson.
+- **Shared phone friendly.** Several profiles on one device, backup export and import.
 
-Progress is stored on the device (`localStorage`, key `vale-v3`). Home-screen web apps keep their storage; Safari tabs may not.
+Why each of these choices: [docs/LEARNING.md](docs/LEARNING.md). Name and identity:
+[docs/BRAND.md](docs/BRAND.md). What comes next: [TODO.md](TODO.md).
 
-## What's inside
+## Install
 
-- Path of lessons (110+ phrases) with Duolingo-style exercises: learn, recognise, listen, word tiles, dictation, speak (record and compare with the model voice), matching rounds, test-out.
-- Role-play scenes (café, tapas, taxi, hotel, street, pharmacy) with hints and translations.
-- Practice: mistakes, spaced review, 60-second pairs, prices by ear, hands-free audio, two-player duel.
-- Survival card (help phrase, hotel address, allergies, diet) shown full-screen to show a waiter or driver.
-- Lexicon with strength meters, favourites and regional packs (Catalan, Basque, Galician).
-- Profiles for two travellers on one phone, daily goal, streak, quests, badges.
-
-Speech uses the device's built-in voices (Web Speech API). There is no speech recognition: installed iOS web apps don't expose it, and it would send audio off the device.
+- **iPhone (Safari):** Share → *Sur l’écran d’accueil*.
+- **Android, desktop Chrome or Edge:** the *Installer l’app* button in the app.
 
 ## Develop
 
-```sh
-node build.js                                    # src/ + fonts/ → docs/index.html, sw.js, manifest
-python3 brand/make_icons.py brand/icon.svg docs/icons   # only when the icon changes
-python3 tests/e2e.py                             # Playwright pass at iPhone size, incl. offline reload
-```
-
-GitHub Pages serves the `gh-pages` branch, which holds the contents of `docs/`. After committing a build on `main`, publish it:
+Node 22 or later.
 
 ```sh
-git fetch origin gh-pages
-git push origin "$(git commit-tree HEAD:docs -p origin/gh-pages -m "Publish $(git rev-parse --short HEAD)")":refs/heads/gh-pages
+npm install
+npm run dev          # http://localhost:5173
+npm run check        # typecheck, lint, unit tests, build, end-to-end tests
 ```
 
-Every build gets a content-hash cache name, so installed apps pick up the new version and show an update prompt.
+| Script              | What it does                                                           |
+| ------------------- | ---------------------------------------------------------------------- |
+| `npm run typecheck` | TypeScript, strict, for the app and for the Node-side config           |
+| `npm run lint`      | Biome (format and lint, accessibility rules included)                  |
+| `npm test`          | Vitest: memory model, sessions, content integrity, contrast, Worker    |
+| `npm run build`     | Production build in `dist/`, service worker with precache              |
+| `npm run test:e2e`  | Playwright on an iPhone-sized and a desktop viewport (axe, offline…)   |
 
-## Layout
+The end-to-end tests use Playwright’s Chromium, or an installed Chrome with
+`CHROME_PATH=/usr/bin/google-chrome`.
+
+## How it is built
+
+Vite, TypeScript, Preact with signals, Workbox for the service worker, ts-fsrs for the memory model.
+No backend for the app itself: progress lives on the device (`localStorage`, persistent storage
+requested).
 
 ```
-src/        app.js (UI and engine), data.js (content), style.css (design system)
-brand/      icon.svg and the PNG renderer
-fonts/      Nunito 600–900, latin subset (SIL Open Font License, see OFL.txt)
-tests/      end-to-end test
-docs/       built app, published to the gh-pages branch
+src/
+  content/      courses (one file of data and one of rules per language), shared types
+  engine/       memory model, exercise choice, sessions, progress, prices
+  state/        schema, migrations from earlier versions, store
+  platform/     speech, recording, sound effects, install, backups, service worker client
+  ui/           screens, components, themes per language
+  translate.ts  phrase search and the translation client
+  translation-api.ts  contract shared with the Worker
+  sw.ts         service worker: precache, offline navigation
+worker/         translation service (Cloudflare Worker)
+tests/          unit/ (Vitest) and e2e/ (Playwright)
 ```
+
+## Translation service
+
+`worker/` is a Cloudflare Worker that calls Claude (`claude-sonnet-5-5` by default) with the course’s
+phonetic conventions, validates the JSON answer and caches it in Workers KV, so a sentence is paid
+for once. Only the app’s origins may call it, 20 times a minute per IP.
+
+Deploy it once:
+
+```sh
+cd worker
+npm install
+npx wrangler login
+npx wrangler deploy                          # creates the Worker and its KV namespace
+npx wrangler secret put ANTHROPIC_API_KEY    # paste a key from platform.claude.com
+```
+
+Then give the app its address: on GitHub, *Settings → Secrets and variables → Actions → Variables*,
+add `TRANSLATE_URL` with the Worker URL (`https://bagage-translate.<account>.workers.dev`) and run
+the *CI* workflow again. Without it, the app offers DeepL and a field to keep your own translation.
+
+Settings live in `worker/wrangler.jsonc`: `MODEL`, `EFFORT` (`low` is faster, `high` more careful),
+`ALLOWED_ORIGINS`. Set `ANTHROPIC_BASE_URL` to route calls through Cloudflare AI Gateway.
+
+Cost, estimated from list prices and not yet measured: about 0.2 to 0.8 US cents per new sentence;
+repeated sentences come from the cache. Sentences are sent to Anthropic through the Worker; nothing
+else about the learner leaves the phone.
+
+## Deploy the app
+
+The *CI* workflow (`.github/workflows/ci.yml`) checks every push and publishes `main` to the
+`gh-pages` branch, which GitHub Pages serves.

@@ -1,0 +1,52 @@
+@layer tokens, base, kit, screens;
+
+/* Design tokens. Course accents (--accent, --motif…) come from ui/themes.ts, set before the first render. */
+@layer tokens {
+  :root {
+    color-scheme: light;
+
+    --ink: #16213e;
+    --ink-soft: #4b5675;
+    --page: #fffaf3;
+    --surface: #ffffff;
+    --sunk: #f5efe5;
+    --line: #e9e1d4;
+    --line-strong: #d8cdbb;
+
+    --sea: #1e5fd0;
+    --crab: #ff7a3d;
+    --crab-deep: #d9541a;
+    --sun: #ffc23a;
+    --blush: #ff9fb2;
+
+    --ok: #0f7a43;
+    --ok-fill: #e3f6ea;
+    --ok-solid: #157f45;
+    --ko: #b42323;
+    --ko-fill: #fdebeb;
+    --ko-solid: #c93b3b;
+
+    --font-display: "Bricolage Grotesque Variable", "Avenir Next", system-ui, sans-serif;
+    --font-text: "Atkinson Hyperlegible Next Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    /* Major-third scale on a 17px body. */
+    --step--1: 0.8125rem;
+    --step-0: 1.0625rem;
+    --step-1: 1.3125rem;
+    --step-2: 1.625rem;
+    --step-3: 2.0625rem;
+    --step-4: 2.5625rem;
+
+    --r-s: 12px;
+    --r-m: 18px;
+    --r-l: 26px;
+    --r-pill: 999px;
+
+    --tap: 48px;
+    --gap: 12px;
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}

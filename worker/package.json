@@ -1,0 +1,14 @@
+{
+  "name": "bagage-translate",
+  "private": true,
+  "type": "module",
+  "description": "Translation service of the Bagage app: Claude behind a Cloudflare Worker, cached in KV.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "logs": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.162.0"
+  }
+}
