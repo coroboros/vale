@@ -296,14 +296,20 @@ function Dictation({ card, onResult }: { card: Card; onResult: (ok: boolean, ver
   );
 }
 
-/** Say it aloud, hear yourself next to the model voice, then judge honestly. */
+/**
+ * Say it aloud, hear yourself next to the model voice, then judge honestly.
+ * Recording is optional: in a train or an open-plan office, saying it in your head and
+ * revealing the answer works too.
+ */
 function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void }) {
   const mic = canRecord();
   const [state, setState] = useState<'ready' | 'recording' | 'revealed'>('ready');
   const [take, setTake] = useState<string | null>(null);
   const [denied, setDenied] = useState(false);
+  const revealed = useRef(false);
   useEffect(() => () => releaseMic(), []);
   const reveal = (url: string | null) => {
+    revealed.current = true;
     setTake(url);
     setState('revealed');
     void speak(card);
@@ -312,10 +318,12 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
     if (state === 'recording') return reveal(await stopRecording());
     try {
       await startRecording();
-      setState('recording');
+      // The answer may have been revealed while the microphone permission was pending.
+      if (revealed.current) void stopRecording();
+      else setState('recording');
     } catch {
       setDenied(true);
-      reveal(null);
+      if (!revealed.current) reveal(null);
     }
   };
   useKeys(k => {
@@ -345,11 +353,9 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
                 ? 'Touche le micro, dis la phrase, touche à nouveau.'
                 : 'Dis la phrase à voix haute, puis découvre la réponse.'}
           </p>
-          {(!mic || denied) && (
-            <button type="button" class="btn" onClick={() => reveal(null)}>
-              Voir la réponse
-            </button>
-          )}
+          <button type="button" class={mic && !denied ? 'btn btn-ghost' : 'btn'} onClick={() => reveal(null)}>
+            Voir la réponse
+          </button>
         </div>
       ) : (
         <div class="speak-zone">

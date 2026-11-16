@@ -4,10 +4,7 @@ export const TRANSLATE_URL = 'https://translate.test';
 
 /** Set CHROME_PATH to use an installed Chrome instead of Playwright's bundled browser. */
 const executablePath = process.env.CHROME_PATH || undefined;
-const launchOptions = {
-  executablePath,
-  args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
-};
+const launchOptions = { executablePath };
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -16,7 +13,14 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [['list']],
-  use: { baseURL: 'http://localhost:4174/', locale: 'fr-FR', launchOptions },
+  use: {
+    baseURL: 'http://localhost:4174/',
+    locale: 'fr-FR',
+    launchOptions,
+    // A stuck step fails fast with its own name instead of the whole test timing out.
+    actionTimeout: 10_000,
+    trace: 'retain-on-failure',
+  },
   // A separate build, wired to a fake translation service that the tests answer themselves.
   webServer: {
     command: 'vite build --outDir .e2e-dist --emptyOutDir && vite preview --outDir .e2e-dist --port 4174 --strictPort',

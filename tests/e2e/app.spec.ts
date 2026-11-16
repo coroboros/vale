@@ -66,6 +66,7 @@ async function playSession(page: Page, keyboard = false) {
     if (await ex.locator('.choice').count()) {
       if (keyboard) {
         await page.keyboard.press('1');
+        await expect(ex.locator('.choice input').first()).toBeChecked();
         await page.keyboard.press('Enter');
       } else {
         await ex.locator('.choice').first().click();
@@ -78,11 +79,6 @@ async function playSession(page: Page, keyboard = false) {
     } else if (await ex.locator('#dictation').count()) {
       await ex.locator('#dictation').fill('hola');
       await ex.locator('.ex-actions .btn').click();
-    } else if (await ex.locator('.mic').count()) {
-      await ex.locator('.mic').click();
-      await page.waitForTimeout(300);
-      await ex.locator('.mic').click();
-      await ex.getByRole('button', { name: 'Je l’ai bien dit' }).click();
     } else if (await ex.getByRole('button', { name: 'Voir la réponse' }).count()) {
       await ex.getByRole('button', { name: 'Voir la réponse' }).click();
       await ex.getByRole('button', { name: 'Je l’ai bien dit' }).click();

@@ -12,6 +12,7 @@ let lastUrl: string | null = null;
 
 /** Starts recording; rejects if the microphone is refused. */
 export async function startRecording(): Promise<void> {
+  if (recorder?.state === 'recording') return;
   if (audioSession) audioSession.type = 'play-and-record';
   stream ??= await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
   chunks = [];
@@ -20,7 +21,7 @@ export async function startRecording(): Promise<void> {
   recorder.start();
 }
 
-/** Stops recording and returns a playable URL of the take. */
+/** Stops recording and returns a playable URL of the take (null if the recorder never answers). */
 export function stopRecording(): Promise<string | null> {
   const current = recorder;
   if (!current || current.state === 'inactive') return Promise.resolve(null);
@@ -31,6 +32,7 @@ export function stopRecording(): Promise<string | null> {
       if (audioSession) audioSession.type = 'playback';
       resolve(lastUrl);
     };
+    setTimeout(() => resolve(null), 2000);
     current.stop();
   });
 }
