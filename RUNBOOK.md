@@ -80,5 +80,6 @@ Proposal and open questions: docs/BUSINESS.md. Order of work once decided:
 
 ## Working with Claude Code on your Mac
 
-Clone the repository, open the folder in Claude Code, and say which step of this runbook to
-continue. CLAUDE.md gives it the project's rules and map; `npm run check` runs every test.
+Clone the repository, open the folder in Claude Code (v2.1.277 or later reads AGENTS.md on its
+own), and say which step of this runbook to continue. AGENTS.md gives any coding agent, Claude
+Code or Codex, the project's rules, commands and map; `npm run check` runs every test.
