@@ -15,11 +15,13 @@ const GOOD = {
 };
 const TIDY = { ...GOOD, alternatives: ['¿Podría dejar la habitación más tarde?'] };
 
+const USAGE = { input_tokens: 1000, output_tokens: 200 };
 const claudeAnswer = (body: unknown, stop = 'end_turn') =>
-  new Response(JSON.stringify({ stop_reason: stop, content: [{ type: 'text', text: JSON.stringify(body) }] }), {
-    status: 200,
-    headers: { 'content-type': 'application/json' },
-  });
+  new Response(
+    JSON.stringify({ stop_reason: stop, content: [{ type: 'text', text: JSON.stringify(body) }], usage: USAGE }),
+    { status: 200, headers: { 'content-type': 'application/json' } },
+  );
+const MONTH = `spend:claude:${new Date().toISOString().slice(0, 7)}`;
 
 function setup(overrides: Partial<Env> = {}) {
   const store = new Map<string, string>();
@@ -114,26 +116,53 @@ describe('translation worker', () => {
     expect(await (await call({ text: 'Bonjour', course: 'es' })).json()).toEqual(TIDY);
   });
 
-  it('falls back to the next model, then to Claude when a key is set', async () => {
-    const { call, run, claude } = setup({ ANTHROPIC_API_KEY: 'sk-test' });
+  it('falls back from one Workers AI model to the next', async () => {
+    const { call, run } = setup();
     run.mockImplementationOnce(async () => {
       throw new Error('capacity');
     });
-    const second = await call({ text: 'Bonjour', course: 'es' });
-    expect(second.headers.get('x-model')).toBe(DEFAULT_MODELS[1]);
+    const res = await call({ text: 'Bonjour', course: 'es' });
+    expect(res.headers.get('x-model')).toBe(DEFAULT_MODELS[1]);
+  });
 
-    run.mockImplementation(async () => ({ response: 'Désolé, je ne peux pas.' }));
-    const last = await call({ text: 'Bonsoir', course: 'es' });
-    expect(last.status).toBe(200);
-    expect(last.headers.get('x-model')).toBe('claude-haiku-5-5');
+  it('uses Claude first, counts what it costs, and stops at the monthly budget', async () => {
+    const { call, run, claude, store } = setup({ ANTHROPIC_API_KEY: 'sk-test', CLAUDE_BUDGET_USD: '10' });
+    const first = await call({ text: 'Bonjour', course: 'es' });
+    expect(first.headers.get('x-model')).toBe('claude-sonnet-5-5');
+    expect(run).not.toHaveBeenCalled();
     const [url, init] = claude.mock.calls[0]!;
     expect(url).toBe('https://api.anthropic.com/v1/messages');
     const headers = init?.headers as Record<string, string>;
     expect(headers.authorization).toBe('Bearer sk-test');
     expect(headers['anthropic-version']).toBe('2026-10-21');
     const sent = JSON.parse(init?.body as string);
+    expect(sent.model).toBe('claude-sonnet-5-5');
     expect(sent.output_config).toMatchObject({ effort: 'low', format: { type: 'json_schema' } });
     expect(sent).not.toHaveProperty('temperature');
+    // 1,000 input and 200 output tokens at $2 and $10 per million.
+    expect(JSON.parse(store.get(MONTH)!)).toBeCloseTo(0.004, 6);
+
+    store.set(MONTH, '10');
+    const capped = await call({ text: 'Bonsoir', course: 'es' });
+    expect(capped.headers.get('x-model')).toBe(DEFAULT_MODELS[0]);
+    expect(claude).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to Workers AI when Claude fails, for example once the credits run out', async () => {
+    const { call, claude } = setup({ ANTHROPIC_API_KEY: 'sk-test' });
+    claude.mockImplementation(
+      async () =>
+        new Response('{"type":"error","error":{"message":"Your credit balance is too low"}}', { status: 400 }),
+    );
+    const res = await call({ text: 'Bonjour', course: 'es' });
+    expect(res.status).toBe(200);
+    expect(res.headers.get('x-model')).toBe(DEFAULT_MODELS[0]);
+  });
+
+  it('never calls Claude without a place to count its spending', async () => {
+    const { call, claude } = setup({ ANTHROPIC_API_KEY: 'sk-test', CACHE: undefined });
+    expect((await call({ text: 'Bonjour', course: 'es' })).headers.get('x-model')).toBe(DEFAULT_MODELS[0]);
+    expect(claude).not.toHaveBeenCalled();
   });
 
   it('lets each course have its own models', () => {
@@ -174,7 +203,7 @@ describe('translation worker', () => {
     const refused = setup({ ANTHROPIC_API_KEY: 'sk-test', AI: undefined });
     refused.claude.mockImplementation(async () => claudeAnswer({}, 'refusal'));
     expect((await refused.call({ text: 'Bonjour', course: 'es' })).status).toBe(502);
-    expect(refused.store.size).toBe(0);
+    expect([...refused.store.keys()]).toEqual([MONTH]);
 
     const unset = setup({ AI: undefined });
     expect((await unset.call({ text: 'Bonjour', course: 'es' })).status).toBe(500);

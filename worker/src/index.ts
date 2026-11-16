@@ -4,8 +4,8 @@
  *   POST /translate  {"text": "Je voudrais un late checkout", "course": "es"}
  *   → 200 {"t": "…", "ph": "…", "note": "…", "alternatives": ["…"]}
  *
- * An open model on Workers AI translates, with a second model as fallback and, if a key is
- * set, Claude as the last resort. Every answer is kept in KV, so a sentence is paid for once.
+ * Claude translates first when a key is set, within a monthly budget, then open models on
+ * Workers AI take over. Every answer is kept in KV, so a sentence is paid for once.
  * Only the app's origins may call it, a few times a minute per IP (Workers Rate Limiting).
  */
 import { COURSES } from '../../src/content';
@@ -28,10 +28,12 @@ export interface Env {
   AI?: Ai;
   /** Models per course, tried in order: {"es": ["@cf/…"], "default": ["@cf/…"]}. */
   MODELS?: unknown;
-  /** Optional: Claude as the last resort. */
+  /** Optional: Claude first, paid by the Claude Max monthly API credits. */
   ANTHROPIC_API_KEY?: string;
   CLAUDE_MODEL?: string;
   CLAUDE_EFFORT?: string;
+  /** Monthly ceiling for Claude, in USD, well under the plan's credits. Default 10. */
+  CLAUDE_BUDGET_USD?: string | number;
   ANTHROPIC_BASE_URL?: string;
   /** Comma-separated origins allowed to call the service. */
   ALLOWED_ORIGINS?: string;
@@ -49,6 +51,7 @@ interface Attempt {
 }
 
 const CACHE_TTL = 60 * 60 * 24 * 90;
+const DEFAULT_BUDGET_USD = 10;
 const DEADLINE_MS = 15_000;
 /** One slow model must leave time for the next one. */
 const ATTEMPT_MS = 8_000;
@@ -96,23 +99,56 @@ async function readInput(request: Request): Promise<{ text: string; course: Cour
   return found ? { text: clean, course: found } : { error: 'unknown_course' };
 }
 
-/** Workers AI models in order, then Claude when a key is set. */
-function attemptsFor(text: string, course: Course, env: Env, fetcher: typeof fetch): Attempt[] {
+const spendKey = (now = new Date()) => `spend:claude:${now.toISOString().slice(0, 7)}`;
+
+/** USD spent on Claude this calendar month, as counted by this Worker. */
+async function claudeSpent(cache: Cache): Promise<number> {
+  const value = await cache.get(spendKey(), 'json').catch(() => null);
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
+async function addClaudeSpend(cache: Cache, usd: number) {
+  if (usd <= 0) return;
+  const total = (await claudeSpent(cache)) + usd;
+  await cache.put(spendKey(), JSON.stringify(total), { expirationTtl: 60 * 60 * 24 * 62 });
+}
+
+/**
+ * Claude first while this month's spend stays under budget (it needs KV to count), then the
+ * Workers AI models in order. The credits themselves stop at zero on Anthropic's side: the
+ * budget is a second, lower ceiling.
+ */
+async function attemptsFor(
+  text: string,
+  course: Course,
+  env: Env,
+  ctx: Context,
+  fetcher: typeof fetch,
+): Promise<Attempt[]> {
   const attempts: Attempt[] = [];
+  const apiKey = env.ANTHROPIC_API_KEY;
+  const cache = env.CACHE;
+  const budget = Number(env.CLAUDE_BUDGET_USD ?? DEFAULT_BUDGET_USD);
+  const ceiling = Number.isFinite(budget) && budget >= 0 ? budget : DEFAULT_BUDGET_USD;
+  if (apiKey && cache) {
+    const spent = await claudeSpent(cache);
+    if (spent < ceiling) {
+      const model = env.CLAUDE_MODEL || CLAUDE_DEFAULTS.model;
+      const effort = env.CLAUDE_EFFORT && EFFORTS.has(env.CLAUDE_EFFORT) ? env.CLAUDE_EFFORT : CLAUDE_DEFAULTS.effort;
+      const baseUrl = (env.ANTHROPIC_BASE_URL || CLAUDE_DEFAULTS.baseUrl).replace(/\/$/, '');
+      attempts.push({
+        model,
+        run: signal =>
+          translateWithClaude(text, course, { apiKey, model, effort, baseUrl, fetch: fetcher }, signal, usd =>
+            ctx.waitUntil(addClaudeSpend(cache, usd)),
+          ),
+      });
+    } else console.warn(`Claude budget reached: ${spent.toFixed(2)} of ${ceiling} USD this month.`);
+  }
   const ai = env.AI;
   if (ai) {
     for (const model of modelsFor(course.id, env.MODELS))
       attempts.push({ model, run: signal => translateWithWorkersAi(text, course, ai, model, signal) });
-  }
-  const apiKey = env.ANTHROPIC_API_KEY;
-  if (apiKey) {
-    const model = env.CLAUDE_MODEL || CLAUDE_DEFAULTS.model;
-    const effort = env.CLAUDE_EFFORT && EFFORTS.has(env.CLAUDE_EFFORT) ? env.CLAUDE_EFFORT : CLAUDE_DEFAULTS.effort;
-    const baseUrl = (env.ANTHROPIC_BASE_URL || CLAUDE_DEFAULTS.baseUrl).replace(/\/$/, '');
-    attempts.push({
-      model,
-      run: signal => translateWithClaude(text, course, { apiKey, model, effort, baseUrl, fetch: fetcher }, signal),
-    });
   }
   return attempts;
 }
@@ -136,8 +172,7 @@ export async function handle(
   const input = await readInput(request);
   if ('error' in input) return json(input, 400, cors);
 
-  const attempts = attemptsFor(input.text, input.course, env, fetcher);
-  if (!attempts.length) {
+  if (!env.AI && !env.ANTHROPIC_API_KEY) {
     console.error('No translation provider: bind Workers AI as AI, or set ANTHROPIC_API_KEY.');
     return json({ error: 'not_configured' }, 500, cors);
   }
@@ -150,6 +185,9 @@ export async function handle(
   const key = await cacheKey(input.course, input.text);
   const cached = asTranslated(await env.CACHE?.get(key, 'json').catch(() => null));
   if (cached) return json(cached, 200, { ...cors, 'x-cache': 'hit' });
+
+  const attempts = await attemptsFor(input.text, input.course, env, ctx, fetcher);
+  if (!attempts.length) return json({ error: 'busy' }, 503, { ...cors, 'retry-after': '3600' });
 
   const overall = AbortSignal.timeout(DEADLINE_MS);
   let failure: unknown;

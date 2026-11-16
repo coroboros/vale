@@ -75,38 +75,48 @@ tests/          unit/ (Vitest) and e2e/ (Playwright)
 
 ## Translation service
 
-`worker/` is a Cloudflare Worker. It asks an open model on Workers AI for the translation
-(DeepSeek V4.1 Flash, then Gemma 4 if the first one fails), without a reasoning pass, with the
-course's phonetic conventions and a JSON schema. Answers are checked, then cached in Workers KV, so
-a sentence is paid for once. Only the app's origins may call it, 20 times a minute per IP.
+`worker/` is a Cloudflare Worker. Claude Sonnet 5.5 translates first when a key is set, paid by the
+monthly API credits of a Claude Max plan; open models on Workers AI take over beyond the monthly
+budget or if Claude fails (DeepSeek V4.1 Flash, then Gemma 4, without a reasoning pass). Every
+model gets the course's phonetic conventions and a JSON schema; answers are checked, then cached
+in Workers KV, so a sentence is paid for once. Only the app's origins may call it, 20 times a
+minute per IP.
 
-Deploy it once:
+**No overspending, three ceilings.** The Max credits stop at zero on Anthropic's side as long as
+the linked Console organisation has no purchased credits and no auto-reload. The Worker keeps its
+own, lower monthly ceiling for Claude (`CLAUDE_BUDGET_USD`, 10 USD by default, counted in KV from
+each response's token usage), then switches to Workers AI. Workers AI draws on the Workers plan's
+daily free Neurons first.
 
-```sh
-cd worker
-npm install
-npx wrangler login
-npx wrangler deploy      # creates the Worker and its KV namespace
-```
+**Deploy with CI (recommended).** Add three repository secrets on GitHub, *Settings → Secrets and
+variables → Actions*:
 
-Then give the app its address: on GitHub, *Settings → Secrets and variables → Actions → Variables*,
-add `TRANSLATE_URL` with the Worker URL (`https://bagage-translate.<account>.workers.dev`) and run
-the *CI* workflow again. Without it, the app offers DeepL and a field to keep your own translation.
+| Secret | Where to get it |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare dashboard, *My Profile → API Tokens*, template *Edit Cloudflare Workers* |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard, *Workers & Pages*, right-hand column |
+| `ANTHROPIC_API_KEY` | Console of the organisation linked to the Max credits (*API keys*) |
 
-**Choosing the models.** `npm run eval` (in `worker/`, with `CLOUDFLARE_ACCOUNT_ID` and an API token
-allowed to use Workers AI) runs each candidate model on twelve travel sentences per language, has a
-stronger model grade the answers, and prints the `MODELS` setting it suggests for each language.
-Put it in the `vars` of `worker/wrangler.jsonc` and deploy again.
+The next push to `main` deploys the Worker (creating its KV namespace), stores the Anthropic key
+as a Worker secret, and builds the app with the Worker's address. Without the Cloudflare secrets
+the app offers DeepL and a field to keep your own translation.
 
-**Optional last resort.** With `npx wrangler secret put ANTHROPIC_API_KEY`, Claude Haiku 5.5 answers
-when every Workers AI model fails. Claude Max plans include monthly API credits that can pay for it.
+**Or deploy by hand:** in `worker/`, `npm install`, `npx wrangler login`, `npx wrangler deploy`,
+`npx wrangler secret put ANTHROPIC_API_KEY`, then set the `TRANSLATE_URL` repository variable.
 
-Cost, estimated and not measured: about 40 Neurons per new sentence with DeepSeek V4.1 Flash, so
-about 240 new sentences a day fit in the free daily allocation of 10,000 Neurons; beyond that,
-about 0.05 US cents each. Repeated sentences come from the cache. Sentences go to Cloudflare through
-the Worker; nothing else about the learner leaves the phone.
+**Choosing the Workers AI models.** `npm run eval` (in `worker/`, with `CLOUDFLARE_ACCOUNT_ID` and
+an API token allowed to use Workers AI) runs each candidate model on twelve travel sentences per
+language, has a stronger model grade the answers, and prints the `MODELS` setting it suggests for
+each language. Put it in the `vars` of `worker/wrangler.jsonc`.
+
+Cost, estimated and not measured: with Sonnet 5.5 about 0.3 US cents per new sentence, so a few
+thousand sentences a month stay well within the default ceiling; with DeepSeek V4.1 Flash about
+40 Neurons, so about 240 new sentences a day within the free allocation. Repeated sentences come
+from the cache. Sentences go to Anthropic or Cloudflare through the Worker; nothing else about the
+learner leaves the phone.
 
 ## Deploy the app
 
-The *CI* workflow (`.github/workflows/ci.yml`) checks every push and publishes `main` to the
-`gh-pages` branch, which GitHub Pages serves.
+The *CI* workflow (`.github/workflows/ci.yml`) checks every push; on `main` it deploys the Worker
+(once Cloudflare is connected) and publishes the app to the `gh-pages` branch, which GitHub Pages
+serves.

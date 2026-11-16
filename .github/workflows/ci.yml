@@ -10,12 +10,13 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  check-and-publish:
+  check:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    permissions:
-      contents: write
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -35,13 +36,62 @@ jobs:
           name: playwright-traces
           path: test-results/
           retention-days: 7
+
+  # Deploys the translation Worker once Cloudflare is connected: repository secrets
+  # CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID, and optionally ANTHROPIC_API_KEY.
+  worker:
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - id: connected
+        run: echo "yes=${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}" >> "$GITHUB_OUTPUT"
+      - if: steps.connected.outputs.yes == 'true'
+        uses: actions/checkout@v7
+      - if: steps.connected.outputs.yes == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+      - id: deploy
+        if: steps.connected.outputs.yes == 'true'
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm ci
+          npx wrangler deploy | tee deploy.log
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            printf '%s' "$ANTHROPIC_API_KEY" | npx wrangler secret put ANTHROPIC_API_KEY
+          fi
+          echo "url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: [check, worker]
+    if: always() && needs.check.result == 'success' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - name: Build
         run: npm run build
         env:
-          # Address of the translation Worker (see README). Empty: the app offers DeepL instead.
-          VITE_TRANSLATE_URL: ${{ vars.TRANSLATE_URL }}
+          # The TRANSLATE_URL variable wins; otherwise the Worker just deployed. Empty: DeepL fallback.
+          VITE_TRANSLATE_URL: ${{ vars.TRANSLATE_URL || needs.worker.outputs.url }}
       - name: Publish to GitHub Pages (gh-pages branch)
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         working-directory: dist
         run: |
           git init -q -b gh-pages

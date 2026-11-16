@@ -9,7 +9,10 @@
   "vars": {
     // Origins allowed to call the service: the published app and the local dev servers.
     "ALLOWED_ORIGINS": "https://coroboros.github.io,http://localhost:5173,http://localhost:4173"
-    // Models per course, tried in order. Defaults in src/workers-ai.ts; measure with `npm run eval`.
+    // Monthly ceiling for Claude in USD (default 10), counted in KV from each response's usage.
+    // "CLAUDE_BUDGET_USD": "10",
+    // Workers AI models per course, tried in order after Claude. Defaults in src/workers-ai.ts;
+    // measure with `npm run eval`.
     // "MODELS": { "es": ["@cf/…"], "it": ["@cf/…"], "default": ["@cf/…"] }
   },
   // Created on the first deploy (automatic provisioning).
