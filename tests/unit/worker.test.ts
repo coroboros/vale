@@ -74,6 +74,15 @@ describe('translation worker', () => {
     expect(res.status).toBe(404);
   });
 
+  it('accepts the app served from its own origin', async () => {
+    const { call } = setup({ ALLOWED_ORIGINS: '' });
+    const res = await call(
+      { text: 'Bonjour', course: 'es' },
+      { headers: { origin: 'https://translate.example.workers.dev', 'content-type': 'application/json' } },
+    );
+    expect(res.status).toBe(200);
+  });
+
   it('rejects empty, oversized and unknown-language requests before calling a model', async () => {
     const { call, run } = setup();
     expect((await call({ text: '  ?! ', course: 'es' })).status).toBe(400);

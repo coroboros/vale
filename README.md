@@ -3,7 +3,8 @@
 **Parle dès l’atterrissage.** Survival phrases for French-speaking travellers, in Spanish and Italian
 for now. Bagage is an installable web app (PWA): it works fully offline, needs no account and shows no ads.
 
-Live: <https://coroboros.github.io/vale/>
+Preview: <https://coroboros.github.io/vale/> (GitHub Pages, without translation). Once Cloudflare is
+connected, the app and its translation service are served by one Worker; see RUNBOOK.md.
 
 ## What it does
 
@@ -25,7 +26,8 @@ Live: <https://coroboros.github.io/vale/>
 - **Shared phone friendly.** Several profiles on one device, backup export and import.
 
 Why each of these choices: [docs/LEARNING.md](docs/LEARNING.md). Name and identity:
-[docs/BRAND.md](docs/BRAND.md). What comes next: [TODO.md](TODO.md).
+[docs/BRAND.md](docs/BRAND.md). Business model: [docs/BUSINESS.md](docs/BUSINESS.md). What to do
+next, in order: [RUNBOOK.md](RUNBOOK.md); backlog: [TODO.md](TODO.md).
 
 ## Install
 
@@ -69,13 +71,14 @@ src/
   translate.ts  phrase search and the translation client
   translation-api.ts  contract shared with the Worker
   sw.ts         service worker: precache, offline navigation
-worker/         translation service (Cloudflare Worker)
+worker/         Cloudflare Worker: serves the app, translates (/translate)
 tests/          unit/ (Vitest) and e2e/ (Playwright)
 ```
 
 ## Translation service
 
-`worker/` is a Cloudflare Worker. Claude Sonnet 5.5 translates first when a key is set, paid by the
+`worker/` is a Cloudflare Worker: it serves the built app as static files and answers
+`/translate` on the same origin. Claude Sonnet 5.5 translates first when a key is set, paid by the
 monthly API credits of a Claude Max plan; open models on Workers AI take over beyond the monthly
 budget or if Claude fails (DeepSeek V4.1 Flash, then Gemma 4, without a reasoning pass). Every
 model gets the course's phonetic conventions and a JSON schema; answers are checked, then cached
@@ -97,12 +100,13 @@ variables → Actions*:
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard, *Workers & Pages*, right-hand column |
 | `ANTHROPIC_API_KEY` | Console of the organisation linked to the Max credits (*API keys*) |
 
-The next push to `main` deploys the Worker (creating its KV namespace), stores the Anthropic key
-as a Worker secret, and builds the app with the Worker's address. Without the Cloudflare secrets
-the app offers DeepL and a field to keep your own translation.
+The next push to `main` builds the app and deploys the Worker with it (creating its KV namespace),
+and stores the Anthropic key as a Worker secret. Without the Cloudflare secrets the app goes to
+GitHub Pages and offers DeepL and a field to keep your own translation.
 
-**Or deploy by hand:** in `worker/`, `npm install`, `npx wrangler login`, `npx wrangler deploy`,
-`npx wrangler secret put ANTHROPIC_API_KEY`, then set the `TRANSLATE_URL` repository variable.
+**Or deploy by hand:** `VITE_TRANSLATE_URL=. npm run build` at the root, then in `worker/`:
+`npm install`, `npx wrangler login`, `npx wrangler deploy`,
+`npx wrangler secret put ANTHROPIC_API_KEY`.
 
 **Choosing the Workers AI models.** `npm run eval` (in `worker/`, with `CLOUDFLARE_ACCOUNT_ID` and
 an API token allowed to use Workers AI) runs each candidate model on twelve travel sentences per
@@ -117,6 +121,5 @@ learner leaves the phone.
 
 ## Deploy the app
 
-The *CI* workflow (`.github/workflows/ci.yml`) checks every push; on `main` it deploys the Worker
-(once Cloudflare is connected) and publishes the app to the `gh-pages` branch, which GitHub Pages
-serves.
+The *CI* workflow (`.github/workflows/ci.yml`) checks every push. On `main` it deploys the app
+and its translation service to Cloudflare once connected, and to GitHub Pages until then.

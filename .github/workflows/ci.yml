@@ -37,46 +37,14 @@ jobs:
           path: test-results/
           retention-days: 7
 
-  # Deploys the translation Worker once Cloudflare is connected: repository secrets
-  # CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID, and optionally ANTHROPIC_API_KEY.
-  worker:
+  # Once Cloudflare is connected (secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID, and
+  # optionally ANTHROPIC_API_KEY), one Worker serves the app and its translation API. Until
+  # then the app goes to GitHub Pages, without translation.
+  deploy:
     needs: check
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    outputs:
-      url: ${{ steps.deploy.outputs.url }}
-    steps:
-      - id: connected
-        run: echo "yes=${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}" >> "$GITHUB_OUTPUT"
-      - if: steps.connected.outputs.yes == 'true'
-        uses: actions/checkout@v7
-      - if: steps.connected.outputs.yes == 'true'
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: worker/package-lock.json
-      - id: deploy
-        if: steps.connected.outputs.yes == 'true'
-        working-directory: worker
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          npm ci
-          npx wrangler deploy | tee deploy.log
-          if [ -n "$ANTHROPIC_API_KEY" ]; then
-            printf '%s' "$ANTHROPIC_API_KEY" | npx wrangler secret put ANTHROPIC_API_KEY
-          fi
-          echo "url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)" >> "$GITHUB_OUTPUT"
-
-  publish:
-    needs: [check, worker]
-    if: always() && needs.check.result == 'success' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
@@ -85,13 +53,39 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            worker/package-lock.json
+      - id: cloudflare
+        run: echo "connected=${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}" >> "$GITHUB_OUTPUT"
       - run: npm ci
-      - name: Build
+
+      - name: Build for Cloudflare (translation on the same origin)
+        if: steps.cloudflare.outputs.connected == 'true'
         run: npm run build
         env:
-          # The TRANSLATE_URL variable wins; otherwise the Worker just deployed. Empty: DeepL fallback.
-          VITE_TRANSLATE_URL: ${{ vars.TRANSLATE_URL || needs.worker.outputs.url }}
+          VITE_TRANSLATE_URL: .
+      - name: Deploy to Cloudflare
+        if: steps.cloudflare.outputs.connected == 'true'
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm ci
+          npx wrangler deploy
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            printf '%s' "$ANTHROPIC_API_KEY" | npx wrangler secret put ANTHROPIC_API_KEY
+          fi
+
+      - name: Build for GitHub Pages
+        if: steps.cloudflare.outputs.connected != 'true'
+        run: npm run build
+        env:
+          VITE_TRANSLATE_URL: ${{ vars.TRANSLATE_URL }}
       - name: Publish to GitHub Pages (gh-pages branch)
+        if: steps.cloudflare.outputs.connected != 'true'
         working-directory: dist
         run: |
           git init -q -b gh-pages

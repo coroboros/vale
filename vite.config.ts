@@ -7,7 +7,8 @@ import { BRAND, COLORS } from './src/brand.ts';
 export default defineConfig({
   // Relative URLs: the same build runs from GitHub Pages (/vale/) and from any other host.
   base: './',
-  build: { target: 'es2022', sourcemap: true },
+  // No source maps in the published app: the code is private.
+  build: { target: 'es2022', sourcemap: false },
   plugins: [
     preact(),
     {

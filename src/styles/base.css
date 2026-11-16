@@ -7,6 +7,8 @@
 
   html,
   body {
+    /* Safety net: a phone must never pan sideways. Tests disable it to catch the real cause. */
+    overflow-x: clip;
     height: 100%;
     margin: 0;
   }

@@ -161,9 +161,11 @@ export async function handle(
 ): Promise<Response> {
   if (new URL(request.url).pathname !== '/translate') return json({ error: 'not_found' }, 404);
 
+  // The app is served from this same Worker; other origins must be listed (local dev servers).
   const origin = request.headers.get('origin') ?? '';
   const allowed = (env.ALLOWED_ORIGINS ?? '').split(',').map(o => o.trim());
-  if (!origin || !allowed.includes(origin)) return json({ error: 'origin_not_allowed' }, 403);
+  if (!origin || (origin !== new URL(request.url).origin && !allowed.includes(origin)))
+    return json({ error: 'origin_not_allowed' }, 403);
   const cors = corsHeaders(origin);
 
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });

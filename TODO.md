@@ -1,25 +1,17 @@
 # To do
 
-Working notes for the next sessions: what is in flight, what still needs a real test, what can be
-better, what to keep an eye on.
-
-## In flight
-
-- **Translation service: built, not deployed.** Unit tests and a run in the local Workers runtime
-  (stub API) pass. It waits for the repository secrets (README, *Translation service*). Once
-  live: one real translation per language, a cache hit, a 429 after 20 calls a minute, and the
-  Claude spend counted in KV against the Console usage page.
-- **Model choice per language.** Run `npm run eval` in `worker/` once deployed, then set `MODELS`.
-- **Repository rename and move to Cloudflare hosting.** Same day, so the phones migrate once
-  (see *Housekeeping*).
+The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 
 ## Test for real
 
-- Both iPhones: the update toast from 4.0, progress kept since v3, install on the home screen,
-  offline after one visit, Spanish and Italian voices (*Réglages → Accessibilité → Contenu
-  énoncé*), voice recording, Bernard speaking when tapped.
+- Both iPhones: install on the home screen, offline after one visit, the update toast, Spanish
+  and Italian voices (*Réglages → Accessibilité → Contenu énoncé*), voice recording, Bernard
+  speaking when tapped, the date fields of onboarding and *Moi* (they overflowed on iOS before
+  the fix; the automated check runs in Chromium only).
 - The welcome flight on an older iPhone (smoothness, battery), with *Réduire les animations* on,
   and in Safari with its toolbars (short screen).
+- Translation: one sentence per language once deployed, a cache hit, a 429 after 20 calls a
+  minute, the Claude spend counted in KV against the Console usage page.
 - Translation quality: the eval grades, then a native speaker on twenty phrases per language,
   and the French-reader pronunciation of Italian stress (often unpredictable from spelling).
 - Lighthouse on a real phone. Local runs: performance 96, accessibility 100, best practices 100.
@@ -36,16 +28,16 @@ better, what to keep an eye on.
 - **Understand what you hear and read.** Translation the other way (Spanish or Italian into
   French), from typed text first, then from a photo of a menu or a sign.
 - **Measure before claiming.** Opt-in, anonymous counts (sessions finished, day-1 and day-7 return,
-  answer accuracy per exercise kind) to check the engagement and difficulty hypotheses in
-  docs/LEARNING.md. Nothing personal, nothing about the sentences translated.
+  answer accuracy per exercise kind) to check the hypotheses in docs/LEARNING.md and to price.
+  Nothing personal, nothing about the sentences translated.
 - **Reminders.** Web Push at the practice moment the learner chose (iOS 16.4+ for installed apps),
-  sent by a Cloudflare Worker with VAPID keys.
+  sent by the Worker with VAPID keys.
+- **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
 - More languages: Portuguese (Portugal and Brazil), Greek, German; one theme and shell pattern
   per country.
 - Speech checking for the speaking exercise, on the device if possible (today the learner judges
   their own attempt after hearing the model).
-- Sync between devices and profiles shared across phones, without accounts (passphrase,
-  Durable Objects).
+- Sync between devices and profiles shared across phones (with accounts).
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
 
 ## Watch
@@ -53,25 +45,19 @@ better, what to keep an eye on.
 - **Anthropic.** Monthly credit use in the Console; prices in `worker/src/claude.ts` (they feed
   the budget); API version 2026-10-21; Claude Sonnet 5.5 retires no sooner than September 2027.
 - **Cloudflare.** Workers AI catalogue (DeepSeek V4.1 Flash and Gemma 4 ids can change), Neuron
-  prices and the daily free allocation.
+  prices and the daily free allocation; Workers static assets limits.
 - **GitHub Actions.** `ubuntu-latest` moves to Ubuntu 26 (warning in the CI logs); action majors
-  (checkout and setup-node v7, upload-artifact v7).
+  (checkout and setup-node v7, upload-artifact v7); minutes once the repository is private.
 - **Dependencies.** Monthly `npm outdated` here and in `worker/`, then `npm run check`.
 - **Flaky end-to-end tests.** Two only failed on GitHub's runners (the first key of the keyboard
   flow, an accessibility check during an entrance animation). Both are fixed; note any new one
   here with its cause.
 
-## Housekeeping
+## Later
 
-- **Rename the repository and move hosting, together.** The Pages address follows the repository
-  name (`/vale/`) and GitHub does not redirect it after a rename. Browsers and installed apps keep
-  their data and service worker per address, so a new address starts empty. Plan: serve the app
-  from Cloudflare (Workers static assets, next to the translation Worker, ideally on a custom
-  domain), rename the repository the same day, then on each phone export a backup from *Moi*,
-  install from the new address and import it.
-- **Close the code.** GitHub Pages on a private repository needs a paid plan; the Cloudflare move
-  above removes that constraint. Stop publishing source maps at the same time.
-- **Infrastructure as code.** `worker/wrangler.jsonc` describes the Worker, its KV and its rate
-  limit, and CI deploys it. Consider Pulumi only when DNS, a custom domain and several
+- **Infrastructure as code.** `worker/wrangler.jsonc` describes the Worker, its assets, KV and
+  rate limit, and CI deploys it. Consider Pulumi when DNS, a custom domain and several
   environments arrive.
+- A custom domain for the app (then its address no longer depends on Cloudflare's subdomain).
+- A Content Security Policy in `public/_headers`, tested end to end before shipping.
 - Lighthouse in CI with budgets (performance, accessibility, best practices).

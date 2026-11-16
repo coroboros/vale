@@ -34,17 +34,22 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(FAKE_VOICES);
 });
 
-async function onboard(page: Page, name = 'Adrien') {
+async function onboard(page: Page, name = 'Adrien', check: (step: string) => Promise<void> = async () => {}) {
   await page.goto('./');
   await page.getByRole('button', { name: 'C’est parti' }).click();
+  await check('language');
   await page.getByRole('button', { name: 'Continuer' }).click();
+  await check('destination');
   await page.getByRole('button', { name: 'Barcelone' }).click();
   await page.getByRole('button', { name: 'Continuer' }).click();
+  await check('date');
   await page.getByLabel('Date de départ').fill('2026-12-20');
   await page.getByRole('button', { name: 'Continuer' }).click();
+  await check('travellers');
   await page.getByLabel('Ton prénom').fill(name);
   await page.getByRole('button', { name: 'Au masculin' }).click();
   await page.getByRole('button', { name: 'Continuer' }).click();
+  await check('pace');
   await page.getByText('Régulier').click();
   await page.getByRole('button', { name: 'Avec mon café du matin' }).click();
   await page.getByRole('button', { name: 'Continuer' }).click();
@@ -268,10 +273,22 @@ test('the welcome window stays still for people who ask for less motion', async 
 
 const SCREENS = ['#/', '#/entrainement', '#/phrases', '#/carte', '#/moi'];
 
-test('tap targets are large and choice buttons never touch', async ({ page }) => {
+test('nothing is too small to tap, too close, or wider than the screen', async ({ page }) => {
   const audit = async (where: string) => {
     await settle(page);
     const problems = await page.evaluate(() => {
+      // The body clips sideways overflow as a safety net; lift it to see the real layout.
+      document.body.style.overflowX = 'visible';
+      const out: string[] = [];
+      const extra = document.documentElement.scrollWidth - window.innerWidth;
+      if (extra > 1) {
+        const wide = [...document.querySelectorAll('body *')]
+          .filter(el => el.getBoundingClientRect().right > window.innerWidth + 1 && !el.closest('.porthole'))
+          .slice(0, 3)
+          .map(el => el.outerHTML.slice(0, 80));
+        out.push(`${extra}px wider than the screen: ${wide.join(' | ')}`);
+      }
+      document.body.style.overflowX = '';
       const sel = 'button, a[href], input:not(.sr-only), select, textarea, label.choice, summary';
       const visible = (el: Element) => {
         const r = el.getBoundingClientRect();
@@ -281,7 +298,6 @@ test('tap targets are large and choice buttons never touch', async ({ page }) =>
         );
       };
       const els = [...document.querySelectorAll(sel)].filter(el => visible(el) && !el.closest('.gloss-word, .skip'));
-      const out: string[] = [];
       for (const el of els) {
         const r = el.getBoundingClientRect();
         if (Math.min(r.width, r.height) < 44)
@@ -304,7 +320,7 @@ test('tap targets are large and choice buttons never touch', async ({ page }) =>
   };
   await page.goto('./');
   await audit('welcome');
-  await onboard(page, 'Léa');
+  await onboard(page, 'Léa', audit);
   await audit('onboarding');
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await audit('session');
