@@ -1,6 +1,6 @@
 /** A practice session: one exercise at a time, immediate feedback, a ticket at the end. */
 import { Check, Clock, Flame, Mic, Play, Square, Target, X, Zap } from 'lucide-preact';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { advance, closeSession, running, type Summary, submitAnswer } from '../../actions';
 import type { Card, Exercise } from '../../engine/exercises';
 import { grade, normalize, type Verdict } from '../../engine/grade';
@@ -19,11 +19,14 @@ type Feedback = { ok: boolean; verdict?: Verdict; neutral?: boolean } | null;
 
 const speak = (card: Card, variant = 0) => say(card.item.t, { lang: card.lang, slow: settings.value.slow, variant });
 
-/** Keyboard: 1-9 pick, Enter checks or continues, Escape quits. */
+/**
+ * Keyboard: 1-9 pick, Enter checks or continues, Escape quits. Registered before the first
+ * paint (layout effect), so a key pressed as soon as an exercise appears is never lost.
+ */
 function useKeys(handler: (key: string) => void) {
   const ref = useRef(handler);
   ref.current = handler;
-  useEffect(() => {
+  useLayoutEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;

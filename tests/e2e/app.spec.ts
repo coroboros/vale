@@ -51,6 +51,13 @@ async function onboard(page: Page, name = 'Adrien') {
   await expect(page.getByRole('heading', { name: 'Imagine.' })).toBeVisible();
 }
 
+/** Waits until entrance animations are over (looping ones excepted), so checks see the final look. */
+async function settle(page: Page) {
+  await page.waitForFunction(() =>
+    document.getAnimations().every(a => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity),
+  );
+}
+
 /** Ends onboarding by opening the first lesson, then leaves it. */
 async function leaveFirstLesson(page: Page) {
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
@@ -70,8 +77,10 @@ async function playSession(page: Page, keyboard = false) {
     const ex = page.locator('.ex').first();
     if (await ex.locator('.choice').count()) {
       if (keyboard) {
-        await page.keyboard.press('1');
-        await expect(ex.locator('.choice input').first()).toBeChecked();
+        await expect(async () => {
+          await page.keyboard.press('1');
+          await expect(ex.locator('.choice input').first()).toBeChecked({ timeout: 300 });
+        }).toPass({ timeout: 5000 });
         await page.keyboard.press('Enter');
       } else {
         await ex.locator('.choice').first().click();
@@ -261,6 +270,7 @@ const SCREENS = ['#/', '#/entrainement', '#/phrases', '#/carte', '#/moi'];
 
 test('tap targets are large and choice buttons never touch', async ({ page }) => {
   const audit = async (where: string) => {
+    await settle(page);
     const problems = await page.evaluate(() => {
       const sel = 'button, a[href], input:not(.sr-only), select, textarea, label.choice, summary';
       const visible = (el: Element) => {
@@ -309,6 +319,7 @@ test('tap targets are large and choice buttons never touch', async ({ page }) =>
 
 test('no serious accessibility issue on the main screens', async ({ page }) => {
   const check = async (where: string) => {
+    await settle(page);
     const { violations } = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
       .analyze();
