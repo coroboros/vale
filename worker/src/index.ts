@@ -4,13 +4,16 @@
  *   POST /translate  {"text": "Je voudrais un late checkout", "course": "es"}
  *   → 200 {"t": "…", "ph": "…", "note": "…", "alternatives": ["…"]}
  *
- * Claude translates; every answer is kept in KV, so a sentence is paid for once.
+ * An open model on Workers AI translates, with a second model as fallback and, if a key is
+ * set, Claude as the last resort. Every answer is kept in KV, so a sentence is paid for once.
  * Only the app's origins may call it, a few times a minute per IP (Workers Rate Limiting).
  */
 import { COURSES } from '../../src/content';
 import type { Course } from '../../src/content/types';
-import { asTranslated, MAX_TRANSLATE_CHARS, sentenceKey } from '../../src/translation-api';
-import { PROMPT_VERSION, translateWithClaude, UpstreamError } from './claude';
+import { asTranslated, MAX_TRANSLATE_CHARS, sentenceKey, type Translated } from '../../src/translation-api';
+import { CLAUDE_DEFAULTS, translateWithClaude } from './claude';
+import { PROMPT_VERSION, UpstreamError } from './prompt';
+import { type Ai, modelsFor, translateWithWorkersAi } from './workers-ai';
 
 /** The subset of the KV and Rate Limiting bindings this Worker uses. */
 interface Cache {
@@ -22,12 +25,16 @@ interface Limiter {
 }
 
 export interface Env {
+  AI?: Ai;
+  /** Models per course, tried in order: {"es": ["@cf/…"], "default": ["@cf/…"]}. */
+  MODELS?: unknown;
+  /** Optional: Claude as the last resort. */
   ANTHROPIC_API_KEY?: string;
+  CLAUDE_MODEL?: string;
+  CLAUDE_EFFORT?: string;
+  ANTHROPIC_BASE_URL?: string;
   /** Comma-separated origins allowed to call the service. */
   ALLOWED_ORIGINS?: string;
-  MODEL?: string;
-  EFFORT?: string;
-  ANTHROPIC_BASE_URL?: string;
   CACHE?: Cache;
   LIMITER?: Limiter;
 }
@@ -36,15 +43,17 @@ interface Context {
   waitUntil(promise: Promise<unknown>): void;
 }
 
-const DEFAULTS = {
-  model: 'claude-sonnet-5-5',
-  effort: 'medium',
-  baseUrl: 'https://api.anthropic.com',
-} as const;
-const EFFORTS = new Set(['low', 'medium', 'high', 'xhigh', 'max']);
+interface Attempt {
+  model: string;
+  run: (signal: AbortSignal) => Promise<Translated>;
+}
+
 const CACHE_TTL = 60 * 60 * 24 * 90;
 const DEADLINE_MS = 15_000;
+/** One slow model must leave time for the next one. */
+const ATTEMPT_MS = 8_000;
 const MAX_BODY = 4096;
+const EFFORTS = new Set(['low', 'medium', 'high', 'xhigh', 'max']);
 
 type Headers = Record<string, string>;
 
@@ -58,6 +67,7 @@ const corsHeaders = (origin: string): Headers => ({
   'access-control-allow-origin': origin,
   'access-control-allow-methods': 'POST, OPTIONS',
   'access-control-allow-headers': 'content-type',
+  'access-control-expose-headers': 'x-cache, x-model',
   'access-control-max-age': '86400',
   vary: 'origin',
 });
@@ -86,6 +96,27 @@ async function readInput(request: Request): Promise<{ text: string; course: Cour
   return found ? { text: clean, course: found } : { error: 'unknown_course' };
 }
 
+/** Workers AI models in order, then Claude when a key is set. */
+function attemptsFor(text: string, course: Course, env: Env, fetcher: typeof fetch): Attempt[] {
+  const attempts: Attempt[] = [];
+  const ai = env.AI;
+  if (ai) {
+    for (const model of modelsFor(course.id, env.MODELS))
+      attempts.push({ model, run: signal => translateWithWorkersAi(text, course, ai, model, signal) });
+  }
+  const apiKey = env.ANTHROPIC_API_KEY;
+  if (apiKey) {
+    const model = env.CLAUDE_MODEL || CLAUDE_DEFAULTS.model;
+    const effort = env.CLAUDE_EFFORT && EFFORTS.has(env.CLAUDE_EFFORT) ? env.CLAUDE_EFFORT : CLAUDE_DEFAULTS.effort;
+    const baseUrl = (env.ANTHROPIC_BASE_URL || CLAUDE_DEFAULTS.baseUrl).replace(/\/$/, '');
+    attempts.push({
+      model,
+      run: signal => translateWithClaude(text, course, { apiKey, model, effort, baseUrl, fetch: fetcher }, signal),
+    });
+  }
+  return attempts;
+}
+
 export async function handle(
   request: Request,
   env: Env,
@@ -101,13 +132,15 @@ export async function handle(
 
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
   if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { ...cors, allow: 'POST, OPTIONS' });
-  if (!env.ANTHROPIC_API_KEY) {
-    console.error('ANTHROPIC_API_KEY is not set: run `npx wrangler secret put ANTHROPIC_API_KEY`.');
-    return json({ error: 'not_configured' }, 500, cors);
-  }
 
   const input = await readInput(request);
   if ('error' in input) return json(input, 400, cors);
+
+  const attempts = attemptsFor(input.text, input.course, env, fetcher);
+  if (!attempts.length) {
+    console.error('No translation provider: bind Workers AI as AI, or set ANTHROPIC_API_KEY.');
+    return json({ error: 'not_configured' }, 500, cors);
+  }
 
   if (env.LIMITER) {
     const { success } = await env.LIMITER.limit({ key: request.headers.get('cf-connecting-ip') ?? 'unknown' });
@@ -118,28 +151,23 @@ export async function handle(
   const cached = asTranslated(await env.CACHE?.get(key, 'json').catch(() => null));
   if (cached) return json(cached, 200, { ...cors, 'x-cache': 'hit' });
 
-  try {
-    const answer = await translateWithClaude(
-      input.text,
-      input.course,
-      {
-        apiKey: env.ANTHROPIC_API_KEY,
-        model: env.MODEL || DEFAULTS.model,
-        effort: env.EFFORT && EFFORTS.has(env.EFFORT) ? env.EFFORT : DEFAULTS.effort,
-        baseUrl: (env.ANTHROPIC_BASE_URL || DEFAULTS.baseUrl).replace(/\/$/, ''),
-        fetch: fetcher,
-      },
-      AbortSignal.timeout(DEADLINE_MS),
-    );
-    if (env.CACHE) ctx.waitUntil(env.CACHE.put(key, JSON.stringify(answer), { expirationTtl: CACHE_TTL }));
-    return json(answer, 200, { ...cors, 'x-cache': 'miss' });
-  } catch (error) {
-    console.error('translation failed', error);
-    if ((error as Error).name === 'TimeoutError') return json({ error: 'timeout' }, 504, cors);
-    if (error instanceof UpstreamError && error.retryable)
-      return json({ error: 'busy' }, 503, { ...cors, 'retry-after': '20' });
-    return json({ error: 'translation_failed' }, 502, cors);
+  const overall = AbortSignal.timeout(DEADLINE_MS);
+  let failure: unknown;
+  for (const attempt of attempts) {
+    try {
+      const answer = await attempt.run(AbortSignal.any([overall, AbortSignal.timeout(ATTEMPT_MS)]));
+      if (env.CACHE) ctx.waitUntil(env.CACHE.put(key, JSON.stringify(answer), { expirationTtl: CACHE_TTL }));
+      return json(answer, 200, { ...cors, 'x-cache': 'miss', 'x-model': attempt.model });
+    } catch (error) {
+      failure = error;
+      console.warn(`translation with ${attempt.model} failed`, error);
+      if (overall.aborted) break;
+    }
   }
+  if (overall.aborted) return json({ error: 'timeout' }, 504, cors);
+  if (failure instanceof UpstreamError && failure.retryable)
+    return json({ error: 'busy' }, 503, { ...cors, 'retry-after': '20' });
+  return json({ error: 'translation_failed' }, 502, cors);
 }
 
 export default {

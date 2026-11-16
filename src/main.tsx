@@ -3,6 +3,7 @@ import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/kit.css';
+import './styles/journey.css';
 import './styles/screens.css';
 import { render } from 'preact';
 import { settleDay } from './actions';

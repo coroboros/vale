@@ -5,12 +5,14 @@
       "src/**",
       "tests/**",
       "worker/src/**",
+      "worker/eval/**",
       "worker/*.json",
       "*.ts",
       "*.json",
       "!dist",
       "!tests/shots",
-      "!.e2e-dist"
+      "!.e2e-dist",
+      "!worker/eval/results.json"
     ]
   },
   "formatter": {

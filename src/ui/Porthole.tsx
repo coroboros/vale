@@ -1,0 +1,280 @@
+/**
+ * The welcome scene: a cabin window flying from one destination to the next. Clouds part on a
+ * city, Bernard greets it in its language, then the clouds close and the plane flies on.
+ *
+ * Play: the view follows the mouse, or the thumb dragged on the glass, like a head moving
+ * close to the window. Tapping the window flies on; tapping Bernard makes him say hello.
+ * Motion stops for people who ask their system for less of it, and the pause button stops
+ * the loop for everyone else (WCAG 2.2.2).
+ */
+import { Pause, Play } from 'lucide-preact';
+import type { RefObject } from 'preact';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { reducedMotion } from '../platform/env';
+import { say } from '../platform/speech';
+import { Mascot } from './Mascot';
+import { Scenery } from './scenery/Scenery';
+import { type Theme, themeVars } from './themes';
+
+export interface Stop {
+  place: string;
+  greeting: string;
+  lang: string;
+  theme: Theme;
+}
+
+type Phase = 'arrive' | 'stay' | 'leave';
+const PHASE_MS: Record<Phase, number> = { arrive: 1700, stay: 4300, leave: 1100 };
+
+function usePageVisible() {
+  const [visible, setVisible] = useState(document.visibilityState === 'visible');
+  useEffect(() => {
+    const update = () => setVisible(document.visibilityState === 'visible');
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
+  return visible;
+}
+
+const clamp = (v: number) => Math.max(-1, Math.min(1, v));
+
+/**
+ * Sets --lx and --ly (from -1 to 1) on the element, eased toward the pointer: the mouse
+ * anywhere on the page, or a finger dragged on the window. Calls onSwipe for a quick
+ * horizontal throw. Returns a ref telling whether the last gesture was a drag (not a tap).
+ */
+function useLookAround(
+  root: RefObject<HTMLElement | null>,
+  glass: RefObject<HTMLElement | null>,
+  enabled: boolean,
+  onSwipe: () => void,
+) {
+  const dragged = useRef(false);
+  const swipe = useRef(onSwipe);
+  swipe.current = onSwipe;
+  useEffect(() => {
+    const el = root.current;
+    const pane = glass.current;
+    if (!enabled || !el || !pane) return;
+    let target = { x: 0, y: 0 };
+    let now = { x: 0, y: 0 };
+    let frame = 0;
+    let start: { x: number; y: number; t: number; id: number } | null = null;
+    const step = () => {
+      now = { x: now.x + (target.x - now.x) * 0.09, y: now.y + (target.y - now.y) * 0.09 };
+      el.style.setProperty('--lx', now.x.toFixed(3));
+      el.style.setProperty('--ly', now.y.toFixed(3));
+      frame = Math.abs(target.x - now.x) + Math.abs(target.y - now.y) > 0.002 ? requestAnimationFrame(step) : 0;
+    };
+    const aim = (x: number, y: number) => {
+      target = { x: clamp(x), y: clamp(y) };
+      if (!frame) frame = requestAnimationFrame(step);
+    };
+    const onMouse = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return;
+      const r = el.getBoundingClientRect();
+      aim(
+        (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2),
+        (e.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2),
+      );
+    };
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') return;
+      start = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId };
+      dragged.current = false;
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id) return;
+      const dx = (e.clientX - start.x) / (pane.clientWidth / 2);
+      const dy = (e.clientY - start.y) / (pane.clientHeight / 2);
+      if (Math.abs(dx) + Math.abs(dy) > 0.08) dragged.current = true;
+      aim(-dx, -dy);
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id) return;
+      const dx = e.clientX - start.x;
+      const quick = performance.now() - start.t < 450;
+      if (quick && Math.abs(dx) > pane.clientWidth * 0.25) swipe.current();
+      start = null;
+      aim(0, 0);
+    };
+    window.addEventListener('pointermove', onMouse, { passive: true });
+    pane.addEventListener('pointerdown', onDown, { passive: true });
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp, { passive: true });
+    window.addEventListener('pointercancel', onUp, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('pointermove', onMouse);
+      pane.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+  }, [enabled, root, glass]);
+  return dragged;
+}
+
+function Wing() {
+  return (
+    <svg class="porthole-wing" viewBox="0 0 220 140" aria-hidden="true">
+      <path d="M-10 140 V118 L150 64 C158 61 166 60 172 62 L180 66 L60 140 Z" fill="#EEF2F7" />
+      <path d="M60 140 L180 66 L176 71 L76 140 Z" fill="#C9D3E0" />
+      <path d="M20 132 L140 82" stroke="#D5DDE8" stroke-width="1.5" />
+      <path d="M-10 118 L150 64 C158 61 166 60 172 62" fill="none" stroke="#fff" stroke-width="3" />
+      <path
+        d="M168 62 L186 26 C188 23 192 23 192 27 L184 66 Z"
+        fill="var(--accent)"
+        stroke="var(--accent-deep)"
+        stroke-width="1.5"
+      />
+      <circle class="porthole-beacon" cx="189.5" cy="27" r="2.2" fill="#fff" />
+    </svg>
+  );
+}
+
+/** The wall of cloud the plane flies through between two destinations. */
+function CloudBank() {
+  const edge: [number, number, number][] = [
+    [62, 18, 34],
+    [48, 66, 30],
+    [64, 116, 40],
+    [44, 168, 28],
+    [60, 214, 38],
+    [46, 264, 30],
+    [64, 312, 40],
+    [50, 356, 30],
+  ];
+  const puffs = [...edge, ...edge.map(([x, y, r]) => [300 - x, (y + 26) % 380, r] as [number, number, number])];
+  return (
+    <svg class="porthole-clouds" viewBox="0 0 300 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="porthole-cloud" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff" />
+          <stop offset="1" stop-color="#eef4fb" />
+        </linearGradient>
+      </defs>
+      <g fill="#dfe9f5">
+        {puffs.map(([x, y, r]) => (
+          <circle key={`s${x}-${y}`} cx={x + 5} cy={y + 7} r={r} />
+        ))}
+      </g>
+      <rect x="62" y="-20" width="176" height="400" fill="url(#porthole-cloud)" />
+      <g fill="url(#porthole-cloud)">
+        {puffs.map(([x, y, r]) => (
+          <circle key={`c${x}-${y}`} cx={x} cy={y} r={r} />
+        ))}
+      </g>
+      <g fill="#fff" opacity="0.85">
+        {[
+          [22, 92, 14],
+          [26, 240, 16],
+          [278, 150, 14],
+          [272, 300, 16],
+        ].map(([x, y, r]) => (
+          <circle key={`w${x}-${y}`} cx={x} cy={y} r={r} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+export function Porthole({ stops }: { stops: Stop[] }) {
+  const still = reducedMotion();
+  const [index, setIndex] = useState(0);
+  const [phase, setPhase] = useState<Phase>(still ? 'stay' : 'arrive');
+  const [playing, setPlaying] = useState(!still);
+  const [hop, setHop] = useState(0);
+  const [intro, setIntro] = useState(!still);
+  const visible = usePageVisible();
+  const root = useRef<HTMLDivElement>(null);
+  const glass = useRef<HTMLButtonElement>(null);
+  const stop = stops[index % stops.length]!;
+  const next = () => setIndex(i => (i + 1) % stops.length);
+
+  useEffect(() => {
+    if (!playing || !visible) return;
+    const timer = setTimeout(() => {
+      if (phase === 'leave') next();
+      setPhase(phase === 'arrive' ? 'stay' : phase === 'stay' ? 'leave' : 'arrive');
+    }, PHASE_MS[phase]);
+    return () => clearTimeout(timer);
+  }, [phase, playing, visible]);
+
+  useEffect(() => {
+    if (!intro) return;
+    const timer = setTimeout(() => setIntro(false), 1700);
+    return () => clearTimeout(timer);
+  }, [intro]);
+
+  const flyOn = () => {
+    if (!playing) {
+      next();
+      setPhase('stay');
+    } else if (phase !== 'leave') setPhase('leave');
+  };
+  const dragged = useLookAround(root, glass, !still, flyOn);
+
+  const togglePlay = () => {
+    if (playing) setPhase('stay');
+    setPlaying(!playing);
+  };
+
+  return (
+    <div
+      ref={root}
+      class="porthole"
+      data-phase={phase}
+      data-playing={playing}
+      data-intro={intro}
+      style={themeVars(stop.theme)}
+    >
+      <button
+        ref={glass}
+        type="button"
+        class="porthole-window"
+        aria-label="Voler vers la destination suivante"
+        onClick={() => {
+          if (dragged.current) dragged.current = false;
+          else flyOn();
+        }}
+      >
+        <span class="porthole-view">
+          <span key={index} class="porthole-land">
+            <Scenery place={stop.place} tall />
+          </span>
+          <Wing />
+          <CloudBank />
+          <span class="porthole-shade" />
+          <span class="porthole-glare" />
+        </span>
+      </button>
+      <button
+        type="button"
+        class="porthole-bernard"
+        aria-label={`Écouter Bernard dire « ${stop.greeting} »`}
+        onClick={() => {
+          setHop(h => h + 1);
+          void say(stop.greeting, { lang: stop.lang });
+        }}
+      >
+        <span class="porthole-bubble" lang={stop.lang}>
+          {stop.greeting}
+        </span>
+        <span key={`${index}-${hop}`} class="porthole-hop">
+          <Mascot size={140} pattern={stop.theme.pattern} mood="happy" decorative />
+        </span>
+      </button>
+      {!still && (
+        <button
+          type="button"
+          class="porthole-toggle"
+          aria-label={playing ? 'Mettre le voyage en pause' : 'Reprendre le voyage'}
+          onClick={togglePlay}
+        >
+          {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
+        </button>
+      )}
+    </div>
+  );
+}

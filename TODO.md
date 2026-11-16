@@ -16,6 +16,10 @@
 
 ## Product
 
+- Show the learner's own destination in the home card, with the welcome scenery.
+- Draw the other destinations (Madrid, Valencia, Florence, Naples, Milan, Sicily); the rest use
+  the generic coast for now.
+
 - More destinations: Portuguese (Portugal and Brazil), Greek, German; one theme and shell pattern
   per country.
 - Speech checking for the speaking exercise, on the device if possible (today the learner judges

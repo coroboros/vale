@@ -1441,11 +1441,84 @@
     padding: 12px 0;
   }
 
+  /* Welcome: the porthole, the name, the way in. Stacked on phones, side by side on desktop. */
+  .onboarding.is-welcome {
+    grid-template-rows: 1fr;
+  }
+
+  .onboarding.is-welcome .ob-body {
+    align-content: stretch;
+    padding: 0;
+  }
+
   .ob-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    min-height: 100%;
+    text-align: center;
+  }
+
+  /* The right padding balances Bernard, who sits half outside the window. */
+  .welcome-art {
+    margin-top: auto;
+    padding: 18px 9% 0 0;
+  }
+
+  .welcome-text {
     display: grid;
     justify-items: center;
-    gap: 14px;
-    text-align: center;
+    gap: 10px;
+  }
+
+  .welcome-actions {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  @media (min-width: 900px) {
+    .onboarding.is-welcome {
+      width: min(100%, 1120px);
+      padding-inline: 48px;
+    }
+
+    .ob-welcome {
+      display: grid;
+      grid-template: "art text" 1fr "art actions" 1fr / auto minmax(0, 440px);
+      column-gap: clamp(56px, 8vw, 132px);
+      justify-content: center;
+      align-items: center;
+      text-align: left;
+    }
+
+    .welcome-art {
+      grid-area: art;
+      margin: 0;
+      padding: 32px 9% 0 0;
+    }
+
+    .welcome-text {
+      grid-area: text;
+      align-self: end;
+      justify-items: start;
+    }
+
+    .welcome-text .promise {
+      justify-content: flex-start;
+    }
+
+    .welcome-text .big-mark {
+      font-size: clamp(4rem, 7vw, 6.4rem);
+    }
+
+    .welcome-actions {
+      grid-area: actions;
+      align-self: start;
+      margin: 12px 0 0;
+    }
   }
 
   .big-mark {

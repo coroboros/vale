@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "logs": "wrangler tail"
+    "logs": "wrangler tail",
+    "eval": "tsx eval/run.ts"
   },
   "devDependencies": {
-    "wrangler": "^4.162.0"
+    "wrangler": "^4.162.0",
+    "tsx": "^4.23.15"
   }
 }

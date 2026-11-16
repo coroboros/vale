@@ -7,3 +7,4 @@ tests/shots/
 .wrangler/
 __pycache__/
 .DS_Store
+worker/eval/results.json

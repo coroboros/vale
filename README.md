@@ -7,14 +7,17 @@ Live: <https://coroboros.github.io/vale/>
 
 ## What it does
 
+- **A flight to begin.** The welcome screen is a cabin window flying to Barcelona, Rome, Seville
+  and Venice. The view follows your finger or your mouse, a tap flies on, and Bernard says hello
+  in the local language.
 - **A trip, not a course.** You pick a destination and a departure date. The home screen shows how
   much of what you learned you will still remember on landing day, from your own memory model.
 - **Spaced retrieval that adapts.** Every phrase has its own forgetting curve (FSRS-7). Exercises
   move from recognising to producing as memory strengthens, aiming at about 85 % success.
 - **Real situations.** Café, restaurant, hotel, transport, shopping, pharmacy, emergencies, plus
   role-play scenes, prices said aloud, a sounds lesson and regional packs (Catalan in Barcelona).
-- **Translate anything, keep it offline.** Type what you want to say; Claude translates it the way a
-  local would say it, with pronunciation written for French readers. Every translation stays in a
+- **Translate anything, keep it offline.** Type what you want to say; an AI model translates it the
+  way a local would say it, with pronunciation written for French readers. Every translation stays in a
   searchable history on the phone and can join your reviews.
 - **A survival card** to show in a restaurant: allergies and diet, in the local language.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
@@ -72,9 +75,10 @@ tests/          unit/ (Vitest) and e2e/ (Playwright)
 
 ## Translation service
 
-`worker/` is a Cloudflare Worker that calls Claude (`claude-sonnet-5-5` by default) with the course’s
-phonetic conventions, validates the JSON answer and caches it in Workers KV, so a sentence is paid
-for once. Only the app’s origins may call it, 20 times a minute per IP.
+`worker/` is a Cloudflare Worker. It asks an open model on Workers AI for the translation
+(DeepSeek V4.1 Flash, then Gemma 4 if the first one fails), without a reasoning pass, with the
+course's phonetic conventions and a JSON schema. Answers are checked, then cached in Workers KV, so
+a sentence is paid for once. Only the app's origins may call it, 20 times a minute per IP.
 
 Deploy it once:
 
@@ -82,20 +86,25 @@ Deploy it once:
 cd worker
 npm install
 npx wrangler login
-npx wrangler deploy                          # creates the Worker and its KV namespace
-npx wrangler secret put ANTHROPIC_API_KEY    # paste a key from platform.claude.com
+npx wrangler deploy      # creates the Worker and its KV namespace
 ```
 
 Then give the app its address: on GitHub, *Settings → Secrets and variables → Actions → Variables*,
 add `TRANSLATE_URL` with the Worker URL (`https://bagage-translate.<account>.workers.dev`) and run
 the *CI* workflow again. Without it, the app offers DeepL and a field to keep your own translation.
 
-Settings live in `worker/wrangler.jsonc`: `MODEL`, `EFFORT` (`low` is faster, `high` more careful),
-`ALLOWED_ORIGINS`. Set `ANTHROPIC_BASE_URL` to route calls through Cloudflare AI Gateway.
+**Choosing the models.** `npm run eval` (in `worker/`, with `CLOUDFLARE_ACCOUNT_ID` and an API token
+allowed to use Workers AI) runs each candidate model on twelve travel sentences per language, has a
+stronger model grade the answers, and prints the `MODELS` setting it suggests for each language.
+Put it in the `vars` of `worker/wrangler.jsonc` and deploy again.
 
-Cost, estimated from list prices and not yet measured: about 0.2 to 0.8 US cents per new sentence;
-repeated sentences come from the cache. Sentences are sent to Anthropic through the Worker; nothing
-else about the learner leaves the phone.
+**Optional last resort.** With `npx wrangler secret put ANTHROPIC_API_KEY`, Claude Haiku 5.5 answers
+when every Workers AI model fails. Claude Max plans include monthly API credits that can pay for it.
+
+Cost, estimated and not measured: about 40 Neurons per new sentence with DeepSeek V4.1 Flash, so
+about 240 new sentences a day fit in the free daily allocation of 10,000 Neurons; beyond that,
+about 0.05 US cents each. Repeated sentences come from the cache. Sentences go to Cloudflare through
+the Worker; nothing else about the learner leaves the phone.
 
 ## Deploy the app
 

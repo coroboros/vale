@@ -10,9 +10,14 @@ const FAKE_VOICES = () => {
     { name: 'Alice', lang: 'it-IT', localService: true, default: false, voiceURI: 'a' },
     { name: 'Thomas', lang: 'fr-FR', localService: true, default: true, voiceURI: 't' },
   ];
+  const spoken: string[] = [];
+  (window as unknown as { __spoken: string[] }).__spoken = spoken;
   const synth = {
     getVoices: () => voices,
-    speak: (u: { onend?: () => void }) => setTimeout(() => u.onend?.(), 20),
+    speak: (u: { text: string; onend?: () => void }) => {
+      spoken.push(u.text);
+      setTimeout(() => u.onend?.(), 20);
+    },
     cancel() {},
     addEventListener() {},
   };
@@ -225,10 +230,36 @@ test('translates a sentence, then finds it again offline', async ({ page, contex
   await context.setOffline(false);
 });
 
+test('the welcome window flies on, Bernard speaks, the journey pauses', async ({ page }) => {
+  await page.goto('./');
+  const bubble = page.locator('.porthole-bubble');
+  await expect(bubble).toHaveText('¡Hola, Barcelona!');
+  await expect(bubble).toBeVisible();
+  await page.getByRole('button', { name: 'Voler vers la destination suivante' }).click();
+  await expect(bubble).toHaveText('Ciao, Roma!', { timeout: 4000 });
+  await page.getByRole('button', { name: /Écouter Bernard/ }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __spoken: string[] }).__spoken))
+    .toContain('Ciao, Roma!');
+  await page.getByRole('button', { name: 'Mettre le voyage en pause' }).click();
+  await expect(page.locator('.porthole')).toHaveAttribute('data-playing', 'false');
+  await page.getByRole('button', { name: 'Reprendre le voyage' }).click();
+  await expect(page.locator('.porthole')).toHaveAttribute('data-playing', 'true');
+});
+
+test('the welcome window stays still for people who ask for less motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('./');
+  await expect(page.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
+  await expect(page.locator('.porthole')).toHaveAttribute('data-playing', 'false');
+  await expect(page.getByRole('button', { name: 'Mettre le voyage en pause' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Voler vers la destination suivante' }).click();
+  await expect(page.locator('.porthole-bubble')).toHaveText('Ciao, Roma!');
+});
+
 const SCREENS = ['#/', '#/entrainement', '#/phrases', '#/carte', '#/moi'];
 
 test('tap targets are large and choice buttons never touch', async ({ page }) => {
-  await onboard(page, 'Léa');
   const audit = async (where: string) => {
     const problems = await page.evaluate(() => {
       const sel = 'button, a[href], input:not(.sr-only), select, textarea, label.choice, summary';
@@ -261,6 +292,9 @@ test('tap targets are large and choice buttons never touch', async ({ page }) =>
     });
     expect(problems, where).toEqual([]);
   };
+  await page.goto('./');
+  await audit('welcome');
+  await onboard(page, 'Léa');
   await audit('onboarding');
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await audit('session');
@@ -274,7 +308,6 @@ test('tap targets are large and choice buttons never touch', async ({ page }) =>
 });
 
 test('no serious accessibility issue on the main screens', async ({ page }) => {
-  await onboard(page, 'Léa');
   const check = async (where: string) => {
     const { violations } = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
@@ -284,6 +317,9 @@ test('no serious accessibility issue on the main screens', async ({ page }) => {
       .map(v => `${v.id}: ${v.nodes[0]?.html}`);
     expect(serious, where).toEqual([]);
   };
+  await page.goto('./');
+  await check('welcome');
+  await onboard(page, 'Léa');
   await check('onboarding');
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await check('session');

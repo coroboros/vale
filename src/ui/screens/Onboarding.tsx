@@ -14,7 +14,20 @@ import { CUES, GOALS, PROFILE_COLORS } from '../../state/schema';
 import { InstallButton } from '../Install';
 import { ChoiceGroup, Say } from '../kit';
 import { Mascot } from '../Mascot';
+import { Porthole, type Stop } from '../Porthole';
+import { hasScenery } from '../scenery/Scenery';
 import { THEMES, themeVars } from '../themes';
+
+/** The welcome flight: every drawn destination, alternating languages. */
+const JOURNEY: Stop[] = (() => {
+  const byCourse = COURSES.map(c =>
+    c.regions
+      .filter(r => hasScenery(r.id))
+      .map(r => ({ place: r.id, greeting: c.greet(r.native), lang: c.lang, theme: THEMES[c.theme] ?? THEMES.sol! })),
+  );
+  const longest = Math.max(...byCourse.map(list => list.length));
+  return Array.from({ length: longest }, (_, i) => byCourse.flatMap(list => list[i] ?? []));
+})().flat();
 
 interface Traveller {
   name: string;
@@ -58,35 +71,45 @@ export function Onboarding() {
   };
 
   return (
-    <div class="onboarding" style={themeVars(theme)}>
-      <header class="ob-top">
-        {step > 0 ? (
+    <div class={`onboarding${step === 0 ? ' is-welcome' : ''}`} style={themeVars(theme)}>
+      {step > 0 && (
+        <header class="ob-top">
           <button type="button" class="icon-btn" aria-label="Retour" onClick={() => setStep(step - 1)}>
             <ArrowLeft size={24} />
           </button>
-        ) : (
-          <span />
-        )}
-        {step > 0 && (
           <ol class="ob-dots" aria-label={`Étape ${step} sur ${last}`}>
             {Array.from({ length: last }, (_, i) => (
               <li key={i} class={i < step ? 'on' : ''} />
             ))}
           </ol>
-        )}
-      </header>
+        </header>
+      )}
 
       <main class="ob-body">
         {step === 0 && (
           <div class="ob-welcome">
-            <Mascot size={190} pattern={theme.pattern} motion="bob" mood="happy" />
-            <h1 class="wordmark big-mark">{BRAND.name.toLowerCase()}</h1>
-            <p class="ob-lead">{BRAND.tagline}</p>
-            <ul class="promise">
-              {BRAND.promise.map(x => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
+            <div class="welcome-art">
+              <Porthole stops={JOURNEY} />
+              <p class="porthole-hint">
+                <span class="on-touch">Touche le hublot, ou Bernard.</span>
+                <span class="on-mouse">Clique sur le hublot, ou sur Bernard.</span>
+              </p>
+            </div>
+            <div class="welcome-text">
+              <h1 class="wordmark big-mark">{BRAND.name.toLowerCase()}</h1>
+              <p class="ob-lead">{BRAND.tagline}</p>
+              <ul class="promise">
+                {BRAND.promise.map(x => (
+                  <li key={x}>{x}</li>
+                ))}
+              </ul>
+            </div>
+            <div class="welcome-actions">
+              <button type="button" class="btn btn-primary btn-block" onClick={() => setStep(1)}>
+                C’est parti
+              </button>
+              <InstallButton block secondary />
+            </div>
           </div>
         )}
 
@@ -240,18 +263,19 @@ export function Onboarding() {
         )}
       </main>
 
-      <footer class="ob-foot">
-        {step < last ? (
-          <button type="button" class="btn btn-primary btn-block" disabled={!canGo} onClick={() => setStep(step + 1)}>
-            {step === 0 ? 'C’est parti' : 'Continuer'}
-          </button>
-        ) : (
-          <button type="button" class="btn btn-primary btn-block" onClick={finish}>
-            Apprendre ma première phrase
-          </button>
-        )}
-        {step === 0 && <InstallButton block secondary />}
-      </footer>
+      {step > 0 && (
+        <footer class="ob-foot">
+          {step < last ? (
+            <button type="button" class="btn btn-primary btn-block" disabled={!canGo} onClick={() => setStep(step + 1)}>
+              Continuer
+            </button>
+          ) : (
+            <button type="button" class="btn btn-primary btn-block" onClick={finish}>
+              Apprendre ma première phrase
+            </button>
+          )}
+        </footer>
+      )}
     </div>
   );
 }
