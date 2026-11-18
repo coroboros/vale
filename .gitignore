@@ -8,3 +8,4 @@ tests/shots/
 __pycache__/
 .DS_Store
 worker/eval/results.json
+.cache/

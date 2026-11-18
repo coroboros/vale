@@ -197,6 +197,24 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await expect(page.locator('.stop.started, .stop.done').first()).toBeVisible();
 });
 
+test('« Imagine » shows the destination photo with its credit, and the mascot without it', async ({ page }) => {
+  await onboard(page);
+  const photo = page.getByRole('img', { name: /parc Güell/ });
+  await expect(photo).toBeVisible();
+  await expect.poll(() => photo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+  await expect(page.locator('.photo-credit').getByRole('link').first()).toHaveAttribute(
+    'href',
+    /commons\.wikimedia\.org/,
+  );
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expectAccessible(page, 'imagine with a photo');
+
+  await page.route('**/photos/**', route => route.abort());
+  await onboard(page);
+  await expect(page.locator('.onboarding')).not.toHaveClass(/has-photo/);
+  await expect(page.locator('.ob-imagine .mascot')).toBeVisible();
+});
+
 test('« Mon voyage » switches language and destination from Home, and each language keeps its trip', async ({
   page,
 }) => {

@@ -3,7 +3,7 @@
  * using the language feeds the motivation to learn it (the « ideal L2 self », docs/LEARNING.md).
  */
 import { ArrowLeft } from 'lucide-preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { createProfiles, startSession } from '../../actions';
 import { BRAND } from '../../brand';
 import { COURSES } from '../../content';
@@ -13,6 +13,7 @@ import { InstallButton } from '../Install';
 import { ChoiceGroup, Say } from '../kit';
 import { Mascot } from '../Mascot';
 import { Porthole, type Stop } from '../Porthole';
+import { type Photo, PORTRAIT, photoFiles, photoOf, preload } from '../photos';
 import { hasScenery } from '../scenery/Scenery';
 import { DateField, LanguageChoice, PlaceChoice } from '../Trip';
 import { THEMES, themeVars } from '../themes';
@@ -26,6 +27,23 @@ const JOURNEY: Stop[] = (() => {
   const longest = Math.max(...byCourse.map(list => list.length));
   return Array.from({ length: longest }, (_, i) => byCourse.flatMap(list => list[i] ?? []));
 })().flat();
+
+function Backdrop({ photo, onError }: { photo: Photo; onError: () => void }) {
+  const files = photoFiles(photo.id);
+  return (
+    <picture class="ob-photo">
+      <source media={PORTRAIT} srcset={files.portrait} />
+      <img
+        src={files.fallback}
+        srcset={files.srcset}
+        sizes="100vw"
+        alt={photo.alt}
+        style={{ '--focus': `${photo.focus * 100}%` }}
+        onError={onError}
+      />
+    </picture>
+  );
+}
 
 interface Traveller {
   name: string;
@@ -47,6 +65,13 @@ export function Onboarding() {
   const sentence = firstLine && firstLine.who === 'you' ? firstLine.options[0]! : c.hello;
   const last = 6;
   const canGo = step !== 4 || people.every(t => t.name.trim());
+  const photo = photoOf(c.id, region);
+  const [brokenPhoto, setBrokenPhoto] = useState('');
+  const shownPhoto = step === last && photo && photo.id !== brokenPhoto ? photo : undefined;
+
+  useEffect(() => {
+    if (step === last - 1 && photo) preload(photo);
+  }, [step, photo?.id]);
 
   const setPerson = (i: number, patch: Partial<Traveller>) =>
     setPeople(ps => ps.map((x, j) => (j === i ? { ...x, ...patch } : x)));
@@ -68,7 +93,10 @@ export function Onboarding() {
   };
 
   return (
-    <div class={`onboarding${step === 0 ? ' is-welcome' : ''}`} style={themeVars(theme)}>
+    <div
+      class={`onboarding${step === 0 ? ' is-welcome' : ''}${shownPhoto ? ' has-photo' : ''}`}
+      style={themeVars(theme)}
+    >
       {step > 0 && (
         <header class="ob-top">
           <button type="button" class="icon-btn" aria-label="Retour" onClick={() => setStep(step - 1)}>
@@ -221,17 +249,37 @@ export function Onboarding() {
         {step === 6 && (
           <section class="ob-step ob-imagine" aria-labelledby="ob-6">
             <h1 id="ob-6">Imagine.</h1>
+            {shownPhoto && <Mascot size={72} pattern={theme.pattern} mood="cheer" motion="bob" decorative />}
             <p class="ob-lead">
               Tu arrives {place && place.id !== 'autre' ? `à ${place.name}` : 'sur place'}. Tu pousses la porte d’un
               café et tu dis :
             </p>
+            {shownPhoto && <Backdrop photo={shownPhoto} onError={() => setBrokenPhoto(shownPhoto.id)} />}
             <div class="imagine-line">
               <Say text={sentence} lang={c.lang} />
               <p class="big" lang={c.lang}>
                 {sentence}
               </p>
             </div>
-            <Mascot size={130} pattern={theme.pattern} mood="cheer" motion="bob" />
+            {shownPhoto ? (
+              <p class="photo-credit">
+                Photo :{' '}
+                <a href={shownPhoto.source} target="_blank" rel="noreferrer">
+                  {shownPhoto.author}
+                </a>
+                ,{' '}
+                {shownPhoto.licenseUrl ? (
+                  <a href={shownPhoto.licenseUrl} target="_blank" rel="noreferrer">
+                    {shownPhoto.license}
+                  </a>
+                ) : (
+                  shownPhoto.license
+                )}
+                , recadrée
+              </p>
+            ) : (
+              <Mascot size={130} pattern={theme.pattern} mood="cheer" motion="bob" />
+            )}
           </section>
         )}
       </main>

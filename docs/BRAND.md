@@ -56,6 +56,24 @@ Each language has a theme (`src/ui/themes.ts`), applied to primary actions, prog
 - Type: Bricolage Grotesque for titles, Atkinson Hyperlegible Next for text (drawn for legibility,
   with distinct letter shapes and a slashed zero).
 
+## Photos
+
+The last step of onboarding (« Imagine ») shows the chosen destination in a full-screen photo:
+the landmark seen from where a traveller would stand, a café terrace or a street rather than an
+aerial view, in daylight. It is the one place where Bagage uses photography; everywhere else
+the scenery is drawn.
+
+- Every photo comes from Wikimedia Commons under a license that allows reuse: public domain,
+  CC0, CC BY or CC BY-SA. `brand/photos.py` refuses anything else.
+- The credit under each photo names the author, links the license and the Commons file page,
+  and says the photo was cropped, as the CC licenses ask. The script copies author and license
+  from Commons into `src/ui/photos.json`, so the credit cannot drift from the file page.
+- The text sits on a frosted card tinted at 62 % near-black: white text keeps 5.4:1 even over a
+  white sky, so the photo itself is never darkened.
+- To add or change a destination: edit its entry in `src/ui/photos.json` (Commons file, focus,
+  alt text), then run `python3 brand/photos.py fetch render` from a machine that reaches Commons.
+  A unit test fails while a destination has no photo or a file is missing.
+
 ## Voice
 
 French, *tu*, short sentences, concrete situations. Errors are explained, never apologised for.

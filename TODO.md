@@ -26,6 +26,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
   overview and on the home screen.
 - Bernard's eyes following a finger on the iPhone, and his blinking.
+- The « Imagine » photo on an older iPhone: the slow zoom under the frosted card (smoothness), and
+  how fast the photo appears on a slow connection (it loads one step ahead, about 250 KB).
 - « Mon voyage » on the iPhone: switching language and destination from the home screen, then
   back, keeps each language's destination and date.
 - The pronunciation check on the iPhone, in Safari and from the home screen: two tries in a row.

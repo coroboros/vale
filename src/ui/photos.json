@@ -1,0 +1,210 @@
+{
+  "lisbonne": {
+    "file": "Alfama trams Lisbon 12 2016 9698.jpg",
+    "focus": 0.55,
+    "alt": "Des tramways jaunes dans une rue ensoleillée de Lisbonne",
+    "author": "Mariordo (Mario Roberto Durán Ortiz)",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Alfama_trams_Lisbon_12_2016_9698.jpg"
+  },
+  "porto": {
+    "file": "Ribeiras Restaurant Porto (22093763525).jpg",
+    "focus": 0.3,
+    "alt": "Une terrasse face au pont Dom-Luís et au Douro, à Porto",
+    "author": "Chris",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ribeiras_Restaurant_Porto_(22093763525).jpg"
+  },
+  "algarve": {
+    "file": "Praia da Marinha-Algarve-Portugal.jpg",
+    "focus": 0.5,
+    "alt": "Falaises dorées et mer turquoise à la Praia da Marinha, en Algarve",
+    "author": "Tobi 87",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Praia_da_Marinha-Algarve-Portugal.jpg"
+  },
+  "madere": {
+    "file": "Ponta de São Lourenço, Madeira, Portugal, 2019-05-28, DD 31.jpg",
+    "focus": 0.55,
+    "alt": "Les falaises de la pointe de São Lourenço plongeant dans l’océan, à Madère",
+    "author": "Diego Delso",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ponta_de_S%C3%A3o_Louren%C3%A7o,_Madeira,_Portugal,_2019-05-28,_DD_31.jpg"
+  },
+  "acores": {
+    "file": "Lagoa das Sete Cidades, Miradouro da vista do Rei, Sete Cidades, Ponta Delgada, ilha de São Miguel, Açores.JPG",
+    "focus": 0.45,
+    "alt": "Les lacs de Sete Cidades au fond de leur cratère vert, aux Açores",
+    "author": "José Luís Ávila Silveira/Pedro Noronha e Costa",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Lagoa_das_Sete_Cidades,_Miradouro_da_vista_do_Rei,_Sete_Cidades,_Ponta_Delgada,_ilha_de_S%C3%A3o_Miguel,_A%C3%A7ores.JPG"
+  },
+  "madrid": {
+    "file": "Plaza Mayor . Fachada orientada al Sur.jpg",
+    "focus": 0.45,
+    "alt": "La Plaza Mayor de Madrid et ses façades sous le soleil",
+    "author": "IGOLEA",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Plaza_Mayor_._Fachada_orientada_al_Sur.jpg"
+  },
+  "barcelone": {
+    "file": "Park Güell - 50030738311.jpg",
+    "focus": 0.35,
+    "alt": "Le banc en mosaïque du parc Güell et les pavillons de Gaudí, à Barcelone",
+    "author": "Jorge Franganillo",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Park_G%C3%BCell_-_50030738311.jpg"
+  },
+  "valence": {
+    "file": "Plaza de la Virgen, Valencia, España, 2014-06-30, DD 163.JPG",
+    "focus": 0.42,
+    "alt": "La plaza de la Virgen, sa fontaine et sa basilique, à Valence",
+    "author": "Diego Delso",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Plaza_de_la_Virgen,_Valencia,_Espa%C3%B1a,_2014-06-30,_DD_163.JPG"
+  },
+  "baleares": {
+    "file": "View of the bay at Calo des Moro, Mallorca (Spain) (23899506181).jpg",
+    "focus": 0.5,
+    "alt": "L’eau turquoise de la crique de Caló des Moro, à Majorque",
+    "author": "Tommie Hansen from Stockholm, Sweden",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:View_of_the_bay_at_Calo_des_Moro,_Mallorca_(Spain)_(23899506181).jpg"
+  },
+  "andalousie": {
+    "file": "Plaza de España (Sevilla) - 01.jpg",
+    "focus": 0.3,
+    "alt": "La Plaza de España de Séville dans la lumière dorée du soir",
+    "author": "Carlos Delgado",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Plaza_de_Espa%C3%B1a_(Sevilla)_-_01.jpg"
+  },
+  "canaries": {
+    "file": "Roque Cinchado mit Teide.jpg",
+    "focus": 0.4,
+    "alt": "Le Roque Cinchado devant le volcan Teide, à Tenerife",
+    "author": "Thomas Wolf, www.foto-tw.de",
+    "license": "CC BY-SA 3.0 de",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Roque_Cinchado_mit_Teide.jpg"
+  },
+  "paysbasque": {
+    "file": "San Sebastian Kontxa beach 1190650.jpg",
+    "focus": 0.6,
+    "alt": "La plage et la baie de La Concha au soleil, à Saint-Sébastien",
+    "author": "Ermell",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:San_Sebastian_Kontxa_beach_1190650.jpg"
+  },
+  "galice": {
+    "file": "Illas Cíes 16VIII2013 01.JPG",
+    "focus": 0.8,
+    "alt": "L’eau turquoise et les plages des îles Cíes, en Galice",
+    "author": "Iago Casabiell González",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Illas_C%C3%ADes_16VIII2013_01.JPG"
+  },
+  "roma": {
+    "file": "Pantheon Rom 1 cropped.jpg",
+    "focus": 0.5,
+    "alt": "Le Panthéon et la fontaine de la piazza della Rotonda, à Rome",
+    "author": "Rabax63",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Pantheon_Rom_1_cropped.jpg"
+  },
+  "firenze": {
+    "file": "Firenze - Vista dal Piazzale Michelangelo - bis.jpg",
+    "focus": 0.5,
+    "alt": "Le Duomo de Florence au-dessus des toits de tuiles, au soleil",
+    "author": "PROPOLI87",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Firenze_-_Vista_dal_Piazzale_Michelangelo_-_bis.jpg"
+  },
+  "venezia": {
+    "file": "Venice, Canal Grande, gondola across Pta. d. Dogana 1.jpg",
+    "focus": 0.48,
+    "alt": "Une gondole sur le Grand Canal devant la basilique de la Salute, à Venise",
+    "author": "Armin Kleiner",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Venice,_Canal_Grande,_gondola_across_Pta._d._Dogana_1.jpg"
+  },
+  "milano": {
+    "file": "Piazza del Duomo - kuhnmi.jpg",
+    "focus": 0.65,
+    "alt": "La cathédrale de Milan et la galerie Victor-Emmanuel II sous un ciel bleu",
+    "author": "kuhnmi",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Piazza_del_Duomo_-_kuhnmi.jpg"
+  },
+  "napoli": {
+    "file": "View of Positano.jpg",
+    "focus": 0.62,
+    "alt": "Les maisons colorées de Positano accrochées à la falaise, sur la côte amalfitaine",
+    "author": "Alexis Lours",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:View_of_Positano.jpg"
+  },
+  "sicilia": {
+    "file": "Spiaggia Cefalù.jpg",
+    "focus": 0.45,
+    "alt": "Les maisons de Cefalù au bord de l’eau dans la lumière du soir, en Sicile",
+    "author": "Einaz80",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Spiaggia_Cefal%C3%B9.jpg"
+  },
+  "londres": {
+    "file": "Westminster Bridge ^ Big Ben - geograph.org.uk - 8096386.jpg",
+    "focus": 0.75,
+    "alt": "Big Ben et le palais de Westminster au bord de la Tamise, à Londres",
+    "author": "Jo Atkins",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Westminster_Bridge_%5E_Big_Ben_-_geograph.org.uk_-_8096386.jpg"
+  },
+  "edimbourg": {
+    "file": "Victoria Street, Edinburgh - geograph.org.uk - 7340875.jpg",
+    "focus": 0.4,
+    "alt": "Les boutiques colorées de Victoria Street, à Édimbourg",
+    "author": "Andrew Abbott",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Victoria_Street,_Edinburgh_-_geograph.org.uk_-_7340875.jpg"
+  },
+  "dublin": {
+    "file": "The Temple Bar Pub in Dublin - panoramio.jpg",
+    "focus": 0.42,
+    "alt": "La façade rouge et fleurie du pub The Temple Bar, à Dublin",
+    "author": "Lobster1",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:The_Temple_Bar_Pub_in_Dublin_-_panoramio.jpg",
+    "frame": [0, 0, 1, 0.83]
+  },
+  "newyork": {
+    "file": "Brooklyn Bridge, view from Brooklyn Bridge Park, New York City, 20231002 0909 1574.jpg",
+    "focus": 0.55,
+    "alt": "Le pont de Brooklyn et les gratte-ciel de Manhattan au soleil",
+    "author": "Jakub Hałun",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Brooklyn_Bridge,_view_from_Brooklyn_Bridge_Park,_New_York_City,_20231002_0909_1574.jpg"
+  }
+}

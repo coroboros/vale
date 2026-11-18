@@ -32,6 +32,7 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 | `npm run test:e2e` | End-to-end tests only; `CHROME_PATH=/path/to/chrome` uses an installed Chrome |
 | `cd worker && npx wrangler dev` | The Worker locally, after `npm run build` at the root |
 | `cd worker && npm run eval` | Compare Workers AI models; needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` |
+| `python3 brand/photos.py fetch render` | Download the destination photos from Wikimedia Commons and render `public/photos/`; needs Pillow and access to Commons |
 
 ## Map
 
@@ -43,7 +44,8 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 - `src/state/`: stored data. `sanitize` gives a new field its default on every load; a change it
   cannot repair needs a migration in `migrate.ts`. Either way, with a test.
 - `src/ui/`: screens, components, `Porthole.tsx` and `scenery/` (the welcome flight),
-  `themes.ts` (colours per language, contrast checked by a test).
+  `themes.ts` (colours per language, contrast checked by a test), `photos.json` (one photo per
+  destination with its credit, written by `brand/photos.py`; files in `public/photos/`).
 - `src/translation-api.ts`: the request and answer shared with the Worker. The Worker also
   imports `src/content/`, so both stay free of browser APIs.
 - `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget), `claude.ts`,
