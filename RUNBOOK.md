@@ -11,19 +11,29 @@ exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-**First, at your request (19 Nov 2026): « Imagine » when a trip is added.** The form stays in the
-sheet, where the cabin window shows the destination while it is chosen (in flight). « Ajouter ce
-voyage » closes the sheet and lands on onboarding's « Imagine » screen for the new trip, full
-screen: the destination's photo (the country's for « Ailleurs »), « Imagine, <name>. », the date
-and practice moment, the café sentence, Bernard. Then « Apprendre ma première phrase » when the
-language is new, otherwise back to the itinerary, and « Plus tard ». Only when a trip is created,
-never on an edit or a switch, so it stays predictable and does not wear out. Build: one `Imagine`
-component taken out of `Onboarding.tsx` and used by both; a full-screen route `#/imagine` showing
-the trip in focus (the back button works); the photo preloaded once the chosen destination
-settles (not on every chip: about 250 KB each); the mascot when the photo fails. Tests: add a
-trip, then Rome's « Imagine », back, no photo, the long-name audit, accessibility. Why: the flow
-ends on a peak (Kahneman and colleagues, 1993, the peak-end rule), and « Imagine » states when and
-where, an if-then plan (docs/LEARNING.md).
+**First, at your request (19 Nov 2026): « Imagine » for every new trip, and the practice moment
+used everywhere.** The moment (« Mon moment pour pratiquer », editable in *Moi*) is asked once and
+then only sets the time of day in « Imagine ».
+
+- **New trip.** The form stays in the sheet, with the cabin window showing the destination while
+  it is chosen. « Ajouter ce voyage » lands on onboarding's « Imagine » screen for that trip, full
+  screen: the city's photo (the country's for « Ailleurs »). Only when a trip is created, never on
+  an edit or a switch. One `Imagine` component taken out of `Onboarding.tsx` for both; a
+  full-screen route `#/imagine` for the trip in focus (back works); the photo preloaded once the
+  chosen destination settles (about 250 KB each); the mascot when it fails.
+- **A scene per moment, one photo per city.** Morning coffee: the café (as now). Commute: the
+  taxi or the station. Lunch break: a terrace. Evening, before sleep: the hotel's front desk, with
+  the learner's name in the sentence (« Tengo una reserva a nombre de Adrien »). Sentences come
+  from the courses' scenes and lessons, not new copies; a test checks every language has one for
+  every moment; gender and « vous » for groups as today. Photos per moment stay step C3.
+- **The dream, then the plan.** Under the sentence: « 10 minutes avec ton café du matin, chaque
+  jour jusqu'au 20 décembre » (goal, moment, date), then the first lesson. Positive fantasies
+  alone lower the energy to act ([Kappes & Oettingen, 2011](https://doi.org/10.1016/j.jesp.2011.02.003));
+  an if-then plan helps (docs/LEARNING.md). Add the first to docs/LEARNING.md.
+- **The moment comes back.** At the chosen time of day, until the goal is met, home says so
+  (« C'est l'heure de ton café : 10 minutes d'espagnol ? »); push reminders later (TODO.md).
+- Tests: add a trip, Rome's « Imagine » per moment, back, no photo, home at the moment, the
+  long-name audit, accessibility.
 
 1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
    Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,
