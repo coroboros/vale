@@ -1,0 +1,4 @@
+{
+  "entry": ["worker/src/index.ts", "worker/eval/run.ts"],
+  "project": ["src/**/*.{ts,tsx}", "worker/{src,eval}/**/*.ts", "tests/**/*.ts", "*.ts"]
+}

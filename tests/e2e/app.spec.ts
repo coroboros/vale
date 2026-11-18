@@ -4,7 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { TRANSLATE_URL } from '../../playwright.config';
 
-/** A deterministic stand-in for the device voices (headless browsers have none). */
+/** Headless browsers have no voices. */
 const FAKE_VOICES = () => {
   const voices = [
     { name: 'Mónica', lang: 'es-ES', localService: true, default: false, voiceURI: 'm' },
@@ -58,21 +58,19 @@ async function onboard(page: Page, name = 'Adrien', check: (step: string) => Pro
   await expect(page.getByRole('heading', { name: 'Imagine.' })).toBeVisible();
 }
 
-/** Waits until entrance animations are over (looping ones excepted), so checks see the final look. */
+/** Looping animations excepted, so checks see the final look. */
 async function settle(page: Page) {
   await page.waitForFunction(() =>
     document.getAnimations().every(a => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity),
   );
 }
 
-/** Ends onboarding by opening the first lesson, then leaves it. */
 async function leaveFirstLesson(page: Page) {
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await page.getByRole('button', { name: 'Quitter la session' }).click();
   await page.getByRole('button', { name: 'Quitter', exact: true }).click();
 }
 
-/** Plays whatever exercise is on screen, right or wrong, until the session ticket shows. */
 async function playSession(page: Page, keyboard = false) {
   for (let i = 0; i < 80; i++) {
     if (await page.locator('.ticket').isVisible()) return;
@@ -81,7 +79,6 @@ async function playSession(page: Page, keyboard = false) {
   throw new Error('the session did not end');
 }
 
-/** Answers the exercise or closes the feedback on screen, right or wrong. */
 async function playStep(page: Page, keyboard = false) {
   const feedback = page.locator('.feedback .btn-block');
   if (await feedback.isVisible()) {
@@ -330,14 +327,12 @@ test('the welcome window flies on, Bernard speaks, the journey pauses', async ({
   await expect(page.locator('.porthole')).toHaveAttribute('data-playing', 'true');
 });
 
-/** Bernard's pupils on the welcome screen, in drawing units. */
 const pupils = (page: Page) =>
   page.locator('.porthole-bernard .mascot').evaluate(el => {
     const style = (el as SVGElement).style;
     return { x: Number(style.getPropertyValue('--px')), y: Number(style.getPropertyValue('--py')) };
   });
 
-/** Counts Bernard's blinks from now on. */
 const countBlinks = (page: Page) =>
   page.evaluate(() => {
     const w = window as unknown as { __blinks: number };
@@ -402,7 +397,6 @@ test('the welcome window stays still for people who ask for less motion', async 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('./');
   await expect(page.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
-  // Bernard neither follows the pointer nor blinks.
   const rest = await pupils(page);
   await countBlinks(page);
   await page.mouse.move(2, 2);

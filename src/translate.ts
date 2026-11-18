@@ -1,9 +1,6 @@
 /**
- * Phrase lookup and translation.
- * Offline: search the course and the learner's own translation history.
- * Online: the translation service (a Cloudflare Worker, see worker/) when configured at build
- * time with VITE_TRANSLATE_URL, otherwise a link to DeepL with the sentence filled in.
- * The request and answer shapes live in translation-api.ts, shared with the Worker.
+ * Offline, the course and the learner's history answer. Online, the Worker in worker/ when the
+ * build sets VITE_TRANSLATE_URL, otherwise a DeepL link with the sentence filled in.
  */
 import type { CourseIndex } from './content';
 import type { Course, Item } from './content/types';
@@ -54,7 +51,6 @@ function matches(words: string[], ...fields: string[]): number | null {
   return hay.length;
 }
 
-/** Course phrases whose French or target text contains every word of the query. */
 export function searchCourse(query: string, index: CourseIndex, limit = 8): Item[] {
   const words = wordsOf(query);
   if (!words.length) return [];

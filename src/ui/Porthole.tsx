@@ -1,18 +1,13 @@
 /**
- * The welcome scene: a cabin window flying from one destination to the next. Clouds part on a
- * city, Bernard greets it in its language, then the clouds close and the plane flies on.
- *
- * Play: the view follows the mouse, or the thumb dragged on the glass, like a head moving
- * close to the window, and Bernard's eyes follow it too. Tapping the window flies on; tapping
- * Bernard makes him say hello. He blinks while the journey plays.
- * Motion stops for people who ask their system for less of it, and the pause button stops
- * the loop for everyone else (WCAG 2.2.2).
+ * Motion stops for people who ask their system for less of it; the pause button stops the loop for
+ * everyone else (WCAG 2.2.2).
  */
 import { Pause, Play } from 'lucide-preact';
 import type { RefObject } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { reducedMotion } from '../platform/env';
 import { say } from '../platform/speech';
+import { easeVars } from './ease';
 import { Mascot } from './Mascot';
 import { Scenery } from './scenery/Scenery';
 import { type Theme, themeVars } from './themes';
@@ -39,11 +34,6 @@ function usePageVisible() {
 
 const clamp = (v: number) => Math.max(-1, Math.min(1, v));
 
-/**
- * Sets --lx and --ly (from -1 to 1) on the element, eased toward the pointer: the mouse
- * anywhere on the page, or a finger dragged on the window. Calls onSwipe for a quick
- * horizontal throw. Returns a ref telling whether the last gesture was a drag (not a tap).
- */
 function useLookAround(
   root: RefObject<HTMLElement | null>,
   glass: RefObject<HTMLElement | null>,
@@ -57,20 +47,9 @@ function useLookAround(
     const el = root.current;
     const pane = glass.current;
     if (!enabled || !el || !pane) return;
-    let target = { x: 0, y: 0 };
-    let now = { x: 0, y: 0 };
-    let frame = 0;
+    const view = easeVars(el, ['--lx', '--ly'], 0.09);
+    const aim = (x: number, y: number) => view.aim(clamp(x), clamp(y));
     let start: { x: number; y: number; t: number; id: number } | null = null;
-    const step = () => {
-      now = { x: now.x + (target.x - now.x) * 0.09, y: now.y + (target.y - now.y) * 0.09 };
-      el.style.setProperty('--lx', now.x.toFixed(3));
-      el.style.setProperty('--ly', now.y.toFixed(3));
-      frame = Math.abs(target.x - now.x) + Math.abs(target.y - now.y) > 0.002 ? requestAnimationFrame(step) : 0;
-    };
-    const aim = (x: number, y: number) => {
-      target = { x: clamp(x), y: clamp(y) };
-      if (!frame) frame = requestAnimationFrame(step);
-    };
     const onMouse = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') return;
       const r = el.getBoundingClientRect();
@@ -105,7 +84,7 @@ function useLookAround(
     window.addEventListener('pointerup', onUp, { passive: true });
     window.addEventListener('pointercancel', onUp, { passive: true });
     return () => {
-      cancelAnimationFrame(frame);
+      view.stop();
       window.removeEventListener('pointermove', onMouse);
       pane.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);
@@ -134,7 +113,6 @@ function Wing() {
   );
 }
 
-/** The wall of cloud the plane flies through between two destinations. */
 function CloudBank() {
   const edge: [number, number, number][] = [
     [62, 18, 34],
@@ -268,8 +246,8 @@ export function Porthole({ stops }: { stops: Stop[] }) {
             pattern={stop.theme.pattern}
             mood="happy"
             decorative
-            look={!still}
-            blink={playing && visible}
+            followPointer={!still}
+            blinks={playing && visible}
           />
         </span>
       </button>

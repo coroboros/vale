@@ -1,4 +1,3 @@
-/** A passport stamp: one per port of call (course unit) and per milestone. */
 import { hashSeed } from '../engine/random';
 
 export function Stamp({

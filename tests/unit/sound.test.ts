@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-/** The settings that shape sound, read by the platform modules themselves. */
 async function withSettings(change: Record<string, unknown>) {
   const { db } = await import('../../src/state/store');
   db.value = { ...db.value, settings: { ...db.value.settings, ...change } };

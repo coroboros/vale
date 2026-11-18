@@ -26,7 +26,7 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 | --- | --- |
 | `npm ci && (cd worker && npm ci)` | Install |
 | `npm run dev` | App on http://localhost:5173 |
-| `npm run check` | Typecheck, lint (Biome), unit tests (Vitest), build, end-to-end tests (Playwright) |
+| `npm run check` | Typecheck, lint (Biome, knip for dead code), unit tests (Vitest), build, end-to-end tests (Playwright) |
 | `npm run format` | Format and fix lint findings |
 | `npm run test:e2e` | End-to-end tests only; `CHROME_PATH=/path/to/chrome` uses an installed Chrome |
 | `cd worker && npx wrangler dev` | The Worker locally, after `npm run build` at the root |
@@ -50,5 +50,7 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 
 - TypeScript strict, Preact with signals, plain CSS in cascade layers (tokens, base, kit,
   screens). No CSS framework.
+- Comments say why (evidence, a constraint, a workaround), never what the code already says;
+  prefer a clearer name to a comment.
 - Commit messages: a short imperative summary, then a bulleted body.
 - When an agent gets something wrong about this repository, fix this file in the same change.

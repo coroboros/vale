@@ -1,7 +1,7 @@
 /** Seedable randomness so sessions, quests and tests are reproducible. */
 export type Rng = () => number;
 
-/** mulberry32: small, fast, good enough for shuffling exercises. */
+/** mulberry32: small and fast, good enough for shuffling. */
 export function seeded(seed: number): Rng {
   let a = seed >>> 0;
   return () => {
@@ -13,7 +13,7 @@ export function seeded(seed: number): Rng {
   };
 }
 
-/** Stable 32-bit hash of a string (FNV-1a), used to seed daily quests. */
+/** FNV-1a. */
 export function hashSeed(text: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193);

@@ -1,6 +1,6 @@
 @layer tokens, base, kit, screens;
 
-/* Design tokens. Course accents (--accent, --motif…) come from ui/themes.ts, set before the first render. */
+/* Course accents (--accent, --motif…) come from ui/themes.ts, set before the first render. */
 @layer tokens {
   :root {
     color-scheme: light;
@@ -35,15 +35,11 @@
     --step-1: 1.3125rem;
     --step-2: 1.625rem;
     --step-3: 2.0625rem;
-    --step-4: 2.5625rem;
-
-    --r-s: 12px;
     --r-m: 18px;
     --r-l: 26px;
     --r-pill: 999px;
 
     --tap: 48px;
-    --gap: 12px;
     --safe-t: env(safe-area-inset-top, 0px);
     --safe-b: env(safe-area-inset-bottom, 0px);
     --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);

@@ -1,4 +1,4 @@
-import { capitalize, confusableNumbers, genderAO, joinList } from '../shared';
+import { capitalize, confusableNumbers, FIRST_WORDS, genderAO, joinList } from '../shared';
 import type { Course } from '../types';
 import { card, extras, gloss, lessons, packs, regions, scenes, sounds, tips } from './es.data';
 
@@ -37,7 +37,7 @@ const UNITS = [
 const TENS = ['', '', '', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
 
 /** Spanish number words up to 99; `apocope` turns a final "uno" into "un" before a noun. */
-export function numberWords(n: number, apocope = false): string {
+function numberWords(n: number, apocope = false): string {
   const words = n < 30 ? UNITS[n]! : `${TENS[Math.floor(n / 10)]}${n % 10 ? ` y ${UNITS[n % 10]}` : ''}`;
   return apocope ? words.replace(/veintiuno$/, 'veintiún').replace(/uno$/, 'un') : words;
 }
@@ -65,18 +65,7 @@ export const es: Course = {
   ],
   gender: genderAO,
   units: [
-    {
-      id: 'first-words',
-      title: 'Premiers mots',
-      steps: [
-        { kind: 'sounds' },
-        { kind: 'lesson', id: 'base' },
-        { kind: 'lesson', id: 'parler' },
-        { kind: 'lesson', id: 'cles' },
-        { kind: 'lesson', id: 'nombres' },
-        { kind: 'review' },
-      ],
-    },
+    FIRST_WORDS,
     {
       id: 'table',
       title: 'À table',

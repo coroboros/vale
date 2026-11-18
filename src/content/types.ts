@@ -1,9 +1,9 @@
-/** Content model shared by every course. One course = one target language taught from French. */
+/** One course = one target language taught from French. */
 
 export type Gender = 'f' | 'm';
 
-/** A phrase as shown to the learner: target text, French-readable phonetics, French meaning. */
-export interface Phrase {
+/** `t` target text, `p` French-readable phonetics, `fr` meaning. */
+interface Phrase {
   t: string;
   ph: string;
   fr: string;
@@ -29,7 +29,7 @@ export interface Lesson {
   items: Item[];
 }
 
-export type SceneLine =
+type SceneLine =
   | { who: 'them'; t: string; fr: string }
   /** The first option is the right answer; options are shuffled at display time. */
   | { who: 'you'; task: string; options: string[] };
@@ -50,7 +50,7 @@ export interface Sound {
   examples: [word: string, ph: string, fr?: string][];
 }
 
-export type TipIcon = 'clock' | 'check' | 'chat' | 'bell' | 'euro' | 'cross' | 'sun' | 'pin';
+type TipIcon = 'clock' | 'check' | 'chat' | 'bell' | 'euro' | 'cross' | 'sun' | 'pin';
 
 export interface Tip {
   icon: TipIcon;
@@ -65,7 +65,7 @@ export interface Extra {
   items: Phrase[];
 }
 
-export interface Note {
+interface Note {
   title: string;
   desc: string;
 }
@@ -75,7 +75,7 @@ export interface Pack {
   id: string;
   title: string;
   native: string;
-  /** BCP 47 tag used to pick a voice. */
+  /** BCP 47: picks the voice. */
   lang: string;
   tip: Note;
   items: Item[];
@@ -110,15 +110,14 @@ export interface Unit {
   steps: Step[];
 }
 
-/** Sentences built from the learner's own data for the survival card. */
-export interface CardPhrases {
+interface CardPhrases {
   toHotel(hotel: string): string;
   /** `allergens` are the target-language names, article included ("el marisco"). */
   allergy(allergens: string[], g: Gender): string;
   myName(name: string): string;
 }
 
-export interface Numbers {
+interface Numbers {
   /** Spoken form of a price: "Son cuatro euros con veinte." or, short, "Cuatro con veinte." */
   sayPrice(euros: number, cents: number, short: boolean): string;
   /** Numbers learners confuse with `n` (doce/dos…), used as distractors. */
@@ -127,7 +126,7 @@ export interface Numbers {
 
 export interface Course {
   id: string;
-  /** BCP 47 tag of the target language, used for speech and `lang` attributes. */
+  /** BCP 47, for speech and `lang` attributes. */
   lang: string;
   name: string;
   native: string;
@@ -135,11 +134,11 @@ export interface Course {
   /** Greeting with the learner's name, punctuated the way the language does it. */
   greet(name: string): string;
   theme: string;
-  /** How to read the phonetic hints, shown once in the sounds lesson. */
   phonetics: string;
-  /** Ids of phrases that show every phonetic convention at work (they teach it to the translator). */
+  /**
+   * Ids of phrases that show every phonetic convention at work (they teach it to the translator).
+   */
   phoneticExamples: string[];
-  /** Replaces `{g}` gender placeholders in target-language text. */
   gender(text: string, g: Gender): string;
   units: Unit[];
   lessons: Lesson[];

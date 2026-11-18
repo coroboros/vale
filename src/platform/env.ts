@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals';
 
-/** What the app runs on. Read once: none of this changes during a visit. */
+/** Read once: none of this changes during a visit. */
 
 export const inFrame = (() => {
   try {
@@ -24,7 +24,6 @@ export const isStandalone = () =>
 
 export const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** Network status, for features that need a connection (translation). */
 export const online = signal(navigator.onLine);
 window.addEventListener('online', () => (online.value = true));
 window.addEventListener('offline', () => (online.value = false));

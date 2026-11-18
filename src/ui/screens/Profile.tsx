@@ -1,4 +1,3 @@
-/** You: stats, passport, trip and rhythm, voice, backups and profiles. */
 import { Download, Upload, UserPlus } from 'lucide-preact';
 import { useRef, useState } from 'preact/hooks';
 import {
@@ -21,7 +20,6 @@ import { InstallButton } from '../Install';
 import { ChoiceGroup, Sheet, showToast, Toggle } from '../kit';
 import { Stamp } from '../Stamp';
 
-/** Settings that are simple switches. */
 type Flag = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
 
 const VOICE: { key: Exclude<Flag, 'quiet'>; label: string; sub: string }[] = [

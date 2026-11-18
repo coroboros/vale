@@ -1,4 +1,3 @@
-/** Practice hub: reviews chosen by the memory model, ear and voice drills, scenes and games. */
 import {
   Check,
   Ear,
@@ -16,7 +15,7 @@ import type { ComponentChildren } from 'preact';
 import { clock, setQuiet, startSession } from '../../actions';
 import { isDue } from '../../engine/memory';
 import { arrivalTime, lessonKey, readiness } from '../../engine/progress';
-import { canSpeak, voicesFor } from '../../platform/speech';
+import { soundFor, voicesFor } from '../../platform/speech';
 import { cindex, course, isQuiet, pdata, profile, settings } from '../../state/store';
 import { go } from '../router';
 
@@ -50,7 +49,7 @@ export function Practice() {
   const data = pdata.value;
   const now = Date.now();
   const quiet = isQuiet(now);
-  const audio = canSpeak(c.lang) && !quiet;
+  const audio = soundFor(c.lang);
   const voices = voicesFor(c.lang).length;
   const noAudio = quiet ? 'Mode discret activé' : 'Aucune voix sur cet appareil';
   const prefix = `${c.id}:`;

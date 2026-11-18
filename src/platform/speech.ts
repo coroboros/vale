@@ -1,12 +1,12 @@
 /**
- * Text-to-speech with the device's own voices (works offline on iOS and macOS).
- * Listening drills can rotate between voices of the language: hearing several speakers
- * is what high-variability phonetic training relies on (Uchihara, Karas & Thomson, 2025).
+ * The device's own voices work offline on iOS and macOS. Listening drills rotate between them:
+ * hearing several speakers is what high-variability phonetic training relies on (Uchihara, Karas &
+ * Thomson, 2025).
  */
 import { signal } from '@preact/signals';
-import { settings } from '../state/store';
+import { isQuiet, settings } from '../state/store';
 
-/** Installed voices; a signal so views update when the system finishes loading them. */
+/** A signal: the system loads voices late, and views must update then. */
 const voices = signal<SpeechSynthesisVoice[]>([]);
 
 const NOVELTY =
@@ -25,7 +25,7 @@ export function initSpeech(): void {
 
 const baseOf = (lang: string) => lang.toLowerCase().split(/[-_]/)[0];
 
-/** Voices for a language, best first: exact region, then on-device voices. */
+/** Best first: exact region, then on-device voices. */
 export function voicesFor(lang: string): SpeechSynthesisVoice[] {
   const wanted = lang.toLowerCase().replace('_', '-');
   const score = (v: SpeechSynthesisVoice) =>
@@ -35,14 +35,13 @@ export function voicesFor(lang: string): SpeechSynthesisVoice[] {
 
 export const canSpeak = (lang: string) => supported && voicesFor(lang).length > 0;
 
+export const soundFor = (lang: string) => canSpeak(lang) && !isQuiet();
+
 export function stopSpeech(): void {
   if (supported) speechSynthesis.cancel();
 }
 
-/**
- * Speaks `text`; resolves when done (or after a safety timeout on engines that drop events).
- * `variant` picks another voice of the language when « Voix variées » is on.
- */
+/** Resolves on end, or after a timeout: some engines drop the event. */
 export function say(text: string, opts: { lang: string; slow?: boolean; variant?: number }): Promise<void> {
   if (!supported) return Promise.resolve();
   stopSpeech();

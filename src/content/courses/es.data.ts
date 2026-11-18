@@ -1,4 +1,3 @@
-// Spanish (Spain) course content. Source of truth for every phrase in the course.
 // Item ids are stable progress keys: edit text freely, never rename an id.
 import type { Extra, Lesson, Pack, Region, Scene, Sound, SurvivalCard, Tip } from '../types';
 

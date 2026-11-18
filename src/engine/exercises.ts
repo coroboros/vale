@@ -1,4 +1,3 @@
-/** Exercise formats and their builders. Distractors come from the same course and language. */
 import { type CourseIndex, itemKey } from '../content';
 import type { Item } from '../content/types';
 import { tokens } from './grade';
@@ -20,9 +19,8 @@ export const TIER: Record<Kind, number> = {
 };
 
 /**
- * Expected share of right answers on a well-remembered item, by format. Recognition is easier
- * than recall, which is easier than free production; the session engine multiplies these by
- * the item's predicted recall to aim each exercise at about 85 % success.
+ * Expected success on a well-remembered item, by format. Multiplied by predicted recall, it aims
+ * each exercise at about 85 % success.
  */
 export const EASE: Record<Kind, number> = {
   guess: 1,
@@ -39,7 +37,6 @@ export const EASE: Record<Kind, number> = {
 export const GRADED: readonly Kind[] = ['reco', 'listen', 'pick', 'tilesFr', 'tilesTarget', 'dictation', 'speak'];
 export const NEEDS_AUDIO: readonly Kind[] = ['listen', 'dictation'];
 
-/** An item ready to be practised: its progress key and the language it is spoken in. */
 export interface Card {
   key: string;
   item: Item;
@@ -68,7 +65,6 @@ export function canBuild(kind: Kind, card: Card): boolean {
   return true;
 }
 
-/** Other items of the same language, best distractors first. */
 function rivals(index: CourseIndex, card: Card, field: 't' | 'fr', rng: Rng): Item[] {
   const own = card.item;
   const source = index.entries.get(own.id)?.source;

@@ -1,14 +1,4 @@
-/**
- * Compares Workers AI models on the same travel sentences, language by language.
- *
- *   CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… npm run eval
- *   npm run eval -- --models @cf/a,@cf/b --judge @cf/c
- *
- * Each candidate translates every sentence with the Worker's own prompt. A stronger model that
- * is not in the race grades the answers (meaning, naturalness, pronunciation hints), then the
- * script prints a ranking per course and the MODELS setting it suggests. Read the sentences in
- * eval/results.json yourself before choosing: the grades are a guide, not a verdict.
- */
+/** Read eval/results.json yourself before choosing: the grades are a guide, not a verdict. */
 import { writeFileSync } from 'node:fs';
 import { COURSES } from '../../src/content';
 import type { Course } from '../../src/content/types';
@@ -69,7 +59,6 @@ async function run(model: string, input: unknown): Promise<unknown> {
   return body.result;
 }
 
-/** Runs tasks a few at a time. */
 async function pool<T>(tasks: (() => Promise<T>)[], size = 4): Promise<T[]> {
   const out: T[] = [];
   let next = 0;
@@ -120,7 +109,7 @@ const GRADES = {
   additionalProperties: false,
 };
 
-/** Grades every valid answer to one sentence, anonymised, from 0 to 10. */
+/** Anonymised, so the judge cannot favour a vendor. */
 async function grade(course: Course, fr: string, answers: Answer[]): Promise<void> {
   const valid = answers.filter(a => a.answer);
   if (!valid.length) return;

@@ -1,9 +1,6 @@
 /**
- * Destinations drawn as layered landscapes: sky, far, mid, water or land, near. Each layer has a
- * class (scn-far, scn-mid, scn-near…) so a container can move them at different depths and
- * animate the small living details (scn-drift, scn-shimmer, scn-bob). Scenery itself never
- * animates: the porthole decides how alive it is, and reduced motion keeps it still.
- * One coordinate space for every scene: 360 × 240, horizon at y = 172.
+ * Scenery never animates itself: the porthole decides how alive it is, so reduced motion keeps it
+ * still. One coordinate space for every scene: 360 × 240, horizon at y = 172.
  */
 import type { ComponentChildren } from 'preact';
 import { useId } from 'preact/hooks';
@@ -11,7 +8,6 @@ import { useId } from 'preact/hooks';
 interface Art {
   sky: [top: string, horizon: string];
   sun: { x: number; y: number; r: number; color: string };
-  /** Sea, lagoon or river; otherwise the ground. */
   water?: [deep: string, horizon: string];
   land?: [near: string, horizon: string];
   clouds: [x: number, y: number, scale: number][];
@@ -125,7 +121,6 @@ const Cypress = ({ x, y, h }: { x: number; y: number; h: number }) => (
   />
 );
 
-/** A Sagrada Família spire: tapered, rounded tip, coloured finial and slits. */
 function Spire({ cx, top, w, finial }: { cx: number; top: number; w: number; finial: string }) {
   const base = 153;
   return (
@@ -150,7 +145,6 @@ const Star = ({ x, y, s }: { x: number; y: number; s: number }) => (
   />
 );
 
-/** Rounded arches in a row, for façades. */
 function Arches({
   from,
   to,
@@ -462,7 +456,6 @@ const ART: Record<string, Art> = {
     ),
   },
 
-  /** Any other destination: a Mediterranean village, doors in the course colour. */
   coast: {
     sky: ['#93D4F5', '#FFF2D2'],
     sun: { x: 92, y: 62, r: 20, color: '#FFC53D' },
@@ -519,9 +512,8 @@ const ART: Record<string, Art> = {
 export const hasScenery = (place: string) => place in ART && place !== 'coast';
 
 /**
- * `tall` frames the scene for portrait windows such as the porthole: more sky above and more
- * ground below, so the landmark keeps a sensible size and the horizon sits near two thirds.
- * Ground layers therefore run down to y = 330, below what the wide frame shows.
+ * Portrait windows such as the porthole show more sky and ground, so the landmark keeps a sensible
+ * size; ground layers therefore run down to y = 330.
  */
 export function Scenery({ place, tall }: { place: string; tall?: boolean }) {
   const art = ART[place] ?? ART.coast!;

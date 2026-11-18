@@ -1,4 +1,3 @@
-/** Role-play: a short real-life exchange. Tap a word for its meaning, choose what you say. */
 import { Languages, X } from 'lucide-preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { completeScene } from '../../actions';

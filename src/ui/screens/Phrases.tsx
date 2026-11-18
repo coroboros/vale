@@ -1,8 +1,3 @@
-/**
- * Phrases: one search box for everything. It finds course phrases and past translations
- * offline, and translates new sentences when online. Translations are kept in a history
- * that works without network; saved ones join the review sessions.
- */
 import { BookmarkCheck, BookmarkPlus, ExternalLink, Search, Sparkles, Star, Trash, WifiOff } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { forgetTranslation, rememberTranslation, setTranslationSaved, toggleFavorite } from '../../actions';
@@ -83,7 +78,6 @@ function TranslationRow({ t }: { t: Translation }) {
   );
 }
 
-/** Offers to translate a sentence that is not in the history yet; the answer joins the history. */
 function Translator({ query }: { query: string }) {
   const c = course.value;
   const [busy, setBusy] = useState(false);

@@ -1,13 +1,10 @@
-/**
- * Long-term memory model: FSRS (Free Spaced Repetition Scheduler) through ts-fsrs.
- * FSRS predicts the probability of recalling each item; the app uses it to schedule
- * reviews, pick exercise difficulty and forecast what will be remembered on arrival.
- */
+/** FSRS through ts-fsrs. Why FSRS: docs/LEARNING.md. */
 import { DefaultScheduler, Rating } from 'ts-fsrs';
+import { DAY_MS } from './time';
 
 export type Grade = 'again' | 'hard' | 'good' | 'easy';
 
-/** Compact persisted memory state of one item (dates in epoch ms). */
+/** Dates in ms since epoch. */
 export interface Memory {
   s: number;
   sf: number;
@@ -27,11 +24,10 @@ type Scheduler = Awaited<ReturnType<typeof create>>;
 type Card = ReturnType<Scheduler['newCard']>;
 
 const RATING = { again: Rating.Again, hard: Rating.Hard, good: Rating.Good, easy: Rating.Easy } as const;
-const DAY = 86_400_000;
 
 let scheduler: Scheduler | null = null;
 
-/** Creates the scheduler once; call before any review. */
+/** Must run before any review. */
 export async function initMemory(): Promise<void> {
   scheduler ??= await create();
 }
@@ -76,14 +72,13 @@ function fromCard(c: Card): Memory {
   };
 }
 
-/** Applies one review and returns the new memory state. */
 export function review(memory: Memory | undefined, grade: Grade, now: number, id: string): Memory {
   const s = sched();
   const card = memory ? toCard(memory, id) : s.newCard({ now: new Date(now) });
   return fromCard(s.review({ card, grade: RATING[grade], now: new Date(now) }).card);
 }
 
-/** Probability of recalling the item at time `at` (0 for an item never reviewed). */
+/** 0 for an item never reviewed. */
 export function recall(memory: Memory | undefined, at: number): number {
   if (!memory || memory.last === null) return 0;
   const s = sched();
@@ -111,7 +106,7 @@ export function seedFromLevel(level: number, at: number, id: string): Memory | u
   const plan = plans[Math.min(4, Math.round(level))];
   if (!plan) return undefined;
   return plan.reduce<Memory | undefined>(
-    (m, [grade, daysBefore]) => review(m, grade, at - daysBefore * DAY, id),
+    (m, [grade, daysBefore]) => review(m, grade, at - daysBefore * DAY_MS, id),
     undefined,
   );
 }

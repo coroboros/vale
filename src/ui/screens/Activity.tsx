@@ -1,4 +1,3 @@
-/** Games: prices by ear, express pairs, a duel for two on one phone, hands-free listening. */
 import { Pause, Play, SkipForward, X } from 'lucide-preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { logActivity } from '../../actions';
@@ -20,7 +19,7 @@ const TITLES: Record<Kind, string> = {
   audio: 'Mains libres',
 };
 
-/** Items the learner has already met, for games that should not introduce new phrases. */
+/** Games never introduce new phrases. */
 function useKnownCards(): Card[] {
   const index = cindex.value;
   const data = pdata.value;
@@ -280,7 +279,7 @@ function Duel() {
   );
 }
 
-/** French prompt, a pause to answer aloud, then the phrase twice. For walks and commutes. */
+/** A pause to answer aloud before hearing the phrase: retrieval comes first. */
 function Audio() {
   const known = useKnownCards();
   const queue = useMemo(() => shuffle(Math.random, known), [known]);

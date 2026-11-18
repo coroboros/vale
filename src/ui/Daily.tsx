@@ -1,4 +1,3 @@
-/** Today at a glance: daily goal, streak, quests, and installing the app. */
 import { CircleCheck, Flame, Gift, Shield } from 'lucide-preact';
 import { openChest } from '../actions';
 import { dailyQuests, dayKey, questValue, repairOffer, streak } from '../engine/progress';

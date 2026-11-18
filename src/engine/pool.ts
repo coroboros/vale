@@ -1,4 +1,3 @@
-/** Chooses which items a session works on, for each kind of session. */
 import { type CourseIndex, itemKey } from '../content';
 import type { Item } from '../content/types';
 import type { ProfileData, Translation } from '../state/schema';
@@ -10,8 +9,7 @@ const NEW_PER_LESSON = 5;
 const INTERLEAVED = 2;
 const REVIEW_SIZE = 12;
 
-/** A saved translation practised like a course item. */
-export const phraseCard = (index: CourseIndex, t: Translation): Card => ({
+const phraseCard = (index: CourseIndex, t: Translation): Card => ({
   key: itemKey(index.course.id, `user-${t.id}`),
   item: { id: `user-${t.id}`, t: t.t, ph: t.ph, fr: t.fr, note: t.note || undefined },
   lang: index.course.lang,
@@ -21,7 +19,7 @@ export interface PoolInput {
   index: CourseIndex;
   data: ProfileData;
   now: number;
-  /** Moment the "fragile" practice aims at (the departure). */
+  /** Fragile practice aims at this moment: the departure. */
   horizon: number;
 }
 

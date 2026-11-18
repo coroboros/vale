@@ -1,4 +1,3 @@
-/** Everything the learner can do, wiring content, engine and saved state together. */
 import { signal } from '@preact/signals';
 import { type CourseIndex, courseById, itemKey } from './content';
 import { review } from './engine/memory';
@@ -15,22 +14,17 @@ import {
   type Session,
   setAudio,
 } from './engine/session';
-import { canSpeak, stopSpeech } from './platform/speech';
+import { soundFor, stopSpeech } from './platform/speech';
 import { blankData, type DB, newId, type Profile, type ProfileData, QUIET_MS, type Translation } from './state/schema';
-import { cindex, isQuiet, pdata, profile, update, updateData } from './state/store';
+import { cindex, pdata, profile, update, updateData } from './state/store';
 import { sentenceKey } from './translation-api';
 import { showToast } from './ui/kit';
 import { go } from './ui/router';
 
-/* ------------------------------------------------------------------ day */
-
-/** Keeps yesterday's streak alive with a joker if one is available. */
 export function settleDay(now = Date.now()): void {
   if (!profile.value) return;
   updateData(data => spendJokers(data, dayKey(now)));
 }
-
-/* ------------------------------------------------------------------ sessions */
 
 export interface Summary {
   outcome: Outcome;
@@ -49,14 +43,13 @@ export interface Running {
   startedAt: number;
   combo: number;
   bestCombo: number;
-  /** Mistakes per item during this session. */
   misses: Record<string, number>;
   summary: Summary | null;
 }
 
 export const running = signal<Running | null>(null);
 
-/** Re-publishes the running session after an in-place change. */
+/** Sessions change in place; a new object makes the signal publish. */
 const touch = () => {
   if (running.value) running.value = { ...running.value };
 };
@@ -75,7 +68,7 @@ export function startSession(mode: Mode, title: string, now = Date.now()): void 
     return;
   }
   const rng = seeded(now);
-  const session = createSession(mode, pool, { audio: canSpeak(index.course.lang) && !isQuiet(now) });
+  const session = createSession(mode, pool, { audio: soundFor(index.course.lang) });
   next(session, index, rng);
   running.value = { session, index, rng, title, startedAt: now, combo: 0, bestCombo: 0, misses: {}, summary: null };
   go({ name: 'session' });
@@ -94,12 +87,11 @@ export function submitAnswer(correct: boolean): void {
   touch();
 }
 
-/** A time of day as the learner reads it, e.g. « 15:40 ». */
 export const clock = (ms: number) => new Date(ms).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
 /**
- * Quiet mode: no listening exercise and no sound the learner did not ask for. Switched on from a
- * session it lasts an hour (a commute, a waiting room); from Moi it lasts until switched off.
+ * From a session, quiet mode lasts an hour (a commute, a waiting room); from Moi, until switched
+ * off.
  */
 export function setQuiet(on: boolean, opts: { forAnHour?: boolean } = {}, now = Date.now()): void {
   update(d => {
@@ -109,13 +101,12 @@ export function setQuiet(on: boolean, opts: { forAnHour?: boolean } = {}, now = 
   if (on) stopSpeech();
   const r = running.value;
   if (r) {
-    setAudio(r.session, !on && canSpeak(r.index.course.lang), r.index, r.rng);
+    setAudio(r.session, soundFor(r.index.course.lang), r.index, r.rng);
     touch();
   }
   if (on && opts.forAnHour) showToast(`Mode discret jusqu’à ${clock(now + QUIET_MS)} : pas d’écoute, pas de son.`);
 }
 
-/** Goes to the next exercise, or closes the session with its summary. */
 export function advance(now = Date.now()): void {
   const r = running.value;
   if (!r) return;
@@ -182,8 +173,6 @@ export function closeSession(): void {
   go({ name: 'home' }, { replace: true });
 }
 
-/* ------------------------------------------------------------------ scenes, sounds, activities */
-
 export function completeScene(sceneId: string, correct: number, now = Date.now()): string[] {
   const p = profile.value;
   if (!p) return [];
@@ -220,7 +209,7 @@ export function logActivity(
   return earned;
 }
 
-/** The day's three quests are done: a small, varied reward (a joker or bonus XP). */
+/** A small, varied reward: a joker or bonus XP. */
 export function openChest(now = Date.now()): void {
   const p = profile.value;
   if (!p) return;
@@ -241,8 +230,6 @@ export function openChest(now = Date.now()): void {
   if (text) showToast(text);
 }
 
-/* ------------------------------------------------------------------ phrases */
-
 export function toggleFavorite(key: string): void {
   updateData(data => {
     data.favorites = data.favorites.includes(key) ? data.favorites.filter(k => k !== key) : [...data.favorites, key];
@@ -251,7 +238,7 @@ export function toggleFavorite(key: string): void {
 
 const HISTORY_MAX = 300;
 
-/** Keeps a translation in the history (most recent first, duplicates merged). */
+/** Most recent first, duplicates merged. */
 export function rememberTranslation(entry: Omit<Translation, 'id' | 'at' | 'saved'>, now = Date.now()): Translation {
   let kept: Translation = { ...entry, id: newId(), at: now, saved: false };
   updateData(data => {
@@ -279,8 +266,6 @@ export function forgetTranslation(id: string): void {
     delete data.mem[itemKey(cindex.value.course.id, `user-${id}`)];
   });
 }
-
-/* ------------------------------------------------------------------ profiles */
 
 export function createProfiles(profiles: Omit<Profile, 'id'>[]): void {
   update(draft => {

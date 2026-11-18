@@ -1,4 +1,3 @@
-// Italian course content. Source of truth for every phrase in the course.
 // Item ids are stable progress keys: edit text freely, never rename an id.
 import type { Extra, Lesson, Region, Scene, Sound, SurvivalCard, Tip } from '../types';
 

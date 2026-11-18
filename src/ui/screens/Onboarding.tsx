@@ -1,7 +1,6 @@
 /**
- * First launch, in six short steps. It ends by picturing yourself there and saying a first
- * sentence: imagining one's future self using the language feeds the motivation to learn it
- * (the "ideal L2 self", see docs/LEARNING.md).
+ * The last step pictures the learner there, saying a first sentence: imagining one's future self
+ * using the language feeds the motivation to learn it (the « ideal L2 self », docs/LEARNING.md).
  */
 import { ArrowLeft } from 'lucide-preact';
 import { useState } from 'preact/hooks';
@@ -18,7 +17,6 @@ import { Porthole, type Stop } from '../Porthole';
 import { hasScenery } from '../scenery/Scenery';
 import { THEMES, themeVars } from '../themes';
 
-/** The welcome flight: every drawn destination, alternating languages. */
 const JOURNEY: Stop[] = (() => {
   const byCourse = COURSES.map(c =>
     c.regions

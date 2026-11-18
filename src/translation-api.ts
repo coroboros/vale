@@ -1,14 +1,9 @@
-/**
- * Contract of the translation service, shared by the app (src/translate.ts) and the
- * Cloudflare Worker that serves it (worker/src). Keep it free of browser and Worker APIs.
- */
+/** Shared with the Worker (worker/src): keep it free of browser and Worker APIs. */
 
-/** Longest French sentence the service accepts, in characters. */
 export const MAX_TRANSLATE_CHARS = 300;
 
 export interface TranslateRequest {
   text: string;
-  /** Course id: the target language and its phonetic conventions. */
   course: string;
 }
 

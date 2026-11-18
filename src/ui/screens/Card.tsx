@@ -1,4 +1,3 @@
-/** The survival card: the sentences to show a waiter, a driver or a pharmacist, built from your details. */
 import { Maximize2, Pencil, X } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { splitKey } from '../../content';

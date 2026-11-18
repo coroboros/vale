@@ -19,10 +19,8 @@ export type Mode =
   | { kind: 'review'; unitId: string | null }
   | { kind: 'practice'; focus: 'mistakes' | 'fragile' | 'listening' | 'speaking' };
 
-/** A card to practise with what is already known about it. */
 export interface PoolCard {
   card: Card;
-  /** Predicted recall now (0 for a new item). */
   recall: number;
   isNew: boolean;
 }
@@ -33,8 +31,7 @@ interface Slot extends PoolCard {
   errors: number;
   firstOk: boolean | null;
   produced: boolean;
-  /** Exercise number before which the item should not come back. */
-  rest: number;
+  notBefore: number;
   seen: number;
 }
 
@@ -43,14 +40,12 @@ export interface Session {
   slots: Slot[];
   waiting: Slot[];
   current: Exercise | null;
-  /** Graded answers so far, oldest first. */
   results: boolean[];
   step: number;
   max: number;
   lastKind: Kind | null;
-  /** Formats the mode allows when sound is available. */
   formats: readonly Kind[];
-  /** Formats in use: `formats` without the listening ones while there is no sound. */
+  /** `formats` without the listening ones while there is no sound. */
   allowed: readonly Kind[];
   matchPlayed: boolean;
   spoken: number;
@@ -70,7 +65,6 @@ export interface Outcome {
 const TARGET = 0.85;
 const WORKING_SET = 3;
 
-/** Success rate the next exercise should aim for, nudged against recent accuracy. */
 export function targetSuccess(results: readonly boolean[]): number {
   const recent = results.slice(-8);
   if (recent.length < 3) return TARGET;
@@ -96,7 +90,7 @@ export function createSession(mode: Mode, pool: PoolCard[], opts: { audio: boole
     errors: 0,
     firstOk: null,
     produced: false,
-    rest: 0,
+    notBefore: 0,
     seen: -1,
   }));
   const fresh = slots.filter(s => s.stage < 0);
@@ -133,7 +127,6 @@ function chooseKind(session: Session, slot: Slot, rng: Rng): Kind {
   return kinds.reduce((best, k) => (score(k) < score(best) ? k : best), kinds[0] ?? 'speak');
 }
 
-/** Moves to the next exercise; returns null when the session is over. */
 export function next(session: Session, index: CourseIndex, rng: Rng): Exercise | null {
   if (session.step >= session.max) for (const s of session.slots) s.stage = Math.max(s.stage, 3);
   const working = session.slots.filter(s => open(s) && s.stage < 2).length;
@@ -151,7 +144,7 @@ export function next(session: Session, index: CourseIndex, rng: Rng): Exercise |
     session.current = null;
     return null;
   }
-  const ready = candidates.filter(s => s.rest <= session.step && s.seen !== session.step - 1);
+  const ready = candidates.filter(s => s.notBefore <= session.step && s.seen !== session.step - 1);
   const pool = ready.length ? ready : candidates;
   const slot = pool.reduce((a, b) => (b.seen < a.seen ? b : a));
   const kind = chooseKind(session, slot, rng);
@@ -163,10 +156,7 @@ export function next(session: Session, index: CourseIndex, rng: Rng): Exercise |
 
 const slotOf = (session: Session, key: string) => session.slots.find(s => s.card.key === key);
 
-/**
- * Turns the listening formats on or off for the rest of the session. When they go off during a
- * listening exercise, the same phrase comes back in another format at once: nothing is graded.
- */
+/** A listening exercise in progress comes back at once in another format, ungraded. */
 export function setAudio(session: Session, audio: boolean, index: CourseIndex, rng: Rng): void {
   session.allowed = withAudio(session.formats, audio);
   const ex = session.current;
@@ -178,7 +168,7 @@ export function setAudio(session: Session, audio: boolean, index: CourseIndex, r
   session.current = build(kind, slot.card, index, rng);
 }
 
-/** Records the learner's answer to the current exercise. Guess and learn cards are never graded. */
+/** Guess and learn cards are never graded. */
 export function answer(session: Session, correct: boolean): void {
   const ex = session.current;
   if (!ex || ex.kind === 'match') return;
@@ -205,7 +195,7 @@ export function answer(session: Session, correct: boolean): void {
   } else {
     slot.errors++;
     slot.stage = Math.max(0, Math.min(slot.stage, tier) - 1);
-    slot.rest = session.step + 2;
+    slot.notBefore = session.step + 2;
   }
 }
 

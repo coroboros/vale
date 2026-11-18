@@ -1,4 +1,3 @@
-/** How the language sounds for a French ear, and how to read the pronunciation hints. */
 import { ArrowLeft } from 'lucide-preact';
 import { useEffect } from 'preact/hooks';
 import { markSoundsSeen } from '../../actions';

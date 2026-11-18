@@ -1,8 +1,9 @@
-/** Persisted data, version 4. Everything lives on the device; nothing is sent anywhere. */
+/** Everything stays on the device: nothing is sent anywhere. */
 import type { Gender } from '../content/types';
 import type { Memory } from '../engine/memory';
+import { HOUR_MS } from '../engine/time';
 
-export const DB_VERSION = 4;
+const DB_VERSION = 4;
 export const STORAGE_KEY = 'db-v4';
 export const LEGACY_KEY = 'vale-v3';
 
@@ -13,9 +14,9 @@ export interface Profile {
   color: string;
   course: string;
   region: string;
-  /** Departure date (YYYY-MM-DD), or '' when unknown. */
+  /** YYYY-MM-DD, or '' when unknown. */
   trip: string;
-  /** Daily goal in XP. */
+  /** XP per day. */
   goal: number;
   /** When the learner plans to practise (implementation intention), or ''. */
   cue: string;
@@ -26,16 +27,15 @@ export interface Settings {
   slow: boolean;
   phonetics: boolean;
   sfx: boolean;
-  /** Rotate between the device's voices of the language (high-variability listening). */
+  /** Varied speakers help listening (evidence in platform/speech.ts). */
   variedVoices: boolean;
-  /** Quiet mode until the learner switches it off (Moi). */
   quiet: boolean;
-  /** Quiet mode until this time (ms since epoch), set by « Je ne peux pas écouter maintenant ». */
+  /** ms since epoch. */
   quietUntil: number;
 }
 
-/** How long « Je ne peux pas écouter maintenant » keeps the sound off: long enough for a commute. */
-export const QUIET_MS = 60 * 60 * 1000;
+/** Long enough for a commute. */
+export const QUIET_MS = HOUR_MS;
 
 /** Quiet mode: no listening exercise and no sound the learner did not ask for. */
 export const quietActive = (s: Settings, now: number): boolean => s.quiet || s.quietUntil > now;
@@ -50,11 +50,10 @@ export interface DayLog {
   perfect: number;
   scenes: number;
   reviews: number;
-  /** Reward for the day's three quests has been collected. */
   chest: boolean;
 }
 
-/** A translation kept in the learner's history; `saved` ones are practised like course items. */
+/** `saved` ones are practised like course items. */
 export interface Translation {
   id: string;
   course: string;
@@ -74,7 +73,7 @@ export interface SurvivalCardData {
   diets: string[];
 }
 
-export interface Stats {
+interface Stats {
   spoken: number;
   prices: number;
   pairs: number;
@@ -154,7 +153,7 @@ export const blankData = (): ProfileData => ({
   translations: [],
 });
 
-export const defaultSettings = (): Settings => ({
+const defaultSettings = (): Settings => ({
   autoplay: true,
   slow: false,
   phonetics: true,

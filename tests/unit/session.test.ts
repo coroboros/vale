@@ -14,7 +14,6 @@ const fresh = (n: number): PoolCard[] =>
 const known = (n: number, recall: number): PoolCard[] =>
   es.lessons[1]!.items.slice(0, n).map(i => ({ card: cardOf(index, i), recall, isNew: false }));
 
-/** Plays a session to the end; `ok` decides each graded answer. */
 function play(session: ReturnType<typeof createSession>, ok: (step: number) => boolean, limit = 80) {
   const rng = seeded(7);
   const kinds: string[] = [];

@@ -21,7 +21,7 @@ const TAB_PATHS: Record<Tab, string> = {
 
 const ACTIVITIES: readonly Activity[] = ['prices', 'pairs', 'duel', 'audio'];
 
-export function parse(hash: string): Route {
+function parse(hash: string): Route {
   const path = hash.replace(/^#/, '') || '/';
   const tab = (Object.keys(TAB_PATHS) as Tab[]).find(t => TAB_PATHS[t] === path);
   if (tab) return { name: tab };
@@ -34,7 +34,7 @@ export function parse(hash: string): Route {
   return { name: 'home' };
 }
 
-export function pathOf(r: Route): string {
+function pathOf(r: Route): string {
   switch (r.name) {
     case 'session':
       return '/session';
@@ -51,7 +51,7 @@ export function pathOf(r: Route): string {
 
 export const route = signal<Route>(parse(location.hash));
 
-/** Navigates; full-screen flows replace history so "back" returns to the tab they came from. */
+/** Full-screen flows replace history, so « back » returns to the tab they came from. */
 export function go(r: Route, opts: { replace?: boolean } = {}): void {
   const url = `#${pathOf(r)}`;
   if (opts.replace) history.replaceState(null, '', url);
@@ -60,7 +60,7 @@ export function go(r: Route, opts: { replace?: boolean } = {}): void {
   window.scrollTo({ top: 0 });
 }
 
-/** Returns to the previous screen, or to `fallback` when the app was opened on this screen. */
+/** `fallback` when the app was opened on this screen. */
 export function back(fallback: Route = { name: 'home' }): void {
   if (history.length > 1) history.back();
   else go(fallback, { replace: true });

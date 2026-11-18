@@ -1,7 +1,4 @@
-/**
- * What every model is asked, and how its answer is read. Shared by the Workers AI and Claude
- * providers, and by the model evaluation script (eval/run.ts).
- */
+/** Shared by both providers and the model evaluation, so they are judged on the same prompt. */
 import { indexOf } from '../../src/content';
 import type { Course } from '../../src/content/types';
 import { asTranslated, type Translated } from '../../src/translation-api';

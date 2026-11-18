@@ -1,4 +1,4 @@
-/** Records the learner's voice on the device so they can compare it with the model voice. */
+/** The take stays on the device: it is only compared with the model voice. */
 
 type AudioSessionType = 'auto' | 'playback' | 'play-and-record';
 const audioSession = (navigator as Navigator & { audioSession?: { type: AudioSessionType } }).audioSession;
@@ -10,7 +10,6 @@ let recorder: MediaRecorder | null = null;
 let chunks: Blob[] = [];
 let lastUrl: string | null = null;
 
-/** Starts recording; rejects if the microphone is refused. */
 export async function startRecording(): Promise<void> {
   if (recorder?.state === 'recording') return;
   if (audioSession) audioSession.type = 'play-and-record';
@@ -21,7 +20,7 @@ export async function startRecording(): Promise<void> {
   recorder.start();
 }
 
-/** Stops recording and returns a playable URL of the take (null if the recorder never answers). */
+/** null if the recorder never answers. */
 export function stopRecording(): Promise<string | null> {
   const current = recorder;
   if (!current || current.state === 'inactive') return Promise.resolve(null);
@@ -46,7 +45,7 @@ export function playTake(url: string): Promise<void> {
   });
 }
 
-/** Releases the microphone (the system indicator turns off). */
+/** So the system's microphone indicator turns off. */
 export function releaseMic(): void {
   for (const track of stream?.getTracks() ?? []) track.stop();
   stream = null;

@@ -1,4 +1,3 @@
-/** Small shared building blocks. */
 import { signal } from '@preact/signals';
 import { Snail, Volume2, X } from 'lucide-preact';
 import type { ComponentChildren } from 'preact';
@@ -70,7 +69,7 @@ export function Toggle({
   );
 }
 
-/** Modal sheet on a native <dialog>: focus is trapped, Escape and the backdrop close it. */
+/** A native <dialog>: focus trap and Escape come for free. */
 export function Sheet({
   title,
   onClose,
@@ -113,7 +112,7 @@ interface Toast {
   action?: { label: string; run: () => void };
 }
 
-export const toast = signal<Toast | null>(null);
+const toast = signal<Toast | null>(null);
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
 
 export function showToast(text: string, action?: Toast['action'], ms = 4500): void {
@@ -122,7 +121,6 @@ export function showToast(text: string, action?: Toast['action'], ms = 4500): vo
   if (!action) toastTimer = setTimeout(() => (toast.value = null), ms);
 }
 
-/** The current notice. One with an action stays until used or set aside with « Plus tard ». */
 export function ToastHost() {
   const t = toast.value;
   if (!t) return null;
@@ -150,7 +148,6 @@ export function ToastHost() {
   );
 }
 
-/** Speaks a phrase with the device voice; the snail variant speaks slowly. */
 export function Say({
   text,
   lang,
@@ -179,7 +176,6 @@ export function Say({
   );
 }
 
-/** French-readable pronunciation, hidden when the learner turned hints off. */
 export function Phonetic({ ph }: { ph: string }) {
   if (!ph || !settings.value.phonetics) return null;
   return <p class="ph">{ph}</p>;
@@ -192,7 +188,7 @@ export interface ChoiceOption<T> {
   lang?: string;
 }
 
-/** Single-choice list on native radio buttons: arrow keys, labels and states come for free. */
+/** Native radio buttons: arrow keys, labels and states come for free. */
 export function ChoiceGroup<T extends string | number>({
   name,
   label,

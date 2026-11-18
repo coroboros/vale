@@ -1,4 +1,3 @@
-/** Keeping progress safe: persistent storage request, and a backup file to export or restore. */
 import { BRAND } from '../brand';
 import { type DB, sanitize } from '../state/schema';
 
@@ -11,7 +10,6 @@ export async function requestPersistence(): Promise<boolean> {
   }
 }
 
-/** Shares (iOS) or downloads (desktop) a JSON copy of all progress. */
 export async function exportBackup(db: DB, now = new Date()): Promise<void> {
   const name = `${BRAND.name.toLowerCase()}-sauvegarde-${now.toISOString().slice(0, 10)}.json`;
   const file = new File([JSON.stringify(db)], name, { type: 'application/json' });
@@ -29,7 +27,6 @@ export async function exportBackup(db: DB, now = new Date()): Promise<void> {
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
-/** Reads a backup file; throws a readable message when the file is not a backup. */
 export async function readBackup(file: File): Promise<DB> {
   let raw: unknown;
   try {

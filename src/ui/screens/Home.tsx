@@ -1,4 +1,3 @@
-/** The itinerary: where you are going, what you would remember on arrival, and the next stop. */
 import { BookOpen, Check, ChevronRight, Ear, MapPin, MessageCircle, Repeat } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { startSession } from '../../actions';

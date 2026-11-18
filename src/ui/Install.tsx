@@ -1,4 +1,3 @@
-/** "Install the app" button: the browser's own dialog where it exists, short steps elsewhere. */
 import { Download, ExternalLink } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { BRAND } from '../brand';

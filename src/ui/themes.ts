@@ -1,7 +1,6 @@
 /**
- * Course themes: each language dresses the mascot's shell and the primary actions.
- * Red and green hues are reserved for answer feedback, so no accent uses them.
- * Contrast pairs are checked by tests/unit/themes.test.ts (WCAG 2.2 AA).
+ * Red and green hues are reserved for answer feedback, so no accent uses them. Contrast pairs are
+ * checked by tests/unit/themes.test.ts (WCAG 2.2 AA).
  */
 export interface Theme {
   id: string;
@@ -17,7 +16,6 @@ export interface Theme {
   accentSoft: string;
   /** Second colour of the shell motif. */
   motif: string;
-  /** Shell pattern drawn by the mascot and the stamps. */
   pattern: 'tiles' | 'waves';
 }
 
@@ -55,7 +53,6 @@ export function themeVars(theme: Theme): Record<string, string> {
   };
 }
 
-/** Sets the theme's custom properties on the document root. */
 export function applyTheme(theme: Theme): void {
   for (const [k, v] of Object.entries(themeVars(theme))) document.documentElement.style.setProperty(k, v);
 }

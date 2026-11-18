@@ -15,6 +15,7 @@ import {
   streak,
 } from '../../src/engine/progress';
 import { seeded } from '../../src/engine/random';
+import { DAY_MS } from '../../src/engine/time';
 import { migrateV3 } from '../../src/state/migrate';
 import { blankData, blankDay, QUIET_MS, quietActive, sanitize } from '../../src/state/schema';
 import { searchCourse, searchHistory } from '../../src/translate';
@@ -100,11 +101,11 @@ describe('quests, stamps and forecast', () => {
     const data = blankData();
     const key = itemKey('es', es.lessons[0]!.items[0]!.id);
     data.mem[key] = review(undefined, 'good', NOW, key);
-    const soon = readiness(index, data, NOW + 2 * 86_400_000).score;
-    const later = readiness(index, data, NOW + 30 * 86_400_000).score;
+    const soon = readiness(index, data, NOW + 2 * DAY_MS).score;
+    const later = readiness(index, data, NOW + 30 * DAY_MS).score;
     expect(soon).toBeGreaterThan(later);
-    data.mem[key] = review(data.mem[key], 'good', NOW + 3 * 86_400_000, key);
-    expect(readiness(index, data, NOW + 30 * 86_400_000).score).toBeGreaterThan(later);
+    data.mem[key] = review(data.mem[key], 'good', NOW + 3 * DAY_MS, key);
+    expect(readiness(index, data, NOW + 30 * DAY_MS).score).toBeGreaterThan(later);
     expect(readiness(index, data, NOW).learned).toBe(1);
   });
 });
@@ -203,7 +204,7 @@ describe('saved data', () => {
       set: { auto: false, slow: true, ph: true, sfx: false },
       data: {
         p1: {
-          p: { 'base.0': { l: 4, t: NOW - 86_400_000 }, 'base.1': { l: 1, t: NOW } },
+          p: { 'base.0': { l: 4, t: NOW - DAY_MS }, 'base.1': { l: 1, t: NOW } },
           sc: { cafe: true },
           days: { [today]: 35 },
           miss: { 'base.1': 2 },

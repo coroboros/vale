@@ -1,4 +1,3 @@
-/** A practice session: one exercise at a time, immediate feedback, a ticket at the end. */
 import { Check, Clock, Flame, Mic, Play, Square, Target, Volume2, VolumeX, X, Zap } from 'lucide-preact';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { advance, closeSession, running, type Summary, setQuiet, submitAnswer } from '../../actions';
@@ -19,10 +18,7 @@ type Feedback = { ok: boolean; verdict?: Verdict; neutral?: boolean } | null;
 
 const speak = (card: Card, variant = 0) => say(card.item.t, { lang: card.lang, slow: settings.value.slow, variant });
 
-/**
- * Keyboard: 1-9 pick, Enter checks or continues, Escape quits. Registered before the first
- * paint (layout effect), so a key pressed as soon as an exercise appears is never lost.
- */
+/** A layout effect, so a key pressed as soon as an exercise appears is never lost. */
 function useKeys(handler: (key: string) => void) {
   const ref = useRef(handler);
   ref.current = handler;
@@ -120,7 +116,17 @@ function Learn({ ex, onDone }: { ex: Exercise & { kind: 'learn' }; onDone: () =>
   );
 }
 
-/** Offered on exercises that need sound: switches quiet mode on for an hour (as Duolingo does). */
+function TargetPrompt({ card }: { card: Card }) {
+  return (
+    <div class="prompt-target">
+      <Say text={card.item.t} lang={card.lang} small />
+      <p class="big" lang={card.lang}>
+        {card.item.t}
+      </p>
+    </div>
+  );
+}
+
 function CantListen({ onMute }: { onMute?: () => void }) {
   if (!onMute) return null;
   return (
@@ -170,12 +176,7 @@ function Choice({
       ) : ex.kind === 'pick' ? (
         <p class="big prompt-fr">{card.item.fr}</p>
       ) : (
-        <div class="prompt-target">
-          <Say text={card.item.t} lang={card.lang} small />
-          <p class="big" lang={card.lang}>
-            {card.item.t}
-          </p>
-        </div>
+        <TargetPrompt card={card} />
       )}
       <ChoiceGroup
         name="answer"
@@ -224,16 +225,7 @@ function Tiles({
   return (
     <div class="ex">
       <p class="ex-kicker">{targetTiles ? `Traduis en ${course.value.name.toLowerCase()}` : 'Traduis en français'}</p>
-      {targetTiles ? (
-        <p class="big prompt-fr">{card.item.fr}</p>
-      ) : (
-        <div class="prompt-target">
-          <Say text={card.item.t} lang={card.lang} small />
-          <p class="big" lang={card.lang}>
-            {card.item.t}
-          </p>
-        </div>
-      )}
+      {targetTiles ? <p class="big prompt-fr">{card.item.fr}</p> : <TargetPrompt card={card} />}
       <fieldset class="answer-line" lang={targetTiles ? card.lang : 'fr'}>
         <legend class="sr-only">Ta réponse</legend>
         {chosen.map(i => (
@@ -322,9 +314,8 @@ function Dictation({
 }
 
 /**
- * Say it aloud, hear yourself next to the model voice, then judge honestly.
- * Recording is optional. In quiet mode the phrase is said in one's head: recalling it silently
- * still strengthens memory (Smith, Roediger & Karpicke, 2013), and the model voice waits for a tap.
+ * In quiet mode the phrase is said in one's head: recalling it silently still strengthens memory
+ * (Smith, Roediger & Karpicke, 2013).
  */
 function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void }) {
   const quiet = isQuiet();

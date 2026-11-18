@@ -1,4 +1,3 @@
-/** Application state: one signal holding the persisted DB, plus derived views. */
 import { computed, signal } from '@preact/signals';
 import { courseById, indexOf } from '../content';
 import { THEMES } from '../ui/themes';
@@ -15,8 +14,8 @@ import {
 } from './schema';
 
 export const db = signal<DB>(blankDB());
-/** False when the browser refuses to store data (private mode, full disk). */
-export const storageOk = signal(true);
+/** False in private browsing or with a full disk. */
+const storageOk = signal(true);
 
 let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -37,15 +36,14 @@ function persist(): void {
   }
 }
 
-/** Writes pending changes now (called when the app is hidden or closed). */
-export function flush(): void {
+function flush(): void {
   if (timer === undefined) return;
   clearTimeout(timer);
   timer = undefined;
   persist();
 }
 
-/** Loads saved data, migrating the v3 app's data on first launch. The v3 record is left intact. */
+/** The v3 record stays, so nothing is lost if this version fails. */
 export function loadDB(now = Date.now()): void {
   const saved = readJSON(STORAGE_KEY);
   if (saved) {
@@ -57,7 +55,6 @@ export function loadDB(now = Date.now()): void {
   if (migrated) persist();
 }
 
-/** Applies a change to a copy of the DB, publishes it and saves shortly after. */
 export function update(mutate: (draft: DB) => void): void {
   const draft = structuredClone(db.value);
   mutate(draft);
@@ -69,7 +66,6 @@ export function update(mutate: (draft: DB) => void): void {
   }, 250);
 }
 
-/** Changes the active profile's data. */
 export function updateData(mutate: (data: ProfileData, draft: DB) => void): void {
   update(draft => {
     draft.data[draft.active] ??= blankData();
@@ -98,8 +94,6 @@ export const cindex = computed(() => indexOf(course.value));
 export const theme = computed(() => THEMES[course.value.theme] ?? THEMES.sol!);
 export const settings = computed(() => db.value.settings);
 
-/** Quiet mode is on: no listening exercise, no sound the learner did not ask for. */
 export const isQuiet = (now = Date.now()) => quietActive(db.value.settings, now);
 
-/** New phrases are spoken on their own: the setting is on and quiet mode is off. */
 export const autoplays = (now = Date.now()) => db.value.settings.autoplay && !isQuiet(now);

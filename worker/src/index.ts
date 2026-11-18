@@ -1,12 +1,7 @@
 /**
- * Translation service of the app, a Cloudflare Worker.
- *
- *   POST /translate  {"text": "Je voudrais un late checkout", "course": "es"}
- *   → 200 {"t": "…", "ph": "…", "note": "…", "alternatives": ["…"]}
- *
- * Claude translates first when a key is set, within a monthly budget, then open models on
- * Workers AI take over. Every answer is kept in KV, so a sentence is paid for once.
- * Only the app's origins may call it, a few times a minute per IP (Workers Rate Limiting).
+ * Claude first when a key is set, within a monthly budget, then open models on Workers AI. Every
+ * answer is kept in KV, so a sentence is paid for once. Only the app's origins may call, a few times
+ * a minute per IP. Request and answer: src/translation-api.ts.
  */
 import { COURSES } from '../../src/content';
 import type { Course } from '../../src/content/types';
@@ -15,7 +10,6 @@ import { CLAUDE_DEFAULTS, translateWithClaude } from './claude';
 import { PROMPT_VERSION, UpstreamError } from './prompt';
 import { type Ai, modelsFor, translateWithWorkersAi } from './workers-ai';
 
-/** The subset of the KV and Rate Limiting bindings this Worker uses. */
 interface Cache {
   get(key: string, type: 'json'): Promise<unknown>;
   put(key: string, value: string, options: { expirationTtl: number }): Promise<void>;
@@ -28,7 +22,7 @@ export interface Env {
   AI?: Ai;
   /** Models per course, tried in order: {"es": ["@cf/…"], "default": ["@cf/…"]}. */
   MODELS?: unknown;
-  /** Optional: Claude first, paid by the Claude Max monthly API credits. */
+  /** Optional. */
   ANTHROPIC_API_KEY?: string;
   CLAUDE_MODEL?: string;
   CLAUDE_EFFORT?: string;
@@ -101,7 +95,7 @@ async function readInput(request: Request): Promise<{ text: string; course: Cour
 
 const spendKey = (now = new Date()) => `spend:claude:${now.toISOString().slice(0, 7)}`;
 
-/** USD spent on Claude this calendar month, as counted by this Worker. */
+/** As counted by this Worker: Anthropic's own count may differ. */
 async function claudeSpent(cache: Cache): Promise<number> {
   const value = await cache.get(spendKey(), 'json').catch(() => null);
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;

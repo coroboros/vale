@@ -6,7 +6,6 @@ export const COURSES: readonly Course[] = [es, it];
 
 export const courseById = (id: string): Course => COURSES.find(c => c.id === id) ?? es;
 
-/** An item with the lesson or pack it belongs to and the language it is spoken in. */
 export interface Entry {
   item: Item;
   source: Lesson | Pack;
@@ -18,13 +17,12 @@ export interface CourseIndex {
   entries: Map<string, Entry>;
   lessons: Map<string, Lesson>;
   scenes: Map<string, Scene>;
-  /** Items of the main course, in path order (regional packs excluded). */
+  /** Path order, regional packs excluded. */
   coreItems: Item[];
 }
 
 const indexes = new Map<string, CourseIndex>();
 
-/** Lookup tables for a course, built once and cached. */
 export function indexOf(course: Course): CourseIndex {
   const cached = indexes.get(course.id);
   if (cached) return cached;
@@ -44,7 +42,7 @@ export function indexOf(course: Course): CourseIndex {
   return index;
 }
 
-/** Progress key of an item: unique across courses. */
+/** Unique across courses. */
 export const itemKey = (courseId: string, itemId: string) => `${courseId}:${itemId}`;
 
 export const splitKey = (key: string): [courseId: string, itemId: string] => {

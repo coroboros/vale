@@ -1,10 +1,12 @@
-/** "Prices by ear": hear an amount, pick it among confusable ones (doce/dos, sessanta/settanta…). */
+/**
+ * "Prices by ear": hear an amount, pick it among confusable ones (doce/dos, sessanta/settanta…).
+ */
 import type { Course } from '../content/types';
 import { pick, type Rng, shuffle } from './random';
 
 const CENTS = [0, 0, 10, 20, 20, 30, 40, 50, 50, 60, 70, 80, 90, 95, 99];
 
-export const formatPrice = (euros: number, cents: number) => `${euros},${String(cents).padStart(2, '0')} €`;
+const formatPrice = (euros: number, cents: number) => `${euros},${String(cents).padStart(2, '0')} €`;
 
 export interface PricePuzzle {
   spoken: string;

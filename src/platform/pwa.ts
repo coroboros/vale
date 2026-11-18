@@ -1,12 +1,8 @@
-/** Service worker registration and the "new version available" flow. */
-
 import { registerSW } from 'virtual:pwa-register';
 import { signal } from '@preact/signals';
 import { inFrame } from './env';
 
-/** The whole app is cached: it opens without network. */
 export const offlineReady = signal(false);
-/** A newer version is downloaded and waits for the learner's go-ahead. */
 export const updateReady = signal(false);
 
 let apply: ((reload?: boolean) => Promise<void>) | null = null;

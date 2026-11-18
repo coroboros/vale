@@ -2,7 +2,6 @@ import { defineConfig } from '@playwright/test';
 
 export const TRANSLATE_URL = 'https://translate.test';
 
-/** Set CHROME_PATH to use an installed Chrome instead of Playwright's bundled browser. */
 const executablePath = process.env.CHROME_PATH || undefined;
 const launchOptions = { executablePath };
 

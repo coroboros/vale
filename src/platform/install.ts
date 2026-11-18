@@ -1,6 +1,6 @@
 /**
- * Installing the app. Chromium browsers fire `beforeinstallprompt` and can show their own
- * dialog; Safari (iOS and macOS) and Firefox need a short set of steps instead.
+ * Chromium browsers fire `beforeinstallprompt` and show their own dialog; Safari and Firefox need
+ * a short set of steps instead.
  */
 import { signal } from '@preact/signals';
 import { inFrame, isFirefox, isIOS, isMacSafari, isStandalone } from './env';
@@ -38,7 +38,6 @@ export function initInstall(): void {
   });
 }
 
-/** Shows the browser's install dialog; true when the learner accepted. */
 export async function promptInstall(): Promise<boolean> {
   if (!deferred) return false;
   await deferred.prompt();
@@ -48,7 +47,6 @@ export async function promptInstall(): Promise<boolean> {
   return outcome === 'accepted';
 }
 
-/** Steps to show when the browser has no install dialog. */
 export const INSTALL_STEPS: Record<'ios' | 'mac-safari' | 'firefox' | 'unsupported', string[]> = {
   ios: ['Touche le bouton Partager de Safari.', 'Choisis « Sur l’écran d’accueil ».', 'Touche « Ajouter ».'],
   'mac-safari': ['Dans Safari, ouvre le menu Fichier.', 'Choisis « Ajouter au Dock ».', 'Clique sur « Ajouter ».'],

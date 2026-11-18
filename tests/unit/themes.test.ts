@@ -1,4 +1,3 @@
-/** WCAG 2.2 contrast checks on the real tokens (styles/tokens.css) and course themes. */
 import { describe, expect, it } from 'vitest';
 import { COLORS } from '../../src/brand';
 import css from '../../src/styles/tokens.css?raw';

@@ -1,11 +1,11 @@
 /**
- * Bernard, the hermit crab. He carries his home everywhere (the app works offline) and
- * changes shell with each language (the course theme). Flat 2D on purpose: in a meta-analysis
- * of pedagogical agents, 2D agents helped learning more than 3D ones (Castro-Alonso et al., 2021).
+ * Flat 2D on purpose: 2D pedagogical agents helped learning more than 3D ones (Castro-Alonso et
+ * al., 2021).
  */
 import type { RefObject } from 'preact';
 import { useEffect, useId, useRef } from 'preact/hooks';
 import { BRAND } from '../brand';
+import { easeVars } from './ease';
 
 export type Mood = 'idle' | 'happy' | 'oops' | 'cheer' | 'sleep';
 
@@ -17,57 +17,44 @@ const PUPIL: Record<Mood, [number, number]> = {
   sleep: [0, 0],
 };
 
-/** Midpoint of the eyes in the drawing (viewBox 120 × 102), and how far a pupil may travel. */
 const EYES = { x: 39.5 / 120, y: 32 / 102 };
 const TRAVEL = 3.2;
 
-/**
- * Eyes that follow the pointer (the mouse anywhere on the page, a finger where it touches) and
- * blink now and then. Pupils move through --px and --py, in drawing units; a blink is the
- * `blink` class for one short animation.
- */
-function useAliveEyes(svg: RefObject<SVGSVGElement | null>, look: boolean, blink: boolean, rest: [number, number]) {
+function useAliveEyes(
+  svg: RefObject<SVGSVGElement | null>,
+  followPointer: boolean,
+  blinks: boolean,
+  rest: [number, number],
+) {
   useEffect(() => {
     const el = svg.current;
-    if (!el || !look) return;
-    let target = { x: rest[0], y: rest[1] };
-    let now = { ...target };
-    let frame = 0;
+    if (!el || !followPointer) return;
+    const pupils = easeVars(el, ['--px', '--py'], 0.2, rest);
     let idle = 0;
-    const step = () => {
-      now = { x: now.x + (target.x - now.x) * 0.2, y: now.y + (target.y - now.y) * 0.2 };
-      el.style.setProperty('--px', now.x.toFixed(2));
-      el.style.setProperty('--py', now.y.toFixed(2));
-      frame = Math.abs(target.x - now.x) + Math.abs(target.y - now.y) > 0.02 ? requestAnimationFrame(step) : 0;
-    };
-    const aim = (x: number, y: number) => {
-      target = { x, y };
-      if (!frame) frame = requestAnimationFrame(step);
-    };
     const lookAt = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
       const dx = e.clientX - (r.left + r.width * EYES.x);
       const dy = e.clientY - (r.top + r.height * EYES.y);
       const d = Math.hypot(dx, dy) || 1;
       const k = (Math.min(1, d / 120) * TRAVEL) / d;
-      aim(dx * k, dy * k);
+      pupils.aim(dx * k, dy * k);
       // A finger lifts: after a moment Bernard looks back at you.
       clearTimeout(idle);
-      if (e.pointerType !== 'mouse') idle = window.setTimeout(() => aim(rest[0], rest[1]), 1500);
+      if (e.pointerType !== 'mouse') idle = window.setTimeout(() => pupils.aim(...rest), 1500);
     };
     window.addEventListener('pointermove', lookAt, { passive: true });
     window.addEventListener('pointerdown', lookAt, { passive: true });
     return () => {
       window.removeEventListener('pointermove', lookAt);
       window.removeEventListener('pointerdown', lookAt);
-      cancelAnimationFrame(frame);
+      pupils.stop();
       clearTimeout(idle);
     };
-  }, [look]);
+  }, [followPointer]);
 
   useEffect(() => {
     const el = svg.current;
-    if (!el || !blink) return;
+    if (!el || !blinks) return;
     let timer = 0;
     const once = () => {
       el.classList.remove('blink');
@@ -94,7 +81,7 @@ function useAliveEyes(svg: RefObject<SVGSVGElement | null>, look: boolean, blink
       el.removeEventListener('animationend', end);
       el.classList.remove('blink');
     };
-  }, [blink]);
+  }, [blinks]);
 }
 
 function Eye({ x, y, mood }: { x: number; y: number; mood: Mood }) {
@@ -144,25 +131,23 @@ export function Mascot({
   pattern = 'tiles',
   motion,
   decorative,
-  look = false,
-  blink = false,
+  followPointer = false,
+  blinks = false,
 }: {
   mood?: Mood;
   size?: number;
   pattern?: 'tiles' | 'waves';
   motion?: 'bob' | 'jump';
-  /** Hide from assistive tech when the text next to it already says everything. */
+  /** When the text next to it already says everything. */
   decorative?: boolean;
-  /** The eyes follow the pointer. */
-  look?: boolean;
-  /** The eyes blink now and then. */
-  blink?: boolean;
+  followPointer?: boolean;
+  blinks?: boolean;
 }) {
   const happy = mood === 'happy' || mood === 'cheer';
   const clip = useId();
   const svg = useRef<SVGSVGElement>(null);
   const rest = PUPIL[mood];
-  useAliveEyes(svg, look, blink, rest);
+  useAliveEyes(svg, followPointer, blinks, rest);
   return (
     <svg
       ref={svg}
@@ -176,7 +161,6 @@ export function Mascot({
     >
       <title>{BRAND.mascot}</title>
       <ellipse cx="60" cy="96" rx="40" ry="4.5" fill="rgb(22 33 62 / 10%)" />
-      {/* shell */}
       <circle cx="73" cy="48" r="36" fill="var(--accent)" stroke="var(--accent-deep)" stroke-width="3" />
       <clipPath id={clip}>
         <circle cx="73" cy="48" r="34" />
@@ -192,22 +176,18 @@ export function Mascot({
         stroke-linecap="round"
       />
       <ellipse cx="46" cy="66" rx="13" ry="15" fill="var(--accent-deep)" />
-      {/* legs */}
       <g stroke="var(--crab-deep)" stroke-width="3.2" stroke-linecap="round">
         <path d="M30 80 l-5 9" />
         <path d="M39 83 l-2 9" />
         <path d="M49 82 l3 9" />
       </g>
-      {/* body */}
       <ellipse cx="40" cy="70" rx="19" ry="15" fill="var(--crab)" stroke="var(--crab-deep)" stroke-width="2.2" />
-      {/* eye stalks */}
       <g stroke="var(--crab-deep)" stroke-width="3.4" stroke-linecap="round">
         <path d="M34 60 L30 38" />
         <path d="M45 59 L49 36" />
       </g>
       <Eye x={29} y={33} mood={mood} />
       <Eye x={50} y={31} mood={mood} />
-      {/* face */}
       <ellipse cx="29" cy="71" rx="3.6" ry="2.2" fill="var(--blush)" opacity="0.75" />
       <ellipse cx="51" cy="71" rx="3.6" ry="2.2" fill="var(--blush)" opacity="0.75" />
       {mood === 'oops' ? (
@@ -221,7 +201,6 @@ export function Mascot({
           stroke-linecap="round"
         />
       )}
-      {/* claws */}
       <g
         fill="var(--crab)"
         stroke="var(--crab-deep)"

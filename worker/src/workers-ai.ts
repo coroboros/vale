@@ -1,12 +1,8 @@
-/**
- * Translation by an open model on Cloudflare Workers AI, billed in Neurons on the Workers plan.
- * Models: https://developers.cloudflare.com/workers-ai/models/
- */
+/** Billed in Neurons on the Workers plan. */
 import type { Course } from '../../src/content/types';
 import type { Translated } from '../../src/translation-api';
 import { deadline, readTranslation, SCHEMA, systemPrompt, UpstreamError, userMessage } from './prompt';
 
-/** The part of the Workers AI binding this Worker uses. */
 export interface Ai {
   run(model: string, input: Record<string, unknown>): Promise<unknown>;
 }
@@ -18,7 +14,7 @@ export interface Ai {
  */
 export const DEFAULT_MODELS = ['@cf/deepseek-ai/deepseek-v4.1-flash-1017', '@cf/google/gemma-4-26b-a4b-it'];
 
-/** The request body, the same through the binding and the REST API. */
+/** The same body serves the binding and the REST API (eval/run.ts). */
 export const workersAiInput = (text: string, course: Course) => ({
   messages: [
     { role: 'system', content: systemPrompt(course) },
@@ -56,7 +52,6 @@ export async function translateWithWorkersAi(
   return readTranslation(contentOf(out));
 }
 
-/** The models to try for a course: MODELS[course] or MODELS.default, else DEFAULT_MODELS. */
 export function modelsFor(courseId: string, configured: unknown): string[] {
   const map = configured && typeof configured === 'object' ? (configured as Record<string, unknown>) : {};
   const list = map[courseId] ?? map.default;

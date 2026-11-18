@@ -1,7 +1,5 @@
 @layer kit {
-  /* ------------------------------------------------------------ porthole
-     A cabin window. --lx and --ly (-1…1) come from the pointer; each landscape layer moves by
-     its depth, the wing most, the sun least. Phases (arrive, stay, leave) drive the clouds. */
+  /* --lx and --ly (-1…1) come from the pointer (ui/Porthole.tsx). */
   .porthole {
     --pw: clamp(150px, min(64vw, calc((100dvh - 440px) * 0.8)), 290px);
     --lx: 0;
@@ -262,7 +260,6 @@
     }
   }
 
-  /* ------------------------------------------------------------ the journey */
   .porthole[data-intro="true"] .porthole-shade {
     animation: porthole-shade 1.3s 0.25s var(--ease-out) both;
   }

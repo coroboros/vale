@@ -1,4 +1,4 @@
-import { capitalize, confusableNumbers, genderAO, joinList } from '../shared';
+import { capitalize, confusableNumbers, FIRST_WORDS, genderAO, joinList } from '../shared';
 import type { Course } from '../types';
 import { card, extras, gloss, lessons, regions, scenes, sounds, tips } from './it.data';
 
@@ -26,8 +26,10 @@ const UNITS = [
 ];
 const TENS = ['', '', 'venti', 'trenta', 'quaranta', 'cinquanta', 'sessanta', 'settanta', 'ottanta', 'novanta'];
 
-/** Italian number words up to 99: the tens lose their vowel before uno/otto, tre takes an accent. */
-export function numberWords(n: number): string {
+/**
+ * Italian number words up to 99: the tens lose their vowel before uno/otto, tre takes an accent.
+ */
+function numberWords(n: number): string {
   if (n < 20) return UNITS[n]!;
   const tens = TENS[Math.floor(n / 10)]!;
   const unit = n % 10;
@@ -66,18 +68,7 @@ export const it: Course = {
   ],
   gender: genderAO,
   units: [
-    {
-      id: 'first-words',
-      title: 'Premiers mots',
-      steps: [
-        { kind: 'sounds' },
-        { kind: 'lesson', id: 'base' },
-        { kind: 'lesson', id: 'parler' },
-        { kind: 'lesson', id: 'cles' },
-        { kind: 'lesson', id: 'nombres' },
-        { kind: 'review' },
-      ],
-    },
+    FIRST_WORDS,
     {
       id: 'table',
       title: 'À table',

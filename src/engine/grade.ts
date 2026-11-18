@@ -1,21 +1,16 @@
-/** Answer checking for typed and built answers: forgiving on form, strict on meaning. */
+/** Forgiving on form (accents, small typos), strict on meaning. */
 
 export type Verdict = 'exact' | 'accents' | 'typo' | 'wrong';
 
 const PUNCTUATION = /[¿?¡!.,…:;"“”«»()[\]—–]/g;
+const APOSTROPHES = /[’‘`´]/g;
 
-/** Lowercase, unify apostrophes, drop punctuation and extra spaces. */
 export const normalize = (text: string) =>
-  text
-    .toLowerCase()
-    .replace(/[’‘`´]/g, "'")
-    .replace(PUNCTUATION, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  text.toLowerCase().replace(APOSTROPHES, "'").replace(PUNCTUATION, ' ').replace(/\s+/g, ' ').trim();
 
 export const stripAccents = (text: string) => text.normalize('NFD').replace(/\p{Diacritic}/gu, '');
 
-export function levenshtein(a: string, b: string): number {
+function levenshtein(a: string, b: string): number {
   if (a === b) return 0;
   const row = Array.from({ length: b.length + 1 }, (_, i) => i);
   for (let i = 1; i <= a.length; i++) {
@@ -30,7 +25,6 @@ export function levenshtein(a: string, b: string): number {
   return row[b.length]!;
 }
 
-/** Grades a typed answer against every accepted form; returns the closest form. */
 export function grade(answer: string, accepted: readonly string[]): { verdict: Verdict; expected: string } {
   const given = normalize(answer);
   let best: { verdict: Verdict; expected: string } = { verdict: 'wrong', expected: accepted[0] ?? '' };
@@ -50,12 +44,5 @@ export function grade(answer: string, accepted: readonly string[]): { verdict: V
   return best;
 }
 
-export const isAccepted = (verdict: Verdict) => verdict !== 'wrong';
-
-/** Words of a phrase for word-tile exercises (punctuation dropped, case kept). */
 export const tokens = (text: string) =>
-  text
-    .replace(/[’]/g, "'")
-    .replace(/[¿?¡!.,…:;"“”«»]/g, ' ')
-    .split(/\s+/)
-    .filter(Boolean);
+  text.replace(APOSTROPHES, "'").replace(PUNCTUATION, ' ').split(/\s+/).filter(Boolean);

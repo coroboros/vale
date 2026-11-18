@@ -1,7 +1,7 @@
 /**
- * Claude through the Messages API: the first choice when ANTHROPIC_API_KEY is set (Claude Max
- * plans include monthly API credits that pay for it), always within the monthly budget kept by
- * index.ts. API reference: https://platform.claude.com/docs/en/build-with-claude/structured-outputs
+ * First choice when ANTHROPIC_API_KEY is set: Claude Max plans include monthly API credits. Always
+ * within the monthly budget kept by index.ts.
+ * https://platform.claude.com/docs/en/build-with-claude/structured-outputs
  */
 import type { Course } from '../../src/content/types';
 import type { Translated } from '../../src/translation-api';
@@ -31,7 +31,10 @@ const PRICES: Record<string, Price> = {
   'claude-sonnet-5-5': { input: 2, output: 10, cacheWrite: 2.5, cacheRead: 0.1 },
   'claude-opus-5-5': { input: 4, output: 20, cacheWrite: 5, cacheRead: 0.2 },
 };
-/** A model missing from the table is counted at a top-tier price, so the budget errs on the safe side. */
+/**
+ * A model missing from the table is counted at a top-tier price, so the budget errs on the safe
+ * side.
+ */
 const UNKNOWN_PRICE: Price = { input: 10, output: 50, cacheWrite: 12.5, cacheRead: 1 };
 
 interface Usage {
@@ -41,8 +44,7 @@ interface Usage {
   cache_read_input_tokens?: number;
 }
 
-/** What a response cost, in USD. */
-export function costOf(model: string, usage: Usage | undefined): number {
+function costOf(model: string, usage: Usage | undefined): number {
   if (!usage) return 0;
   const p = PRICES[model] ?? UNKNOWN_PRICE;
   return (
@@ -62,8 +64,8 @@ interface MessageResponse {
   usage?: Usage;
 }
 
-/** Reads Claude's answer, or throws when it is unusable (refusal, cut off, malformed). */
-export function readAnswer(data: MessageResponse): Translated {
+/** Throws on a refusal, a cut-off or a malformed answer. */
+function readAnswer(data: MessageResponse): Translated {
   if (data.stop_reason !== 'end_turn') throw new UpstreamError(`unexpected stop_reason: ${data.stop_reason}`, false);
   return readTranslation(data.content?.find(block => block.type === 'text')?.text ?? '');
 }
