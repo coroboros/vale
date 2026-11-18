@@ -1,7 +1,8 @@
 import { Maximize2, Pencil, X } from 'lucide-preact';
 import { useState } from 'preact/hooks';
-import { splitKey } from '../../content';
-import type { SurvivalCardData } from '../../state/schema';
+import { editTrip } from '../../actions';
+import { regionOf, splitKey } from '../../content';
+import { type SurvivalCardData, tripOf } from '../../state/schema';
 import { cindex, course, pdata, profile, updateData } from '../../state/store';
 import { Say, Sheet } from '../kit';
 
@@ -18,15 +19,16 @@ function useLines(): Line[] {
   const p = profile.value!;
   const data = pdata.value;
   const card = data.card;
+  const { hotel, address } = tripOf(p);
   const lines: Line[] = [{ id: 'help', ...c.card.help, lang: c.lang, hero: true }];
-  if (card.hotel)
+  if (hotel)
     lines.push({
       id: 'hotel',
-      t: c.say.toHotel(card.hotel),
-      fr: `À l’hôtel ${card.hotel}, s’il vous plaît.`,
+      t: c.say.toHotel(hotel),
+      fr: `À l’hôtel ${hotel}, s’il vous plaît.`,
       lang: c.lang,
     });
-  if (card.address) lines.push({ id: 'address', t: card.address, fr: 'Mon adresse ici', lang: c.lang });
+  if (address) lines.push({ id: 'address', t: address, fr: 'Mon adresse ici', lang: c.lang });
   const allergens = c.card.allergens.filter(a => card.allergens.includes(a.id));
   if (allergens.length) {
     lines.push({
@@ -55,6 +57,8 @@ function useLines(): Line[] {
 function EditSheet({ onClose }: { onClose: () => void }) {
   const c = course.value;
   const card = pdata.value.card;
+  const trip = tripOf(profile.value!);
+  const { at } = regionOf(c, trip.region);
   const set = (patch: Partial<SurvivalCardData>) =>
     updateData(d => {
       d.card = { ...d.card, ...patch };
@@ -64,23 +68,23 @@ function EditSheet({ onClose }: { onClose: () => void }) {
     <Sheet title="Ma carte" onClose={onClose}>
       <div class="form">
         <label class="field">
-          <span>Mon hôtel</span>
+          <span>Mon hôtel {at}</span>
           <input
             class="input"
-            value={card.hotel}
-            onInput={e => set({ hotel: e.currentTarget.value })}
-            placeholder="Hostal Sol"
+            value={trip.hotel}
+            onInput={e => editTrip({ hotel: e.currentTarget.value })}
+            placeholder={c.card.example.hotel}
             autocomplete="off"
           />
         </label>
         <label class="field">
-          <span>Mon adresse sur place</span>
+          <span>Mon adresse {at}</span>
           <textarea
             class="input"
             rows={2}
-            value={card.address}
-            onInput={e => set({ address: e.currentTarget.value })}
-            placeholder="Calle Mayor 12, Madrid"
+            value={trip.address}
+            onInput={e => editTrip({ address: e.currentTarget.value })}
+            placeholder={c.card.example.address}
           />
         </label>
         <fieldset class="field">

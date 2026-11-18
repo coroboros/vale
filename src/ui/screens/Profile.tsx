@@ -10,17 +10,18 @@ import {
   setSpeechCheck,
   switchProfile,
 } from '../../actions';
+import { courseById, regionOf } from '../../content';
 import type { Gender } from '../../content/types';
 import { dayKey, stamps, streak } from '../../engine/progress';
 import { exportBackup, readBackup } from '../../platform/backup';
 import { offlineReady } from '../../platform/pwa';
 import { canHear } from '../../platform/recognition';
-import { CUES, GOALS, PROFILE_COLORS, type Settings, tripOf } from '../../state/schema';
+import { CUES, GOALS, PROFILE_COLORS, type Settings, type Profile as Traveller, tripOf } from '../../state/schema';
 import { course, db, isQuiet, pdata, profile, settings, update } from '../../state/store';
 import { InstallButton } from '../Install';
 import { ChoiceGroup, Sheet, showToast, Toggle } from '../kit';
 import { Stamp } from '../Stamp';
-import { TripFields } from '../Trip';
+import { TripList, TripSheet, type TripView } from '../Trip';
 
 type Flag = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
 
@@ -31,6 +32,18 @@ const VOICE: { key: Exclude<Flag, 'quiet'>; label: string; sub: string }[] = [
   { key: 'phonetics', label: 'Prononciation écrite', sub: 'Les aides « à la française »' },
   { key: 'sfx', label: 'Sons', sub: 'Petits sons de réussite' },
 ];
+
+const withArticle = (language: string) => (/^[aeiouyéè]/i.test(language) ? `l’${language}` : `le ${language}`);
+const andList = new Intl.ListFormat('fr-FR', { type: 'conjunction' });
+
+/** « Apprend l’espagnol et le portugais pour 2 voyages », « Apprend l’italien pour un voyage à Rome ». */
+function learning(p: Traveller): string {
+  const languages = [...new Set([tripOf(p), ...p.trips].map(t => t.course))];
+  const names = andList.format(languages.map(id => withArticle(courseById(id).name.toLowerCase())));
+  if (p.trips.length > 1) return `Apprend ${names} pour ${p.trips.length} voyages`;
+  const trip = tripOf(p);
+  return `Apprend ${names} pour un voyage ${regionOf(courseById(trip.course), trip.region).at}`;
+}
 
 function setSetting(key: Flag, value: boolean) {
   update(d => {
@@ -101,7 +114,7 @@ export function Profile() {
   const xp = Object.values(data.days).reduce((sum, d) => sum + d.xp, 0);
   const minutes = Math.round(Object.values(data.days).reduce((sum, d) => sum + d.ms, 0) / 60000);
   const learned = Object.keys(data.mem).length;
-  const region = c.regions.find(r => r.id === tripOf(p).region);
+  const [tripView, setTripView] = useState<TripView | null>(null);
 
   return (
     <>
@@ -111,10 +124,7 @@ export function Profile() {
         </span>
         <div>
           <h1>{p.name}</h1>
-          <p class="muted">
-            Apprend l’{c.name.toLowerCase()}
-            {region && region.id !== 'autre' ? ` pour ${region.name}` : ''}
-          </p>
+          <p class="muted">{learning(p)}</p>
         </div>
       </header>
 
@@ -149,9 +159,9 @@ export function Profile() {
         </div>
       </section>
 
-      <section class="section card form" aria-label="Voyage">
-        <h2>Voyage</h2>
-        <TripFields />
+      <section class="section card form" aria-label="Voyages">
+        <h2>Voyages</h2>
+        <TripList onEdit={id => setTripView({ kind: 'edit', id })} onAdd={() => setTripView({ kind: 'add' })} />
       </section>
 
       <section class="section card" aria-label="Rythme">
@@ -296,6 +306,7 @@ export function Profile() {
         )}
       </section>
       {adding && <AddProfile onClose={() => setAdding(false)} />}
+      {tripView && <TripSheet start={tripView} onClose={() => setTripView(null)} />}
     </>
   );
 }

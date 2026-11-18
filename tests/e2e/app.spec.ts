@@ -231,31 +231,106 @@ test('« Imagine » shows the destination photo with its credit, and the mascot 
   await expect(page.locator('.ob-imagine .mascot')).toBeVisible();
 });
 
-test('« Mon voyage » switches language and destination from Home, and each language keeps its trip', async ({
+test('« Mes voyages » keeps several trips, even in one language, and Home follows the one in focus', async ({
   page,
 }) => {
   await onboard(page);
   await leaveFirstLesson(page);
-  const trip = page.getByRole('button', { name: /^Mon voyage/ });
-  await expect(trip).toContainText('Espagnol · Barcelone');
-  await trip.click();
-  const window = page.locator('.sheet .porthole');
+  const trips = page.getByRole('button', { name: /^Mes voyages/ });
+  const sheet = page.locator('.sheet');
+  await expect(trips).toContainText('Espagnol · Barcelone');
+  await trips.click();
+  const window = sheet.locator('.porthole');
   await expect(window.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
-  await expectAccessible(page, 'mon voyage');
+  await expectAccessible(page, 'mes voyages');
+
+  await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+  await expect(page.getByRole('radio', { name: /^Espagnol/ })).toBeFocused();
   await page.getByText('Italien', { exact: true }).click();
   await page.getByRole('button', { name: 'Venise' }).click();
   await expect(window.locator('.porthole-bubble')).toHaveText('Ciao, Venezia!');
   await page.getByLabel('Date de départ').fill('2027-04-02');
+  await expectAccessible(page, 'nouveau voyage');
+  await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await expect(page.getByRole('radio', { name: /^Italien · Venise/ })).toBeChecked();
   await page.getByRole('button', { name: 'C’est noté' }).click();
   await expect(page.getByRole('heading', { name: 'Ciao, Adrien!' })).toBeVisible();
   await expect(page.locator('.postcard-place')).toHaveText('Venezia');
-  await trip.click();
+
+  // Two trips in one language, then one of them removed.
+  await trips.click();
+  await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
   await page.getByText('Espagnol', { exact: true }).click();
-  await expect(page.getByLabel('Date de départ')).toHaveValue('2026-12-20');
+  await page.getByRole('button', { name: 'Andalousie' }).click();
+  await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await expect(sheet.getByRole('radio')).toHaveCount(3);
+  await page.getByRole('button', { name: 'Modifier le voyage : Espagnol · Andalousie' }).click();
+  await page.getByRole('button', { name: 'Supprimer ce voyage' }).click();
+  await page.getByRole('button', { name: 'Supprimer', exact: true }).click();
+  await expect(sheet.getByRole('radio')).toHaveCount(2);
+  await sheet.locator('label').filter({ hasText: 'Espagnol · Barcelone' }).click();
+  await expect(window.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
   await page.getByRole('button', { name: 'C’est noté' }).click();
   await expect(page.locator('.postcard-place')).toHaveText('Barcelona');
   await page.reload();
-  await expect(trip).toContainText('Espagnol · Barcelone');
+  await expect(trips).toContainText('Espagnol · Barcelone');
+
+  // Lexicons and translation stay at hand in every language of the trips.
+  await page.getByRole('link', { name: 'Phrases' }).click();
+  await expect(page.getByRole('button', { name: 'Espagnol' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Italien' }).click();
+  await expect(page.locator('.fold .phrase-t').first()).toHaveAttribute('lang', 'it-IT');
+  await page.getByLabel('Phrase en français').fill('Je voudrais un café');
+  await expect(page.getByRole('button', { name: 'Traduire en italien' })).toBeVisible();
+});
+
+test('the next trip is offered once the one in focus has begun', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-12-22T09:00:00'));
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await expect(page.locator('.postcard-when')).toHaveText('Sur place : à toi de parler');
+  await expect(page.getByRole('region', { name: 'Voyage suivant' })).toHaveCount(0);
+  await page.getByRole('button', { name: /^Mes voyages/ }).click();
+  await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+  await page.getByText('Italien', { exact: true }).click();
+  await page.getByRole('button', { name: 'Rome' }).click();
+  await page.getByLabel('Date de départ').fill('2027-01-10');
+  await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await page.locator('.sheet label').filter({ hasText: 'Espagnol · Barcelone' }).click();
+  await page.getByRole('button', { name: 'C’est noté' }).click();
+  const next = page.getByRole('region', { name: 'Voyage suivant' });
+  await expect(next).toContainText('Prochain voyage : Italien · Rome');
+  await expect(next).toContainText('Départ dans 19 jours');
+  await expectAccessible(page, 'next trip');
+  await next.getByRole('button', { name: 'Préparer ce voyage' }).click();
+  await expect(page.getByRole('heading', { name: 'Ciao, Adrien!' })).toBeVisible();
+  await expect(next).toHaveCount(0);
+});
+
+test('each trip keeps its own hotel on the card, and Moi lists and switches trips', async ({ page }) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  const hotel = page.getByText('À l’hôtel Sol, s’il vous plaît.');
+  await page.getByRole('link', { name: 'Carte' }).click();
+  await page.getByRole('button', { name: 'Modifier' }).click();
+  await page.getByLabel('Mon hôtel à Barcelone').fill('Sol');
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await expect(hotel).toBeVisible();
+
+  await page.getByRole('link', { name: 'Moi' }).click();
+  await expect(page.getByText('Apprend l’espagnol pour un voyage à Barcelone')).toBeVisible();
+  await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+  await page.getByText('Portugais', { exact: true }).click();
+  await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await expect(page.locator('.sheet')).toHaveCount(0);
+  await expect(page.getByText('Apprend le portugais et l’espagnol pour 2 voyages')).toBeVisible();
+  await page.getByRole('link', { name: 'Carte' }).click();
+  await expect(page.getByRole('heading', { name: 'Ma carte' })).toBeVisible();
+  await expect(hotel).toHaveCount(0);
+  await page.getByRole('link', { name: 'Moi' }).click();
+  await page.locator('label').filter({ hasText: 'Espagnol · Barcelone' }).click();
+  await page.getByRole('link', { name: 'Carte' }).click();
+  await expect(hotel).toBeVisible();
 });
 
 test('Portuguese and English each play a first lesson to the end', async ({ page }) => {
@@ -265,8 +340,10 @@ test('Portuguese and English each play a first lesson to the end', async ({ page
     ['Portugais', 'Olá, Adrien!'],
     ['Anglais', 'Hello, Adrien!'],
   ] as const) {
-    await page.getByRole('button', { name: /^Mon voyage/ }).click();
+    await page.getByRole('button', { name: /^Mes voyages/ }).click();
+    await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
     await page.getByText(language, { exact: true }).click();
+    await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
     await page.getByRole('button', { name: 'C’est noté' }).click();
     await expect(page.getByRole('heading', { name: hello })).toBeVisible();
     await page.getByRole('button', { name: /^Les essentiels/ }).click();
@@ -274,6 +351,19 @@ test('Portuguese and English each play a first lesson to the end', async ({ page
     await playSession(page);
     await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
   }
+});
+
+test('a tab opens at its top, wherever the last one was scrolled', async ({ page }) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await page.getByRole('link', { name: 'Moi' }).click();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  await page.getByRole('link', { name: 'Phrases' }).click();
+  await expect(page.getByRole('heading', { name: 'Phrases', level: 1 })).toBeVisible();
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  await page.goBack();
+  await expect(page.getByRole('heading', { name: 'Adrien', level: 1 })).toBeVisible();
 });
 
 test.describe('on an iPhone, in Safari', () => {
@@ -767,8 +857,11 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     await expect(page.locator('.sheet')).toBeVisible();
     await audit(`${size}: quit dialog`);
     await page.getByRole('button', { name: 'Quitter', exact: true }).click();
-    await page.getByRole('button', { name: /^Mon voyage/ }).click();
-    await audit(`${size}: mon voyage`);
+    await page.getByRole('button', { name: /^Mes voyages/ }).click();
+    await audit(`${size}: mes voyages`);
+    await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+    await audit(`${size}: nouveau voyage`);
+    await page.getByRole('button', { name: 'Annuler' }).click();
     await page.getByRole('button', { name: 'C’est noté' }).click();
     for (const hash of SCREENS) {
       await page.goto(`./${hash}`);

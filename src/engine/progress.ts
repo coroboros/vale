@@ -249,8 +249,9 @@ export function readiness(index: CourseIndex, data: ProfileData, at: number, ext
 }
 
 /**
- * Noon, so a time-zone or daylight-saving shift cannot move the day; with no trip, a week ahead.
+ * Noon, so a time-zone or daylight-saving shift cannot move the day; with no trip, a week ahead;
+ * once there, now: what matters on site is what is remembered today.
  */
 export function arrivalTime(trip: string, now: number): number {
-  return trip ? Date.parse(`${trip}T12:00:00`) : now + 7 * DAY_MS;
+  return trip ? Math.max(now, Date.parse(`${trip}T12:00:00`)) : now + 7 * DAY_MS;
 }

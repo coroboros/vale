@@ -582,6 +582,7 @@ export const regions: Region[] = [
 ];
 
 export const card: SurvivalCard = {
+  example: { hotel: 'Albergo Sole', address: 'Via del Corso 12, Roma' },
   help: { t: 'Non parlo italiano. Mi può aiutare?', fr: 'Je ne parle pas italien. Vous pouvez m’aider ?' },
   sos: { t: 'Ho bisogno di un medico. È urgente.', fr: 'J’ai besoin d’un médecin. C’est urgent.' },
   allergens: [

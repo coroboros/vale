@@ -331,11 +331,21 @@
 
   .choice small {
     display: block;
-  }
-
-  .choice small {
     color: var(--ink-soft);
     font-size: var(--step--1);
+  }
+
+  /* The side control sits outside the label, so a tap on it never picks the choice. */
+  .choice-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .flag-dot {
+    flex: none;
+    border-radius: 50%;
   }
 
   /* 60x44 hit area around a 54x32 switch. */

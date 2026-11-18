@@ -42,7 +42,9 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 - `src/platform/`: what the browser offers: voices, speech recognition, recording, sounds,
   install, backup.
 - `src/state/`: stored data. `sanitize` gives a new field its default on every load; a change it
-  cannot repair needs a migration in `migrate.ts`. Either way, with a test.
+  cannot repair needs a migration in `migrate.ts`. Either way, with a test. A profile has a list
+  of trips and the one in focus (`tripOf`); progress is keyed by language, so trips in one
+  language share it.
 - `src/ui/`: screens, components, `Porthole.tsx` and `scenery/` (the welcome flight),
   `themes.ts` (colours per country, from the course's `flag`, contrast checked by a test), `photos.json` (one photo per
   destination with its credit, written by `brand/photos.py`; files in `public/photos/`).

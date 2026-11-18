@@ -2,11 +2,15 @@ import { en } from './courses/en';
 import { es } from './courses/es';
 import { it } from './courses/it';
 import { pt } from './courses/pt';
-import type { Course, Item, Lesson, Pack, Scene } from './types';
+import type { Course, Item, Lesson, Pack, Region, Scene } from './types';
 
 export const COURSES: readonly Course[] = [es, it, pt, en];
 
 export const courseById = (id: string): Course => COURSES.find(c => c.id === id) ?? es;
+
+/** The region, or the course's « Ailleurs », which every course has (tested). */
+export const regionOf = (course: Course, id: string): Region =>
+  course.regions.find(r => r.id === id) ?? course.regions.find(r => r.id === 'autre')!;
 
 export interface Entry {
   item: Item;

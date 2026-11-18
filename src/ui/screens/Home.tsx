@@ -1,19 +1,19 @@
 import { BookOpen, Check, ChevronDown, ChevronRight, Ear, MapPin, MessageCircle, Repeat } from 'lucide-preact';
 import { useState } from 'preact/hooks';
-import { startSession } from '../../actions';
-import { itemKey } from '../../content';
+import { focusTrip, startSession } from '../../actions';
+import { courseById, itemKey, regionOf } from '../../content';
 import type { Course, Step, Unit } from '../../content/types';
 import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible } from '../../engine/progress';
-import { tripOf } from '../../state/schema';
+import { orderTrips, tripOf } from '../../state/schema';
 import { cindex, course, pdata, profile } from '../../state/store';
 import { Daily } from '../Daily';
 import { KeepProgress } from '../Install';
 import { Bar, Phonetic, Say, Sheet } from '../kit';
-import { Mascot } from '../Mascot';
+import { FlagDot, Mascot } from '../Mascot';
 import { go } from '../router';
 import { Stamp } from '../Stamp';
 import { Scenery } from '../scenery/Scenery';
-import { TripSheet } from '../Trip';
+import { departure, TripSheet, tripName } from '../Trip';
 
 interface Stop {
   unit: Unit;
@@ -119,11 +119,14 @@ export function Home() {
   const [tripOpen, setTripOpen] = useState(false);
 
   const trip = tripOf(p);
-  const region = c.regions.find(r => r.id === trip.region);
-  const somewhere = region && region.id !== 'autre' ? region : null;
-  const packItems = c.packs.find(x => x.id === region?.pack)?.items ?? [];
+  const region = regionOf(c, trip.region);
+  const somewhere = region.id !== 'autre' ? region : null;
+  const packItems = c.packs.find(x => x.id === region.pack)?.items ?? [];
   const ready = readiness(cindex.value, data, arrivalTime(trip.date, now), packItems);
-  const daysLeft = trip.date ? daysBetween(dayKey(now), trip.date) : null;
+  const today = dayKey(now);
+  const away = !!trip.date && daysBetween(today, trip.date) < 0;
+  // Trips in a row: once one has begun, the next one is a tap away.
+  const next = away ? orderTrips(p.trips, today).find(t => t.date >= today) : undefined;
   const stops: Stop[] = c.units.flatMap(unit =>
     unit.steps
       .filter(s => stepVisible(c, s, trip.region))
@@ -131,16 +134,7 @@ export function Home() {
   );
   const current = stops.find(s => s.progress < 1) ?? null;
   const pct = Math.round(ready.score * 100);
-  const when =
-    daysLeft === null
-      ? 'Date de départ à choisir'
-      : daysLeft > 1
-        ? `Départ dans ${daysLeft} jours`
-        : daysLeft === 1
-          ? 'Départ demain'
-          : daysLeft === 0
-            ? 'Départ aujourd’hui'
-            : 'Sur place : à toi de parler';
+  const when = away ? 'Sur place : à toi de parler' : departure(trip.date, today);
 
   return (
     <>
@@ -148,9 +142,8 @@ export function Home() {
         <button type="button" class="trip-pill" aria-haspopup="dialog" onClick={() => setTripOpen(true)}>
           <MapPin size={18} aria-hidden="true" />
           <span>
-            <span class="sr-only">Mon voyage : </span>
-            {c.name}
-            {somewhere && ` · ${somewhere.name}`}
+            <span class="sr-only">Mes voyages : </span>
+            {tripName(trip)}
           </span>
           <ChevronDown size={18} aria-hidden="true" />
         </button>
@@ -169,11 +162,12 @@ export function Home() {
           <p class="postcard-when">{when}</p>
           <div class="readiness">
             <p>
-              Mémoire à l’arrivée : <strong class="num">{pct} %</strong> des phrases
+              Mémoire {away ? 'aujourd’hui' : 'à l’arrivée'} : <strong class="num">{pct} %</strong> des phrases
             </p>
-            <Bar value={ready.score} label="Phrases retenues à l’arrivée" />
+            <Bar value={ready.score} label={`Phrases retenues ${away ? 'aujourd’hui' : 'à l’arrivée'}`} />
             <p class="small muted">
-              Estimation si tu ne révises plus d’ici là. {ready.learned} phrases vues sur {ready.total}.
+              {!away && 'Estimation si tu ne révises plus d’ici là. '}
+              {ready.learned} phrases vues sur {ready.total}.
             </p>
           </div>
           <div class="postcard-actions">
@@ -198,6 +192,19 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {next && (
+        <section class="card next-trip" aria-label="Voyage suivant">
+          <FlagDot flag={courseById(next.course).flag} size={36} />
+          <p>
+            <strong>Prochain voyage : {tripName(next)}</strong>
+            <span class="small muted">{departure(next.date, today)}</span>
+          </p>
+          <button type="button" class="btn" onClick={() => focusTrip(next.id)}>
+            Préparer ce voyage
+          </button>
+        </section>
+      )}
 
       {ready.learned > 0 && <KeepProgress />}
 

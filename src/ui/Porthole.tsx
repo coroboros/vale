@@ -168,7 +168,7 @@ export const stopOf = (course: Course, region: Region): Stop => ({
 
 /**
  * Several stops: the welcome journey, flying from one to the next. One stop: the trip being chosen
- * in « Mon voyage »; the window lands there again whenever the choice changes.
+ * in « Mes voyages »; the window lands there again whenever the choice changes.
  */
 export function Porthole({ stops }: { stops: Stop[] }) {
   const still = reducedMotion();

@@ -4,6 +4,7 @@ import { grade, normalize, tokens } from '../../src/engine/grade';
 import { initMemory, review } from '../../src/engine/memory';
 import { pricePuzzle } from '../../src/engine/prices';
 import {
+  arrivalTime,
   dailyQuests,
   dayKey,
   logSession,
@@ -18,7 +19,16 @@ import { checkSpeech, type SpeechCheck } from '../../src/engine/pronunciation';
 import { seeded } from '../../src/engine/random';
 import { DAY_MS } from '../../src/engine/time';
 import { migrateV3 } from '../../src/state/migrate';
-import { blankData, blankDay, QUIET_MS, quietActive, sanitize, tripOf } from '../../src/state/schema';
+import {
+  blankData,
+  blankDay,
+  blankTrip,
+  orderTrips,
+  QUIET_MS,
+  quietActive,
+  sanitize,
+  tripOf,
+} from '../../src/state/schema';
 import { searchCourse, searchHistory } from '../../src/translate';
 
 beforeAll(initMemory);
@@ -157,6 +167,14 @@ describe('quests, stamps and forecast', () => {
     expect(readiness(index, data, NOW + 30 * DAY_MS).score).toBeGreaterThan(later);
     expect(readiness(index, data, NOW).learned).toBe(1);
   });
+
+  it('forecasts for noon on the departure day, a week ahead without a date, and for now once there', () => {
+    const now = Date.parse('2026-11-18T09:00:00');
+    expect(arrivalTime('2026-12-20', now)).toBe(Date.parse('2026-12-20T12:00:00'));
+    expect(arrivalTime('', now)).toBe(now + 7 * DAY_MS);
+    expect(arrivalTime('2026-11-18', now)).toBe(Date.parse('2026-11-18T12:00:00'));
+    expect(arrivalTime('2026-10-01', now)).toBe(now);
+  });
 });
 
 describe('prices by ear', () => {
@@ -242,21 +260,71 @@ describe('saved data', () => {
       profiles: [{ id: 'x', name: 'Léa', goal: 999, trip: 'demain' }],
       data: { x: { jokers: 9 } },
     });
-    expect(db.profiles[0]).toMatchObject({ goal: 40, trips: {}, course: 'es', gender: 'm' });
+    expect(db.profiles[0]).toMatchObject({
+      goal: 40,
+      trips: [{ id: 'es', course: 'es', region: 'autre', date: '', hotel: '', address: '' }],
+      trip: 'es',
+      gender: 'm',
+    });
     expect(db.data.x!.jokers).toBe(2);
     expect(db.data.x!.mem).toEqual({});
   });
 
-  it('keeps one trip per language, and turns an older single trip into the current language’s', () => {
-    const old = sanitize({ profiles: [{ id: 'x', name: 'Léa', course: 'it', region: 'roma', trip: '2027-04-02' }] });
-    const p = old.profiles[0]!;
-    expect(p.trips).toEqual({ it: { region: 'roma', date: '2027-04-02' } });
-    expect(tripOf(p)).toEqual({ region: 'roma', date: '2027-04-02' });
-    expect(tripOf({ ...p, course: 'es' })).toEqual({ region: 'autre', date: '' });
-    const kept = sanitize({
-      profiles: [{ id: 'y', name: 'Tom', course: 'es', trips: { es: { region: 'madrid', date: 'soon' }, it: 7 } }],
+  it('turns both older trip formats into the list, keeping the language in use in focus', () => {
+    const single = sanitize({ profiles: [{ id: 'x', name: 'Léa', course: 'it', region: 'roma', trip: '2027-04-02' }] });
+    expect(single.profiles[0]!.trips).toEqual([
+      { id: 'it', course: 'it', region: 'roma', date: '2027-04-02', hotel: '', address: '' },
+    ]);
+    expect(tripOf(single.profiles[0]!)).toMatchObject({ course: 'it', region: 'roma' });
+    const byLanguage = sanitize({
+      profiles: [
+        {
+          id: 'y',
+          name: 'Tom',
+          course: 'it',
+          trips: { es: { region: 'madrid', date: 'soon' }, it: { region: 'venezia', date: '2027-04-02' }, pt: 7 },
+        },
+      ],
     });
-    expect(kept.profiles[0]!.trips).toEqual({ es: { region: 'madrid', date: '' } });
+    const p = byLanguage.profiles[0]!;
+    expect(p.trips.map(t => [t.id, t.course, t.region, t.date])).toEqual([
+      ['es', 'es', 'madrid', ''],
+      ['it', 'it', 'venezia', '2027-04-02'],
+    ]);
+    expect(tripOf(p).course).toBe('it');
+  });
+
+  it('moves the card’s single hotel and address to the trip in focus, once', () => {
+    const raw = {
+      profiles: [{ id: 'x', name: 'Léa', course: 'it', trips: { es: { region: 'madrid' }, it: { region: 'roma' } } }],
+      data: { x: { card: { hotel: 'Sole', address: 'Via Roma 1', allergens: ['nuts'], diets: 7 } } },
+    };
+    const db = sanitize(raw);
+    expect(db.profiles[0]!.trips.map(t => t.hotel)).toEqual(['', 'Sole']);
+    expect(tripOf(db.profiles[0]!).address).toBe('Via Roma 1');
+    expect(db.data.x!.card).toEqual({ allergens: ['nuts'], diets: [] });
+    expect(sanitize(db)).toEqual(db);
+  });
+
+  it('keeps several trips, even in one language, and repairs a focus that points nowhere', () => {
+    const trips = [
+      { id: 'a', course: 'es', region: 'barcelone', date: '2026-12-20', hotel: 'Sol', address: '' },
+      { id: 'b', course: 'es', region: 'andalousie', date: '2027-03-01', hotel: '', address: '' },
+    ];
+    const db = sanitize({ profiles: [{ id: 'x', name: 'Léa', trips, trip: 'gone' }] });
+    expect(db.profiles[0]!.trips).toEqual(trips);
+    expect(db.profiles[0]!.trip).toBe('a');
+    const twice = sanitize({ profiles: [{ id: 'x', name: 'Léa', trips: [...trips, trips[0]], trip: 'a' }] });
+    expect(new Set(twice.profiles[0]!.trips.map(t => t.id)).size).toBe(3);
+  });
+
+  it('lists upcoming trips first, the soonest on top, then undated ones, then past ones', () => {
+    const t = (id: string, date: string) => ({ ...blankTrip('es', id), date });
+    const order = orderTrips(
+      [t('past', '2026-10-01'), t('later', '2027-03-01'), t('undated', ''), t('soon', '2026-12-20')],
+      '2026-11-18',
+    );
+    expect(order.map(x => x.id)).toEqual(['soon', 'later', 'undated', 'past']);
   });
 
   it('fills new settings in, keeps valid ones and drops wrong or unknown ones', () => {
@@ -305,9 +373,11 @@ describe('saved data', () => {
     expect(db.active).toBe('p2');
     expect(db.profiles.map(p => p.gender)).toEqual(['m', 'f']);
     expect(db.profiles[0]).toMatchObject({
-      trips: { es: { region: 'barcelone', date: '2026-12-01' } },
+      trips: [
+        { id: 'es', course: 'es', region: 'barcelone', date: '2026-12-01', hotel: 'Sol', address: 'Calle Mayor 1' },
+      ],
+      trip: 'es',
       goal: 60,
-      course: 'es',
     });
     expect(db.settings).toMatchObject({ autoplay: false, slow: true, sfx: false });
     const p1 = db.data.p1!;
@@ -318,7 +388,7 @@ describe('saved data', () => {
     expect(p1.mistakes['es:buenas']).toBe(2);
     expect(p1.favorites).toEqual(['es:hola']);
     expect(p1.stats).toMatchObject({ spoken: 7, prices: 3 });
-    expect(p1.card).toEqual({ hotel: 'Sol', address: 'Calle Mayor 1', allergens: ['marisco'], diets: ['veg'] });
+    expect(p1.card).toEqual({ allergens: ['marisco'], diets: ['veg'] });
     expect(db.data.p2).toBeDefined();
     expect(migrateV3({ v: 2 }, NOW)).toBeNull();
   });

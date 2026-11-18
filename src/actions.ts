@@ -178,7 +178,8 @@ function finish(r: Running, now: number): Summary {
 }
 
 function awardStamps(data: ProfileData, p: Profile, now: number): string[] {
-  const earned = newStamps({ data, course: courseById(p.course), region: tripOf(p).region, today: dayKey(now) });
+  const trip = tripOf(p);
+  const earned = newStamps({ data, course: courseById(trip.course), region: trip.region, today: dayKey(now) });
   for (const id of earned) data.stamps[id] = now;
   return earned;
 }
@@ -194,7 +195,7 @@ export function completeScene(sceneId: string, correct: number, now = Date.now()
   if (!p) return [];
   let earned: string[] = [];
   updateData(data => {
-    data.scenes[lessonKey(p.course, sceneId)] ??= now;
+    data.scenes[lessonKey(tripOf(p).course, sceneId)] ??= now;
     logSession(data, now, { xp: 5 + correct, sessions: 1, scenes: 1, correct, spoken: 0 }, p.goal);
     earned = awardStamps(data, p, now);
   });
@@ -205,7 +206,7 @@ export function markSoundsSeen(now = Date.now()): void {
   const p = profile.value;
   if (!p) return;
   updateData(data => {
-    data.lessons[lessonKey(p.course, 'sounds')] ??= now;
+    data.lessons[lessonKey(tripOf(p).course, 'sounds')] ??= now;
   });
 }
 
@@ -302,18 +303,46 @@ export function switchProfile(id: string): void {
   settleDay();
 }
 
-export function editProfile(patch: Partial<Omit<Profile, 'id' | 'trips'>>): void {
+export function editProfile(patch: Partial<Omit<Profile, 'id' | 'trips' | 'trip'>>): void {
   update(draft => {
     const p = draft.profiles.find(x => x.id === draft.active);
     if (p) Object.assign(p, patch);
   });
 }
 
-/** For the course being learnt. */
-export function editTrip(patch: Partial<Trip>): void {
+/** The trip in focus unless another is named. */
+export function editTrip(patch: Partial<Omit<Trip, 'id'>>, id?: string): void {
   update(draft => {
     const p = draft.profiles.find(x => x.id === draft.active);
-    if (p) p.trips[p.course] = { ...tripOf(p), ...patch };
+    const t = p?.trips.find(x => x.id === (id ?? p.trip));
+    if (t) Object.assign(t, patch);
+  });
+}
+
+/** Adds a trip and puts it in focus. */
+export function addTrip(trip: Trip): void {
+  update(draft => {
+    const p = draft.profiles.find(x => x.id === draft.active);
+    if (!p || p.trips.some(t => t.id === trip.id)) return;
+    p.trips.push(trip);
+    p.trip = trip.id;
+  });
+}
+
+export function focusTrip(id: string): void {
+  update(draft => {
+    const p = draft.profiles.find(x => x.id === draft.active);
+    if (p?.trips.some(t => t.id === id)) p.trip = id;
+  });
+}
+
+/** The last trip stays: home and lessons always follow one. */
+export function removeTrip(id: string): void {
+  update(draft => {
+    const p = draft.profiles.find(x => x.id === draft.active);
+    if (!p || p.trips.length < 2) return;
+    p.trips = p.trips.filter(t => t.id !== id);
+    if (p.trip === id) p.trip = p.trips[0]!.id;
   });
 }
 

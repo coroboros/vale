@@ -8,7 +8,7 @@ import { createProfiles, startSession } from '../../actions';
 import { BRAND } from '../../brand';
 import { COURSES } from '../../content';
 import type { Gender } from '../../content/types';
-import { CUES, GOALS, PROFILE_COLORS } from '../../state/schema';
+import { blankTrip, CUES, GOALS, PROFILE_COLORS } from '../../state/schema';
 import { InstallButton } from '../Install';
 import { imagineWords } from '../imagine';
 import { ChoiceGroup, Say } from '../kit';
@@ -85,8 +85,8 @@ export function Onboarding() {
         name: t.name.trim(),
         gender: t.gender,
         color: PROFILE_COLORS[i % PROFILE_COLORS.length]!,
-        course: c.id,
-        trips: { [c.id]: { region, date: trip } },
+        trips: [{ ...blankTrip(c.id, c.id), region, date: trip }],
+        trip: c.id,
         goal,
         cue,
       })),

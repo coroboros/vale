@@ -153,6 +153,22 @@ function FlagArt({ flag }: { flag: Flag }) {
   );
 }
 
+/** Bernard's shell alone, small: it marks a language wherever one is picked. */
+export function FlagDot({ flag, size = 24 }: { flag: Flag; size?: number }) {
+  const clip = useId();
+  return (
+    <svg class="flag-dot" width={size} height={size} viewBox="38 13 70 70" aria-hidden="true">
+      <clipPath id={clip}>
+        <circle cx="73" cy="48" r="34" />
+      </clipPath>
+      <g clip-path={`url(#${clip})`}>
+        <FlagArt flag={flag} />
+      </g>
+      <circle cx="73" cy="48" r="34" fill="none" stroke="rgb(22 33 62 / 22%)" stroke-width="2" />
+    </svg>
+  );
+}
+
 /** Bernard everywhere is the Bernard of the welcome flight: he watches the pointer and blinks. */
 export function Mascot({
   mood = 'idle',

@@ -37,7 +37,18 @@ function Nav({ current }: { current: Tab | null }) {
         <span class="wordmark">{BRAND.name.toLowerCase()}</span>
       </div>
       {TABS.map(({ tab, label, href, Icon }) => (
-        <a key={tab} class="nav-item" href={href} aria-current={current === tab ? 'page' : undefined}>
+        <a
+          key={tab}
+          class="nav-item"
+          href={href}
+          aria-current={current === tab ? 'page' : undefined}
+          onClick={e => {
+            // A tap opens the screen at its top, as `go` does; a modified click keeps its browser meaning.
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            go({ name: tab }, { replace: current === tab });
+          }}
+        >
           <Icon size={24} aria-hidden="true" />
           <span>{label}</span>
         </a>

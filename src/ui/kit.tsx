@@ -187,6 +187,9 @@ export interface ChoiceOption<T> {
   title: ComponentChildren;
   sub?: ComponentChildren;
   lang?: string;
+  icon?: ComponentChildren;
+  /** A control beside the choice, outside its label, so using it never picks the choice. */
+  aside?: ComponentChildren;
 }
 
 /** Native radio buttons: arrow keys, labels and states come for free. */
@@ -210,22 +213,33 @@ export function ChoiceGroup<T extends string | number>({
   return (
     <fieldset class="choices">
       <legend class={showLabel ? 'choices-label' : 'sr-only'}>{label}</legend>
-      {options.map((o, i) => (
-        <label key={String(o.value)} class="choice" lang={o.lang}>
-          <input
-            type="radio"
-            class="sr-only"
-            name={name}
-            checked={value === o.value}
-            onChange={() => onChange(o.value)}
-          />
-          {numbered && <kbd>{i + 1}</kbd>}
-          <span>
-            <strong>{o.title}</strong>
-            {o.sub && <small>{o.sub}</small>}
-          </span>
-        </label>
-      ))}
+      {options.map((o, i) => {
+        const choice = (
+          <label key={String(o.value)} class="choice" lang={o.lang}>
+            <input
+              type="radio"
+              class="sr-only"
+              name={name}
+              checked={value === o.value}
+              onChange={() => onChange(o.value)}
+            />
+            {numbered && <kbd>{i + 1}</kbd>}
+            {o.icon}
+            <span>
+              <strong>{o.title}</strong>
+              {o.sub && <small>{o.sub}</small>}
+            </span>
+          </label>
+        );
+        return o.aside ? (
+          <div key={String(o.value)} class="choice-row">
+            {choice}
+            {o.aside}
+          </div>
+        ) : (
+          choice
+        );
+      })}
     </fieldset>
   );
 }

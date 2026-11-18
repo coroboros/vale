@@ -2022,6 +2022,7 @@ export const regions: Region[] = [
 ];
 
 export const card: SurvivalCard = {
+  example: { hotel: 'Hostal Sol', address: 'Calle Mayor 12, Madrid' },
   help: {
     t: 'No hablo español. ¿Me puede ayudar?',
     fr: 'Je ne parle pas espagnol. Vous pouvez m’aider ?',

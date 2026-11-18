@@ -7,10 +7,16 @@ const DB_VERSION = 4;
 export const STORAGE_KEY = 'db-v4';
 export const LEGACY_KEY = 'vale-v3';
 
+/** One trip: a language, a destination, a departure day. Several can share a language. */
 export interface Trip {
+  id: string;
+  course: string;
   region: string;
-  /** YYYY-MM-DD, or '' when unknown. */
+  /** Departure day, YYYY-MM-DD, or '' when not chosen yet. */
   date: string;
+  /** For the survival card: each trip has its own. */
+  hotel: string;
+  address: string;
 }
 
 export interface Profile {
@@ -18,9 +24,10 @@ export interface Profile {
   name: string;
   gender: Gender;
   color: string;
-  course: string;
-  /** By course: switching language keeps each one's destination and date. */
-  trips: Record<string, Trip>;
+  /** Every trip planned, in any language: two trips in a row, or two languages at once. */
+  trips: Trip[];
+  /** The trip in focus: home, lessons and the memory forecast follow it and its language. */
+  trip: string;
   /** XP per day. */
   goal: number;
   /** When the learner plans to practise (implementation intention), or ''. */
@@ -44,18 +51,62 @@ export interface Settings {
 const SPEECH_CHECK = ['ask', 'on', 'off'] as const;
 type SpeechCheckChoice = (typeof SPEECH_CHECK)[number];
 
-export const tripOf = (p: Profile): Trip => p.trips[p.course] ?? { region: 'autre', date: '' };
+export const blankTrip = (course: string, id = newId()): Trip => ({
+  id,
+  course,
+  region: 'autre',
+  date: '',
+  hotel: '',
+  address: '',
+});
+
+export const tripOf = (p: Profile): Trip => p.trips.find(t => t.id === p.trip) ?? p.trips[0] ?? blankTrip('es', '');
+
+/** Upcoming trips first, the soonest on top; then those without a date; then past ones, latest first. */
+export function orderTrips(trips: Trip[], today: string): Trip[] {
+  const rank = (t: Trip) => (!t.date ? 1 : t.date >= today ? 0 : 2);
+  return [...trips].sort(
+    (a, b) => rank(a) - rank(b) || (rank(a) === 2 ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date)),
+  );
+}
 
 export const isDay = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
 
-/** Before trips by course, a profile had one `region` and one `trip` date. */
-function repairTrips(p: Partial<Profile> & { region?: unknown; trip?: unknown }, course: string): Record<string, Trip> {
-  const trips: Record<string, Trip> = {};
-  for (const [id, t] of Object.entries(p.trips && typeof p.trips === 'object' ? p.trips : {}))
-    if (t && typeof t.region === 'string') trips[id] = { region: t.region, date: isDay(t.date) ? t.date : '' };
-  if (!trips[course] && (typeof p.region === 'string' || isDay(p.trip)))
-    trips[course] = { region: typeof p.region === 'string' ? p.region : 'autre', date: isDay(p.trip) ? p.trip : '' };
-  return trips;
+type StoredTrip = Partial<Record<keyof Trip, unknown>>;
+const text = (v: unknown): string => (typeof v === 'string' ? v : '');
+
+/**
+ * Trips were first one `region` and one `trip` date per profile, then one per language (`trips`
+ * keyed by course, `course` the one in use); both become entries of the list.
+ */
+function repairTrips(p: { course?: unknown; trips?: unknown; trip?: unknown; region?: unknown }): {
+  trips: Trip[];
+  trip: string;
+} {
+  const course = typeof p.course === 'string' ? p.course : 'es';
+  const stored: StoredTrip[] = Array.isArray(p.trips)
+    ? p.trips
+    : p.trips && typeof p.trips === 'object'
+      ? Object.entries(p.trips as Record<string, StoredTrip>).map(([id, t]) => ({ ...t, id, course: id }))
+      : [];
+  const trips: Trip[] = [];
+  for (const t of stored) {
+    if (!t || typeof t.region !== 'string') continue;
+    // Ids name the trip in focus and the one to edit or remove: each must be unique.
+    const id = typeof t.id === 'string' && !trips.some(x => x.id === t.id) ? t.id : newId();
+    trips.push({
+      id,
+      course: typeof t.course === 'string' ? t.course : course,
+      region: t.region,
+      date: isDay(t.date) ? t.date : '',
+      hotel: text(t.hotel),
+      address: text(t.address),
+    });
+  }
+  if (!trips.length)
+    trips.push({ ...blankTrip(course, course), region: text(p.region) || 'autre', date: isDay(p.trip) ? p.trip : '' });
+  const focus = trips.find(t => t.id === p.trip) ?? trips.find(t => t.course === course) ?? trips[0]!;
+  return { trips, trip: focus.id };
 }
 
 /** Long enough for a commute. */
@@ -90,9 +141,8 @@ export interface Translation {
   saved: boolean;
 }
 
+/** About the traveller, whatever the trip; the hotel and address belong to each trip. */
 export interface SurvivalCardData {
-  hotel: string;
-  address: string;
   allergens: string[];
   diets: string[];
 }
@@ -172,7 +222,7 @@ export const blankData = (): ProfileData => ({
   stamps: {},
   mistakes: {},
   favorites: [],
-  card: { hotel: '', address: '', allergens: [], diets: [] },
+  card: { allergens: [], diets: [] },
   stats: { spoken: 0, prices: 0, pairs: 0, duels: 0, perfect: 0 },
   translations: [],
 });
@@ -225,8 +275,7 @@ export function sanitize(raw: unknown): DB {
           name: p.name.slice(0, 24),
           gender: p.gender === 'f' ? 'f' : 'm',
           color: typeof p.color === 'string' ? p.color : PROFILE_COLORS[0],
-          course: typeof p.course === 'string' ? p.course : 'es',
-          trips: repairTrips(p, typeof p.course === 'string' ? p.course : 'es'),
+          ...repairTrips(p),
           goal: GOALS.some(g => g.xp === p.goal) ? p.goal : 40,
           cue: typeof p.cue === 'string' ? p.cue : '',
         }))
@@ -235,10 +284,17 @@ export function sanitize(raw: unknown): DB {
   for (const p of db.profiles) {
     const d = (src.data?.[p.id] ?? {}) as Partial<ProfileData>;
     const base = blankData();
+    const card = (d.card ?? {}) as Partial<Record<'hotel' | 'address' | keyof SurvivalCardData, unknown>>;
+    const focus = tripOf(p);
+    // The card once kept one hotel and address for every trip: they go to the trip in focus.
+    if (!focus.hotel && !focus.address) Object.assign(focus, { hotel: text(card.hotel), address: text(card.address) });
     db.data[p.id] = {
       ...base,
       ...d,
-      card: { ...base.card, ...(d.card ?? {}) },
+      card: {
+        allergens: Array.isArray(card.allergens) ? card.allergens : [],
+        diets: Array.isArray(card.diets) ? card.diets : [],
+      },
       stats: { ...base.stats, ...(d.stats ?? {}) },
       frozen: Array.isArray(d.frozen) ? d.frozen : [],
       favorites: Array.isArray(d.favorites) ? d.favorites : [],

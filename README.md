@@ -12,22 +12,26 @@ connected, the app and its translation service are served by one Worker; see RUN
 - **A flight to begin.** The welcome screen is a cabin window flying to Barcelona, Venice, Lisbon,
   London, Seville and Rome. The view follows your finger or your mouse, a tap flies on, and Bernard
   says hello in the local language.
-- **A trip, not a course.** You pick a destination and a departure date, and switch language from
-  the home screen whenever you like: each language keeps its own trip, and the welcome window
-  comes back there, flying to the destination you pick. Onboarding ends on a
-  full-screen photo of your destination, where you hear yourself order your first coffee. The home screen shows how
-  much of what you learned you will still remember on landing day, from your own memory model.
+- **Trips, not a course.** You pick a destination and a departure date. Plan as many trips as you
+  like, two in a row or several languages at once, even two in the same language: the home screen
+  follows the one you are preparing, and offers the next one once a trip has begun. The welcome
+  window comes back in « Mes voyages », flying to the trip you pick. Onboarding ends on a
+  full-screen photo of your destination, where you hear yourself order your first coffee. The home
+  screen shows how much of what you learned you will still remember on landing day, from your own
+  memory model.
 - **Spaced retrieval that adapts.** Every phrase has its own forgetting curve (FSRS-7). Exercises
   move from recognising to producing as memory strengthens, aiming at about 85 % success.
 - **Real situations.** Café, restaurant, hotel, transport, shopping, pharmacy, emergencies, plus
   role-play scenes, prices said aloud, a sounds lesson and regional packs (Catalan in Barcelona).
 - **Translate anything, keep it offline.** Type what you want to say; an AI model translates it the
   way a local would say it, with pronunciation written for French readers. Every translation stays in a
-  searchable history on the phone and can join your reviews.
+  searchable history on the phone and can join your reviews. Lexicons and translation stay at hand
+  in every language you travel with or have learnt.
 - **Say it, see what was understood.** In speaking exercises, the browser's speech recognition
   marks the words it heard and the ones it missed. The browser runs it on the phone when it can,
   otherwise online, so you are asked once first. Without it, you record yourself and compare.
-- **A survival card** to show in a restaurant: allergies and diet, in the local language.
+- **A survival card** to show in a restaurant: allergies and diet, in the local language, and each
+  trip's hotel and address.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
   Bernard, a hermit crab whose shell wears the country's flag. Mistakes never block a lesson.
 - **Shared phone friendly.** Several profiles on one device, backup export and import.

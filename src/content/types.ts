@@ -89,6 +89,8 @@ export interface Region {
 }
 
 export interface SurvivalCard {
+  /** Placeholders for the hotel and address fields: what one looks like in that country. */
+  example: { hotel: string; address: string };
   help: { t: string; fr: string };
   sos: { t: string; fr: string };
   allergens: { id: string; t: string; fr: string }[];

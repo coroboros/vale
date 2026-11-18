@@ -3,7 +3,7 @@
 import { indexOf, itemKey } from '../content';
 import { es } from '../content/courses/es';
 import { seedFromLevel } from '../engine/memory';
-import { blankData, blankDay, blankDB, type DB, GOALS, isDay, PROFILE_COLORS } from './schema';
+import { blankData, blankDay, blankDB, blankTrip, type DB, GOALS, isDay, PROFILE_COLORS } from './schema';
 
 interface V3Data {
   p?: Record<string, { l: number; t: number }>;
@@ -53,13 +53,16 @@ export function migrateV3(raw: unknown, now: number): DB | null {
     name: p.name || 'Moi',
     gender: p.g === 'a' ? 'f' : 'm',
     color: p.color ?? PROFILE_COLORS[i % PROFILE_COLORS.length]!,
-    course: es.id,
-    trips: {
-      [es.id]: {
+    trips: [
+      {
+        ...blankTrip(es.id, es.id),
         region: es.regions.some(r => r.id === raw.dest) ? raw.dest! : 'autre',
         date: isDay(raw.date) ? raw.date : '',
+        hotel: raw.data?.[p.id]?.card?.hotel ?? '',
+        address: raw.data?.[p.id]?.card?.addr ?? '',
       },
-    },
+    ],
+    trip: es.id,
     goal: GOALS.some(g => g.xp === raw.goal) ? raw.goal! : 40,
     cue: '',
   }));
@@ -95,12 +98,7 @@ export function migrateV3(raw: unknown, now: number): DB | null {
       duels: old.st?.duels ?? 0,
       perfect: old.st?.perfect ?? 0,
     };
-    data.card = {
-      hotel: old.card?.hotel ?? '',
-      address: old.card?.addr ?? '',
-      allergens: old.card?.allergens ?? [],
-      diets: old.card?.diets ?? [],
-    };
+    data.card = { allergens: old.card?.allergens ?? [], diets: old.card?.diets ?? [] };
     db.data[profile.id] = data;
   }
   return db;

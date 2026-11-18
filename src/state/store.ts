@@ -1,5 +1,5 @@
 import { computed, signal } from '@preact/signals';
-import { courseById, indexOf } from '../content';
+import { COURSES, courseById, indexOf, splitKey } from '../content';
 import { THEMES } from '../ui/themes';
 import { migrateV3 } from './migrate';
 import {
@@ -11,6 +11,7 @@ import {
   quietActive,
   STORAGE_KEY,
   sanitize,
+  tripOf,
 } from './schema';
 
 export const db = signal<DB>(blankDB());
@@ -89,8 +90,22 @@ export function watchStorage(): void {
 
 export const profile = computed(() => db.value.profiles.find(p => p.id === db.value.active) ?? null);
 export const pdata = computed<ProfileData>(() => db.value.data[db.value.active] ?? blankData());
-export const course = computed(() => courseById(profile.value?.course ?? 'es'));
+export const course = computed(() => courseById(profile.value ? tripOf(profile.value).course : 'es'));
 export const cindex = computed(() => indexOf(course.value));
+
+/** The trips' languages, the one in focus first, then any other with something learnt: no lexicon is lost. */
+export const languages = computed(() => {
+  const p = profile.value;
+  if (!p) return [];
+  const data = pdata.value;
+  const ids = new Set([
+    tripOf(p).course,
+    ...p.trips.map(t => t.course),
+    ...[...Object.keys(data.mem), ...data.favorites].map(k => splitKey(k)[0]),
+    ...data.translations.map(t => t.course),
+  ]);
+  return [...ids].flatMap(id => COURSES.filter(c => c.id === id));
+});
 export const theme = computed(() => THEMES[course.value.flag]);
 export const settings = computed(() => db.value.settings);
 

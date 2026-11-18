@@ -32,8 +32,9 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
   installed app.
 - Bernard everywhere on the iPhone: his eyes following a finger and blinking in lessons, on the
   home card and in « Imagine », without slowing the screen; the flag on his shell at small sizes.
-- « Mon voyage » on the iPhone: switching language and destination from the home screen, then
-  back, keeps each language's destination and date.
+- « Mes voyages » on the iPhone: adding a second trip, switching the one in focus from the home
+  screen and from *Moi*, the next-trip card once a trip has begun, and *Phrases* switching
+  language.
 - The pronunciation check on the iPhone, in Safari and from the home screen: two tries in a row.
   On iOS 27, recognition goes deaf after the first session (WebKit bug 321436); Bagage then falls
   back to recording, after ten seconds. Reporters say a short synthesised phrase right before
@@ -78,7 +79,11 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **French as a language to learn.** Everything is written for French speakers (the interface,
   the French-reader pronunciation, the notes), so teaching French needs an interface in another
   language, English first, and content written for its speakers: a project of its own.
-- Sync between devices and profiles shared across phones (with accounts).
+- **Cloud backup and sync, paid.** Encrypted on the phone, kept on Cloudflare R2, sold alone or
+  inside the pass and the subscription; it costs us almost nothing (docs/BUSINESS.md, costs
+  checked 18 November 2026). Profiles shared across phones come with it.
+- **Trips, next.** A return date (the pass needs one: docs/BUSINESS.md), so home moves to the next
+  trip on its own and a trip's stamps carry its dates.
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
 
 ## Watch

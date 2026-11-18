@@ -731,6 +731,7 @@ export const regions: Region[] = [
 ];
 
 export const card: SurvivalCard = {
+  example: { hotel: 'The Swan Inn', address: '12 High Street, London' },
   help: { t: 'I don’t speak English. Can you help me?', fr: 'Je ne parle pas anglais. Vous pouvez m’aider ?' },
   sos: { t: 'I need a doctor. It’s urgent.', fr: 'J’ai besoin d’un médecin. C’est urgent.' },
   allergens: [

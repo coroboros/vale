@@ -1,18 +1,19 @@
 import { BookmarkCheck, BookmarkPlus, ExternalLink, Search, Sparkles, Star, Trash, WifiOff } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { forgetTranslation, rememberTranslation, setTranslationSaved, toggleFavorite } from '../../actions';
-import { type Entry, itemKey, splitKey } from '../../content';
-import type { Item } from '../../content/types';
+import { courseById, type Entry, indexOf, itemKey, splitKey } from '../../content';
+import type { Course, Item } from '../../content/types';
 import { online } from '../../platform/env';
 import type { Translation } from '../../state/schema';
-import { cindex, course, pdata } from '../../state/store';
+import { course, languages, pdata } from '../../state/store';
 import { deeplLink, hasTranslator, searchCourse, searchHistory, translateOnline } from '../../translate';
 import { MAX_TRANSLATE_CHARS, sentenceKey } from '../../translation-api';
 import { Phonetic, Say, showToast } from '../kit';
+import { FlagDot } from '../Mascot';
 import { go } from '../router';
 
-function ItemRow({ item, lang }: { item: Item; lang: string }) {
-  const key = itemKey(course.value.id, item.id);
+function ItemRow({ courseId, item, lang }: { courseId: string; item: Item; lang: string }) {
+  const key = itemKey(courseId, item.id);
   const fav = pdata.value.favorites.includes(key);
   return (
     <li class="phrase">
@@ -38,7 +39,7 @@ function ItemRow({ item, lang }: { item: Item; lang: string }) {
 }
 
 function TranslationRow({ t }: { t: Translation }) {
-  const lang = course.value.lang;
+  const lang = courseById(t.course).lang;
   return (
     <li class="phrase">
       <Say text={t.t} lang={lang} small soft />
@@ -78,8 +79,7 @@ function TranslationRow({ t }: { t: Translation }) {
   );
 }
 
-function Translator({ query }: { query: string }) {
-  const c = course.value;
+function Translator({ query, course: c }: { query: string; course: Course }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [manual, setManual] = useState('');
@@ -157,9 +157,12 @@ function Translator({ query }: { query: string }) {
   );
 }
 
+/** Opens on the language of the trip in focus; the others stay one tap away, lexicons and translation. */
 export function Phrases() {
-  const c = course.value;
-  const index = cindex.value;
+  const [picked, setPicked] = useState('');
+  const others = languages.value;
+  const c = others.find(x => x.id === picked) ?? course.value;
+  const index = indexOf(c);
   const data = pdata.value;
   const [query, setQuery] = useState('');
   const q = query.trim();
@@ -179,6 +182,26 @@ export function Phrases() {
         <h1>Phrases</h1>
         <p class="muted">Cherche dans tes leçons ou traduis ce que tu veux dire.</p>
       </header>
+
+      {others.length > 1 && (
+        <fieldset class="field">
+          <legend class="sr-only">Langue</legend>
+          <div class="chips">
+            {others.map(x => (
+              <button
+                key={x.id}
+                type="button"
+                class="chip"
+                aria-pressed={x.id === c.id}
+                onClick={() => setPicked(x.id)}
+              >
+                <FlagDot flag={x.flag} size={20} />
+                {x.name}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       <search class="search">
         <Search size={22} aria-hidden="true" />
@@ -205,7 +228,12 @@ export function Phrases() {
               <h2>Dans tes leçons</h2>
               <ul class="phrases">
                 {inCourse.map(item => (
-                  <ItemRow key={item.id} item={item} lang={index.entries.get(item.id)?.lang ?? c.lang} />
+                  <ItemRow
+                    key={item.id}
+                    courseId={c.id}
+                    item={item}
+                    lang={index.entries.get(item.id)?.lang ?? c.lang}
+                  />
                 ))}
               </ul>
             </section>
@@ -223,7 +251,7 @@ export function Phrases() {
           {!exact && (
             <section class="section" aria-label="Traduire">
               <h2>Traduire « {q} »</h2>
-              <Translator key={q} query={q} />
+              <Translator key={`${c.id}:${q}`} query={q} course={c} />
             </section>
           )}
         </>
@@ -234,7 +262,7 @@ export function Phrases() {
               <h2>Mes favoris</h2>
               <ul class="phrases">
                 {favorites.map(e => (
-                  <ItemRow key={e.item.id} item={e.item} lang={e.lang} />
+                  <ItemRow key={e.item.id} courseId={c.id} item={e.item} lang={e.lang} />
                 ))}
               </ul>
             </section>
@@ -266,7 +294,7 @@ export function Phrases() {
                 </summary>
                 <ul class="phrases">
                   {l.items.map(item => (
-                    <ItemRow key={item.id} item={item} lang={'lang' in l ? l.lang : c.lang} />
+                    <ItemRow key={item.id} courseId={c.id} item={item} lang={'lang' in l ? l.lang : c.lang} />
                   ))}
                 </ul>
               </details>

@@ -30,6 +30,11 @@ exists (voices, photos) waits only for its keys.
 4. **Acquisition experiments that need no account** (hypotheses, untested): a survival card worth
    sharing, pages answering « comment commander un café en espagnol » that open the right lesson.
 
+Done at your request, outside this order: ✅ 18 Nov 2026, **several trips at once** (two in a row,
+several languages, two in one language), each with its own hotel and address on the card; home
+follows the trip in focus and offers the next one once a trip has begun; *Phrases* switches
+between the traveller's languages.
+
 ## B. You, when you can
 
 ### B1. Connect Cloudflare and the Claude credits (about 15 minutes)
@@ -144,7 +149,9 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
    checked by the Worker.
 3. Premium content served by the Worker after purchase (what ships in the app bundle is free by
    nature), and per-user quotas on translation and AI conversation.
-4. The live conversation partner, light on data (docs/VOICE.md), if the figures justify it.
+4. Cloud backup and sync, encrypted on the phone, kept on R2: alone or inside the pass and the
+   subscription (docs/BUSINESS.md).
+5. The live conversation partner, light on data (docs/VOICE.md), if the figures justify it.
 
 ## Working with Claude Code on your Mac
 

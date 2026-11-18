@@ -65,6 +65,40 @@ Graded by evidence, strongest first:
   inside the free app bundle is free in practice, so premium content is downloaded after
   purchase (and kept offline).
 
+## Cloud backup: an option to study
+
+Today the only copy of someone's progress is on their phone. Safari deletes it after seven days
+of Safari use without a visit, unless the app is on the home screen (RUNBOOK.md, A1); a lost or
+replaced phone loses it, and a second device cannot share it. *Moi* offers a manual export, and
+that stays free.
+
+**The offer.** Automatic backup and the same progress on every device, sold alone at a small yearly
+price or included in the subscription and in the pass until the return date. Fixed card fees take
+a large share of very small payments (an inference, not checked against a processor's rates), so
+the bundle is the main road and the standalone price a test.
+
+**What it costs us.** Cloudflare R2, Standard storage, from its
+[pricing page](https://developers.cloudflare.com/r2/pricing/) (updated 30 October 2026):
+
+| | Price | Free every month |
+| --- | --- | --- |
+| Storage | $0.015 per GB-month | 10 GB-month |
+| Writes (Class A) | $4.50 per million | 1 million |
+| Reads (Class B) | $0.36 per million | 10 million |
+| Egress | free | |
+
+Our estimate, computed from the shape of the stored record and not measured on real learners: a
+heavy learner (600 phrases in two languages, 200 days of practice, 150 translations) stores about
+160 KB, 25 KB compressed. With one backup per day of practice and seven kept, 10,000 subscribers
+fit in the free allowance, and 100,000 cost about $9 a month, mostly writes. Storage is not the
+cost; accounts, payments and the privacy work are.
+
+**What it needs.** Accounts and payments (below), and a privacy design that keeps the promise
+« nothing readable leaves the phone »: encryption on the device, the server only keeps
+ciphertext. The hard part is recovery when every device is lost; a key derived from the
+traveller's passkey is one route (to check against browser support when building it). Then the
+GDPR side: privacy policy, deletion and export on request.
+
 ## Open questions (for you)
 
 - Prices for the pass (per week of trip? flat?) and the subscription.
