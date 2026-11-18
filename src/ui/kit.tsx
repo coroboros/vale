@@ -122,23 +122,29 @@ export function showToast(text: string, action?: Toast['action'], ms = 4500): vo
   if (!action) toastTimer = setTimeout(() => (toast.value = null), ms);
 }
 
+/** The current notice. One with an action stays until used or set aside with « Plus tard ». */
 export function ToastHost() {
   const t = toast.value;
   if (!t) return null;
   return (
     <div class="toast" role="status">
-      <span>{t.text}</span>
+      <span class="toast-text">{t.text}</span>
       {t.action && (
-        <button
-          type="button"
-          class="btn btn-primary"
-          onClick={() => {
-            toast.value = null;
-            t.action?.run();
-          }}
-        >
-          {t.action.label}
-        </button>
+        <div class="toast-actions">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onClick={() => {
+              toast.value = null;
+              t.action?.run();
+            }}
+          >
+            {t.action.label}
+          </button>
+          <button type="button" class="icon-btn" aria-label="Plus tard" onClick={() => (toast.value = null)}>
+            <X size={22} />
+          </button>
+        </div>
       )}
     </div>
   );

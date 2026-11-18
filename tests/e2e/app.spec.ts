@@ -1,3 +1,5 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { TRANSLATE_URL } from '../../playwright.config';
@@ -174,6 +176,33 @@ test('« Je ne peux pas écouter maintenant » swaps the listening exercise and 
   await expect(page.getByRole('button', { name: 'Mode discret' })).toHaveAttribute('aria-pressed', 'true');
 });
 
+test('the update notice fits the screen, and « Plus tard » sets it aside', async ({ page }) => {
+  // A real update: the service worker file changes, the browser installs the new one, which waits.
+  const sw = resolve('.e2e-dist/sw.js');
+  const original = await readFile(sw, 'utf8');
+  try {
+    await page.goto('./');
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.reload();
+    await writeFile(sw, `${original}\n// next version`);
+    await page.evaluate(async () => (await navigator.serviceWorker.getRegistration())?.update());
+    const notice = page.locator('.toast').filter({ hasText: 'Une nouvelle version est prête.' });
+    await expect(notice).toBeVisible();
+    await settle(page);
+    const box = (await notice.boundingBox())!;
+    const width = page.viewportSize()!.width;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(width);
+    // It once shrank to half the screen on phones.
+    if (width < 720) expect(box.width).toBeGreaterThan(width * 0.75);
+    await expect(notice.getByRole('button', { name: 'Mettre à jour' })).toBeVisible();
+    await notice.getByRole('button', { name: 'Plus tard' }).click();
+    await expect(notice).toHaveCount(0);
+  } finally {
+    await writeFile(sw, original);
+  }
+});
+
 test('opens without network once visited', async ({ page, context }) => {
   await page.goto('./');
   await page.evaluate(() => navigator.serviceWorker.ready);
@@ -313,7 +342,7 @@ test('the welcome window stays still for people who ask for less motion', async 
 
 const SCREENS = ['#/', '#/entrainement', '#/phrases', '#/carte', '#/moi'];
 
-test('nothing is too small to tap, too close, or wider than the screen', async ({ page }) => {
+test('nothing is too small to tap, too close, cut, or wider than the screen', async ({ page }, info) => {
   const audit = async (where: string) => {
     await settle(page);
     const problems = await page.evaluate(() => {
@@ -343,6 +372,21 @@ test('nothing is too small to tap, too close, or wider than the screen', async (
         if (Math.min(r.width, r.height) < 44)
           out.push(`small ${Math.round(r.width)}x${Math.round(r.height)}: ${el.outerHTML.slice(0, 80)}`);
       }
+      // A label running out of its box, such as a tab name into the next one.
+      for (const el of document.querySelectorAll('button, a[href], .nav-item, h1, h2, h3')) {
+        if (!visible(el) || el.closest('.porthole, .skip')) continue;
+        if (el.scrollWidth > el.clientWidth + 1)
+          out.push(`cut ${el.scrollWidth}>${el.clientWidth}: ${el.outerHTML.slice(0, 80)}`);
+      }
+      // A single word broken over two lines, as « Barcelon / a » once was on a small phone.
+      for (const el of document.querySelectorAll('h1, h2, .postcard-place')) {
+        const text = el.textContent?.trim() ?? '';
+        if (!text || /\s/.test(text) || !visible(el)) continue;
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const lines = new Set([...range.getClientRects()].map(r => Math.round(r.top)));
+        if (lines.size > 1) out.push(`« ${text} » split over ${lines.size} lines`);
+      }
       const spaced = els.filter(el => el.matches('.choice, .chip, .tile-card'));
       for (let i = 0; i < spaced.length; i++)
         for (let j = i + 1; j < spaced.length; j++) {
@@ -358,19 +402,39 @@ test('nothing is too small to tap, too close, or wider than the screen', async (
     });
     expect(problems, where).toEqual([]);
   };
-  await page.goto('./');
-  await audit('welcome');
-  await onboard(page, 'Léa', audit);
-  await audit('onboarding');
-  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
-  await audit('session');
-  await page.getByRole('button', { name: 'Quitter la session' }).click();
-  await audit('quit dialog');
-  await page.getByRole('button', { name: 'Quitter', exact: true }).click();
-  for (const hash of SCREENS) {
-    await page.goto(`./${hash}`);
-    await audit(hash);
-  }
+  const run = async (size: string) => {
+    await page.goto('./');
+    // Back to a first launch. The app saves pending changes when the page goes away, so that save
+    // is switched off before the data is cleared.
+    await page.evaluate(() => {
+      Storage.prototype.setItem = () => {};
+      localStorage.clear();
+    });
+    await page.goto('./');
+    await audit(`${size}: welcome`);
+    await onboard(page, 'Léa', step => audit(`${size}: ${step}`));
+    await audit(`${size}: onboarding`);
+    await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+    await audit(`${size}: session`);
+    await page.getByRole('button', { name: 'Quitter la session' }).click();
+    await expect(page.locator('.sheet')).toBeVisible();
+    await audit(`${size}: quit dialog`);
+    await page.getByRole('button', { name: 'Quitter', exact: true }).click();
+    for (const hash of SCREENS) {
+      await page.goto(`./${hash}`);
+      await audit(`${size}: ${hash}`);
+    }
+  };
+  await run(`${page.viewportSize()!.width}px`);
+  // The phone run also covers a small phone (iPhone SE, first model) and a tablet.
+  if (info.project.name === 'iphone')
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 768, height: 1024 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await run(`${viewport.width}px`);
+    }
 });
 
 test('no serious accessibility issue on the main screens', async ({ page }) => {

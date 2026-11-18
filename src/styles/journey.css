@@ -3,7 +3,7 @@
      A cabin window. --lx and --ly (-1…1) come from the pointer; each landscape layer moves by
      its depth, the wing most, the sun least. Phases (arrive, stay, leave) drive the clouds. */
   .porthole {
-    --pw: clamp(180px, min(64vw, calc((100dvh - 440px) * 0.8)), 290px);
+    --pw: clamp(150px, min(64vw, calc((100dvh - 440px) * 0.8)), 290px);
     --lx: 0;
     --ly: 0;
     position: relative;
