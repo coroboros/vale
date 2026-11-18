@@ -35,6 +35,34 @@ then only sets the time of day in « Imagine ».
 - Tests: add a trip, Rome's « Imagine » per moment, back, no photo, home at the moment, the
   long-name audit, accessibility.
 
+**Then, what does not match yet** (checked on 19 Nov 2026 after your iPhone screenshots), in this
+order:
+
+1. **Dublin and New York wear the British flag**: Bernard's shell and the theme come from the
+   course, so Dublin, in Ireland, not the United Kingdom, shows the Union Jack. A destination can
+   set its own flag (Ireland, United States), theme colours contrast-tested like the others;
+   Edinburgh keeps the UK's.
+2. **Destination tips are written and never shown.** Eleven destinations have one (« Aux
+   États-Unis », « En Irlande », « En Écosse »…) and so does every regional pack, but no screen
+   reads them. The trip's tip goes first in *Phrases*, « Bon à savoir », and a pack's tip in its
+   lesson.
+3. **Money per destination.** The English price drills are in pounds everywhere, while Dublin
+   pays in euros and New York in dollars, as their own tips say. A destination sets its currency
+   and the course's `sayPrice` takes it.
+4. **Every destination drawn, animated like the others.** Seventeen use the generic coast
+   (New York in your screenshot): Madrid, Valence, Baléares, Canaries, Pays basque, Galice;
+   Florence, Milan, Naples, Sicile; Porto, Algarve, Madère, Açores; Édimbourg, Dublin, New York.
+   New York first. « Ailleurs » shows the country's emblem through the same map `photos.ts` uses,
+   shared rather than copied. A test fails when a destination has no drawing, as for photos (the
+   old list in TODO.md had missed four).
+5. **American and Irish words, with their voices**, through the regional packs that already
+   teach Catalan in Barcelona: « Les mots de New York » (check, restroom, subway, to go, the tip)
+   with the en-US voice, Dublin's (grand, the craic) with en-IE. A pack's own language already
+   picks its voice: nothing new to build.
+6. **On the iPhone, a sheet opens with a focus ring on its close button** (screenshot). Focus
+   goes to the sheet itself (`autofocus` on the `<dialog>`, to check in Safari), so a tap shows no
+   ring and the keyboard still does.
+
 1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
    Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,
    2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Home now asks

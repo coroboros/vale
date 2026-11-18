@@ -53,9 +53,6 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   clip sent to the Worker. On Chrome for computers, offer the on-device language pack
   (`SpeechRecognition.install()`) instead of the online service. Stress and intonation need more
   than word recognition.
-- Draw the other destinations (Madrid, Valencia, Florence, Naples, Milan, Sicily, Porto, the
-  Algarve, Madeira, the Azores, Edinburgh, Dublin, New York); the rest use the generic coast for
-  now.
 - **Photos that make you want to go.** One sunny, iconic photo per destination and per practice
   moment (morning coffee, commute, lunch, evening golden hour), from Unsplash: RUNBOOK.md, step C3.
 - **« Imagine », the sound of the place.** Once recorded voices exist, the phrase plays by itself as
