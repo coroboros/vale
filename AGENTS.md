@@ -37,7 +37,10 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 - `src/content/`: one data file and one rules file per language. Item ids key the learner's
   progress: never rename them.
 - `src/engine/`: FSRS memory model, exercise choice, sessions, progress.
-- `src/state/`: stored data. A change to its shape needs a migration in `migrate.ts` and a test.
+- `src/platform/`: what the browser offers: voices, speech recognition, recording, sounds,
+  install, backup.
+- `src/state/`: stored data. `sanitize` gives a new field its default on every load; a change it
+  cannot repair needs a migration in `migrate.ts`. Either way, with a test.
 - `src/ui/`: screens, components, `Porthole.tsx` and `scenery/` (the welcome flight),
   `themes.ts` (colours per language, contrast checked by a test).
 - `src/translation-api.ts`: the request and answer shared with the Worker. The Worker also

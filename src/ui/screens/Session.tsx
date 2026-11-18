@@ -1,20 +1,23 @@
 import { Check, Clock, Flame, Mic, Play, Square, Target, Volume2, VolumeX, X, Zap } from 'lucide-preact';
+import { Fragment } from 'preact';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { advance, closeSession, running, type Summary, setQuiet, submitAnswer } from '../../actions';
+import { advance, closeSession, running, type Summary, setQuiet, setSpeechCheck, submitAnswer } from '../../actions';
 import type { Card, Exercise } from '../../engine/exercises';
 import { grade, normalize, type Verdict } from '../../engine/grade';
 import { stamps as allStamps } from '../../engine/progress';
+import { checkSpeech, type SpeechCheck } from '../../engine/pronunciation';
 import { shuffle } from '../../engine/random';
 import { progress } from '../../engine/session';
+import { canHear, listen, probe, whereHeard } from '../../platform/recognition';
 import { canRecord, playTake, releaseMic, startRecording, stopRecording } from '../../platform/recorder';
 import { play } from '../../platform/sfx';
-import { say } from '../../platform/speech';
+import { say, stopSpeech } from '../../platform/speech';
 import { autoplays, course, isQuiet, settings, theme } from '../../state/store';
 import { Bar, ChoiceGroup, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
 import { Stamp } from '../Stamp';
 
-type Feedback = { ok: boolean; verdict?: Verdict; neutral?: boolean } | null;
+type Feedback = { ok: boolean; verdict?: Verdict; neutral?: boolean; heard?: SpeechCheck } | null;
 
 const speak = (card: Card, variant = 0) => say(card.item.t, { lang: card.lang, slow: settings.value.slow, variant });
 
@@ -35,37 +38,49 @@ function useKeys(handler: (key: string) => void) {
 }
 
 function FeedbackPanel({ fb, card, onNext }: { fb: NonNullable<Feedback>; card: Card | null; onNext: () => void }) {
+  // A retry shows how the latest attempt went; the first one has already been graded.
+  const ok = fb.heard?.ok ?? fb.ok;
   const title = fb.neutral
     ? 'C’était…'
-    : fb.ok
-      ? fb.verdict === 'accents'
-        ? 'Presque parfait'
-        : fb.verdict === 'typo'
-          ? 'Bien, une petite faute'
-          : 'Bien joué'
-      : 'La bonne réponse';
+    : fb.heard
+      ? fb.heard.all
+        ? 'Je t’ai compris'
+        : ok
+          ? 'Presque tout compris'
+          : 'Pas encore compris'
+      : ok
+        ? fb.verdict === 'accents'
+          ? 'Presque parfait'
+          : fb.verdict === 'typo'
+            ? 'Bien, une petite faute'
+            : 'Bien joué'
+        : 'La bonne réponse';
   const btn = useRef<HTMLButtonElement>(null);
   useEffect(() => btn.current?.focus(), []);
   return (
-    <div class={`feedback ${fb.neutral ? 'neutral' : fb.ok ? 'ok' : 'ko'}`} aria-live="polite">
+    <div class={`feedback ${fb.neutral ? 'neutral' : ok ? 'ok' : 'ko'}`} aria-live="polite">
       <div class="feedback-body">
-        <Mascot
-          size={64}
-          mood={fb.neutral ? 'idle' : fb.ok ? 'happy' : 'oops'}
-          pattern={theme.value.pattern}
-          decorative
-        />
+        <Mascot size={64} mood={fb.neutral ? 'idle' : ok ? 'happy' : 'oops'} pattern={theme.value.pattern} decorative />
         <div class="feedback-text">
           <p class="feedback-title">{title}</p>
           {card && (
             <>
-              <p class="feedback-answer" lang={card.lang}>
-                {card.item.t}
-              </p>
+              {fb.heard ? (
+                <HeardPhrase check={fb.heard} lang={card.lang} />
+              ) : (
+                <p class="feedback-answer" lang={card.lang}>
+                  {card.item.t}
+                </p>
+              )}
               <Phonetic ph={card.item.ph} />
               <p class="muted">{card.item.fr}</p>
+              {fb.heard && !fb.heard.all && (
+                <p class="muted">
+                  J’ai entendu : « <span lang={card.lang}>{fb.heard.heard}</span> »
+                </p>
+              )}
               {fb.verdict === 'accents' && <p class="muted">Attention aux accents.</p>}
-              {!fb.ok && card.item.note && <p class="feedback-note">{card.item.note}</p>}
+              {!ok && card.item.note && <p class="feedback-note">{card.item.note}</p>}
             </>
           )}
         </div>
@@ -74,7 +89,7 @@ function FeedbackPanel({ fb, card, onNext }: { fb: NonNullable<Feedback>; card: 
       <button
         ref={btn}
         type="button"
-        class={`btn btn-block ${fb.neutral ? 'btn-primary' : fb.ok ? 'btn-ok' : 'btn-ko'}`}
+        class={`btn btn-block ${fb.neutral ? 'btn-primary' : ok ? 'btn-ok' : 'btn-ko'}`}
         onClick={onNext}
       >
         Continuer
@@ -317,22 +332,62 @@ function Dictation({
  * In quiet mode the phrase is said in one's head: recalling it silently still strengthens memory
  * (Smith, Roediger & Karpicke, 2013).
  */
-function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void }) {
+const ASK_DEVICE = 'La reconnaissance vocale tourne sur ton appareil : ta voix n’en sort pas.';
+const ASK_BROWSER =
+  'Ton navigateur reconnaît ta voix : sur ton appareil quand il le peut, sinon par son service en ligne (Apple, Google…). Bagage ne garde rien.';
+
+/**
+ * With the browser's speech recognition, the learner sees which words it heard; without it, they
+ * record themselves, compare with the model and judge.
+ */
+function Speak({
+  card,
+  judged,
+  onResult,
+  onRetry,
+}: {
+  card: Card;
+  judged: boolean;
+  onResult: (ok: boolean, heard?: SpeechCheck) => void;
+  onRetry: (heard: SpeechCheck) => void;
+}) {
   const quiet = isQuiet();
   const mic = canRecord() && !quiet;
-  const [state, setState] = useState<'ready' | 'recording' | 'revealed'>('ready');
+  const choice = settings.value.speechCheck;
+  const [where, setWhere] = useState(() => whereHeard(card.lang));
+  const checks = !quiet && choice !== 'off' && canHear() && !!where;
+  const [state, setState] = useState<'ready' | 'asking' | 'starting' | 'listening' | 'recording' | 'revealed'>('ready');
+  const [note, setNote] = useState('');
+  const [last, setLast] = useState<SpeechCheck | null>(null);
   const [take, setTake] = useState<string | null>(null);
   const [denied, setDenied] = useState(false);
   const revealed = useRef(false);
-  useEffect(() => () => releaseMic(), []);
+  const alive = useRef(true);
+  const cancel = useRef<(() => void) | null>(null);
+  const yes = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (where === undefined && !quiet && choice !== 'off')
+      void probe(card.lang).then(() => {
+        if (alive.current) setWhere(whereHeard(card.lang));
+      });
+    return () => {
+      alive.current = false;
+      cancel.current?.();
+      releaseMic();
+    };
+  }, []);
+  useEffect(() => {
+    if (state === 'asking') yes.current?.focus();
+  }, [state]);
+
   const reveal = (url: string | null) => {
+    cancel.current?.();
     revealed.current = true;
     setTake(url);
     setState('revealed');
     if (!quiet) void speak(card);
   };
-  const toggle = async () => {
-    if (state === 'recording') return reveal(await stopRecording());
+  const record = async () => {
     try {
       await startRecording();
       // The answer may have been revealed while the microphone permission was pending.
@@ -343,36 +398,119 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
       if (!revealed.current) reveal(null);
     }
   };
+  const hear = () => {
+    stopSpeech();
+    setNote('');
+    setState('starting');
+    const run = listen(card.lang, where || 'browser', () => setState('listening'));
+    cancel.current = run.cancel;
+    void run.done.then(h => {
+      cancel.current = null;
+      if (!alive.current || revealed.current) return;
+      setState('ready');
+      if (h.kind !== 'heard') {
+        setNote(
+          h.kind === 'silence'
+            ? 'Je n’ai rien entendu. Réessaie un peu plus fort.'
+            : 'La reconnaissance vocale ne répond pas.',
+        );
+        return;
+      }
+      const check = checkSpeech(card.item.t, h.transcripts, course.value.numbers.spell);
+      setLast(check);
+      if (judged) onRetry(check);
+      else onResult(check.ok, check);
+      if (!check.all) void speak(card);
+    });
+  };
+  const tap = async () => {
+    if (state === 'recording') return reveal(await stopRecording());
+    if (state !== 'ready') return;
+    if (checks && choice === 'ask') return setState('asking');
+    if (checks) return hear();
+    if (mic) await record();
+  };
+  const choose = (on: boolean) => {
+    setSpeechCheck(on);
+    if (on) hear();
+    else if (mic) void record();
+    else setState('ready');
+  };
   useKeys(k => {
+    if (judged) return;
     if (k === 'Enter' && state === 'revealed') onResult(true);
-    if (k === ' ' && state !== 'revealed' && mic) void toggle();
+    if (k === ' ' && (state === 'ready' || state === 'recording')) void tap();
   });
+
+  const busy = state === 'starting' || state === 'listening';
+  const micButton = (label: string) => (
+    <button
+      type="button"
+      class={`mic${judged ? ' small' : ''}${state === 'listening' || state === 'recording' ? ' on' : ''}`}
+      onClick={() => void tap()}
+      aria-disabled={busy}
+      aria-label={busy ? 'Je t’écoute' : state === 'recording' ? 'Arrêter' : label}
+    >
+      {state === 'recording' ? <Square size={34} /> : <Mic size={judged ? 28 : 38} />}
+    </button>
+  );
+  const line =
+    state === 'starting'
+      ? 'Un instant…'
+      : state === 'listening'
+        ? 'Je t’écoute…'
+        : state === 'recording'
+          ? 'Je t’écoute… touche pour arrêter.'
+          : note;
+
+  if (judged && last?.all) return <ReviewCard card={card} />;
+  if (judged)
+    return (
+      <div class="ex">
+        <p class="ex-kicker">Encore une fois ?</p>
+        <div class="speak-zone">
+          {checks && micButton('Réessayer')}
+          <p class="muted" aria-live="polite">
+            {line || (checks ? 'Touche le micro et redis la phrase.' : '')}
+          </p>
+        </div>
+      </div>
+    );
   return (
     <div class="ex">
       <p class="ex-kicker">{quiet ? 'Dis-le dans ta tête' : 'Dis-le à voix haute'}</p>
       <p class="big prompt-fr">{card.item.fr}</p>
-      {state !== 'revealed' ? (
-        <div class="speak-zone">
-          {mic && !denied ? (
-            <button
-              type="button"
-              class={`mic${state === 'recording' ? ' on' : ''}`}
-              onClick={() => void toggle()}
-              aria-label={state === 'recording' ? 'Arrêter' : 'Enregistrer ma voix'}
-            >
-              {state === 'recording' ? <Square size={34} /> : <Mic size={38} />}
+      {state === 'asking' ? (
+        <div class="speak-ask">
+          <p class="speak-ask-title">Je te dis ce que j’ai compris ?</p>
+          <p class="muted">{where === 'device' ? ASK_DEVICE : ASK_BROWSER}</p>
+          <div class="judge">
+            <button type="button" class="btn btn-block" onClick={() => choose(false)}>
+              {mic ? 'Juste m’enregistrer' : 'Non merci'}
             </button>
-          ) : null}
-          <p class="muted">
-            {state === 'recording'
-              ? 'Je t’écoute… touche pour arrêter.'
-              : mic
-                ? 'Touche le micro, dis la phrase, touche à nouveau.'
-                : quiet
-                  ? 'Dis la phrase dans ta tête, puis découvre la réponse.'
-                  : 'Dis la phrase à voix haute, puis découvre la réponse.'}
+            <button ref={yes} type="button" class="btn btn-primary btn-block" onClick={() => choose(true)}>
+              Vérifier ma prononciation
+            </button>
+          </div>
+        </div>
+      ) : state !== 'revealed' ? (
+        <div class="speak-zone">
+          {(checks || mic) && !denied ? micButton(checks ? 'Dire la phrase' : 'Enregistrer ma voix') : null}
+          <p class="muted" aria-live="polite">
+            {line ||
+              (checks
+                ? 'Touche le micro et dis la phrase.'
+                : mic
+                  ? 'Touche le micro, dis la phrase, touche à nouveau.'
+                  : quiet
+                    ? 'Dis la phrase dans ta tête, puis découvre la réponse.'
+                    : 'Dis la phrase à voix haute, puis découvre la réponse.')}
           </p>
-          <button type="button" class={mic && !denied ? 'btn btn-ghost' : 'btn'} onClick={() => reveal(null)}>
+          <button
+            type="button"
+            class={(checks || mic) && !denied ? 'btn btn-ghost' : 'btn'}
+            onClick={() => reveal(null)}
+          >
             Voir la réponse
           </button>
         </div>
@@ -403,6 +541,34 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
         </div>
       )}
     </div>
+  );
+}
+
+/** The phrase, each word marked as the recogniser heard it or not. */
+function HeardPhrase({ check, lang }: { check: SpeechCheck; lang: string }) {
+  return (
+    <p class="feedback-answer" lang={lang}>
+      {check.words.map((w, i) => (
+        <Fragment key={i}>
+          {i > 0 && ' '}
+          {w.pre}
+          {w.mark ? (
+            <span class={`word-${w.mark}`}>
+              {w.word}
+              {w.mark === 'missed' && (
+                <span class="sr-only" lang="fr">
+                  {' '}
+                  (pas entendu)
+                </span>
+              )}
+            </span>
+          ) : (
+            w.word
+          )}
+          {w.post}
+        </Fragment>
+      ))}
+    </p>
   );
 }
 
@@ -526,11 +692,11 @@ export function SessionScreen() {
 
   if (r.summary) return <Ticket title={r.title} summary={r.summary} />;
 
-  const result = (ok: boolean, verdict?: Verdict) => {
+  const result = (ok: boolean, verdict?: Verdict, heard?: SpeechCheck) => {
     const neutral = ex?.kind === 'guess';
     if (!neutral) play(ok ? 'ok' : 'ko', r.combo);
     submitAnswer(ok);
-    setFb({ ok, verdict, neutral });
+    setFb({ ok, verdict, neutral, heard });
   };
   const next = () => {
     setFb(null);
@@ -581,9 +747,16 @@ export function SessionScreen() {
         )}
         {(ex?.kind === 'tilesFr' || ex?.kind === 'tilesTarget') && !fb && <Tiles ex={ex} onResult={ok => result(ok)} />}
         {ex?.kind === 'dictation' && !fb && <Dictation card={ex.card} onResult={result} onMute={mute} />}
-        {ex?.kind === 'speak' && !fb && <Speak card={ex.card} onResult={ok => result(ok)} />}
+        {ex?.kind === 'speak' && (!fb || fb.heard) && (
+          <Speak
+            card={ex.card}
+            judged={!!fb}
+            onResult={(ok, heard) => result(ok, undefined, heard)}
+            onRetry={heard => setFb(f => f && { ...f, heard })}
+          />
+        )}
         {ex?.kind === 'match' && <Match cards={ex.cards} onDone={next} />}
-        {fb && card && <ReviewCard card={card} />}
+        {fb && card && !fb.heard && <ReviewCard card={card} />}
       </main>
       {fb && <FeedbackPanel fb={fb} card={card} onNext={next} />}
       {confirmQuit && (

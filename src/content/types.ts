@@ -118,6 +118,8 @@ interface CardPhrases {
 }
 
 interface Numbers {
+  /** Number words up to 100: speech recognisers write "2" where a phrase says "dos". */
+  spell(n: number): string;
   /** Spoken form of a price: "Son cuatro euros con veinte." or, short, "Cuatro con veinte." */
   sayPrice(euros: number, cents: number, short: boolean): string;
   /** Numbers learners confuse with `n` (doce/dos…), used as distractors. */

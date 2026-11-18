@@ -14,6 +14,7 @@ import {
   spendJokers,
   streak,
 } from '../../src/engine/progress';
+import { checkSpeech, type SpeechCheck } from '../../src/engine/pronunciation';
 import { seeded } from '../../src/engine/random';
 import { DAY_MS } from '../../src/engine/time';
 import { migrateV3 } from '../../src/state/migrate';
@@ -36,6 +37,53 @@ describe('grading', () => {
     expect(grade('la cuenta', ['¿Dónde está el baño?']).verdict).toBe('wrong');
     expect(grade('si', ['no']).verdict).toBe('wrong');
     expect(tokens('¡Hola, buenos días!')).toEqual(['Hola', 'buenos', 'días']);
+  });
+});
+
+describe('pronunciation check', () => {
+  const spell = es.numbers.spell;
+  const marks = (c: SpeechCheck) => c.words.filter(w => w.mark).map(w => `${w.word}:${w.mark}`);
+
+  it('marks every word heard, whatever the case, accents and punctuation', () => {
+    const c = checkSpeech('¿Dónde está el baño?', ['DONDE ESTA EL BANO'], spell);
+    expect(c).toMatchObject({ all: true, ok: true, heard: 'DONDE ESTA EL BANO' });
+    expect(c.words[0]).toMatchObject({ pre: '¿', word: 'Dónde', mark: 'heard' });
+    expect(c.words.at(-1)).toMatchObject({ word: 'baño', post: '?', mark: 'heard' });
+  });
+
+  it('flags a word heard as another, and lets one miss in four pass', () => {
+    const c = checkSpeech('La cuenta, por favor.', ['la cuento por favor'], spell);
+    expect(marks(c)).toEqual(['La:heard', 'cuenta:missed', 'por:heard', 'favor:heard']);
+    expect(c).toMatchObject({ all: false, ok: true });
+    expect(checkSpeech('Una mesa para dos', ['una misa para tos'], spell).ok).toBe(false);
+    expect(checkSpeech('Por favor', ['por'], spell).ok).toBe(false);
+  });
+
+  it('reads digits and the euro sign the way the phrase spells them', () => {
+    expect(checkSpeech('Son cuatro euros con veinte.', ['son 4 € con 20'], spell).all).toBe(true);
+    expect(checkSpeech('Cien', ['100'], spell).all).toBe(true);
+    expect(checkSpeech('Cento', ['100'], courseById('it').numbers.spell).all).toBe(true);
+  });
+
+  it('keeps the transcript that matches best', () => {
+    const c = checkSpeech('¿Dónde está el baño?', ['dónde es el baño', 'dónde está el baño'], spell);
+    expect(c).toMatchObject({ all: true, heard: 'dónde está el baño' });
+  });
+
+  it('takes either side of a pair, and an unsaid trailing word, as said', () => {
+    const pair = checkSpeech('Soy francés / francesa', ['soy francesa'], spell);
+    expect(marks(pair)).toEqual(['Soy:heard', 'francesa:heard']);
+    expect(pair.all).toBe(true);
+    expect(marks(checkSpeech('Soy francés / francesa', ['soy'], spell))).toEqual([
+      'Soy:heard',
+      'francés:missed',
+      'francesa:missed',
+    ]);
+    expect(checkSpeech('Soy alérgico / alérgica a…', ['soy alérgica al marisco'], spell).all).toBe(true);
+  });
+
+  it('treats an elision as one word, whatever the apostrophe', () => {
+    expect(checkSpeech('Dov’è il bagno?', ["dov'è il bagno"], courseById('it').numbers.spell).all).toBe(true);
   });
 });
 
@@ -176,8 +224,10 @@ describe('saved data', () => {
 
   it('fills new settings in, keeps valid ones and drops wrong or unknown ones', () => {
     const db = sanitize({ settings: { autoplay: false, sfx: 'no', quietUntil: '12', legacy: 1 } });
-    expect(db.settings).toMatchObject({ autoplay: false, sfx: true, quiet: false, quietUntil: 0 });
+    expect(db.settings).toMatchObject({ autoplay: false, sfx: true, quiet: false, quietUntil: 0, speechCheck: 'ask' });
     expect(db.settings).not.toHaveProperty('legacy');
+    expect(sanitize({ settings: { speechCheck: 'on' } }).settings.speechCheck).toBe('on');
+    expect(sanitize({ settings: { speechCheck: 'yes' } }).settings.speechCheck).toBe('ask');
   });
 
   it('quiet mode lasts until switched off, or for an hour from a session', () => {

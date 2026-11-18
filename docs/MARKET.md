@@ -22,8 +22,9 @@ quickly: check again before deciding.
 
 ## Bagage's gaps, most useful to a traveller first
 
-1. **Feedback on pronunciation.** Speak, Pimsleur and Google Translate check what you say; Bagage
-   lets you compare your recording with the model and judge yourself.
+1. **Feedback on pronunciation.** Shipped on 18 November 2026 where the browser has speech
+   recognition: Bagage marks the words it heard and the ones it missed. Elsewhere, the learner
+   compares their recording with the model and judges.
 2. **Conversation practice with an AI.** Everyone above has it. Bagage has scripted scenes.
 3. **Natural voices that work offline.** Bagage uses the phone's voices: offline, but robotic on
    some devices.
@@ -31,7 +32,7 @@ quickly: check again before deciding.
    sound, from a button in the exercise (Duolingo's « Can't listen now ») or the speaker in the
    session bar.
 
-Plans for 1 to 3 are in TODO.md.
+Plans for 2 and 3, and what is left of 1, are in TODO.md.
 
 ## What this means (inference)
 

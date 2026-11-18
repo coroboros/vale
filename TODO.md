@@ -18,6 +18,11 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
   overview and on the home screen.
 - Bernard's eyes following a finger on the iPhone, and his blinking.
+- The pronunciation check on the iPhone, in Safari and from the home screen: two tries in a row.
+  On iOS 27, recognition goes deaf after the first session (WebKit bug 321436); Bagage then falls
+  back to recording, after ten seconds. Reporters say a short synthesised phrase right before
+  each session avoids it: worth adding if the second try fails. Also Chrome on Android (online)
+  and Chrome on a computer, with and without the language pack.
 
 ## Improve
 
@@ -27,9 +32,10 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   once in CI and cached for offline use, the phone's voices as the fallback: docs/VOICE.md.
 - **Live conversation partner.** Talk with Bernard by voice in the course's situations, audio only
   and light on data (Opus over WebRTC, a data-saver mode, megabytes shown): docs/VOICE.md.
-- **Feedback on pronunciation.** Compare what the learner said with the phrase, with speech
-  recognition on the phone where the browser has it, otherwise a short clip sent to the Worker.
-  Today the learner judges their own attempt after hearing the model.
+- **Pronunciation, the rest.** Where the browser has no recogniser (Firefox) or gives up, a short
+  clip sent to the Worker. On Chrome for computers, offer the on-device language pack
+  (`SpeechRecognition.install()`) instead of the online service. Stress and intonation need more
+  than word recognition.
 - Show the learner's own destination in the home card, with the welcome scenery.
 - Draw the other destinations (Madrid, Valencia, Florence, Naples, Milan, Sicily); the rest use
   the generic coast for now.

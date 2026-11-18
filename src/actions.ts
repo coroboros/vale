@@ -107,6 +107,12 @@ export function setQuiet(on: boolean, opts: { forAnHour?: boolean } = {}, now = 
   if (on && opts.forAnHour) showToast(`Mode discret jusqu’à ${clock(now + QUIET_MS)} : pas d’écoute, pas de son.`);
 }
 
+export function setSpeechCheck(on: boolean): void {
+  update(d => {
+    d.settings.speechCheck = on ? 'on' : 'off';
+  });
+}
+
 export function advance(now = Date.now()): void {
   const r = running.value;
   if (!r) return;

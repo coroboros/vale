@@ -32,7 +32,12 @@ export interface Settings {
   quiet: boolean;
   /** ms since epoch. */
   quietUntil: number;
+  /** Word-by-word feedback from the browser's speech recognition: 'ask' first, as the audio may go online. */
+  speechCheck: SpeechCheckChoice;
 }
+
+const SPEECH_CHECK = ['ask', 'on', 'off'] as const;
+type SpeechCheckChoice = (typeof SPEECH_CHECK)[number];
 
 /** Long enough for a commute. */
 export const QUIET_MS = HOUR_MS;
@@ -161,6 +166,7 @@ const defaultSettings = (): Settings => ({
   variedVoices: true,
   quiet: false,
   quietUntil: 0,
+  speechCheck: 'ask',
 });
 
 export const blankDB = (): DB => ({
@@ -191,6 +197,7 @@ export function sanitize(raw: unknown): DB {
       typeof saved[k as keyof Settings] === typeof v ? saved[k as keyof Settings] : v,
     ]),
   ) as unknown as Settings;
+  if (!SPEECH_CHECK.includes(db.settings.speechCheck)) db.settings.speechCheck = 'ask';
   db.profiles = Array.isArray(src.profiles)
     ? src.profiles
         .filter(p => p && typeof p.id === 'string' && typeof p.name === 'string')

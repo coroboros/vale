@@ -20,6 +20,9 @@ connected, the app and its translation service are served by one Worker; see RUN
 - **Translate anything, keep it offline.** Type what you want to say; an AI model translates it the
   way a local would say it, with pronunciation written for French readers. Every translation stays in a
   searchable history on the phone and can join your reviews.
+- **Say it, see what was understood.** In speaking exercises, the browser's speech recognition
+  marks the words it heard and the ones it missed. The browser runs it on the phone when it can,
+  otherwise online, so you are asked once first. Without it, you record yourself and compare.
 - **A survival card** to show in a restaurant: allergies and diet, in the local language.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
   Bernard, a hermit crab whose shell changes with the country. Mistakes never block a lesson.

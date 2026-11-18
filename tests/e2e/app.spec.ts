@@ -36,6 +36,45 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(FAKE_VOICES);
 });
 
+/** A speech recogniser that hears what the test queued: transcripts, an error, or nothing at all. */
+const FAKE_RECOGNITION = (onDevice: boolean) => {
+  type Next = { transcripts: string[] } | { error: string } | 'deaf';
+  const hearing = { queue: [] as Next[], started: [] as { lang: string; processLocally: boolean }[] };
+  (window as unknown as { __hearing: typeof hearing }).__hearing = hearing;
+  class Recognition {
+    static available = async (o: { processLocally: boolean }) =>
+      o.processLocally && !onDevice ? 'downloadable' : 'available';
+    lang = '';
+    processLocally = false;
+    onstart: (() => void) | null = null;
+    onspeechstart: (() => void) | null = null;
+    onresult: ((e: unknown) => void) | null = null;
+    onerror: ((e: unknown) => void) | null = null;
+    onend: (() => void) | null = null;
+    start() {
+      hearing.started.push({ lang: this.lang, processLocally: this.processLocally });
+      const next = hearing.queue.shift() ?? { error: 'no-speech' };
+      setTimeout(() => {
+        this.onstart?.();
+        if (next === 'deaf') return;
+        if ('error' in next) this.onerror?.({ error: next.error });
+        else {
+          this.onspeechstart?.();
+          this.onresult?.({ results: [next.transcripts.map(transcript => ({ transcript }))] });
+        }
+        this.onend?.();
+      }, 30);
+    }
+    abort() {}
+  }
+  Object.assign(window, { SpeechRecognition: Recognition, webkitSpeechRecognition: Recognition });
+};
+
+type Hearing = { queue: unknown[]; started: { lang: string; processLocally: boolean }[] };
+const hearNext = (page: Page, next: unknown) =>
+  page.evaluate(n => (window as unknown as { __hearing: Hearing }).__hearing.queue.push(n), next);
+const started = (page: Page) => page.evaluate(() => (window as unknown as { __hearing: Hearing }).__hearing.started);
+
 async function onboard(page: Page, name = 'Adrien', check: (step: string) => Promise<void> = async () => {}) {
   await page.goto('./');
   await page.getByRole('button', { name: 'C’est parti' }).click();
@@ -63,6 +102,26 @@ async function settle(page: Page) {
   await page.waitForFunction(() =>
     document.getAnimations().every(a => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity),
   );
+}
+
+async function expectAccessible(page: Page, where: string) {
+  await settle(page);
+  const { violations } = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  const serious = violations
+    .filter(v => v.impact === 'serious' || v.impact === 'critical')
+    .map(v => `${v.id}: ${v.nodes[0]?.html}`);
+  expect(serious, where).toEqual([]);
+}
+
+async function toSpeakingDrill(page: Page) {
+  await onboard(page);
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  await playSession(page);
+  await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('link', { name: 'Entraînement' }).click();
+  await page.getByRole('button', { name: /^Prononciation/ }).click();
 }
 
 async function leaveFirstLesson(page: Page) {
@@ -171,6 +230,75 @@ test('« Je ne peux pas écouter maintenant » swaps the listening exercise and 
   await expect(cant).toHaveCount(0);
   await expect(page.locator('#dictation, .say-row.center')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Mode discret' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('the pronunciation check asks first, marks the words it heard, and a retry shows progress', async ({ page }) => {
+  await page.addInitScript(FAKE_RECOGNITION, false);
+  await toSpeakingDrill(page);
+  const mic = page.getByRole('button', { name: 'Dire la phrase' });
+  await mic.click();
+  await expect(page.locator('.speak-ask')).toContainText('sinon par son service en ligne');
+  await expectAccessible(page, 'asking');
+  await hearNext(page, { error: 'no-speech' });
+  await page.getByRole('button', { name: 'Vérifier ma prononciation' }).click();
+  await expect(page.getByText('Je n’ai rien entendu.')).toBeVisible();
+  await hearNext(page, { transcripts: ['mmm'] });
+  await mic.click();
+  const panel = page.locator('.feedback');
+  await expect(panel.locator('.feedback-title')).toHaveText('Pas encore compris');
+  await expect(panel).toHaveClass(/\bko\b/);
+  await expect(panel).toContainText('J’ai entendu : « mmm »');
+  await expect(panel.locator('.word-heard')).toHaveCount(0);
+  await expectAccessible(page, 'missed words');
+  const phrase = await panel.locator('.feedback-answer').evaluate(el => {
+    const copy = el.cloneNode(true) as HTMLElement;
+    for (const hidden of copy.querySelectorAll('.sr-only')) hidden.remove();
+    return copy.textContent ?? '';
+  });
+  // The best of the recogniser's guesses counts.
+  await hearNext(page, { transcripts: ['euh', phrase] });
+  await page.getByRole('button', { name: 'Réessayer' }).click();
+  await expect(panel.locator('.feedback-title')).toHaveText('Je t’ai compris');
+  await expect(panel).toHaveClass(/\bok\b/);
+  await expect(panel.locator('.word-missed')).toHaveCount(0);
+  await panel.getByRole('button', { name: 'Continuer' }).click();
+  // Asked once: the next phrase goes straight to listening.
+  await hearNext(page, { transcripts: ['mmm'] });
+  await page.getByRole('button', { name: 'Dire la phrase' }).click();
+  await expect(panel.locator('.feedback-title')).toHaveText('Pas encore compris');
+  await expect(page.locator('.speak-ask')).toHaveCount(0);
+  const runs = await started(page);
+  expect(runs).toHaveLength(4);
+  expect(runs.every(r => r.lang === 'es-ES' && !r.processLocally)).toBe(true);
+});
+
+test('on the device, the check says so; declined, the learner records; deaf, it gives way', async ({ page }) => {
+  await page.clock.install();
+  await page.addInitScript(FAKE_RECOGNITION, true);
+  await toSpeakingDrill(page);
+  await page.getByRole('button', { name: 'Dire la phrase' }).click();
+  await expect(page.locator('.speak-ask')).toContainText('ta voix n’en sort pas');
+  await page.getByRole('button', { name: 'Juste m’enregistrer' }).click();
+  // Headless Chrome has no microphone: the answer shows, to be judged by ear.
+  await page.getByRole('button', { name: 'Je l’ai bien dit' }).click();
+  await page.locator('.feedback').getByRole('button', { name: 'Continuer' }).click();
+  await expect(page.getByRole('button', { name: 'Enregistrer ma voix' })).toBeVisible();
+  await page.getByRole('button', { name: 'Quitter la session' }).click();
+  await page.getByRole('button', { name: 'Quitter', exact: true }).click();
+  await page.getByRole('link', { name: 'Moi' }).click();
+  const toggle = page.getByRole('switch', { name: 'Vérifier ma prononciation' });
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+  await page.getByRole('link', { name: 'Entraînement' }).click();
+  await page.getByRole('button', { name: /^Prononciation/ }).click();
+  await hearNext(page, 'deaf');
+  await page.getByRole('button', { name: 'Dire la phrase' }).click();
+  await expect(page.getByText('Je t’écoute…')).toBeVisible();
+  await page.clock.runFor(11_000);
+  await expect(page.getByText('La reconnaissance vocale ne répond pas.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Enregistrer ma voix' })).toBeVisible();
+  expect(await started(page)).toEqual([{ lang: 'es-ES', processLocally: true }]);
 });
 
 test('the update notice fits the screen, and « Plus tard » sets it aside', async ({ page }) => {
@@ -507,16 +635,7 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
 });
 
 test('no serious accessibility issue on the main screens', async ({ page }) => {
-  const check = async (where: string) => {
-    await settle(page);
-    const { violations } = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
-      .analyze();
-    const serious = violations
-      .filter(v => v.impact === 'serious' || v.impact === 'critical')
-      .map(v => `${v.id}: ${v.nodes[0]?.html}`);
-    expect(serious, where).toEqual([]);
-  };
+  const check = (where: string) => expectAccessible(page, where);
   await page.goto('./');
   await check('welcome');
   await onboard(page, 'Léa');

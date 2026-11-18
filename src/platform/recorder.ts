@@ -1,7 +1,5 @@
 /** The take stays on the device: it is only compared with the model voice. */
-
-type AudioSessionType = 'auto' | 'playback' | 'play-and-record';
-const audioSession = (navigator as Navigator & { audioSession?: { type: AudioSessionType } }).audioSession;
+import { setAudioSession } from './audio';
 
 export const canRecord = () => !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== 'undefined';
 
@@ -12,7 +10,7 @@ let lastUrl: string | null = null;
 
 export async function startRecording(): Promise<void> {
   if (recorder?.state === 'recording') return;
-  if (audioSession) audioSession.type = 'play-and-record';
+  setAudioSession('play-and-record');
   stream ??= await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
   chunks = [];
   recorder = new MediaRecorder(stream);
@@ -28,7 +26,7 @@ export function stopRecording(): Promise<string | null> {
     current.onstop = () => {
       if (lastUrl) URL.revokeObjectURL(lastUrl);
       lastUrl = chunks.length ? URL.createObjectURL(new Blob(chunks, { type: current.mimeType })) : null;
-      if (audioSession) audioSession.type = 'playback';
+      setAudioSession('playback');
       resolve(lastUrl);
     };
     setTimeout(() => resolve(null), 2000);

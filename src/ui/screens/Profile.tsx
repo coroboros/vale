@@ -7,6 +7,7 @@ import {
   resetProgress,
   restoreBackup,
   setQuiet,
+  setSpeechCheck,
   switchProfile,
 } from '../../actions';
 import { COURSES } from '../../content';
@@ -14,6 +15,7 @@ import type { Gender } from '../../content/types';
 import { dayKey, stamps, streak } from '../../engine/progress';
 import { exportBackup, readBackup } from '../../platform/backup';
 import { offlineReady } from '../../platform/pwa';
+import { canHear } from '../../platform/recognition';
 import { CUES, GOALS, PROFILE_COLORS, type Settings } from '../../state/schema';
 import { course, db, isQuiet, pdata, profile, settings, update } from '../../state/store';
 import { InstallButton } from '../Install';
@@ -236,6 +238,15 @@ export function Profile() {
             <Toggle checked={s[v.key]} onChange={val => setSetting(v.key, val)} label={v.label} />
           </div>
         ))}
+        {canHear() && (
+          <div class="row">
+            <div class="row-main">
+              <p class="row-title">Vérifier ma prononciation</p>
+              <p class="row-sub">Ton navigateur reconnaît ta voix, sur l’appareil quand il le peut</p>
+            </div>
+            <Toggle checked={s.speechCheck === 'on'} onChange={setSpeechCheck} label="Vérifier ma prononciation" />
+          </div>
+        )}
       </section>
 
       <section class="section card" aria-label="Application">
