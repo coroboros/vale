@@ -32,8 +32,19 @@ const FAKE_VOICES = () => {
   };
 };
 
+/**
+ * Playwright's headless Chromium has no speech service: asking it whether a language can be
+ * recognised (SpeechRecognition.available) crashed the page in CI. Tests run without recognition
+ * unless they install FAKE_RECOGNITION.
+ */
+const NO_RECOGNITION = () => {
+  Reflect.deleteProperty(window, 'SpeechRecognition');
+  Reflect.deleteProperty(window, 'webkitSpeechRecognition');
+};
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(FAKE_VOICES);
+  await page.addInitScript(NO_RECOGNITION);
 });
 
 /** A speech recogniser that hears what the test queued: transcripts, an error, or nothing at all. */
