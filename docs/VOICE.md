@@ -6,22 +6,24 @@ Plans for the two voice features in TODO.md. Facts carry their source; estimates
 
 Today the app speaks with the phone's own voices: free and offline, but robotic on some devices.
 
-- **Model.** Fish Audio S2.1 Pro, their current model: 83 languages, Spanish and Italian included,
-  WebSocket streaming available [1][2]. It costs $15 per million bytes of text; the free variant
+- **Model.** Fish Audio S2.1 Pro, their current model: 83 languages (the published list of the
+  previous model, S1, already had Spanish, Italian, Portuguese and English), WebSocket streaming
+  available [1][2]. It costs $15 per million bytes of text; the free variant
   runs until 30 November 2026, with no service level, and is meant for testing [3][2].
-- **Generated once, not at run time.** The course has 370 distinct phrases (233 Spanish, 137
-  Italian), 5.5 KB of text in all, counted from `src/content/`. Two voices therefore cost about
-  $0.17 per full run. A CI script writes one Opus file per phrase and voice, named by a hash of the
+- **Generated once, not at run time.** The four courses have 666 distinct phrases (249 Spanish,
+  141 Italian, 139 Portuguese, 137 English: lessons, regional packs, menus and false friends, both
+  sides of the scenes, the survival card), 10 KB of text in all, counted from `src/content/`. Two
+  voices therefore cost about $0.30 per full run. A CI script writes one Opus file per phrase and voice, named by a hash of the
   text, voice and model, so a run only regenerates what changed.
-- **Offline.** The files ship with the course in the service worker's cache, about 3 MB for
-  everything (estimate: 1.3 s per phrase at 24 kbit/s). The phone's voices stay as the fallback.
+- **Offline.** The files of the language being learnt go into the service worker's cache, about
+  1.3 MB per language and 5 MB for all four (estimate: 1.3 s per phrase at 24 kbit/s). The phone's voices stay as the fallback.
 - **Choice.** One female and one male voice per language, picked in *Moi*. Listening drills can
   still alternate both: hearing several speakers helps (see `src/platform/speech.ts`).
 - **Rights.** Paid use carries commercial rights, but not for a voice you have no rights to: Fish
   Audio's terms forbid using a real person's voice without consent [4][5]. Use their Voice Design
   (original voices) or voices with proven rights, never a clone.
 - **Quality check.** A native speaker per language approves the voices and twenty phrases
-  (Castilian Spanish for Spain, and Italian stress).
+  (Castilian Spanish for Spain, Italian stress, European Portuguese, British English).
 
 ## Live conversation, light on data
 

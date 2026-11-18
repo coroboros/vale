@@ -26,16 +26,18 @@ type Spell = (n: number) => string;
 
 const AROUND = /^([^\p{L}\p{N}]*)(.*?)([^\p{L}\p{N}]*)$/u;
 
+const CURRENCIES: Record<string, string> = { '€': 'euro', '£': 'pound', $: 'dollar' };
+
 /** Accents and elisions are spelling, not sound. */
 const keys = (text: string, spell: Spell): string[] =>
-  normalize(text.replace(/€/g, ' euro '))
+  normalize(text.replace(/[€£$]/g, sign => ` ${CURRENCIES[sign]} `))
     .split(' ')
     .filter(Boolean)
     .flatMap(w => (/^\d+$/.test(w) ? normalize(spell(Number(w))).split(' ') : [w]))
     .map(w =>
       stripAccents(w)
         .replace(/'/g, '')
-        .replace(/^euros$/, 'euro'),
+        .replace(/^(euro|pound|dollar)s$/, '$1'),
     );
 
 /** Order is free: a recogniser formats "cuatro euros con veinte" as "4,20 €". */

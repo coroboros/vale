@@ -16,7 +16,7 @@ export interface Theme {
   accentSoft: string;
   /** Second colour of the shell motif. */
   motif: string;
-  pattern: 'tiles' | 'waves';
+  pattern: 'tiles' | 'waves' | 'azulejo' | 'checks';
 }
 
 export const THEMES: Record<string, Theme> = {
@@ -39,6 +39,26 @@ export const THEMES: Record<string, Theme> = {
     accentSoft: '#DDF3F5',
     motif: '#F2C230',
     pattern: 'waves',
+  },
+  azulejo: {
+    id: 'azulejo',
+    accent: '#1D5FBF',
+    accentDeep: '#123F85',
+    onAccent: '#FFFFFF',
+    accentInk: '#1A56AD',
+    accentSoft: '#E2ECFA',
+    motif: '#F4B400',
+    pattern: 'azulejo',
+  },
+  tamise: {
+    id: 'tamise',
+    accent: '#6A4CB0',
+    accentDeep: '#4A3387',
+    onAccent: '#FFFFFF',
+    accentInk: '#5E42A4',
+    accentSoft: '#EEE8F8',
+    motif: '#F2C230',
+    pattern: 'checks',
   },
 };
 

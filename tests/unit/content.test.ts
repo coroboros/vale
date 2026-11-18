@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { COURSES, indexOf } from '../../src/content';
+import { build, canBuild, cardOf, GRADED } from '../../src/engine/exercises';
 import { normalize } from '../../src/engine/grade';
+import { seeded } from '../../src/engine/random';
 import { THEMES } from '../../src/ui/themes';
 
 describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) => {
@@ -62,6 +64,23 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
 
   it('keeps its glossary in normalized form', () => {
     for (const word of Object.keys(course.gloss)) expect(normalize(word)).toBe(word);
+  });
+
+  it('builds every exercise an item allows, with distinct options that include the answer', () => {
+    const rng = seeded(5);
+    for (const item of items) {
+      const card = cardOf(index, item);
+      for (const kind of GRADED) {
+        if (!canBuild(kind, card)) continue;
+        const ex = build(kind, card, index, rng);
+        if ('options' in ex) {
+          expect(new Set(ex.options).size, `${item.id} ${kind}`).toBe(ex.options.length);
+          expect(ex.options.length, `${item.id} ${kind}`).toBeGreaterThanOrEqual(3);
+          expect(ex.options).toContain(ex.answer);
+        }
+        if ('tiles' in ex) for (const word of ex.answer) expect(ex.tiles).toContain(word);
+      }
+    }
   });
 
   it('uses an existing theme', () => {

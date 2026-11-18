@@ -220,6 +220,24 @@ test('« Mon voyage » switches language and destination from Home, and each lan
   await expect(trip).toContainText('Espagnol · Barcelone');
 });
 
+test('Portuguese and English each play a first lesson to the end', async ({ page }) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  for (const [language, hello] of [
+    ['Portugais', 'Olá, Adrien!'],
+    ['Anglais', 'Hello, Adrien!'],
+  ] as const) {
+    await page.getByRole('button', { name: /^Mon voyage/ }).click();
+    await page.getByText(language, { exact: true }).click();
+    await page.getByRole('button', { name: 'C’est noté' }).click();
+    await expect(page.getByRole('heading', { name: hello })).toBeVisible();
+    await page.getByRole('button', { name: /^Les essentiels/ }).click();
+    await page.getByRole('button', { name: 'Commencer', exact: true }).click();
+    await playSession(page);
+    await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
+  }
+});
+
 test('quiet mode: nothing speaks on its own, the listening drills wait, the sound comes back', async ({ page }) => {
   await onboard(page);
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();

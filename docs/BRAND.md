@@ -47,6 +47,8 @@ Each language has a theme (`src/ui/themes.ts`), applied to primary actions, prog
 | --- | --- | --- | --- |
 | Sol | Spanish | sun yellow `#FFB21E` | blue tiles |
 | Laguna | Italian | lagoon teal `#0B7C8C` | yellow waves |
+| Azulejo | Portuguese | tile blue `#1D5FBF` | yellow azulejo diamonds |
+| Tamise | English | royal purple `#6A4CB0` | gold checks |
 
 - Warm paper background `#FFFAF3`, ink `#16213E`.
 - Red and green are kept for right and wrong answers only, so no theme uses them.

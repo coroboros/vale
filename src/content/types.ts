@@ -50,10 +50,7 @@ export interface Sound {
   examples: [word: string, ph: string, fr?: string][];
 }
 
-type TipIcon = 'clock' | 'check' | 'chat' | 'bell' | 'euro' | 'cross' | 'sun' | 'pin';
-
 export interface Tip {
-  icon: TipIcon;
   title: string;
   desc: string;
 }
@@ -118,6 +115,8 @@ interface CardPhrases {
 }
 
 interface Numbers {
+  /** Shown with prices. */
+  currency: '€' | '£';
   /** Number words up to 100: speech recognisers write "2" where a phrase says "dos". */
   spell(n: number): string;
   /** Spoken form of a price: "Son cuatro euros con veinte." or, short, "Cuatro con veinte." */

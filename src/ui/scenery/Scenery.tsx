@@ -209,6 +209,73 @@ function OrangeTree({ x, y, s }: { x: number; y: number; s: number }) {
   );
 }
 
+/** A Lisbon house: pastel front, terracotta roof, two windows. */
+function TownHouse({ x, base, w, h, color }: { x: number; base: number; w: number; h: number; color: string }) {
+  const top = base - h;
+  return (
+    <g>
+      <rect x={x} y={top} width={w} height={h} fill={color} />
+      <path d={`M${x - 1} ${top} L${x + 2} ${top - 4} H${x + w - 2} L${x + w + 1} ${top} Z`} fill="#D9734E" />
+      <rect x={x + w * 0.2} y={top + h * 0.3} width="3" height="4" rx="0.8" fill="#3E4A63" />
+      <rect x={x + w * 0.6} y={top + h * 0.3} width="3" height="4" rx="0.8" fill="#3E4A63" />
+    </g>
+  );
+}
+
+/** Lisbon's yellow tram, standing on its rails at (x, y). */
+function Tram({ x, y }: { x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <path d="M40 -44 L48 -62" stroke="#3E4A63" stroke-width="1.6" />
+      <rect x="0" y="-44" width="84" height="40" rx="7" fill="#F6C21B" />
+      <rect x="2" y="-46" width="80" height="6" rx="3" fill="#FFF6DF" />
+      <rect x="4" y="-36" width="76" height="14" rx="2" fill="#FFF6DF" />
+      <g fill="#3E4A63">
+        {[7, 22, 37, 52, 67].map(wx => (
+          <rect key={wx} x={wx} y="-34" width="11" height="10" rx="1.5" />
+        ))}
+      </g>
+      <rect x="0" y="-17" width="84" height="3" fill="#E0A100" />
+      <rect x="70" y="-21" width="9" height="16" rx="1" fill="#3E4A63" opacity="0.55" />
+      <g fill="#2B3445">
+        <circle cx="18" cy="-3" r="4.5" />
+        <circle cx="66" cy="-3" r="4.5" />
+      </g>
+    </g>
+  );
+}
+
+/** A London double-decker at (x, y), its wheels on the road. */
+function Bus({ x, y }: { x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="0" y="-48" width="100" height="44" rx="8" fill="#D23A2E" />
+      <rect x="0" y="-27" width="100" height="3" fill="#F2EDE4" />
+      <g fill="#2F3B4F">
+        {[8, 30, 52, 74].map(wx => (
+          <rect key={`u${wx}`} x={wx} y="-43" width="17" height="11" rx="2" />
+        ))}
+        {[8, 30, 52].map(wx => (
+          <rect key={`l${wx}`} x={wx} y="-21" width="17" height="10" rx="2" />
+        ))}
+        <rect x="76" y="-21" width="16" height="17" rx="2" />
+      </g>
+      <g fill="#20252F">
+        <circle cx="20" cy="-3" r="6" />
+        <circle cx="80" cy="-3" r="6" />
+      </g>
+    </g>
+  );
+}
+
+const Lamp = ({ x, base }: { x: number; base: number }) => (
+  <g>
+    <path d={`M${x} ${base} V${base - 42}`} stroke="#2F3542" stroke-width="2.6" />
+    <path d={`M${x - 4.5} ${base - 42} h9 l-1.5 -9 h-6 z`} fill="#2F3542" />
+    <circle cx={x} cy={base - 46} r="2" fill="#FFE7A3" />
+  </g>
+);
+
 const ART: Record<string, Art> = {
   barcelone: {
     sky: ['#8FD3F7', '#FFF1CC'],
@@ -452,6 +519,168 @@ const ART: Record<string, Art> = {
         <Cypress x={268} y={232} h={50} />
         <Cypress x={279} y={234} h={40} />
         <StonePine x={312} y={236} h={54} w={66} />
+      </>
+    ),
+  },
+
+  lisbonne: {
+    sky: ['#9CD6F6', '#FFF1D6'],
+    sun: { x: 318, y: 62, r: 18, color: '#FFC94A' },
+    water: ['#1F6FAE', '#6EB5E3'],
+    clouds: [
+      [30, 38, 0.8],
+      [170, 22, 0.65],
+      [262, 46, 0.5],
+    ],
+    birds: [130, 80],
+    far: (
+      <>
+        <path d="M150 173 C190 152 232 146 272 152 C302 156 330 148 360 144 V173 Z" fill="#D9CDB4" />
+        <g fill="#C8513A">
+          <rect x="150" y="161" width="210" height="3" />
+          <path d="M194 164 V110 H200 V164 Z M298 164 V110 H304 V164 Z" />
+        </g>
+        <g fill="none" stroke="#C8513A" stroke-width="1.5">
+          <path d="M150 152 Q172 138 197 111 Q249 196 301 111 Q328 136 360 148" />
+          {Array.from({ length: 9 }, (_, i) => {
+            const t = (i + 1) / 10;
+            return <path key={t} d={`M${197 + 104 * t} ${111 + 170 * t * (1 - t)} V161`} stroke-width="0.7" />;
+          })}
+        </g>
+        <path
+          d="M333 148 V134 H337 V148 Z M328 129 H342 M335 125 V134"
+          stroke="#CDBFA4"
+          stroke-width="2"
+          fill="#CDBFA4"
+        />
+      </>
+    ),
+    mid: (
+      <>
+        <path d="M0 173 V126 C22 108 52 96 86 94 C114 92 140 104 162 122 C174 132 182 150 188 173 Z" fill="#EAD5B4" />
+        <path
+          d="M44 104 V94 H48 V98 H54 V94 H58 V98 H64 V94 H68 V98 H74 V94 H78 V98 H84 V94 H88 V98 H94 V94 H98 V104 Z M62 94 V84 H66 V88 H70 V84 H74 V94 Z"
+          fill="#CDB997"
+        />
+        {(
+          [
+            [6, 128, 20, 18, '#F6D57A'],
+            [30, 124, 18, 22, '#FFFFFF'],
+            [52, 120, 20, 16, '#F2A7A0'],
+            [100, 124, 18, 20, '#A9CCEB'],
+            [122, 130, 20, 18, '#FFFFFF'],
+            [0, 151, 18, 20, '#A9CCEB'],
+            [22, 150, 20, 17, '#F3C08A'],
+            [46, 148, 18, 22, '#FFFFFF'],
+            [68, 150, 22, 18, '#F6D57A'],
+            [94, 148, 18, 21, '#F2A7A0'],
+            [116, 151, 20, 18, '#FFFFFF'],
+            [140, 152, 18, 16, '#A9CCEB'],
+            [0, 173, 22, 18, '#F2A7A0'],
+            [26, 173, 20, 22, '#F6D57A'],
+            [50, 173, 22, 17, '#FFFFFF'],
+            [76, 173, 18, 21, '#A9CCEB'],
+            [98, 173, 22, 18, '#F3C08A'],
+            [124, 173, 20, 20, '#FFFFFF'],
+            [148, 173, 22, 16, '#F6D57A'],
+          ] as const
+        ).map(([x, base, w, h, color]) => (
+          <TownHouse key={`${x}-${base}`} x={x} base={base} w={w} h={h} color={color} />
+        ))}
+        <Sailboat x={262} y={190} s={0.75} />
+      </>
+    ),
+    near: (
+      <>
+        <path d="M0 150 C120 147 240 147 360 144" fill="none" stroke="#3E4A63" stroke-width="0.8" opacity="0.6" />
+        <path d="M0 208 C100 202 220 204 360 198 V330 H0 Z" fill="#E4D8C3" />
+        <g fill="none" stroke="#F7F1E6" stroke-width="5" opacity="0.9">
+          <path d="M0 256 C40 248 80 264 120 256 S200 248 240 256 S320 264 360 254" />
+          <path d="M0 286 C40 278 80 294 120 286 S200 278 240 286 S320 294 360 284" />
+        </g>
+        <g fill="none" stroke="#A89A82" stroke-width="2">
+          <path d="M0 232 C120 226 240 228 360 222" />
+          <path d="M0 240 C120 234 240 236 360 230" />
+        </g>
+        <Tram x={150} y={234} />
+        <Lamp x={56} base={232} />
+        <path d="M326 240 V112 H360 V240 Z" fill="#F4F0E6" />
+        <g fill="#2E6BC2">
+          {[0, 1, 2, 3, 4, 5].map(row =>
+            [0, 1].map(col => (
+              <path
+                key={`${row}-${col}`}
+                d="M0 -4 L4 0 L0 4 L-4 0 Z"
+                transform={`translate(${334 + col * 12} ${124 + row * 18})`}
+              />
+            )),
+          )}
+        </g>
+        <rect x="336" y="160" width="14" height="24" rx="1" fill="#3E4A63" />
+      </>
+    ),
+  },
+
+  londres: {
+    sky: ['#A3C4E4', '#F4EEE3'],
+    sun: { x: 312, y: 58, r: 15, color: '#FFE08A' },
+    water: ['#3D6680', '#8DB0C4'],
+    clouds: [
+      [18, 34, 0.9],
+      [120, 20, 0.75],
+      [214, 44, 0.6],
+      [296, 26, 0.5],
+    ],
+    birds: [178, 76],
+    far: (
+      <>
+        <path d="M0 173 V160 H16 V150 H30 V156 H44 V146 H58 V154 H100 V150 H116 V158 H132 V173 Z" fill="#C5D2DE" />
+        <path d="M34 150 C34 138 52 138 52 150 Z M42 138 V132 H44 V138 Z" fill="#C5D2DE" />
+        <path d="M70 173 L82 94 L94 173 Z" fill="#B7C7D6" />
+        <path d="M82 94 L86 173" stroke="#D7E1EA" stroke-width="1" />
+        <path d="M104 173 C102 150 104 130 112 122 C120 130 122 150 120 173 Z" fill="#B0C1D1" />
+      </>
+    ),
+    mid: (
+      <>
+        <rect x="140" y="140" width="164" height="33" fill="#DCC593" />
+        <path
+          d={`M140 140 ${Array.from({ length: 21 }, (_, i) => `L${144 + i * 8} 133 L${148 + i * 8} 140`).join(' ')} Z`}
+          fill="#C9B07B"
+        />
+        <g stroke="#C2A66E" stroke-width="1.1">
+          {Array.from({ length: 27 }, (_, i) => (
+            <path key={i} d={`M${143 + i * 6} 144 V172`} />
+          ))}
+        </g>
+        <path d="M220 140 V124 H232 V140 Z M220 124 L226 106 L232 124 Z" fill="#D2B985" />
+        <rect x="300" y="104" width="24" height="69" fill="#D6BE8B" />
+        <path
+          d="M298 104 H326 V100 H298 Z M300 100 l2 -6 l2 6 m6 0 l2 -6 l2 6 m6 0 l2 -6 l2 6"
+          fill="#C9B07B"
+          stroke="#C9B07B"
+        />
+        <path d="M312 94 V84" stroke="#59616C" stroke-width="1" />
+        <rect x="120" y="120" width="20" height="53" fill="#DCC593" />
+        <g stroke="#C2A66E" stroke-width="1">
+          <path d="M125 124 V172 M130 124 V172 M135 124 V172" />
+        </g>
+        <rect x="117" y="98" width="26" height="24" fill="#D2B985" />
+        <circle cx="130" cy="110" r="8" fill="#FFF5D8" stroke="#B8975E" stroke-width="1.5" />
+        <path d="M130 110 V104.5 M130 110 L133.5 112" stroke="#3E4A63" stroke-width="1.2" stroke-linecap="round" />
+        <rect x="120" y="86" width="20" height="12" fill="#CDB37E" />
+        <Arches from={122} to={139} top={88} bottom={97} step={6} w={3.5} color="#8F7448" />
+        <path d="M119 86 L130 62 L141 86 Z" fill="#59616C" />
+        <circle cx="130" cy="61" r="1.8" fill="#F2C230" />
+      </>
+    ),
+    near: (
+      <>
+        <path d="M0 214 C120 208 240 210 360 206 V330 H0 Z" fill="#B7B0A3" />
+        <path d="M0 214 C120 208 240 210 360 206" fill="none" stroke="#DCD6CB" stroke-width="4" />
+        <Lamp x={40} base={214} />
+        <Lamp x={318} base={208} />
+        <Bus x={136} y={246} />
       </>
     ),
   },

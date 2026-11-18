@@ -4,6 +4,7 @@ import {
   Euro,
   Headphones,
   Mic,
+  PoundSterling,
   Repeat,
   Swords,
   Timer,
@@ -161,7 +162,7 @@ export function Practice() {
         <h2>Jeux</h2>
         <div class="tile-grid">
           <Tile
-            icon={<Euro size={26} />}
+            icon={course.value.numbers.currency === '£' ? <PoundSterling size={26} /> : <Euro size={26} />}
             title="Prix à l’oreille"
             sub={audio ? '10 prix à comprendre' : noAudio}
             disabled={!audio}

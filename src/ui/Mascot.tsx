@@ -6,6 +6,7 @@ import type { RefObject } from 'preact';
 import { useEffect, useId, useRef } from 'preact/hooks';
 import { BRAND } from '../brand';
 import { easeVars } from './ease';
+import type { Theme } from './themes';
 
 export type Mood = 'idle' | 'happy' | 'oops' | 'cheer' | 'sleep';
 
@@ -106,7 +107,24 @@ function Eye({ x, y, mood }: { x: number; y: number; mood: Mood }) {
   );
 }
 
-function Motif({ pattern }: { pattern: 'tiles' | 'waves' }) {
+function Motif({ pattern }: { pattern: Theme['pattern'] }) {
+  if (pattern === 'checks') {
+    return (
+      <g stroke="var(--motif)">
+        <path d="M36 24 H110 M36 52 H110 M36 80 H110 M58 8 V92 M86 8 V92" stroke-width="3.2" />
+        <path d="M36 31 H110 M36 59 H110 M65 8 V92 M93 8 V92" stroke-width="1.2" />
+      </g>
+    );
+  }
+  if (pattern === 'azulejo') {
+    const tile = (x: number, y: number) => (
+      <g key={`${x}-${y}`} transform={`translate(${x} ${y}) rotate(45)`}>
+        <rect x="-5.5" y="-5.5" width="11" height="11" fill="none" stroke="var(--motif)" stroke-width="2.2" />
+        <circle r="1.9" fill="var(--motif)" />
+      </g>
+    );
+    return <g>{[tile(58, 28), tile(86, 34), tile(52, 50), tile(92, 56), tile(74, 72)]}</g>;
+  }
   if (pattern === 'waves') {
     return (
       <g fill="none" stroke="var(--motif)" stroke-width="2.6" stroke-linecap="round">
@@ -136,7 +154,7 @@ export function Mascot({
 }: {
   mood?: Mood;
   size?: number;
-  pattern?: 'tiles' | 'waves';
+  pattern?: Theme['pattern'];
   motion?: 'bob' | 'jump';
   /** When the text next to it already says everything. */
   decorative?: boolean;

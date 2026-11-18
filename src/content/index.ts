@@ -1,8 +1,10 @@
+import { en } from './courses/en';
 import { es } from './courses/es';
 import { it } from './courses/it';
+import { pt } from './courses/pt';
 import type { Course, Item, Lesson, Pack, Scene } from './types';
 
-export const COURSES: readonly Course[] = [es, it];
+export const COURSES: readonly Course[] = [es, it, pt, en];
 
 export const courseById = (id: string): Course => COURSES.find(c => c.id === id) ?? es;
 

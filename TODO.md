@@ -2,10 +2,18 @@
 
 The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 
+## Before launch
+
+- **Native speakers or teachers check every course.** Each phrase, its French-reader
+  pronunciation, its note, the scenes, sounds, tips and survival card, in all four languages. The
+  Portuguese and English courses were written on 18 November 2026 and nobody has reviewed them
+  yet; Spanish and Italian have not had a native review either.
+
 ## Test for real
 
-- Both iPhones: install on the home screen, offline after one visit, the update toast, Spanish
-  and Italian voices (*Réglages → Accessibilité → Contenu énoncé*), voice recording, Bernard
+- Both iPhones: install on the home screen, offline after one visit, the update toast, the
+  Spanish, Italian, Portuguese (Portugal) and English (UK) voices (*Réglages → Accessibilité →
+  Contenu énoncé*), voice recording, Bernard
   speaking when tapped, the date fields of onboarding and *Moi* (they overflowed on iOS before
   the fix; the automated check runs in Chromium only).
 - The welcome flight on an older iPhone (smoothness, battery), with *Réduire les animations* on,
@@ -18,6 +26,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
   overview and on the home screen.
 - Bernard's eyes following a finger on the iPhone, and his blinking.
+- « Mon voyage » on the iPhone: switching language and destination from the home screen, then
+  back, keeps each language's destination and date.
 - The pronunciation check on the iPhone, in Safari and from the home screen: two tries in a row.
   On iOS 27, recognition goes deaf after the first session (WebKit bug 321436); Bagage then falls
   back to recording, after ten seconds. Reporters say a short synthesised phrase right before
@@ -36,10 +46,10 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   clip sent to the Worker. On Chrome for computers, offer the on-device language pack
   (`SpeechRecognition.install()`) instead of the online service. Stress and intonation need more
   than word recognition.
-- Show the learner's own destination in the home card, with the welcome scenery.
-- Draw the other destinations (Madrid, Valencia, Florence, Naples, Milan, Sicily); the rest use
-  the generic coast for now.
-- **Understand what you hear and read.** Translation the other way (Spanish or Italian into
+- Draw the other destinations (Madrid, Valencia, Florence, Naples, Milan, Sicily, Porto, the
+  Algarve, Madeira, the Azores, Edinburgh, Dublin, New York); the rest use the generic coast for
+  now.
+- **Understand what you hear and read.** Translation the other way (any course language into
   French), from typed text first, then from a photo of a menu or a sign.
 - **Measure before claiming.** Opt-in, anonymous counts (sessions finished, day-1 and day-7 return,
   answer accuracy per exercise kind) to check the hypotheses in docs/LEARNING.md and to price.
@@ -47,8 +57,11 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **Reminders.** Web Push at the practice moment the learner chose (iOS 16.4+ for installed apps),
   sent by the Worker with VAPID keys.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
-- More languages: Portuguese (Portugal and Brazil), Greek, German; one theme and shell pattern
-  per country.
+- More languages: Brazilian Portuguese (its own pronunciation and words), Greek, German; one
+  theme and shell pattern per country.
+- **French as a language to learn.** Everything is written for French speakers (the interface,
+  the French-reader pronunciation, the notes), so teaching French needs an interface in another
+  language, English first, and content written for its speakers: a project of its own.
 - Sync between devices and profiles shared across phones (with accounts).
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
 

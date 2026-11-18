@@ -1448,32 +1448,26 @@ export const sounds: Sound[] = [
 
 export const tips: Tip[] = [
   {
-    icon: 'clock',
     title: 'Horaires',
     desc: 'Déjeuner vers 14 h, dîner vers 21 h 30.',
   },
   {
-    icon: 'check',
     title: 'Vale',
     desc: 'OK, d’accord. Tu l’entendras partout.',
   },
   {
-    icon: 'chat',
     title: '¡Buenas!',
     desc: 'Bonjour décontracté, à toute heure.',
   },
   {
-    icon: 'bell',
     title: 'L’addition',
     desc: 'Elle n’arrive que si tu la demandes.',
   },
   {
-    icon: 'euro',
     title: 'Pourboire',
     desc: 'Facultatif : on arrondit.',
   },
   {
-    icon: 'cross',
     title: '112',
     desc: 'Urgences, gratuit, partout en Espagne.',
   },

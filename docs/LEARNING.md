@@ -24,5 +24,5 @@ Where the app goes beyond what the research shows, it says so.
 - That pronunciation written “the French way” does not slow down accurate pronunciation in the long
   run. It helps on day one, which is the app’s promise; it can be turned off in *Moi*.
 - The quality of translations from the translation service has not been evaluated on a test set.
-- That the browser's recogniser judges French speakers fairly in Spanish and Italian. Letting one
+- That the browser's recogniser judges French speakers fairly in the languages taught. Letting one
   word in four go unheard is a guess, to be tuned with the counts in TODO.md.

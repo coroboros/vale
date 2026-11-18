@@ -6,7 +6,8 @@ import { pick, type Rng, shuffle } from './random';
 
 const CENTS = [0, 0, 10, 20, 20, 30, 40, 50, 50, 60, 70, 80, 90, 95, 99];
 
-const formatPrice = (euros: number, cents: number) => `${euros},${String(cents).padStart(2, '0')} €`;
+const formatPrice = (units: number, cents: number, sign: string) =>
+  `${units},${String(cents).padStart(2, '0')} ${sign}`;
 
 export interface PricePuzzle {
   spoken: string;
@@ -17,7 +18,8 @@ export interface PricePuzzle {
 export function pricePuzzle(course: Course, rng: Rng): PricePuzzle {
   const euros = 1 + Math.floor(rng() * 49);
   const cents = pick(rng, CENTS);
-  const answer = formatPrice(euros, cents);
+  const sign = course.numbers.currency;
+  const answer = formatPrice(euros, cents, sign);
   const seen = new Set([answer]);
   const candidates: [number, number][] = [
     ...course.numbers.confusable(euros).map(e => [e, cents] as [number, number]),
@@ -29,7 +31,7 @@ export function pricePuzzle(course: Course, rng: Rng): PricePuzzle {
   ];
   const options = [answer];
   for (const [e, c] of shuffle(rng, candidates)) {
-    const text = formatPrice(e, c);
+    const text = formatPrice(e, c, sign);
     if (options.length >= 4) break;
     if (e < 1 || e > 99 || c < 0 || c > 99 || seen.has(text)) continue;
     seen.add(text);

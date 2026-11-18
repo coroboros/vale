@@ -1,17 +1,19 @@
 # Bagage
 
-**Parle dès l’atterrissage.** Survival phrases for French-speaking travellers, in Spanish and Italian
-for now. Bagage is an installable web app (PWA): it works fully offline, needs no account and shows no ads.
+**Parle dès l’atterrissage.** Survival phrases for French-speaking travellers, in Spanish, Italian,
+Portuguese and English. Bagage is an installable web app (PWA): it works fully offline, needs no
+account and shows no ads.
 
 Preview: <https://coroboros.github.io/vale/> (GitHub Pages, without translation). Once Cloudflare is
 connected, the app and its translation service are served by one Worker; see RUNBOOK.md.
 
 ## What it does
 
-- **A flight to begin.** The welcome screen is a cabin window flying to Barcelona, Rome, Seville
-  and Venice. The view follows your finger or your mouse, a tap flies on, and Bernard says hello
-  in the local language.
-- **A trip, not a course.** You pick a destination and a departure date. The home screen shows how
+- **A flight to begin.** The welcome screen is a cabin window flying to Barcelona, Venice, Lisbon,
+  London, Seville and Rome. The view follows your finger or your mouse, a tap flies on, and Bernard
+  says hello in the local language.
+- **A trip, not a course.** You pick a destination and a departure date, and switch language from
+  the home screen whenever you like: each language keeps its own trip. The home screen shows how
   much of what you learned you will still remember on landing day, from your own memory model.
 - **Spaced retrieval that adapts.** Every phrase has its own forgetting curve (FSRS-7). Exercises
   move from recognising to producing as memory strengthens, aiming at about 85 % success.

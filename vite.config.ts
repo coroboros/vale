@@ -33,7 +33,7 @@ export default defineConfig({
         name: `${BRAND.name} : ${BRAND.tagline}`,
         short_name: BRAND.name,
         description:
-          'Les phrases de survie pour voyager, en espagnol et en italien. Hors ligne, sans compte, sans pub.',
+          'Les phrases de survie pour voyager : espagnol, italien, portugais, anglais. Hors ligne, sans compte, sans pub.',
         lang: 'fr',
         dir: 'ltr',
         start_url: './',

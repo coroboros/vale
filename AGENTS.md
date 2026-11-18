@@ -1,7 +1,8 @@
 # AGENTS.md
 
-Bagage is a web app (PWA) that teaches French speakers the phrases they need for a trip to Spain
-or Italy, plus the Cloudflare Worker in `worker/` that serves the app and translates sentences.
+Bagage is a web app (PWA) that teaches French speakers the phrases they need for a trip to Spain,
+Italy, Portugal or an English-speaking country, plus the Cloudflare Worker in `worker/` that serves
+the app and translates sentences.
 
 What to do next, in order: RUNBOOK.md. Backlog and watch list: TODO.md. Why things are the way
 they are: docs/ (learning evidence, brand, business, market, voice).

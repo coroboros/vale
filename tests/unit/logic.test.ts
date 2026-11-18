@@ -59,8 +59,9 @@ describe('pronunciation check', () => {
     expect(checkSpeech('Por favor', ['por'], spell).ok).toBe(false);
   });
 
-  it('reads digits and the euro sign the way the phrase spells them', () => {
+  it('reads digits and currency signs the way the phrase spells them', () => {
     expect(checkSpeech('Son cuatro euros con veinte.', ['son 4 € con 20'], spell).all).toBe(true);
+    expect(checkSpeech('That’s four pounds twenty.', ["That's £4.20"], courseById('en').numbers.spell).all).toBe(true);
     expect(checkSpeech('Cien', ['100'], spell).all).toBe(true);
     expect(checkSpeech('Cento', ['100'], courseById('it').numbers.spell).all).toBe(true);
   });
@@ -168,6 +169,30 @@ describe('prices by ear', () => {
       expect(p.options).toContain(p.answer);
       expect(p.spoken).not.toMatch(/undefined/);
     }
+  });
+
+  it('says and shows prices in each country’s way and currency', () => {
+    const pt = courseById('pt');
+    const en = courseById('en');
+    expect(pt.numbers.sayPrice(4, 20, false)).toBe('São quatro euros e vinte.');
+    expect(pt.numbers.sayPrice(4, 20, true)).toBe('Quatro e vinte.');
+    expect(pt.numbers.spell(16)).toBe('dezasseis');
+    expect(en.numbers.sayPrice(4, 20, false)).toBe('That’s four pounds twenty.');
+    expect(en.numbers.spell(21)).toBe('twenty-one');
+    expect(pricePuzzle(en, seeded(3)).answer).toMatch(/^\d+,\d\d £$/);
+    expect(pricePuzzle(pt, seeded(3)).answer).toMatch(/^\d+,\d\d €$/);
+  });
+});
+
+describe('survival card sentences', () => {
+  it('contract the preposition and agree with the speaker', () => {
+    const pt = courseById('pt');
+    expect(pt.say.allergy(['o marisco', 'os amendoins'], 'f')).toBe(
+      'Sou alérgica ao marisco e aos amendoins. É muito importante.',
+    );
+    expect(courseById('en').say.allergy(['tree nuts', 'shellfish'], 'm')).toBe(
+      'I’m allergic to tree nuts and shellfish. It’s very important.',
+    );
   });
 });
 
