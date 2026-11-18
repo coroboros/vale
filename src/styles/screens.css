@@ -51,6 +51,17 @@
     border-color: transparent;
   }
 
+  .quiet-note {
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .quiet-note p {
+    flex: 1;
+    min-width: 12rem;
+  }
+
   .ph {
     font-size: var(--step--1);
     font-weight: 700;

@@ -1,7 +1,7 @@
 /** A practice session: one exercise at a time, immediate feedback, a ticket at the end. */
-import { Check, Clock, Flame, Mic, Play, Square, Target, X, Zap } from 'lucide-preact';
+import { Check, Clock, Flame, Mic, Play, Square, Target, Volume2, VolumeX, X, Zap } from 'lucide-preact';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { advance, closeSession, running, type Summary, submitAnswer } from '../../actions';
+import { advance, closeSession, running, type Summary, setQuiet, submitAnswer } from '../../actions';
 import type { Card, Exercise } from '../../engine/exercises';
 import { grade, normalize, type Verdict } from '../../engine/grade';
 import { stamps as allStamps } from '../../engine/progress';
@@ -10,7 +10,7 @@ import { progress } from '../../engine/session';
 import { canRecord, playTake, releaseMic, startRecording, stopRecording } from '../../platform/recorder';
 import { play } from '../../platform/sfx';
 import { say } from '../../platform/speech';
-import { course, settings, theme } from '../../state/store';
+import { autoplays, course, isQuiet, settings, theme } from '../../state/store';
 import { Bar, ChoiceGroup, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
 import { Stamp } from '../Stamp';
@@ -90,7 +90,7 @@ function FeedbackPanel({ fb, card, onNext }: { fb: NonNullable<Feedback>; card: 
 function Learn({ ex, onDone }: { ex: Exercise & { kind: 'learn' }; onDone: () => void }) {
   const { card } = ex;
   useEffect(() => {
-    if (settings.value.autoplay) void speak(card);
+    if (autoplays()) void speak(card);
   }, [card.key]);
   useKeys(k => {
     if (k === 'Enter') onDone();
@@ -120,18 +120,30 @@ function Learn({ ex, onDone }: { ex: Exercise & { kind: 'learn' }; onDone: () =>
   );
 }
 
+/** Offered on exercises that need sound: switches quiet mode on for an hour (as Duolingo does). */
+function CantListen({ onMute }: { onMute?: () => void }) {
+  if (!onMute) return null;
+  return (
+    <button type="button" class="btn btn-ghost btn-block" onClick={onMute}>
+      Je ne peux pas écouter maintenant
+    </button>
+  );
+}
+
 function Choice({
   ex,
   onResult,
+  onMute,
 }: {
   ex: Exercise & { kind: 'guess' | 'reco' | 'listen' | 'pick' };
   onResult: (ok: boolean) => void;
+  onMute?: () => void;
 }) {
   const [picked, setPicked] = useState<string | null>(null);
   const { card } = ex;
   const targetOptions = ex.kind === 'listen' || ex.kind === 'pick';
   useEffect(() => {
-    if (ex.kind === 'listen' || (settings.value.autoplay && (ex.kind === 'reco' || ex.kind === 'guess')))
+    if (ex.kind === 'listen' || (autoplays() && (ex.kind === 'reco' || ex.kind === 'guess')))
       void speak(card, ex.kind === 'listen' ? 1 : 0);
   }, [card.key, ex.kind]);
   const check = () => picked && onResult(picked === ex.answer);
@@ -174,10 +186,11 @@ function Choice({
         onChange={o => {
           play('tap');
           setPicked(o);
-          if (ex.kind === 'pick') void say(o, { lang: card.lang });
+          if (ex.kind === 'pick' && autoplays()) void say(o, { lang: card.lang });
         }}
       />
       <div class="ex-actions">
+        {ex.kind === 'listen' && <CantListen onMute={onMute} />}
         <button type="button" class="btn btn-primary btn-block" disabled={!picked} onClick={check}>
           {ex.kind === 'guess' ? 'Voir la réponse' : 'Vérifier'}
         </button>
@@ -197,7 +210,7 @@ function Tiles({
   const { card } = ex;
   const targetTiles = ex.kind === 'tilesTarget';
   useEffect(() => {
-    if (!targetTiles && settings.value.autoplay) void speak(card);
+    if (!targetTiles && autoplays()) void speak(card);
   }, [card.key]);
   const check = () =>
     chosen.length && onResult(normalize(chosen.map(i => ex.tiles[i]).join(' ')) === normalize(ex.answer.join(' ')));
@@ -254,7 +267,15 @@ function Tiles({
   );
 }
 
-function Dictation({ card, onResult }: { card: Card; onResult: (ok: boolean, verdict: Verdict) => void }) {
+function Dictation({
+  card,
+  onResult,
+  onMute,
+}: {
+  card: Card;
+  onResult: (ok: boolean, verdict: Verdict) => void;
+  onMute?: () => void;
+}) {
   const [text, setText] = useState('');
   useEffect(() => void speak(card, 1), [card.key]);
   const check = () => {
@@ -290,6 +311,7 @@ function Dictation({ card, onResult }: { card: Card; onResult: (ok: boolean, ver
           enterkeyhint="done"
         />
         <div class="ex-actions">
+          <CantListen onMute={onMute} />
           <button type="submit" class="btn btn-primary btn-block" disabled={!text.trim()}>
             Vérifier
           </button>
@@ -301,11 +323,12 @@ function Dictation({ card, onResult }: { card: Card; onResult: (ok: boolean, ver
 
 /**
  * Say it aloud, hear yourself next to the model voice, then judge honestly.
- * Recording is optional: in a train or an open-plan office, saying it in your head and
- * revealing the answer works too.
+ * Recording is optional. In quiet mode the phrase is said in one's head: recalling it silently
+ * still strengthens memory (Smith, Roediger & Karpicke, 2013), and the model voice waits for a tap.
  */
 function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void }) {
-  const mic = canRecord();
+  const quiet = isQuiet();
+  const mic = canRecord() && !quiet;
   const [state, setState] = useState<'ready' | 'recording' | 'revealed'>('ready');
   const [take, setTake] = useState<string | null>(null);
   const [denied, setDenied] = useState(false);
@@ -315,7 +338,7 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
     revealed.current = true;
     setTake(url);
     setState('revealed');
-    void speak(card);
+    if (!quiet) void speak(card);
   };
   const toggle = async () => {
     if (state === 'recording') return reveal(await stopRecording());
@@ -335,7 +358,7 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
   });
   return (
     <div class="ex">
-      <p class="ex-kicker">Dis-le à voix haute</p>
+      <p class="ex-kicker">{quiet ? 'Dis-le dans ta tête' : 'Dis-le à voix haute'}</p>
       <p class="big prompt-fr">{card.item.fr}</p>
       {state !== 'revealed' ? (
         <div class="speak-zone">
@@ -354,7 +377,9 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
               ? 'Je t’écoute… touche pour arrêter.'
               : mic
                 ? 'Touche le micro, dis la phrase, touche à nouveau.'
-                : 'Dis la phrase à voix haute, puis découvre la réponse.'}
+                : quiet
+                  ? 'Dis la phrase dans ta tête, puis découvre la réponse.'
+                  : 'Dis la phrase à voix haute, puis découvre la réponse.'}
           </p>
           <button type="button" class={mic && !denied ? 'btn btn-ghost' : 'btn'} onClick={() => reveal(null)}>
             Voir la réponse
@@ -381,7 +406,7 @@ function Speak({ card, onResult }: { card: Card; onResult: (ok: boolean) => void
               À retravailler
             </button>
             <button type="button" class="btn btn-primary btn-block" onClick={() => onResult(true)}>
-              Je l’ai bien dit
+              {quiet ? 'Je l’avais' : 'Je l’ai bien dit'}
             </button>
           </div>
         </div>
@@ -398,7 +423,7 @@ function Match({ cards, onDone }: { cards: Card[]; onDone: () => void }) {
   const [wrong, setWrong] = useState<string | null>(null);
   const pickSide = (side: 'l' | 'r', c: Card) => {
     if (solved.includes(c.key)) return;
-    if (side === 'l') void say(c.item.t, { lang: c.lang });
+    if (side === 'l' && autoplays()) void say(c.item.t, { lang: c.lang });
     if (!sel || sel.side === side) return setSel({ side, key: c.key });
     if (sel.key === c.key) {
       play('ok', solved.length);
@@ -521,6 +546,10 @@ export function SessionScreen() {
     advance();
   };
   const card = ex && ex.kind !== 'match' ? ex.card : null;
+  // A listening drill is chosen on purpose: no quiet mode inside it.
+  const drill = r.session.mode.kind === 'practice' && r.session.mode.focus === 'listening';
+  const quiet = isQuiet();
+  const mute = drill ? undefined : () => setQuiet(true, { forAnHour: true });
 
   return (
     <div class="session">
@@ -529,6 +558,17 @@ export function SessionScreen() {
           <X size={26} />
         </button>
         <Bar value={progress(r.session)} label="Progression de la session" />
+        {!drill && (
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Mode discret"
+            aria-pressed={quiet}
+            onClick={() => setQuiet(!quiet, { forAnHour: true })}
+          >
+            {quiet ? <VolumeX size={24} /> : <Volume2 size={24} />}
+          </button>
+        )}
         <div class={`combo${r.combo >= 3 ? ' hot' : ''}`}>
           <Check size={18} aria-hidden="true" />
           <span class="num">{r.combo}</span>
@@ -546,10 +586,10 @@ export function SessionScreen() {
           />
         )}
         {(ex?.kind === 'guess' || ex?.kind === 'reco' || ex?.kind === 'listen' || ex?.kind === 'pick') && !fb && (
-          <Choice ex={ex} onResult={ok => result(ok)} />
+          <Choice ex={ex} onResult={ok => result(ok)} onMute={mute} />
         )}
         {(ex?.kind === 'tilesFr' || ex?.kind === 'tilesTarget') && !fb && <Tiles ex={ex} onResult={ok => result(ok)} />}
-        {ex?.kind === 'dictation' && !fb && <Dictation card={ex.card} onResult={result} />}
+        {ex?.kind === 'dictation' && !fb && <Dictation card={ex.card} onResult={result} onMute={mute} />}
         {ex?.kind === 'speak' && !fb && <Speak card={ex.card} onResult={ok => result(ok)} />}
         {ex?.kind === 'match' && <Match cards={ex.cards} onDone={next} />}
         {fb && card && <ReviewCard card={card} />}

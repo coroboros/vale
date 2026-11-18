@@ -16,7 +16,7 @@ import {
 } from '../../src/engine/progress';
 import { seeded } from '../../src/engine/random';
 import { migrateV3 } from '../../src/state/migrate';
-import { blankData, blankDay, sanitize } from '../../src/state/schema';
+import { blankData, blankDay, QUIET_MS, quietActive, sanitize } from '../../src/state/schema';
 import { searchCourse, searchHistory } from '../../src/translate';
 
 beforeAll(initMemory);
@@ -171,6 +171,21 @@ describe('saved data', () => {
     expect(db.profiles[0]).toMatchObject({ goal: 40, trip: '', course: 'es', gender: 'm' });
     expect(db.data.x!.jokers).toBe(2);
     expect(db.data.x!.mem).toEqual({});
+  });
+
+  it('fills new settings in, keeps valid ones and drops wrong or unknown ones', () => {
+    const db = sanitize({ settings: { autoplay: false, sfx: 'no', quietUntil: '12', legacy: 1 } });
+    expect(db.settings).toMatchObject({ autoplay: false, sfx: true, quiet: false, quietUntil: 0 });
+    expect(db.settings).not.toHaveProperty('legacy');
+  });
+
+  it('quiet mode lasts until switched off, or for an hour from a session', () => {
+    const s = sanitize(null).settings;
+    expect(quietActive(s, NOW)).toBe(false);
+    expect(quietActive({ ...s, quiet: true }, NOW)).toBe(true);
+    const hour = { ...s, quietUntil: NOW + QUIET_MS };
+    expect(quietActive(hour, NOW + QUIET_MS - 1)).toBe(true);
+    expect(quietActive(hour, NOW + QUIET_MS)).toBe(false);
   });
 
   it('migrates a v3 record without losing progress', () => {

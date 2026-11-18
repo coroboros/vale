@@ -7,7 +7,7 @@ import { stamps as allStamps } from '../../engine/progress';
 import { shuffle } from '../../engine/random';
 import { play } from '../../platform/sfx';
 import { say, stopSpeech } from '../../platform/speech';
-import { course, settings, theme } from '../../state/store';
+import { autoplays, course, theme } from '../../state/store';
 import { Say } from '../kit';
 import { Mascot } from '../Mascot';
 import { back, go } from '../router';
@@ -66,7 +66,7 @@ export function SceneScreen({ id }: { id: string }) {
     setBubbles(b => [...b, { who: 'them', t: line.t, fr: line.fr }]);
     let cancelled = false;
     const nextLine = () => !cancelled && setStep(s => s + 1);
-    if (settings.value.autoplay) void say(line.t, { lang: c.lang }).then(() => setTimeout(nextLine, 350));
+    if (autoplays()) void say(line.t, { lang: c.lang }).then(() => setTimeout(nextLine, 350));
     else setTimeout(nextLine, 900);
     return () => {
       cancelled = true;
@@ -97,7 +97,7 @@ export function SceneScreen({ id }: { id: string }) {
     if (option === line.options[0]) {
       play('ok');
       setBubbles(b => [...b, { who: 'you', t: option, fr: line.task }]);
-      void say(option, { lang: c.lang });
+      if (autoplays()) void say(option, { lang: c.lang });
       setStep(s => s + 1);
     } else {
       play('ko');

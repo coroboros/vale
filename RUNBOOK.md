@@ -66,6 +66,9 @@ In this order, each with its tests:
    the claims in docs/LEARNING.md and to price anything.
 2. The learner's own destination in the home card; more drawn destinations.
 3. Translation the other way (understand a menu or a reply).
+4. AI voices for every phrase (docs/VOICE.md). From you: a Fish Audio API key with a few dollars
+   of credit, stored as the `FISH_API_KEY` GitHub secret, and a native speaker to approve the
+   voices.
 
 ## 7. Business model (you decide, Claude builds)
 
@@ -76,7 +79,7 @@ Proposal and open questions: docs/BUSINESS.md. Order of work once decided:
    by the Worker.
 3. Premium content served by the Worker after purchase (what ships in the app bundle is free by
    nature), and per-user quotas on translation and AI conversation.
-4. The live conversation partner (TODO.md).
+4. The live conversation partner, light on data (docs/VOICE.md).
 
 ## Working with Claude Code on your Mac
 

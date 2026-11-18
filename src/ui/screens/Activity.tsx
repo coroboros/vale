@@ -8,7 +8,7 @@ import { pricePuzzle } from '../../engine/prices';
 import { seeded, shuffle } from '../../engine/random';
 import { play } from '../../platform/sfx';
 import { canSpeak, say, stopSpeech } from '../../platform/speech';
-import { cindex, course, db, pdata, profile, theme } from '../../state/store';
+import { autoplays, cindex, course, db, pdata, profile, theme } from '../../state/store';
 import { Mascot } from '../Mascot';
 import type { Activity as Kind } from '../router';
 import { back } from '../router';
@@ -246,7 +246,7 @@ function Duel() {
     const ok = o === q.answer;
     play(ok ? 'ok' : 'ko');
     if (ok) setScores(s => s.map((v, i) => (i === player ? v + 1 : v)));
-    void say(q.answer, { lang: q.card.lang });
+    if (autoplays()) void say(q.answer, { lang: q.card.lang });
     setTimeout(() => {
       setPicked(null);
       setTurn(turn + 1);

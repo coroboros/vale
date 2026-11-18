@@ -1,19 +1,30 @@
 /** You: stats, passport, trip and rhythm, voice, backups and profiles. */
 import { Download, Upload, UserPlus } from 'lucide-preact';
 import { useRef, useState } from 'preact/hooks';
-import { createProfiles, editProfile, resetProgress, restoreBackup, switchProfile } from '../../actions';
+import {
+  clock,
+  createProfiles,
+  editProfile,
+  resetProgress,
+  restoreBackup,
+  setQuiet,
+  switchProfile,
+} from '../../actions';
 import { COURSES } from '../../content';
 import type { Gender } from '../../content/types';
 import { dayKey, stamps, streak } from '../../engine/progress';
 import { exportBackup, readBackup } from '../../platform/backup';
 import { offlineReady } from '../../platform/pwa';
 import { CUES, GOALS, PROFILE_COLORS, type Settings } from '../../state/schema';
-import { course, db, pdata, profile, settings, update } from '../../state/store';
+import { course, db, isQuiet, pdata, profile, settings, update } from '../../state/store';
 import { InstallButton } from '../Install';
 import { ChoiceGroup, Sheet, showToast, Toggle } from '../kit';
 import { Stamp } from '../Stamp';
 
-const VOICE: { key: keyof Settings; label: string; sub: string }[] = [
+/** Settings that are simple switches. */
+type Flag = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
+
+const VOICE: { key: Exclude<Flag, 'quiet'>; label: string; sub: string }[] = [
   { key: 'autoplay', label: 'Lecture automatique', sub: 'Chaque nouvelle phrase est prononcée' },
   { key: 'slow', label: 'Voix lente', sub: 'Plus facile au début' },
   { key: 'variedVoices', label: 'Voix variées', sub: 'Les exercices d’écoute changent de voix' },
@@ -21,7 +32,7 @@ const VOICE: { key: keyof Settings; label: string; sub: string }[] = [
   { key: 'sfx', label: 'Sons', sub: 'Petits sons de réussite' },
 ];
 
-function setSetting(key: keyof Settings, value: boolean) {
+function setSetting(key: Flag, value: boolean) {
   update(d => {
     d.settings[key] = value;
   });
@@ -207,6 +218,17 @@ export function Profile() {
 
       <section class="section card" aria-label="Voix et affichage">
         <h2>Voix et affichage</h2>
+        <div class="row">
+          <div class="row-main">
+            <p class="row-title">Mode discret</p>
+            <p class="row-sub">
+              {isQuiet() && !s.quiet
+                ? `Jusqu’à ${clock(s.quietUntil)} : pas d’écoute, pas de son`
+                : 'Pas d’exercice d’écoute, pas de son automatique'}
+            </p>
+          </div>
+          <Toggle checked={isQuiet()} onChange={on => setQuiet(on)} label="Mode discret" />
+        </div>
         {VOICE.map(v => (
           <div key={v.key} class="row">
             <div class="row-main">

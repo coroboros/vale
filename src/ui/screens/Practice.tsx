@@ -1,11 +1,23 @@
 /** Practice hub: reviews chosen by the memory model, ear and voice drills, scenes and games. */
-import { Check, Ear, Euro, Headphones, Mic, Repeat, Swords, Timer, TriangleAlert, Umbrella } from 'lucide-preact';
+import {
+  Check,
+  Ear,
+  Euro,
+  Headphones,
+  Mic,
+  Repeat,
+  Swords,
+  Timer,
+  TriangleAlert,
+  Umbrella,
+  VolumeX,
+} from 'lucide-preact';
 import type { ComponentChildren } from 'preact';
-import { startSession } from '../../actions';
+import { clock, setQuiet, startSession } from '../../actions';
 import { isDue } from '../../engine/memory';
 import { arrivalTime, lessonKey, readiness } from '../../engine/progress';
 import { canSpeak, voicesFor } from '../../platform/speech';
-import { cindex, course, pdata, profile } from '../../state/store';
+import { cindex, course, isQuiet, pdata, profile, settings } from '../../state/store';
 import { go } from '../router';
 
 function Tile({
@@ -37,8 +49,10 @@ export function Practice() {
   const c = course.value;
   const data = pdata.value;
   const now = Date.now();
-  const audio = canSpeak(c.lang);
+  const quiet = isQuiet(now);
+  const audio = canSpeak(c.lang) && !quiet;
   const voices = voicesFor(c.lang).length;
+  const noAudio = quiet ? 'Mode discret activé' : 'Aucune voix sur cet appareil';
   const prefix = `${c.id}:`;
   const due = Object.entries(data.mem).filter(([k, m]) => k.startsWith(prefix) && isDue(m, now)).length;
   const learned = Object.keys(data.mem).filter(k => k.startsWith(prefix)).length;
@@ -86,11 +100,23 @@ export function Practice() {
 
       <section class="section" aria-label="Oreille et voix">
         <h2>Oreille et voix</h2>
+        {quiet && (
+          <div class="card note-card quiet-note">
+            <VolumeX size={22} aria-hidden="true" />
+            <p>
+              Mode discret{settings.value.quiet ? '' : ` jusqu’à ${clock(settings.value.quietUntil)}`} : pas d’écoute,
+              pas de son.
+            </p>
+            <button type="button" class="btn" onClick={() => setQuiet(false)}>
+              Remettre le son
+            </button>
+          </div>
+        )}
         <div class="tile-grid">
           <Tile
             icon={<Ear size={26} />}
             title="Écoute"
-            sub={!audio ? 'Aucune voix sur cet appareil' : voices > 1 ? `${voices} voix différentes` : 'Une voix'}
+            sub={!audio ? noAudio : voices > 1 ? `${voices} voix différentes` : 'Une voix'}
             disabled={none || !audio}
             onClick={() => startSession({ kind: 'practice', focus: 'listening' }, 'Écoute')}
           />
@@ -104,7 +130,7 @@ export function Practice() {
           <Tile
             icon={<Headphones size={26} />}
             title="Mains libres"
-            sub="En marchant, écouteurs"
+            sub={audio ? 'En marchant, écouteurs' : noAudio}
             disabled={none || !audio}
             onClick={() => go({ name: 'activity', kind: 'audio' })}
           />
@@ -137,7 +163,7 @@ export function Practice() {
           <Tile
             icon={<Euro size={26} />}
             title="Prix à l’oreille"
-            sub="10 prix à comprendre"
+            sub={audio ? '10 prix à comprendre' : noAudio}
             disabled={!audio}
             onClick={() => go({ name: 'activity', kind: 'prices' })}
           />

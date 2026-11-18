@@ -48,6 +48,9 @@ export interface Session {
   step: number;
   max: number;
   lastKind: Kind | null;
+  /** Formats the mode allows when sound is available. */
+  formats: readonly Kind[];
+  /** Formats in use: `formats` without the listening ones while there is no sound. */
   allowed: readonly Kind[];
   matchPlayed: boolean;
   spoken: number;
@@ -75,11 +78,13 @@ export function targetSuccess(results: readonly boolean[]): number {
   return Math.min(0.95, Math.max(0.75, TARGET + (TARGET - accuracy) * 0.6));
 }
 
+const withAudio = (formats: readonly Kind[], audio: boolean) =>
+  audio ? formats : formats.filter(k => !NEEDS_AUDIO.includes(k));
+
 export function createSession(mode: Mode, pool: PoolCard[], opts: { audio: boolean; max?: number }): Session {
   const test = mode.kind === 'test';
   const focus = mode.kind === 'practice' ? mode.focus : null;
-  const allowed = GRADED.filter(k => {
-    if (!opts.audio && NEEDS_AUDIO.includes(k)) return false;
+  const formats = GRADED.filter(k => {
     if (focus === 'listening') return k === 'listen' || k === 'dictation';
     if (focus === 'speaking') return k === 'speak';
     if (test) return TIER[k] >= 1;
@@ -105,7 +110,8 @@ export function createSession(mode: Mode, pool: PoolCard[], opts: { audio: boole
     step: 0,
     max: opts.max ?? (test ? pool.length : mode.kind === 'lesson' || mode.kind === 'pack' ? 18 : 14),
     lastKind: null,
-    allowed,
+    formats,
+    allowed: withAudio(formats, opts.audio),
     matchPlayed: false,
     spoken: 0,
   };
@@ -156,6 +162,21 @@ export function next(session: Session, index: CourseIndex, rng: Rng): Exercise |
 }
 
 const slotOf = (session: Session, key: string) => session.slots.find(s => s.card.key === key);
+
+/**
+ * Turns the listening formats on or off for the rest of the session. When they go off during a
+ * listening exercise, the same phrase comes back in another format at once: nothing is graded.
+ */
+export function setAudio(session: Session, audio: boolean, index: CourseIndex, rng: Rng): void {
+  session.allowed = withAudio(session.formats, audio);
+  const ex = session.current;
+  if (audio || !ex || ex.kind === 'match' || !NEEDS_AUDIO.includes(ex.kind)) return;
+  const slot = slotOf(session, ex.card.key);
+  if (!slot || !session.allowed.length) return;
+  const kind = chooseKind(session, slot, rng);
+  session.lastKind = kind;
+  session.current = build(kind, slot.card, index, rng);
+}
 
 /** Records the learner's answer to the current exercise. Guess and learn cards are never graded. */
 export function answer(session: Session, correct: boolean): void {

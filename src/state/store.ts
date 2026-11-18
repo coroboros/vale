@@ -3,7 +3,16 @@ import { computed, signal } from '@preact/signals';
 import { courseById, indexOf } from '../content';
 import { THEMES } from '../ui/themes';
 import { migrateV3 } from './migrate';
-import { blankData, blankDB, type DB, LEGACY_KEY, type ProfileData, STORAGE_KEY, sanitize } from './schema';
+import {
+  blankData,
+  blankDB,
+  type DB,
+  LEGACY_KEY,
+  type ProfileData,
+  quietActive,
+  STORAGE_KEY,
+  sanitize,
+} from './schema';
 
 export const db = signal<DB>(blankDB());
 /** False when the browser refuses to store data (private mode, full disk). */
@@ -88,3 +97,9 @@ export const course = computed(() => courseById(profile.value?.course ?? 'es'));
 export const cindex = computed(() => indexOf(course.value));
 export const theme = computed(() => THEMES[course.value.theme] ?? THEMES.sol!);
 export const settings = computed(() => db.value.settings);
+
+/** Quiet mode is on: no listening exercise, no sound the learner did not ask for. */
+export const isQuiet = (now = Date.now()) => quietActive(db.value.settings, now);
+
+/** New phrases are spoken on their own: the setting is on and quiet mode is off. */
+export const autoplays = (now = Date.now()) => db.value.settings.autoplay && !isQuiet(now);

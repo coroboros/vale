@@ -15,16 +15,23 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Translation quality: the eval grades, then a native speaker on twenty phrases per language,
   and the French-reader pronunciation of Italian stress (often unpredictable from spelling).
 - Lighthouse on a real phone. Local runs: performance 96, accessibility 100, best practices 100.
+- Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
+  overview and on the home screen.
 
 ## Improve
 
+What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
+
+- **AI voices for every phrase.** Fish Audio, a female or a male voice chosen in *Moi*, generated
+  once in CI and cached for offline use, the phone's voices as the fallback: docs/VOICE.md.
+- **Live conversation partner.** Talk with Bernard by voice in the course's situations, audio only
+  and light on data (Opus over WebRTC, a data-saver mode, megabytes shown): docs/VOICE.md.
+- **Feedback on pronunciation.** Compare what the learner said with the phrase, with speech
+  recognition on the phone where the browser has it, otherwise a short clip sent to the Worker.
+  Today the learner judges their own attempt after hearing the model.
 - Show the learner's own destination in the home card, with the welcome scenery.
 - Draw the other destinations (Madrid, Valencia, Florence, Naples, Milan, Sicily); the rest use
   the generic coast for now.
-- **Live conversation partner.** Talk with an AI tutor in real time, by voice, inside the course's
-  situations (hotel desk, restaurant, pharmacy). The learner picks an avatar style: realistic,
-  cartoon or anime. It should reuse the scenes' goals, correct gently in French, and log the
-  phrases it practised into the memory model. Technology to be chosen with the owner.
 - **Understand what you hear and read.** Translation the other way (Spanish or Italian into
   French), from typed text first, then from a photo of a menu or a sign.
 - **Measure before claiming.** Opt-in, anonymous counts (sessions finished, day-1 and day-7 return,
@@ -35,8 +42,6 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
 - More languages: Portuguese (Portugal and Brazil), Greek, German; one theme and shell pattern
   per country.
-- Speech checking for the speaking exercise, on the device if possible (today the learner judges
-  their own attempt after hearing the model).
 - Sync between devices and profiles shared across phones (with accounts).
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
 

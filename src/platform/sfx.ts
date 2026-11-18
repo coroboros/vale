@@ -1,4 +1,5 @@
 /** Short synthesized sounds (no audio files to download). */
+import { isQuiet, settings } from '../state/store';
 
 let ctx: AudioContext | null = null;
 
@@ -39,8 +40,9 @@ const SOUNDS = {
 
 export type Sound = keyof typeof SOUNDS;
 
-/** Plays a sound; the audio context is created on the first user gesture. */
+/** Plays a sound when sounds are on and quiet mode is off; the audio context starts on a gesture. */
 export function play(sound: Sound, combo = 0): void {
+  if (!settings.value.sfx || isQuiet()) return;
   try {
     ctx ??= new AudioContext();
     if (ctx.state === 'suspended') void ctx.resume();

@@ -3,7 +3,7 @@ import { courseById, indexOf } from '../../src/content';
 import { cardOf, TIER } from '../../src/engine/exercises';
 import { initMemory } from '../../src/engine/memory';
 import { seeded } from '../../src/engine/random';
-import { answer, createSession, next, outcome, type PoolCard, targetSuccess } from '../../src/engine/session';
+import { answer, createSession, next, outcome, type PoolCard, setAudio, targetSuccess } from '../../src/engine/session';
 
 beforeAll(initMemory);
 
@@ -79,6 +79,25 @@ describe('lesson session', () => {
     const kinds = play(session, () => true);
     expect(kinds).not.toContain('listen');
     expect(kinds).not.toContain('dictation');
+  });
+
+  it('« Je ne peux pas écouter » swaps a listening exercise for another format, ungraded', () => {
+    const session = createSession({ kind: 'review', unitId: null }, known(4, 0.6), { audio: true });
+    session.allowed = ['listen'];
+    const rng = seeded(5);
+    const ex = next(session, index, rng)!;
+    expect(ex.kind).toBe('listen');
+    const key = ex.kind !== 'match' ? ex.card.key : '';
+    const step = session.step;
+    setAudio(session, false, index, rng);
+    const swapped = session.current!;
+    expect(swapped.kind).not.toBe('listen');
+    expect(swapped.kind !== 'match' && swapped.card.key).toBe(key);
+    expect(session.step).toBe(step);
+    expect(session.results).toEqual([]);
+    expect(play(session, () => true)).not.toContain('dictation');
+    setAudio(session, true, index, rng);
+    expect(session.allowed).toContain('listen');
   });
 
   it('stops at the exercise cap even if the learner keeps failing', () => {

@@ -5,10 +5,19 @@ import { review } from './engine/memory';
 import { buildPool } from './engine/pool';
 import { arrivalTime, dayKey, lessonKey, logSession, newStamps, spendJokers, streak } from './engine/progress';
 import { type Rng, seeded } from './engine/random';
-import { answer, createSession, type Mode, next, type Outcome, outcome, type Session } from './engine/session';
+import {
+  answer,
+  createSession,
+  type Mode,
+  next,
+  type Outcome,
+  outcome,
+  type Session,
+  setAudio,
+} from './engine/session';
 import { canSpeak, stopSpeech } from './platform/speech';
-import { blankData, type DB, newId, type Profile, type ProfileData, type Translation } from './state/schema';
-import { cindex, pdata, profile, update, updateData } from './state/store';
+import { blankData, type DB, newId, type Profile, type ProfileData, QUIET_MS, type Translation } from './state/schema';
+import { cindex, isQuiet, pdata, profile, update, updateData } from './state/store';
 import { sentenceKey } from './translation-api';
 import { showToast } from './ui/kit';
 import { go } from './ui/router';
@@ -66,7 +75,7 @@ export function startSession(mode: Mode, title: string, now = Date.now()): void 
     return;
   }
   const rng = seeded(now);
-  const session = createSession(mode, pool, { audio: canSpeak(index.course.lang) });
+  const session = createSession(mode, pool, { audio: canSpeak(index.course.lang) && !isQuiet(now) });
   next(session, index, rng);
   running.value = { session, index, rng, title, startedAt: now, combo: 0, bestCombo: 0, misses: {}, summary: null };
   go({ name: 'session' });
@@ -83,6 +92,27 @@ export function submitAnswer(correct: boolean): void {
   }
   answer(r.session, correct);
   touch();
+}
+
+/** A time of day as the learner reads it, e.g. « 15:40 ». */
+export const clock = (ms: number) => new Date(ms).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+/**
+ * Quiet mode: no listening exercise and no sound the learner did not ask for. Switched on from a
+ * session it lasts an hour (a commute, a waiting room); from Moi it lasts until switched off.
+ */
+export function setQuiet(on: boolean, opts: { forAnHour?: boolean } = {}, now = Date.now()): void {
+  update(d => {
+    d.settings.quiet = on && !opts.forAnHour;
+    d.settings.quietUntil = on && opts.forAnHour ? now + QUIET_MS : 0;
+  });
+  if (on) stopSpeech();
+  const r = running.value;
+  if (r) {
+    setAudio(r.session, !on && canSpeak(r.index.course.lang), r.index, r.rng);
+    touch();
+  }
+  if (on && opts.forAnHour) showToast(`Mode discret jusqu’à ${clock(now + QUIET_MS)} : pas d’écoute, pas de son.`);
 }
 
 /** Goes to the next exercise, or closes the session with its summary. */

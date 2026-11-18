@@ -29,6 +29,14 @@ A hermit crab, *bernard-l’ermite* in French, who carries his home on his back 
 shell takes the colours and pattern of the country being learned. He jumps when a session goes
 well, makes a sorry face when an answer is wrong, and never scolds.
 
+## App icon
+
+`brand/icon.svg` is the only source; `sh brand/make-icons.sh` writes the favicon, the iOS and
+manifest PNGs and the maskable copy. Bernard fills the frame, without scenery or fine detail, so he
+still reads at tab size (32 px on a computer, about 84 px in Safari's tab overview on an iPhone).
+The maskable copy shrinks him to 80 %, inside the circle of radius 40 % that Android may crop to
+(Web Application Manifest, icon masks and safe zone).
+
 ## Colours and type
 
 Each language has a theme (`src/ui/themes.ts`), applied to primary actions, progress and the shell:

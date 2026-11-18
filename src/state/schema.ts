@@ -28,7 +28,17 @@ export interface Settings {
   sfx: boolean;
   /** Rotate between the device's voices of the language (high-variability listening). */
   variedVoices: boolean;
+  /** Quiet mode until the learner switches it off (Moi). */
+  quiet: boolean;
+  /** Quiet mode until this time (ms since epoch), set by « Je ne peux pas écouter maintenant ». */
+  quietUntil: number;
 }
+
+/** How long « Je ne peux pas écouter maintenant » keeps the sound off: long enough for a commute. */
+export const QUIET_MS = 60 * 60 * 1000;
+
+/** Quiet mode: no listening exercise and no sound the learner did not ask for. */
+export const quietActive = (s: Settings, now: number): boolean => s.quiet || s.quietUntil > now;
 
 export interface DayLog {
   xp: number;
@@ -150,6 +160,8 @@ export const defaultSettings = (): Settings => ({
   phonetics: true,
   sfx: true,
   variedVoices: true,
+  quiet: false,
+  quietUntil: 0,
 });
 
 export const blankDB = (): DB => ({
@@ -172,7 +184,14 @@ export function sanitize(raw: unknown): DB {
   if (!raw || typeof raw !== 'object') return db;
   const src = raw as Partial<DB>;
   db.onboarded = src.onboarded === true;
-  db.settings = { ...defaultSettings(), ...(src.settings ?? {}) };
+  const saved = (src.settings ?? {}) as Partial<Record<keyof Settings, unknown>>;
+  const defaults = defaultSettings();
+  db.settings = Object.fromEntries(
+    Object.entries(defaults).map(([k, v]) => [
+      k,
+      typeof saved[k as keyof Settings] === typeof v ? saved[k as keyof Settings] : v,
+    ]),
+  ) as unknown as Settings;
   db.profiles = Array.isArray(src.profiles)
     ? src.profiles
         .filter(p => p && typeof p.id === 'string' && typeof p.name === 'string')

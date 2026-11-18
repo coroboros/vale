@@ -74,51 +74,56 @@ async function leaveFirstLesson(page: Page) {
 async function playSession(page: Page, keyboard = false) {
   for (let i = 0; i < 80; i++) {
     if (await page.locator('.ticket').isVisible()) return;
-    const feedback = page.locator('.feedback .btn-block');
-    if (await feedback.isVisible()) {
-      await feedback.click();
-      continue;
-    }
-    const ex = page.locator('.ex').first();
-    if (await ex.locator('.choice').count()) {
-      if (keyboard) {
-        await expect(async () => {
-          await page.keyboard.press('1');
-          await expect(ex.locator('.choice input').first()).toBeChecked({ timeout: 300 });
-        }).toPass({ timeout: 5000 });
-        await page.keyboard.press('Enter');
-      } else {
-        await ex.locator('.choice').first().click();
-        await ex.locator('.ex-actions .btn').click();
-      }
-    } else if (await ex.locator('.bank .tile').count()) {
-      const free = ex.locator('.bank .tile:not([disabled])');
-      while (await free.count()) await free.first().click();
-      await ex.locator('.ex-actions .btn').click();
-    } else if (await ex.locator('#dictation').count()) {
-      await ex.locator('#dictation').fill('hola');
-      await ex.locator('.ex-actions .btn').click();
-    } else if (await ex.getByRole('button', { name: 'Voir la réponse' }).count()) {
-      await ex.getByRole('button', { name: 'Voir la réponse' }).click();
-      await ex.getByRole('button', { name: 'Je l’ai bien dit' }).click();
-    } else if (await ex.locator('.pairs').count()) {
-      const left = ex.locator('.pairs > div').first().locator('.pair:not([disabled])');
-      const right = ex.locator('.pairs > div').last().locator('.pair:not([disabled])');
-      for (let a = 0; a < 6 && (await left.count()); a++) {
-        for (let b = 0; b < (await right.count()); b++) {
-          await left.first().click();
-          await right.nth(b).click();
-          await page.waitForTimeout(450);
-          if ((await left.count()) <= a) break;
-        }
-      }
-      await page.waitForTimeout(600);
-    } else if (await ex.getByRole('button', { name: 'Continuer' }).count()) {
-      await ex.getByRole('button', { name: 'Continuer' }).click();
-    }
-    await page.waitForTimeout(60);
+    await playStep(page, keyboard);
   }
   throw new Error('the session did not end');
+}
+
+/** Answers the exercise or closes the feedback on screen, right or wrong. */
+async function playStep(page: Page, keyboard = false) {
+  const feedback = page.locator('.feedback .btn-block');
+  if (await feedback.isVisible()) {
+    await feedback.click();
+    return;
+  }
+  const ex = page.locator('.ex').first();
+  if (await ex.locator('.choice').count()) {
+    if (keyboard) {
+      await expect(async () => {
+        await page.keyboard.press('1');
+        await expect(ex.locator('.choice input').first()).toBeChecked({ timeout: 300 });
+      }).toPass({ timeout: 5000 });
+      await page.keyboard.press('Enter');
+    } else {
+      await ex.locator('.choice').first().click();
+      await ex.locator('.ex-actions .btn-primary').click();
+    }
+  } else if (await ex.locator('.bank .tile').count()) {
+    const free = ex.locator('.bank .tile:not([disabled])');
+    while (await free.count()) await free.first().click();
+    await ex.locator('.ex-actions .btn-primary').click();
+  } else if (await ex.locator('#dictation').count()) {
+    await ex.locator('#dictation').fill('hola');
+    await ex.locator('.ex-actions .btn-primary').click();
+  } else if (await ex.getByRole('button', { name: 'Voir la réponse' }).count()) {
+    await ex.getByRole('button', { name: 'Voir la réponse' }).click();
+    await ex.getByRole('button', { name: /^Je l’(ai bien dit|avais)$/ }).click();
+  } else if (await ex.locator('.pairs').count()) {
+    const left = ex.locator('.pairs > div').first().locator('.pair:not([disabled])');
+    const right = ex.locator('.pairs > div').last().locator('.pair:not([disabled])');
+    for (let a = 0; a < 6 && (await left.count()); a++) {
+      for (let b = 0; b < (await right.count()); b++) {
+        await left.first().click();
+        await right.nth(b).click();
+        await page.waitForTimeout(450);
+        if ((await left.count()) <= a) break;
+      }
+    }
+    await page.waitForTimeout(600);
+  } else if (await ex.getByRole('button', { name: 'Continuer' }).count()) {
+    await ex.getByRole('button', { name: 'Continuer' }).click();
+  }
+  await page.waitForTimeout(60);
 }
 
 test('first launch to first lesson, progress kept after reload', async ({ page }) => {
@@ -132,6 +137,41 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await page.reload();
   await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
   await expect(page.locator('.stop.started, .stop.done').first()).toBeVisible();
+});
+
+test('quiet mode: nothing speaks on its own, the listening drills wait, the sound comes back', async ({ page }) => {
+  await onboard(page);
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  const quiet = page.getByRole('button', { name: 'Mode discret' });
+  await expect(quiet).toHaveAttribute('aria-pressed', 'false');
+  await quiet.click();
+  await expect(quiet).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('status')).toContainText('Mode discret jusqu’à');
+  const spoken = () => page.evaluate(() => (window as unknown as { __spoken: string[] }).__spoken.length);
+  const before = await spoken();
+  await playSession(page);
+  expect(await spoken()).toBe(before);
+  await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('link', { name: 'Entraînement' }).click();
+  await expect(page.locator('.quiet-note')).toContainText('Mode discret jusqu’à');
+  await expect(page.getByRole('button', { name: /^Écoute/ })).toBeDisabled();
+  await page.getByRole('button', { name: 'Remettre le son' }).click();
+  await expect(page.locator('.quiet-note')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Écoute/ })).toBeEnabled();
+});
+
+test('« Je ne peux pas écouter maintenant » swaps the listening exercise and goes quiet', async ({ page }) => {
+  // A fixed clock makes the session's random choices repeatable.
+  await page.clock.setFixedTime(new Date('2026-11-18T09:00:00'));
+  await onboard(page);
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  const cant = page.getByRole('button', { name: 'Je ne peux pas écouter maintenant' });
+  for (let i = 0; i < 40 && !(await cant.isVisible()); i++) await playStep(page);
+  await cant.click();
+  await expect(page.getByRole('status')).toContainText('Mode discret jusqu’à');
+  await expect(cant).toHaveCount(0);
+  await expect(page.locator('#dictation, .say-row.center')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Mode discret' })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('opens without network once visited', async ({ page, context }) => {

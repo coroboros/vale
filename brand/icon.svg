@@ -1,25 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- App icon: Bernard the hermit crab under the sun. Artwork kept inside the maskable safe zone (80%). -->
+  <!--
+    App icon and favicon: Bernard the hermit crab, filling the frame so he still reads at tab size
+    (32 px on a computer, about 84 px in Safari's tab overview on an iPhone). No scenery and no
+    fine detail: big eyes, a bold spiral, flat colours on the brand blue.
+    The art sits in <g id="art">; brand/make-icons.sh shrinks it into the maskable safe zone.
+  -->
   <rect width="512" height="512" fill="#1E5FD0"/>
-  <circle cx="372" cy="150" r="78" fill="#FFC23A"/>
-  <path d="M0 404 Q64 380 128 404 T256 404 T384 404 T512 404 V512 H0 Z" fill="#174CAD"/>
-  <g transform="translate(70 92) scale(3.05)">
-    <ellipse cx="60" cy="96" rx="40" ry="4.5" fill="#0E2F6E" opacity=".35"/>
-    <circle cx="73" cy="48" r="36" fill="#FFB21E" stroke="#D98A00" stroke-width="3"/>
-    <g fill="#16213E">
-      <circle cx="58" cy="28" r="4.2"/><circle cx="86" cy="34" r="4.2"/><circle cx="92" cy="56" r="4.2"/><circle cx="74" cy="72" r="4.2"/>
+  <g id="art">
+    <circle cx="316" cy="296" r="170" fill="#FFB21E" stroke="#D98A00" stroke-width="12"/>
+    <path d="M322 296 a20 20 0 1 1 40 0 a44 44 0 1 1 -88 0 a74 74 0 1 1 148 0 a106 106 0 1 1 -212 0" fill="none" stroke="#D98A00" stroke-width="30" stroke-linecap="round"/>
+    <ellipse cx="192" cy="362" rx="108" ry="88" fill="#FF7A3D" stroke="#D9541A" stroke-width="12"/>
+    <g fill="#FF7A3D" stroke="#D9541A" stroke-width="12" stroke-linejoin="round" transform="rotate(-30 96 318)">
+      <path d="M96 318 m-50 0 a50 50 0 1 0 50 -50 l0 34 a16 16 0 0 1 -16 16 z"/>
     </g>
-    <path d="M73 48 m-4 0 a4 4 0 1 1 8 0 a8 8 0 1 1 -16 0 a14 14 0 1 1 28 0 a20 20 0 1 1 -40 0" fill="none" stroke="#D98A00" stroke-width="3.4" stroke-linecap="round"/>
-    <ellipse cx="46" cy="66" rx="13" ry="15" fill="#D98A00"/>
-    <g stroke="#D9541A" stroke-width="3.4" stroke-linecap="round"><path d="M30 80 l-5 9"/><path d="M39 83 l-2 9"/><path d="M49 82 l3 9"/></g>
-    <ellipse cx="40" cy="70" rx="19" ry="15" fill="#FF7A3D" stroke="#D9541A" stroke-width="2.4"/>
-    <g stroke="#D9541A" stroke-width="3.6" stroke-linecap="round"><path d="M34 60 L30 38"/><path d="M45 59 L49 36"/></g>
-    <circle cx="29" cy="33" r="9" fill="#fff" stroke="#D9541A" stroke-width="2.2"/>
-    <circle cx="50" cy="31" r="9" fill="#fff" stroke="#D9541A" stroke-width="2.2"/>
-    <circle cx="29" cy="31.5" r="4.4" fill="#16213E"/><circle cx="50" cy="29.5" r="4.4" fill="#16213E"/>
-    <circle cx="30.6" cy="29.8" r="1.4" fill="#fff"/><circle cx="51.6" cy="27.8" r="1.4" fill="#fff"/>
-    <path d="M33 70 q7 8 14 0" fill="#16213E" stroke="#16213E" stroke-width="2.2" stroke-linecap="round"/>
-    <g fill="#FF7A3D" stroke="#D9541A" stroke-width="2.4" transform="rotate(-38 22 70)"><path d="M22 70 m-9 0 a9 9 0 1 0 9 -9 l0 6 a3 3 0 0 1 -3 3 z"/></g>
-    <g fill="#FF7A3D" stroke="#D9541A" stroke-width="2.4"><path d="M58 76 m-7 0 a7 7 0 1 0 7 -7 l0 4.6 a2.4 2.4 0 0 1 -2.4 2.4 z"/></g>
+    <g stroke="#D9541A" stroke-width="20" stroke-linecap="round"><path d="M168 292 L142 200"/><path d="M222 286 L246 184"/></g>
+    <circle cx="134" cy="156" r="58" fill="#fff" stroke="#D9541A" stroke-width="12"/>
+    <circle cx="252" cy="140" r="58" fill="#fff" stroke="#D9541A" stroke-width="12"/>
+    <circle cx="146" cy="151" r="28" fill="#16213E"/>
+    <circle cx="264" cy="135" r="28" fill="#16213E"/>
+    <circle cx="155" cy="140" r="10" fill="#fff"/>
+    <circle cx="273" cy="124" r="10" fill="#fff"/>
+    <path d="M160 384 Q196 418 232 384" fill="none" stroke="#16213E" stroke-width="14" stroke-linecap="round"/>
   </g>
 </svg>
