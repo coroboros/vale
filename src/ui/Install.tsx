@@ -44,3 +44,21 @@ export function InstallButton({ block, secondary }: { block?: boolean; secondary
     </>
   );
 }
+
+/**
+ * On an iPhone, Safari deletes a site's data after seven days of Safari use without a visit; apps
+ * on the home screen keep theirs (WebKit, 2020). Shown once there is progress to lose.
+ */
+export function KeepProgress() {
+  if (installMethod.value !== 'ios') return null;
+  return (
+    <section class="card keep" aria-labelledby="keep-title">
+      <h2 id="keep-title">Garde ta progression</h2>
+      <p>
+        Sur iPhone, Safari efface les données d’un site resté sans visite pendant sept jours d’utilisation. Installée
+        sur l’écran d’accueil, {BRAND.name} garde tout.
+      </p>
+      <InstallButton block />
+    </section>
+  );
+}

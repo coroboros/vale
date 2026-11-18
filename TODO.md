@@ -28,6 +28,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Bernard's eyes following a finger on the iPhone, and his blinking.
 - The « Imagine » photo on an older iPhone: the slow zoom under the frosted card (smoothness), and
   how fast the photo appears on a slow connection (it loads one step ahead, about 250 KB).
+- « Garde ta progression » on the iPhone: shown in Safari once a lesson is done, gone in the
+  installed app.
 - Bernard everywhere on the iPhone: his eyes following a finger and blinking in lessons, on the
   home card and in « Imagine », without slowing the screen; the flag on his shell at small sizes.
 - « Mon voyage » on the iPhone: switching language and destination from the home screen, then
@@ -54,7 +56,7 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   Algarve, Madeira, the Azores, Edinburgh, Dublin, New York); the rest use the generic coast for
   now.
 - **Photos that make you want to go.** One sunny, iconic photo per destination and per practice
-  moment (morning coffee, commute, lunch, evening golden hour), from Unsplash: RUNBOOK.md, step 6.
+  moment (morning coffee, commute, lunch, evening golden hour), from Unsplash: RUNBOOK.md, step C3.
 - **« Imagine », the sound of the place.** Once recorded voices exist, the phrase plays by itself as
   the photo appears, over a soft sound of the place (a café, a tram bell); silent in quiet mode.
 - **A game worth coming back to, from the evidence** (docs/LEARNING.md, game layer). Game fiction:
@@ -65,9 +67,9 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   stay informative, never paid per task (Deci, Koestner & Ryan, 1999).
 - **Understand what you hear and read.** Translation the other way (any course language into
   French), from typed text first, then from a photo of a menu or a sign.
-- **Measure before claiming.** Opt-in, anonymous counts (sessions finished, day-1 and day-7 return,
-  answer accuracy per exercise kind) to check the hypotheses in docs/LEARNING.md and to price.
-  Nothing personal, nothing about the sentences translated.
+- **Measure before claiming.** Anonymous counts, nothing personal, nothing about the sentences
+  translated: the decision figures are in RUNBOOK.md (A2); answer accuracy per exercise kind
+  then checks the hypotheses in docs/LEARNING.md.
 - **Reminders.** Web Push at the practice moment the learner chose (iOS 16.4+ for installed apps),
   sent by the Worker with VAPID keys.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
@@ -98,5 +100,4 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   rate limit, and CI deploys it. Consider Pulumi when DNS, a custom domain and several
   environments arrive.
 - A custom domain for the app (then its address no longer depends on Cloudflare's subdomain).
-- A Content Security Policy in `public/_headers`, tested end to end before shipping.
 - Lighthouse in CI with budgets (performance, accessibility, best practices).

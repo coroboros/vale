@@ -1,7 +1,7 @@
 # Business model: proposal
 
 Status: a proposal to decide on, not a plan. Every figure below is an outside benchmark or an
-estimate; ours will only be known once step 6 of the runbook (measurement) is live.
+estimate; ours will only be known once measurement (RUNBOOK.md, A2 and C1) is live.
 
 ## Principles
 
@@ -27,6 +27,11 @@ The **Pass voyage** fits how people use the app: they learn before a trip, with 
 once until the return date avoids subscription fatigue and can be priced from the trip length.
 Profiles on one phone (a couple sharing a device) share the pass.
 
+The flip side (external review, 18 November 2026): one payment per trip is little revenue per
+person and none in between trips. It only works if acquiring a traveller costs close to nothing,
+and buying again for the next trip becomes the figure to watch. Test that people pay at all,
+with the simplest payment link, before building accounts and entitlements (RUNBOOK.md, D3).
+
 ## How people move from free to paid
 
 Graded by evidence, strongest first:
@@ -51,8 +56,9 @@ Graded by evidence, strongest first:
 - **Local first.** No account to learn. An account appears only to buy or to sync devices.
 - **Sign-in:** passkeys, with an email link as the fallback. Users and entitlements in Cloudflare
   D1, read by the same Worker.
-- **Payments:** Stripe Checkout on the web (the app is a web app, outside app-store billing), a
-  webhook on the Worker records the entitlement. VAT and refunds through Stripe Tax and a clear
+- **Payments:** Stripe Checkout on the web, a webhook on the Worker records the entitlement. This
+  holds only outside the stores: in a store app, digital purchases follow the store's rules and
+  commissions (RUNBOOK.md, D2). VAT and refunds through Stripe Tax and a clear
   refund rule for passes.
 - **What a purchase unlocks:** the Worker checks the entitlement before serving premium lessons
   and before each translation or conversation turn, with a monthly cap per user. Whatever ships
@@ -66,3 +72,6 @@ Graded by evidence, strongest first:
 - Commercial use of AI: the Claude Max monthly credits suit the private beta; check Anthropic's
   terms before serving paying customers with them, and budget a regular API account for launch.
 - Legal: terms of sale, privacy policy (GDPR), company and invoicing setup.
+- Stores or web, or both: where the pass sells, with the commission inside the price (RUNBOOK.md,
+  D2, for the rules checked on 18 November 2026).
+- The name: INPI and EUIPO searches (classes 9 and 41), domain, store names.

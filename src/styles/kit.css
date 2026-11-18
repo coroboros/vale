@@ -544,6 +544,17 @@
     animation: rise 0.28s var(--ease-out) both;
   }
 
+  /* Smaller than on the welcome screen: the choices below must stay in reach on a phone. */
+  .trip-view {
+    display: grid;
+    justify-items: center;
+    padding-block: 28px 4px;
+  }
+
+  .trip-view .porthole {
+    --pw: clamp(130px, min(48vw, calc((100dvh - 560px) * 0.8)), 210px);
+  }
+
   .sheet-grip {
     width: 44px;
     height: 5px;

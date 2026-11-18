@@ -1,16 +1,17 @@
 /**
  * Motion stops for people who ask their system for less of it; the pause button stops the loop for
- * everyone else (WCAG 2.2.2).
+ * everyone else (WCAG 2.2.2). With one stop nothing loops, so there is no pause button.
  */
 import { Pause, Play } from 'lucide-preact';
 import type { RefObject } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import type { Course, Region } from '../content/types';
 import { reducedMotion } from '../platform/env';
 import { say } from '../platform/speech';
 import { easeVars } from './ease';
 import { Mascot } from './Mascot';
 import { Scenery } from './scenery/Scenery';
-import { type Theme, themeVars } from './themes';
+import { THEMES, type Theme, themeVars } from './themes';
 
 export interface Stop {
   place: string;
@@ -158,11 +159,23 @@ function CloudBank() {
   );
 }
 
+export const stopOf = (course: Course, region: Region): Stop => ({
+  place: region.id,
+  greeting: course.greet(region.native),
+  lang: course.lang,
+  theme: THEMES[course.flag],
+});
+
+/**
+ * Several stops: the welcome journey, flying from one to the next. One stop: the trip being chosen
+ * in « Mon voyage »; the window lands there again whenever the choice changes.
+ */
 export function Porthole({ stops }: { stops: Stop[] }) {
   const still = reducedMotion();
+  const single = stops.length === 1;
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>(still ? 'stay' : 'arrive');
-  const [playing, setPlaying] = useState(!still);
+  const [playing, setPlaying] = useState(!still && !single);
   const [hop, setHop] = useState(0);
   const [intro, setIntro] = useState(!still);
   const visible = usePageVisible();
@@ -170,6 +183,17 @@ export function Porthole({ stops }: { stops: Stop[] }) {
   const glass = useRef<HTMLButtonElement>(null);
   const stop = stops[index % stops.length]!;
   const next = () => setIndex(i => (i + 1) % stops.length);
+  const greet = () => {
+    setHop(h => h + 1);
+    void say(stop.greeting, { lang: stop.lang });
+  };
+
+  useEffect(() => {
+    if (!single || still) return;
+    setPhase('arrive');
+    const timer = setTimeout(() => setPhase('stay'), PHASE_MS.arrive);
+    return () => clearTimeout(timer);
+  }, [single, stop.place, stop.lang]);
 
   useEffect(() => {
     if (!playing || !visible) return;
@@ -187,7 +211,8 @@ export function Porthole({ stops }: { stops: Stop[] }) {
   }, [intro]);
 
   const flyOn = () => {
-    if (!playing) {
+    if (single) greet();
+    else if (!playing) {
       next();
       setPhase('stay');
     } else if (phase !== 'leave') setPhase('leave');
@@ -212,14 +237,15 @@ export function Porthole({ stops }: { stops: Stop[] }) {
         ref={glass}
         type="button"
         class="porthole-window"
-        aria-label="Voler vers la destination suivante"
+        aria-label={single ? `Écouter Bernard dire « ${stop.greeting} »` : 'Voler vers la destination suivante'}
+        tabIndex={single ? -1 : undefined}
         onClick={() => {
           if (dragged.current) dragged.current = false;
           else flyOn();
         }}
       >
         <span class="porthole-view">
-          <span key={index} class="porthole-land">
+          <span key={`${index}-${stop.place}-${stop.lang}`} class="porthole-land">
             <Scenery place={stop.place} tall />
           </span>
           <Wing />
@@ -232,19 +258,16 @@ export function Porthole({ stops }: { stops: Stop[] }) {
         type="button"
         class="porthole-bernard"
         aria-label={`Écouter Bernard dire « ${stop.greeting} »`}
-        onClick={() => {
-          setHop(h => h + 1);
-          void say(stop.greeting, { lang: stop.lang });
-        }}
+        onClick={greet}
       >
         <span class="porthole-bubble" lang={stop.lang}>
           {stop.greeting}
         </span>
         <span key={`${index}-${hop}`} class="porthole-hop">
-          <Mascot size={140} flag={stop.theme.id} mood="happy" decorative blinks={playing && visible} />
+          <Mascot size={140} flag={stop.theme.id} mood="happy" decorative blinks={(playing || single) && visible} />
         </span>
       </button>
-      {!still && (
+      {!still && !single && (
         <button
           type="button"
           class="porthole-toggle"

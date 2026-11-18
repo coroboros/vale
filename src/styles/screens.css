@@ -1776,6 +1776,11 @@
     background: none;
   }
 
+  .keep {
+    display: grid;
+    gap: 10px;
+  }
+
   .traveller {
     display: grid;
     gap: 14px;

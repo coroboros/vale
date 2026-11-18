@@ -5,7 +5,34 @@ the watch list live in TODO.md; the reasons behind product choices in docs/.
 
 Owner: **you** (needs your accounts or your phone) or **Claude** (code, in a Claude Code session).
 
-## 1. Connect Cloudflare and the Claude credits (you, about 15 minutes)
+Rule since the external review of 18 November 2026: **measure before widening**. No new language
+and no live conversation before the numbers below say people come back. Quality work on what
+exists (voices, photos) waits only for its keys.
+
+## A. Now: Claude, without you
+
+1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
+   Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,
+   2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Home now asks
+   iPhone users in Safari to install once they have progress to lose; the app already asked the
+   browser to keep its data at every start. Export from *Moi* remains the backup.
+2. **Measurement, ready to switch on.** Fix the decision figures first, then build anonymous
+   counts (no identifier, nothing about sentences translated) in the app and the Worker, tested
+   locally, switched on at step C1. The figures:
+   - return on day 1 and day 7 (share of new learners active again);
+   - share installed on the home screen by day 7;
+   - sessions completed before the departure date;
+   - later, the pass: offers seen, then taps.
+   Check the CNIL's conditions for consent-free audience measurement before switching on.
+3. **The game layer, from the evidence** (TODO.md): Bernard's trip as a story, the first daily
+   goal already started by onboarding, « plus que deux phrases » near the goal, travellers on one
+   phone as a team.
+4. **Acquisition experiments that need no account** (hypotheses, untested): a survival card worth
+   sharing, pages answering « comment commander un café en espagnol » that open the right lesson.
+
+## B. You, when you can
+
+### B1. Connect Cloudflare and the Claude credits (about 15 minutes)
 
 1. **Claim the Max API credits.** On claude.ai in a browser: *Settings → Billing → API credits →
    Link organization* (create a Console organisation if asked). The plan must be active for at
@@ -23,23 +50,24 @@ Owner: **you** (needs your accounts or your phone) or **Claude** (code, in a Cla
 6. **Check.** Open the address, go to *Phrases*, translate « Je voudrais un late checkout ».
    In the Cloudflare dashboard, the Worker's logs show the model used.
 
-## 2. Make the repository private, then rename it (you, 5 minutes)
+### B2. Make the repository private, then rename it (5 minutes)
 
-Only after step 1 works: GitHub Pages stops serving a private repository on the free plan.
+Right after B1 works (GitHub Pages stops serving a private repository on the free plan):
+docs/BUSINESS.md and docs/MARKET.md are public until then.
 
 1. Repository → *Settings → General → Danger Zone → Change visibility → Private*.
 2. Same page, *Repository name*: `bagage` → *Rename*.
 3. *Settings → Pages*: unpublish, then delete the `gh-pages` branch.
 4. On any clone: `git remote set-url origin https://github.com/coroboros/bagage.git`.
 
-## 3. Tidy up after the move (Claude)
+### B3. Tidy up after the move (Claude)
 
 - Remove the GitHub Pages branch of the *deploy* job in `.github/workflows/ci.yml`.
 - `BRAND.url` (`src/brand.ts`) and the README link: the Cloudflare address.
 - `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: keep only the local dev servers.
 - Delete the `TRANSLATE_URL` variable if it was ever set.
 
-## 4. Pick the Workers AI models with data (you run it, Claude reads it)
+### B4. Pick the Workers AI models with data (you run it, Claude reads it)
 
 The fallback models are chosen from general evidence, not measured on our sentences yet.
 
@@ -52,43 +80,71 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… npm run eval
 The token needs the *Workers AI* permission (add it to the deploy token or create one just for
 this). Paste the suggested `MODELS` into the `vars` of `worker/wrangler.jsonc`, commit, push.
 
-## 5. Install and test on your iPhones (you, with Claude for fixes)
+### B5. Install and test on your iPhones (Claude fixes)
 
 Safari → the Cloudflare address → *Partager → Sur l'écran d'accueil*. Then go through *Test for
 real* in TODO.md and report what fails, with a screenshot.
 
-## 6. Product, before any business (Claude)
+### B6. Keys, when you have them
 
-In this order, each with its tests:
+- **Unsplash** for the « Imagine » photos: step C3.
+- **Fish Audio** for the voices: a key with a few dollars of credit as the `FISH_API_KEY` GitHub
+  secret, and a native speaker to approve the voices (docs/VOICE.md).
 
-1. Privacy-friendly measurement of the funnel (sessions, return on day 1 and day 7, translations
-   used, where people stop). Nothing about the content of translations. Needed to prove any of
-   the claims in docs/LEARNING.md and to price anything.
-2. Photos from Unsplash for « Imagine ». From you: an Unsplash Access Key (unsplash.com/oauth/
-   applications → *New Application*), stored as the `UNSPLASH_ACCESS_KEY` GitHub secret. Then
-   Claude: `brand/photos.py` searches Unsplash per destination and per practice moment (morning
-   coffee: morning light; commute: a lively street; lunch: a sunny terrace; evening: golden hour),
-   picks from contact sheets, triggers each photo's download endpoint once and records the
-   photographer. As the API terms require, the app shows Unsplash's own image URLs (sized and
-   encoded by their CDN, so the 15 MB in `public/photos/` leave the repository) and credits
-   « Photo : name sur Unsplash » with links. README says that this step loads an image from
-   images.unsplash.com, the only request the app makes to another site.
-3. More drawn destinations (the home card already shows the learner's own).
-4. Translation the other way (understand a menu or a reply).
-5. AI voices for every phrase (docs/VOICE.md). From you: a Fish Audio API key with a few dollars
-   of credit, stored as the `FISH_API_KEY` GitHub secret, and a native speaker to approve the
-   voices.
+## C. After going live: measure first (Claude)
 
-## 7. Business model (you decide, Claude builds)
+1. Switch measurement on (A2). Compare the translation cost with the Console's usage page: about
+   0.3 cent a sentence is an estimate, not a measurement.
+2. Two weeks later, read the figures and choose what comes next from them.
+3. Photos from Unsplash for « Imagine ». `brand/photos.py` searches Unsplash per destination and
+   per practice moment (morning coffee: morning light; commute: a lively street; lunch: a sunny
+   terrace; evening: golden hour), picks from contact sheets, triggers each photo's download
+   endpoint once and records the photographer. As the API terms require, the app shows
+   Unsplash's own image URLs (sized and encoded by their CDN, so the 15 MB in `public/photos/`
+   leave the repository) and credits « Photo : name sur Unsplash » with links. README says that
+   this step loads an image from images.unsplash.com, the only request the app makes to another
+   site.
+4. AI voices for every phrase (docs/VOICE.md), with the Fish Audio key.
+5. More drawn destinations; translation the other way (understand a menu or a reply).
 
-Proposal and open questions: docs/BUSINESS.md. Order of work once decided:
+## D. Before selling anything (you decide, Claude prepares)
+
+1. **Where the first 100 travellers come from.** One experiment per channel, each with its cost,
+   installs and day-7 return: search pages per situation, the shared survival card, short travel
+   videos, the stores. The demand exists: 12.9 million French tourists visited Spain in 2024,
+   10.3 % more than in 2023 ([Turespaña, Frontur](https://www.mintur.gob.es/es-es/gabineteprensa/notasprensa/2025/documents/20250203%20ndp%20frontur%20egatur%20diciembre%20y%20anual.pdf)).
+   A pass paid once per trip brings little per person: acquisition must cost close to nothing,
+   and buying again for the next trip becomes the figure that matters.
+2. **Stores or the web.** In a store app, digital purchases follow the store's rules, which
+   rewrites docs/BUSINESS.md's « Stripe on the web ». Checked 18 Nov 2026:
+   - Apple, EU, from 1 Oct 2026: 26 % through Apple's in-app purchase, alternatives allowed
+     alongside, and the chosen setup kept 12 months ([Apple](https://developer.apple.com/support/apps-in-the-eu/));
+     secondary sources give 20 % for other processors and 15 % for a link to the web.
+   - Google Play, US, UK and EEA, from 30 Jun 2026: 10 % on the first million dollars a year
+     whatever the billing, plus 5 % only with Google's billing; links to a web checkout
+     allowed ([Android Developers Blog](https://android-developers.googleblog.com/2026/06/play-expanded-billing.html)).
+   - Apple reviews apps that wrap a website against its minimum functionality rule (4.2); check
+     inside the wrapper: offline and the service worker, speech recognition and synthesis, the
+     microphone, persistent storage.
+   Put the commission in the price, and decide where the pass sells: app, web, or both.
+3. **Test willingness to pay with the simplest thing** (a payment link for the pass, offered to
+   real travellers) before building accounts, D1, passkeys and entitlements.
+4. **Legal and the name.** Terms of sale, privacy policy (GDPR), the company that invoices,
+   Anthropic's terms for serving paying customers; the name checked at INPI and EUIPO (classes 9
+   and 41), the domain and the store names.
+5. **A Content Security Policy** in `public/_headers`, tested end to end, before accounts and
+   payments.
+
+## E. The business model (Claude, once D says go)
+
+Proposal and open questions: docs/BUSINESS.md. In this order:
 
 1. Accounts (only when buying or syncing; the app stays usable without one).
-2. Payments (Stripe Checkout, the « Pass voyage » and a subscription) and entitlements checked
-   by the Worker.
+2. Payments (the pass, then a subscription), following the D2 decision, and entitlements
+   checked by the Worker.
 3. Premium content served by the Worker after purchase (what ships in the app bundle is free by
    nature), and per-user quotas on translation and AI conversation.
-4. The live conversation partner, light on data (docs/VOICE.md).
+4. The live conversation partner, light on data (docs/VOICE.md), if the figures justify it.
 
 ## Working with Claude Code on your Mac
 

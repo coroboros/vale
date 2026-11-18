@@ -7,6 +7,7 @@ import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible 
 import { tripOf } from '../../state/schema';
 import { cindex, course, pdata, profile } from '../../state/store';
 import { Daily } from '../Daily';
+import { KeepProgress } from '../Install';
 import { Bar, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
 import { go } from '../router';
@@ -197,6 +198,8 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {ready.learned > 0 && <KeepProgress />}
 
       <div class="only-narrow">
         <Daily compact />

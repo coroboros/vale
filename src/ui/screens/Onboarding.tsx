@@ -13,18 +13,14 @@ import { InstallButton } from '../Install';
 import { imagineWords } from '../imagine';
 import { ChoiceGroup, Say } from '../kit';
 import { Mascot } from '../Mascot';
-import { Porthole, type Stop } from '../Porthole';
+import { Porthole, type Stop, stopOf } from '../Porthole';
 import { type Photo, PORTRAIT, photoFiles, photoOf, preload } from '../photos';
 import { hasScenery } from '../scenery/Scenery';
 import { DateField, LanguageChoice, PlaceChoice } from '../Trip';
 import { THEMES, themeVars } from '../themes';
 
 const JOURNEY: Stop[] = (() => {
-  const byCourse = COURSES.map(c =>
-    c.regions
-      .filter(r => hasScenery(r.id))
-      .map(r => ({ place: r.id, greeting: c.greet(r.native), lang: c.lang, theme: THEMES[c.flag] })),
-  );
+  const byCourse = COURSES.map(c => c.regions.filter(r => hasScenery(r.id)).map(r => stopOf(c, r)));
   const longest = Math.max(...byCourse.map(list => list.length));
   return Array.from({ length: longest }, (_, i) => byCourse.flatMap(list => list[i] ?? []));
 })().flat();

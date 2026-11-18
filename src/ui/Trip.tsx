@@ -6,6 +6,7 @@ import { dayKey } from '../engine/progress';
 import { tripOf } from '../state/schema';
 import { course, pdata, profile } from '../state/store';
 import { ChoiceGroup, Sheet } from './kit';
+import { Porthole, stopOf } from './Porthole';
 
 export function LanguageChoice({
   value,
@@ -102,9 +103,16 @@ export function TripFields() {
   );
 }
 
+/** The welcome window comes back here: it flies to the trip being chosen, and Bernard says hello. */
 export function TripSheet({ onClose }: { onClose: () => void }) {
+  const c = course.value;
+  const region = tripOf(profile.value!).region;
+  const place = c.regions.find(r => r.id === region) ?? c.regions[c.regions.length - 1]!;
   return (
     <Sheet title="Mon voyage" onClose={onClose}>
+      <div class="trip-view">
+        <Porthole stops={[stopOf(c, place)]} />
+      </div>
       <div class="form">
         <TripFields />
         <button type="button" class="btn btn-primary btn-block" onClick={onClose}>

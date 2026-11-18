@@ -13,7 +13,8 @@ connected, the app and its translation service are served by one Worker; see RUN
   London, Seville and Rome. The view follows your finger or your mouse, a tap flies on, and Bernard
   says hello in the local language.
 - **A trip, not a course.** You pick a destination and a departure date, and switch language from
-  the home screen whenever you like: each language keeps its own trip. Onboarding ends on a
+  the home screen whenever you like: each language keeps its own trip, and the welcome window
+  comes back there, flying to the destination you pick. Onboarding ends on a
   full-screen photo of your destination, where you hear yourself order your first coffee. The home screen shows how
   much of what you learned you will still remember on landing day, from your own memory model.
 - **Spaced retrieval that adapts.** Every phrase has its own forgetting curve (FSRS-7). Exercises

@@ -12,7 +12,9 @@ Today the app speaks with the phone's own voices: free and offline, but robotic 
   runs until 30 November 2026, with no service level, and is meant for testing [3][2].
 - **Generated once, not at run time.** The four courses have 666 distinct phrases (249 Spanish,
   141 Italian, 139 Portuguese, 137 English: lessons, regional packs, menus and false friends, both
-  sides of the scenes, the survival card), 10 KB of text in all, counted from `src/content/`. Two
+  sides of the scenes, the survival card), 10 KB of text in all, counted from `src/content/`.
+  The home screen counts something else on purpose: the phrases of the itinerary that the memory
+  forecast covers (the lessons and the destination's regional pack, 111 + 12 for Barcelona). Two
   voices therefore cost about $0.30 per full run. A CI script writes one Opus file per phrase and voice, named by a hash of the
   text, voice and model, so a run only regenerates what changed.
 - **Offline.** The files of the language being learnt go into the service worker's cache, about

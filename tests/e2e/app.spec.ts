@@ -239,8 +239,12 @@ test('« Mon voyage » switches language and destination from Home, and each lan
   const trip = page.getByRole('button', { name: /^Mon voyage/ });
   await expect(trip).toContainText('Espagnol · Barcelone');
   await trip.click();
+  const window = page.locator('.sheet .porthole');
+  await expect(window.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
+  await expectAccessible(page, 'mon voyage');
   await page.getByText('Italien', { exact: true }).click();
   await page.getByRole('button', { name: 'Venise' }).click();
+  await expect(window.locator('.porthole-bubble')).toHaveText('Ciao, Venezia!');
   await page.getByLabel('Date de départ').fill('2027-04-02');
   await page.getByRole('button', { name: 'C’est noté' }).click();
   await expect(page.getByRole('heading', { name: 'Ciao, Adrien!' })).toBeVisible();
@@ -270,6 +274,32 @@ test('Portuguese and English each play a first lesson to the end', async ({ page
     await playSession(page);
     await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
   }
+});
+
+test.describe('on an iPhone, in Safari', () => {
+  test.use({
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1',
+  });
+
+  test('asks the browser to keep data, and asks to install once there is progress to lose', async ({ page }) => {
+    await page.addInitScript(() => {
+      const asked: number[] = [];
+      Object.assign(window, { __persist: asked });
+      Object.defineProperty(navigator, 'storage', {
+        configurable: true,
+        value: { persist: async () => asked.push(1) > 0 && false, persisted: async () => false },
+      });
+    });
+    await onboard(page);
+    await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+    await playSession(page);
+    await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
+    await expect(page.getByRole('heading', { name: 'Garde ta progression' })).toBeVisible();
+    expect(await page.evaluate(() => (window as unknown as { __persist: number[] }).__persist.length)).toBeGreaterThan(
+      0,
+    );
+  });
 });
 
 test('quiet mode: nothing speaks on its own, the listening drills wait, the sound comes back', async ({ page }) => {
@@ -727,6 +757,9 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     await expect(page.locator('.sheet')).toBeVisible();
     await audit(`${size}: quit dialog`);
     await page.getByRole('button', { name: 'Quitter', exact: true }).click();
+    await page.getByRole('button', { name: /^Mon voyage/ }).click();
+    await audit(`${size}: mon voyage`);
+    await page.getByRole('button', { name: 'C’est noté' }).click();
     for (const hash of SCREENS) {
       await page.goto(`./${hash}`);
       await audit(`${size}: ${hash}`);
