@@ -653,11 +653,45 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
       // A single word broken over two lines, as « Barcelon / a » once was on a small phone.
       for (const el of document.querySelectorAll('h1, h2, .postcard-place')) {
         const text = el.textContent?.trim() ?? '';
-        if (!text || /\s/.test(text) || !visible(el)) continue;
+        // A hyphenated name may wrap after its hyphen; a plain word may not wrap at all.
+        if (!text || /[\s-]/.test(text) || !visible(el)) continue;
         const range = document.createRange();
         range.selectNodeContents(el);
         const lines = new Set([...range.getClientRects()].map(r => Math.round(r.top)));
         if (lines.size > 1) out.push(`« ${text} » split over ${lines.size} lines`);
+      }
+      // Bernard and the stamps never sit on text, whatever the length of a name or a title. The
+      // drawing leaves the corners of its box empty, hence the inset.
+      const marks = [...document.querySelectorAll('.mascot, .stamp')].filter(
+        el => visible(el) && !el.closest('.porthole'),
+      );
+      if (marks.length) {
+        const lines: { box: DOMRect; text: string }[] = [];
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          const text = node.textContent?.trim() ?? '';
+          const parent = node.parentElement;
+          if (!text || !parent || parent.closest('.mascot, .stamp, .porthole, .sr-only') || !visible(parent)) continue;
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          for (const box of range.getClientRects()) if (box.width && box.height) lines.push({ box, text });
+        }
+        for (const mark of marks) {
+          const m = mark.getBoundingClientRect();
+          const inset = m.width * 0.1;
+          const was = (mark as HTMLElement).style.pointerEvents;
+          (mark as HTMLElement).style.pointerEvents = 'auto';
+          for (const { box, text } of lines) {
+            const [left, right] = [Math.max(box.left, m.left + inset), Math.min(box.right, m.right - inset)];
+            const [top, bottom] = [Math.max(box.top, m.top + inset), Math.min(box.bottom, m.bottom - inset)];
+            if (left >= right || top >= bottom) continue;
+            // Covered only if the mark is the one on top there (a fixed bar may pass over a stamp).
+            const onTop = document.elementFromPoint((left + right) / 2, (top + bottom) / 2);
+            if (onTop?.closest('.mascot, .stamp') === mark)
+              out.push(`${mark.classList[0]} covers « ${text.slice(0, 30)} »`);
+          }
+          (mark as HTMLElement).style.pointerEvents = was;
+        }
       }
       const spaced = els.filter(el => el.matches('.choice, .chip, .tile-card'));
       for (let i = 0; i < spaced.length; i++)
@@ -684,7 +718,8 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     });
     await page.goto('./');
     await audit(`${size}: welcome`);
-    await onboard(page, 'Léa', step => audit(`${size}: ${step}`));
+    // The longest first name the form accepts is 24 characters: layouts are checked near it.
+    await onboard(page, 'Marie-Charlotte-Eugénie', step => audit(`${size}: ${step}`));
     await audit(`${size}: onboarding`);
     await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
     await audit(`${size}: session`);

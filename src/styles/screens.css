@@ -1751,6 +1751,7 @@
   /* Room for Bernard, perched in the corner beside a title that now carries a name. */
   .has-photo .ob-imagine h1 {
     padding-right: 80px;
+    font-size: clamp(1.75rem, 8.5vw, var(--step-3));
     color: #fff;
   }
 
