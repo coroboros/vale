@@ -576,6 +576,16 @@ const countBlinks = (page: Page) =>
   });
 const blinks = (page: Page) => page.evaluate(() => (window as unknown as { __blinks: number }).__blinks);
 
+test('Bernard’s greeting leaves the view clear, and comes back when he is tapped', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Mettre le voyage en pause' }).click();
+  const opacity = () => page.locator('.porthole-bubble').evaluate(b => Number(getComputedStyle(b).opacity));
+  await expect.poll(opacity).toBeGreaterThan(0.9);
+  await expect.poll(opacity, { timeout: 8000 }).toBe(0);
+  await page.locator('.porthole-bernard').click();
+  await expect.poll(opacity).toBeGreaterThan(0.9);
+});
+
 test('Bernard’s bubble leaves his eyes visible', async ({ page }) => {
   for (const viewport of [page.viewportSize()!, { width: 320, height: 568 }]) {
     await page.setViewportSize(viewport);

@@ -548,11 +548,11 @@
   .trip-view {
     display: grid;
     justify-items: center;
-    padding-block: 28px 4px;
+    padding-block: 4px;
   }
 
   .trip-view .porthole {
-    --pw: clamp(130px, min(48vw, calc((100dvh - 560px) * 0.8)), 210px);
+    --pw: clamp(170px, min(60vw, calc((100dvh - 420px) * 0.8)), 280px);
   }
 
   .sheet-grip {

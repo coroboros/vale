@@ -183,8 +183,12 @@ export function Porthole({ stops }: { stops: Stop[] }) {
   const glass = useRef<HTMLButtonElement>(null);
   const stop = stops[index % stops.length]!;
   const next = () => setIndex(i => (i + 1) % stops.length);
+  // A tap brings the bubble back at once; a new destination shows it once the land is in view.
+  const arrival = `${index}-${stop.place}-${stop.lang}`;
+  const [tappedAt, setTappedAt] = useState('');
   const greet = () => {
     setHop(h => h + 1);
+    setTappedAt(arrival);
     void say(stop.greeting, { lang: stop.lang });
   };
 
@@ -260,7 +264,12 @@ export function Porthole({ stops }: { stops: Stop[] }) {
         aria-label={`Écouter Bernard dire « ${stop.greeting} »`}
         onClick={greet}
       >
-        <span class="porthole-bubble" lang={stop.lang}>
+        <span
+          key={`${arrival}-${hop}`}
+          class="porthole-bubble"
+          lang={stop.lang}
+          style={tappedAt === arrival ? { '--bubble-delay': '0s' } : undefined}
+        >
           {stop.greeting}
         </span>
         <span key={`${index}-${hop}`} class="porthole-hop">
