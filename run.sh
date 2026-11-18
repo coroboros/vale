@@ -1,2 +1,2 @@
 set -e
-python3 candidates.py
+python3 brand/photos.py fetch render

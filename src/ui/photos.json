@@ -1,13 +1,13 @@
 {
   "lisbonne": {
-    "file": "Lissabon - Santa Luzia - Alfama - 3.jpg",
-    "focus": 0.38,
-    "alt": "Les toits rouges d’Alfama sous le ciel bleu de Lisbonne"
+    "file": "Alfama trams Lisbon 12 2016 9698.jpg",
+    "focus": 0.55,
+    "alt": "Des tramways jaunes dans une rue ensoleillée de Lisbonne"
   },
   "porto": {
-    "file": "Ribeira from Dom Luis I bridge (1).jpg",
-    "focus": 0.7,
-    "alt": "Les façades colorées de la Ribeira au bord du Douro, à Porto"
+    "file": "Ribeiras Restaurant Porto (22093763525).jpg",
+    "focus": 0.3,
+    "alt": "Une terrasse face au pont Dom-Luís et au Douro, à Porto"
   },
   "algarve": {
     "file": "Praia da Marinha-Algarve-Portugal.jpg",
@@ -15,9 +15,9 @@
     "alt": "Falaises dorées et mer turquoise à la Praia da Marinha, en Algarve"
   },
   "madere": {
-    "file": "Ponta de São Lourenço, Madeira, Portugal, 2019-05-28, DD 10.jpg",
-    "focus": 0.5,
-    "alt": "Falaises et eau turquoise à la pointe de São Lourenço, à Madère"
+    "file": "Ponta de São Lourenço, Madeira, Portugal, 2019-05-28, DD 31.jpg",
+    "focus": 0.55,
+    "alt": "Les falaises de la pointe de São Lourenço plongeant dans l’océan, à Madère"
   },
   "acores": {
     "file": "Lagoa das Sete Cidades, Miradouro da vista do Rei, Sete Cidades, Ponta Delgada, ilha de São Miguel, Açores.JPG",
@@ -25,19 +25,19 @@
     "alt": "Les lacs de Sete Cidades au fond de leur cratère vert, aux Açores"
   },
   "madrid": {
-    "file": "Edificio Metrópolis, calle de Alcalá, Madrid, España, 2017-05-18, DD 08.jpg",
-    "focus": 0.7,
-    "alt": "L’édifice Metrópolis et sa coupole sous le ciel bleu de Madrid"
+    "file": "Plaza Mayor . Fachada orientada al Sur.jpg",
+    "focus": 0.45,
+    "alt": "La Plaza Mayor de Madrid et ses façades sous le soleil"
   },
   "barcelone": {
-    "file": "Park Güell 02.jpg",
-    "focus": 0.75,
-    "alt": "Les pavillons en mosaïque de Gaudí au parc Güell, avec Barcelone et la mer au loin"
+    "file": "Park Güell - 50030738311.jpg",
+    "focus": 0.35,
+    "alt": "Le banc en mosaïque du parc Güell et les pavillons de Gaudí, à Barcelone"
   },
   "valence": {
-    "file": "Ciudad de las Artes y las Ciencias, Valencia, España, 2014-06-29, DD 39.JPG",
-    "focus": 0.4,
-    "alt": "La Cité des arts et des sciences de Valence au crépuscule, au bord de ses bassins"
+    "file": "Plaza de la Virgen, Valencia, España, 2014-06-30, DD 163.JPG",
+    "focus": 0.42,
+    "alt": "La plaza de la Virgen, sa fontaine et sa basilique, à Valence"
   },
   "baleares": {
     "file": "View of the bay at Calo des Moro, Mallorca (Spain) (23899506181).jpg",
@@ -60,14 +60,14 @@
     "alt": "La plage et la baie de La Concha au soleil, à Saint-Sébastien"
   },
   "galice": {
-    "file": "Praia de Rodas desde a montaña norte das Illas Cíes, Vigo, Galiza.jpg",
-    "focus": 0.35,
-    "alt": "La plage de Rodas et les îles Cíes dans la lumière du soir, en Galice"
+    "file": "Illas Cíes 16VIII2013 01.JPG",
+    "focus": 0.55,
+    "alt": "L’eau turquoise et les plages des îles Cíes, en Galice"
   },
   "roma": {
-    "file": "Colosseum of Rome and Roman forum.jpg",
-    "focus": 0.4,
-    "alt": "Le Colisée de Rome entre cyprès et colonnes antiques"
+    "file": "Pantheon Rom 1 cropped.jpg",
+    "focus": 0.5,
+    "alt": "Le Panthéon et la fontaine de la piazza della Rotonda, à Rome"
   },
   "firenze": {
     "file": "Firenze - Vista dal Piazzale Michelangelo - bis.jpg",
@@ -75,18 +75,43 @@
     "alt": "Le Duomo de Florence au-dessus des toits de tuiles, au soleil"
   },
   "venezia": {
-    "file": "Canal Grande Chiesa della Salute e Dogana dal ponte dell Accademia.jpg",
-    "focus": 0.55,
-    "alt": "Le Grand Canal, une gondole et la basilique de la Salute, à Venise"
+    "file": "Venice, Canal Grande, gondola across Pta. d. Dogana 1.jpg",
+    "focus": 0.48,
+    "alt": "Une gondole sur le Grand Canal devant la basilique de la Salute, à Venise"
   },
   "milano": {
-    "file": "Milano, Duomo with Milan Cathedral and Galleria Vittorio Emanuele II, 2016.jpg",
-    "focus": 0.7,
-    "alt": "La cathédrale de Milan et l’entrée de la galerie Victor-Emmanuel II"
+    "file": "Piazza del Duomo - kuhnmi.jpg",
+    "focus": 0.65,
+    "alt": "La cathédrale de Milan et la galerie Victor-Emmanuel II sous un ciel bleu"
   },
   "napoli": {
     "file": "View of Positano.jpg",
     "focus": 0.62,
     "alt": "Les maisons colorées de Positano accrochées à la falaise, sur la côte amalfitaine"
+  },
+  "sicilia": {
+    "file": "Spiaggia Cefalù.jpg",
+    "focus": 0.45,
+    "alt": "Les maisons de Cefalù au bord de l’eau dans la lumière du soir, en Sicile"
+  },
+  "londres": {
+    "file": "Westminster Bridge ^ Big Ben - geograph.org.uk - 8096386.jpg",
+    "focus": 0.75,
+    "alt": "Big Ben et le palais de Westminster au bord de la Tamise, à Londres"
+  },
+  "edimbourg": {
+    "file": "Victoria Street, Edinburgh - geograph.org.uk - 7340875.jpg",
+    "focus": 0.4,
+    "alt": "Les boutiques colorées de Victoria Street, à Édimbourg"
+  },
+  "dublin": {
+    "file": "The Temple Bar Pub in Dublin - panoramio.jpg",
+    "focus": 0.42,
+    "alt": "La façade rouge et fleurie du pub The Temple Bar, à Dublin"
+  },
+  "newyork": {
+    "file": "Brooklyn Bridge, view from Brooklyn Bridge Park, New York City, 20231002 0909 1574.jpg",
+    "focus": 0.55,
+    "alt": "Le pont de Brooklyn et les gratte-ciel de Manhattan au soleil"
   }
 }
