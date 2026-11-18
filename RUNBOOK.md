@@ -11,6 +11,20 @@ exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
+**First, at your request (19 Nov 2026): « Imagine » when a trip is added.** The form stays in the
+sheet, where the cabin window shows the destination while it is chosen (in flight). « Ajouter ce
+voyage » closes the sheet and lands on onboarding's « Imagine » screen for the new trip, full
+screen: the destination's photo (the country's for « Ailleurs »), « Imagine, <name>. », the date
+and practice moment, the café sentence, Bernard. Then « Apprendre ma première phrase » when the
+language is new, otherwise back to the itinerary, and « Plus tard ». Only when a trip is created,
+never on an edit or a switch, so it stays predictable and does not wear out. Build: one `Imagine`
+component taken out of `Onboarding.tsx` and used by both; a full-screen route `#/imagine` showing
+the trip in focus (the back button works); the photo preloaded once the chosen destination
+settles (not on every chip: about 250 KB each); the mascot when the photo fails. Tests: add a
+trip, then Rome's « Imagine », back, no photo, the long-name audit, accessibility. Why: the flow
+ends on a peak (Kahneman and colleagues, 1993, the peak-end rule), and « Imagine » states when and
+where, an if-then plan (docs/LEARNING.md).
+
 1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
    Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,
    2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Home now asks
