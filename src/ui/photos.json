@@ -1,0 +1,92 @@
+{
+  "lisbonne": {
+    "file": "Lissabon - Santa Luzia - Alfama - 3.jpg",
+    "focus": 0.38,
+    "alt": "Les toits rouges d’Alfama sous le ciel bleu de Lisbonne"
+  },
+  "porto": {
+    "file": "Ribeira from Dom Luis I bridge (1).jpg",
+    "focus": 0.7,
+    "alt": "Les façades colorées de la Ribeira au bord du Douro, à Porto"
+  },
+  "algarve": {
+    "file": "Praia da Marinha-Algarve-Portugal.jpg",
+    "focus": 0.5,
+    "alt": "Falaises dorées et mer turquoise à la Praia da Marinha, en Algarve"
+  },
+  "madere": {
+    "file": "Ponta de São Lourenço, Madeira, Portugal, 2019-05-28, DD 10.jpg",
+    "focus": 0.5,
+    "alt": "Falaises et eau turquoise à la pointe de São Lourenço, à Madère"
+  },
+  "acores": {
+    "file": "Lagoa das Sete Cidades, Miradouro da vista do Rei, Sete Cidades, Ponta Delgada, ilha de São Miguel, Açores.JPG",
+    "focus": 0.45,
+    "alt": "Les lacs de Sete Cidades au fond de leur cratère vert, aux Açores"
+  },
+  "madrid": {
+    "file": "Edificio Metrópolis, calle de Alcalá, Madrid, España, 2017-05-18, DD 08.jpg",
+    "focus": 0.7,
+    "alt": "L’édifice Metrópolis et sa coupole sous le ciel bleu de Madrid"
+  },
+  "barcelone": {
+    "file": "Park Güell 02.jpg",
+    "focus": 0.75,
+    "alt": "Les pavillons en mosaïque de Gaudí au parc Güell, avec Barcelone et la mer au loin"
+  },
+  "valence": {
+    "file": "Ciudad de las Artes y las Ciencias, Valencia, España, 2014-06-29, DD 39.JPG",
+    "focus": 0.4,
+    "alt": "La Cité des arts et des sciences de Valence au crépuscule, au bord de ses bassins"
+  },
+  "baleares": {
+    "file": "View of the bay at Calo des Moro, Mallorca (Spain) (23899506181).jpg",
+    "focus": 0.5,
+    "alt": "L’eau turquoise de la crique de Caló des Moro, à Majorque"
+  },
+  "andalousie": {
+    "file": "Plaza de España (Sevilla) - 01.jpg",
+    "focus": 0.3,
+    "alt": "La Plaza de España de Séville dans la lumière dorée du soir"
+  },
+  "canaries": {
+    "file": "Roque Cinchado mit Teide.jpg",
+    "focus": 0.4,
+    "alt": "Le Roque Cinchado devant le volcan Teide, à Tenerife"
+  },
+  "paysbasque": {
+    "file": "San Sebastian Kontxa beach 1190650.jpg",
+    "focus": 0.6,
+    "alt": "La plage et la baie de La Concha au soleil, à Saint-Sébastien"
+  },
+  "galice": {
+    "file": "Praia de Rodas desde a montaña norte das Illas Cíes, Vigo, Galiza.jpg",
+    "focus": 0.35,
+    "alt": "La plage de Rodas et les îles Cíes dans la lumière du soir, en Galice"
+  },
+  "roma": {
+    "file": "Colosseum of Rome and Roman forum.jpg",
+    "focus": 0.4,
+    "alt": "Le Colisée de Rome entre cyprès et colonnes antiques"
+  },
+  "firenze": {
+    "file": "Firenze - Vista dal Piazzale Michelangelo - bis.jpg",
+    "focus": 0.5,
+    "alt": "Le Duomo de Florence au-dessus des toits de tuiles, au soleil"
+  },
+  "venezia": {
+    "file": "Canal Grande Chiesa della Salute e Dogana dal ponte dell Accademia.jpg",
+    "focus": 0.55,
+    "alt": "Le Grand Canal, une gondole et la basilique de la Salute, à Venise"
+  },
+  "milano": {
+    "file": "Milano, Duomo with Milan Cathedral and Galleria Vittorio Emanuele II, 2016.jpg",
+    "focus": 0.7,
+    "alt": "La cathédrale de Milan et l’entrée de la galerie Victor-Emmanuel II"
+  },
+  "napoli": {
+    "file": "View of Positano.jpg",
+    "focus": 0.62,
+    "alt": "Les maisons colorées de Positano accrochées à la falaise, sur la côte amalfitaine"
+  }
+}
