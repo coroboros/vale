@@ -2,7 +2,8 @@
 """Fetches the destination photos of the « Imagine » step from Wikimedia Commons and renders them.
 
 src/ui/photos.json lists, for each destination, the Commons file, the point to keep when cropping
-(focus: 0 is the left edge, 1 the right edge) and the alt text. `fetch` downloads each file and
+(focus: 0 is the left edge, 1 the right edge), the alt text and, when part of the frame must go
+(a date stamp, a border), the part to keep (frame: left, top, right, bottom, as fractions). `fetch` downloads each file and
 copies its author, license and file page from Commons into the list, so the credit shown under a
 photo always matches Commons. `render` writes the WebP files the app serves from public/photos/.
 
@@ -32,6 +33,8 @@ FREE = re.compile(r"^(CC0|Public domain|CC BY(-SA)? \d\.\d)", re.IGNORECASE)
 SOURCE_WIDTH = 3840
 WIDTHS = (1280, 1920)
 PORTRAIT_HEIGHT = 1920
+# Low enough to keep each file near 200 KB; the frosted card and scrim hide what compression costs.
+QUALITY = 56
 
 
 def get(url: str) -> bytes:
@@ -119,18 +122,21 @@ def render(photos: dict[str, dict]) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for key, photo in photos.items():
         image = Image.open(CACHE / f"{key}.jpg").convert("RGB")
+        if "frame" in photo:
+            left, top, right, bottom = photo["frame"]
+            image = image.crop((round(left * image.width), round(top * image.height), round(right * image.width), round(bottom * image.height)))
         focus = photo["focus"]
         # Landscape screens see the whole frame, kept between 4:3 and 16:9 so no file is wasted width.
         ratio = min(max(image.width / image.height, 4 / 3), 16 / 9)
         landscape = crop(image, ratio, focus)
         for width in WIDTHS:
             size = (width, round(width / ratio))
-            landscape.resize(size, Image.LANCZOS).save(OUT / f"{key}-{width}.webp", quality=62, method=6)
+            landscape.resize(size, Image.LANCZOS).save(OUT / f"{key}-{width}.webp", quality=QUALITY, method=6)
         # Phones held upright get their own 9:16 crop around the focus, so the landmark stays in view.
         portrait = crop(image, 9 / 16, focus)
         height = min(PORTRAIT_HEIGHT, portrait.height)
         size = (round(height * 9 / 16), height)
-        portrait.resize(size, Image.LANCZOS).save(OUT / f"{key}-portrait.webp", quality=60, method=6)
+        portrait.resize(size, Image.LANCZOS).save(OUT / f"{key}-portrait.webp", quality=QUALITY, method=6)
         print(f"{key}: rendered")
 
 

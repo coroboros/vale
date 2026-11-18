@@ -109,7 +109,7 @@
   },
   "galice": {
     "file": "Illas Cíes 16VIII2013 01.JPG",
-    "focus": 0.55,
+    "focus": 0.8,
     "alt": "L’eau turquoise et les plages des îles Cíes, en Galice",
     "author": "Iago Casabiell González",
     "license": "CC BY-SA 4.0",
@@ -195,7 +195,13 @@
     "author": "Lobster1",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "source": "https://commons.wikimedia.org/wiki/File:The_Temple_Bar_Pub_in_Dublin_-_panoramio.jpg"
+    "source": "https://commons.wikimedia.org/wiki/File:The_Temple_Bar_Pub_in_Dublin_-_panoramio.jpg",
+    "frame": [
+      0,
+      0,
+      1,
+      0.83
+    ]
   },
   "newyork": {
     "file": "Brooklyn Bridge, view from Brooklyn Bridge Park, New York City, 20231002 0909 1574.jpg",
