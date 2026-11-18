@@ -1,15 +1,18 @@
-import { BookOpen, Check, ChevronRight, Ear, MapPin, MessageCircle, Repeat } from 'lucide-preact';
+import { BookOpen, Check, ChevronDown, ChevronRight, Ear, MapPin, MessageCircle, Repeat } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { startSession } from '../../actions';
 import { itemKey } from '../../content';
 import type { Course, Step, Unit } from '../../content/types';
 import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible } from '../../engine/progress';
+import { tripOf } from '../../state/schema';
 import { cindex, course, pdata, profile, theme } from '../../state/store';
 import { Daily } from '../Daily';
 import { Bar, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
 import { go } from '../router';
 import { Stamp } from '../Stamp';
+import { Scenery } from '../scenery/Scenery';
+import { TripSheet } from '../Trip';
 
 interface Stop {
   unit: Unit;
@@ -112,21 +115,24 @@ export function Home() {
   const data = pdata.value;
   const now = Date.now();
   const [lessonStop, setLessonStop] = useState<Stop | null>(null);
+  const [tripOpen, setTripOpen] = useState(false);
 
-  const region = c.regions.find(r => r.id === p.region);
+  const trip = tripOf(p);
+  const region = c.regions.find(r => r.id === trip.region);
+  const somewhere = region && region.id !== 'autre' ? region : null;
   const packItems = c.packs.find(x => x.id === region?.pack)?.items ?? [];
-  const ready = readiness(cindex.value, data, arrivalTime(p.trip, now), packItems);
-  const daysLeft = p.trip ? daysBetween(dayKey(now), p.trip) : null;
+  const ready = readiness(cindex.value, data, arrivalTime(trip.date, now), packItems);
+  const daysLeft = trip.date ? daysBetween(dayKey(now), trip.date) : null;
   const stops: Stop[] = c.units.flatMap(unit =>
     unit.steps
-      .filter(s => stepVisible(c, s, p.region))
-      .map(step => ({ unit, step, progress: stepProgress(data, c, step, unit.id, p.region) })),
+      .filter(s => stepVisible(c, s, trip.region))
+      .map(step => ({ unit, step, progress: stepProgress(data, c, step, unit.id, trip.region) })),
   );
   const current = stops.find(s => s.progress < 1) ?? null;
   const pct = Math.round(ready.score * 100);
   const when =
     daysLeft === null
-      ? 'Ajoute ta date de départ dans Moi'
+      ? 'Date de départ à choisir'
       : daysLeft > 1
         ? `Départ dans ${daysLeft} jours`
         : daysLeft === 1
@@ -138,13 +144,26 @@ export function Home() {
   return (
     <>
       <header class="home-head">
+        <button type="button" class="trip-pill" aria-haspopup="dialog" onClick={() => setTripOpen(true)}>
+          <MapPin size={18} aria-hidden="true" />
+          <span>
+            <span class="sr-only">Mon voyage : </span>
+            {c.name}
+            {somewhere && ` · ${somewhere.name}`}
+          </span>
+          <ChevronDown size={18} aria-hidden="true" />
+        </button>
         <h1 lang={c.lang}>{c.greet(p.name)}</h1>
       </header>
 
       <section class="postcard" aria-label="Ton voyage">
+        <div class="postcard-view" aria-hidden="true">
+          <Scenery place={trip.region} />
+          <Mascot size={112} pattern={theme.value.pattern} mood={pct >= 80 ? 'cheer' : 'idle'} decorative />
+        </div>
         <div class="postcard-text">
           <p class="postcard-place" lang={c.lang}>
-            {region && region.id !== 'autre' ? region.native : c.native}
+            {somewhere ? somewhere.native : c.native}
           </p>
           <p class="postcard-when">{when}</p>
           <div class="readiness">
@@ -161,9 +180,9 @@ export function Home() {
               <button
                 type="button"
                 class="btn btn-primary"
-                onClick={() => openStop(current, setLessonStop, c, p.region)}
+                onClick={() => openStop(current, setLessonStop, c, trip.region)}
               >
-                {current.progress > 0 ? 'Continuer' : 'Commencer'} : {stepTitle(c, current.step, p.region).title}
+                {current.progress > 0 ? 'Continuer' : 'Commencer'} : {stepTitle(c, current.step, trip.region).title}
               </button>
             )}
             {ready.fragile.length > 0 && (
@@ -176,16 +195,6 @@ export function Home() {
               </button>
             )}
           </div>
-        </div>
-        <div class="postcard-art" aria-hidden="true">
-          <span class="sun" />
-          <Mascot
-            size={150}
-            pattern={theme.value.pattern}
-            motion="bob"
-            mood={pct >= 80 ? 'cheer' : 'idle'}
-            decorative
-          />
         </div>
       </section>
 
@@ -214,7 +223,7 @@ export function Home() {
               </div>
               <ol class="route">
                 {unitStops.map(stop => {
-                  const { title, sub } = stepTitle(c, stop.step, p.region);
+                  const { title, sub } = stepTitle(c, stop.step, trip.region);
                   const Icon = ICONS[stop.step.kind];
                   const state =
                     stop.progress >= 1 ? 'done' : stop === current ? 'here' : stop.progress > 0 ? 'started' : 'todo';
@@ -223,7 +232,11 @@ export function Home() {
                       key={`${unit.id}-${stop.step.kind}-${'id' in stop.step ? stop.step.id : ''}`}
                       class={`stop ${state}`}
                     >
-                      <button type="button" class="stop-btn" onClick={() => openStop(stop, setLessonStop, c, p.region)}>
+                      <button
+                        type="button"
+                        class="stop-btn"
+                        onClick={() => openStop(stop, setLessonStop, c, trip.region)}
+                      >
                         <span class="stop-mark" aria-hidden="true">
                           {state === 'done' ? <Check size={22} /> : <Icon size={22} />}
                         </span>
@@ -246,6 +259,7 @@ export function Home() {
       </section>
 
       {lessonStop && <LessonSheet stop={lessonStop} onClose={() => setLessonStop(null)} />}
+      {tripOpen && <TripSheet onClose={() => setTripOpen(false)} />}
     </>
   );
 }

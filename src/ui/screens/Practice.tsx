@@ -16,6 +16,7 @@ import { clock, setQuiet, startSession } from '../../actions';
 import { isDue } from '../../engine/memory';
 import { arrivalTime, lessonKey, readiness } from '../../engine/progress';
 import { soundFor, voicesFor } from '../../platform/speech';
+import { tripOf } from '../../state/schema';
 import { cindex, course, isQuiet, pdata, profile, settings } from '../../state/store';
 import { go } from '../router';
 
@@ -56,7 +57,7 @@ export function Practice() {
   const due = Object.entries(data.mem).filter(([k, m]) => k.startsWith(prefix) && isDue(m, now)).length;
   const learned = Object.keys(data.mem).filter(k => k.startsWith(prefix)).length;
   const mistakes = Object.entries(data.mistakes).filter(([k, n]) => k.startsWith(prefix) && n > 0).length;
-  const fragile = readiness(cindex.value, data, arrivalTime(p.trip, now)).fragile.length;
+  const fragile = readiness(cindex.value, data, arrivalTime(tripOf(p).date, now)).fragile.length;
   const none = learned === 0;
 
   return (

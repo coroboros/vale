@@ -8,13 +8,13 @@ import { createProfiles, startSession } from '../../actions';
 import { BRAND } from '../../brand';
 import { COURSES } from '../../content';
 import type { Gender } from '../../content/types';
-import { dayKey } from '../../engine/progress';
 import { CUES, GOALS, PROFILE_COLORS } from '../../state/schema';
 import { InstallButton } from '../Install';
 import { ChoiceGroup, Say } from '../kit';
 import { Mascot } from '../Mascot';
 import { Porthole, type Stop } from '../Porthole';
 import { hasScenery } from '../scenery/Scenery';
+import { DateField, LanguageChoice, PlaceChoice } from '../Trip';
 import { THEMES, themeVars } from '../themes';
 
 const JOURNEY: Stop[] = (() => {
@@ -58,8 +58,7 @@ export function Onboarding() {
         gender: t.gender,
         color: PROFILE_COLORS[i % PROFILE_COLORS.length]!,
         course: c.id,
-        region,
-        trip,
+        trips: { [c.id]: { region, date: trip } },
         goal,
         cue,
       })),
@@ -114,11 +113,8 @@ export function Onboarding() {
         {step === 1 && (
           <section class="ob-step" aria-labelledby="ob-1">
             <h1 id="ob-1">Quelle langue pour ce voyage ?</h1>
-            <ChoiceGroup
-              name="course"
-              label="Langue"
+            <LanguageChoice
               value={courseId}
-              options={COURSES.map(x => ({ value: x.id, title: x.name, sub: <span lang={x.lang}>{x.hello}</span> }))}
               onChange={id => {
                 setCourseId(id);
                 setRegion('autre');
@@ -130,19 +126,7 @@ export function Onboarding() {
         {step === 2 && (
           <section class="ob-step" aria-labelledby="ob-2">
             <h1 id="ob-2">Où vas-tu ?</h1>
-            <div class="chips">
-              {c.regions.map(r => (
-                <button
-                  key={r.id}
-                  type="button"
-                  class="chip"
-                  aria-pressed={region === r.id}
-                  onClick={() => setRegion(r.id)}
-                >
-                  {r.name}
-                </button>
-              ))}
-            </div>
+            <PlaceChoice course={c} value={region} onChange={setRegion} />
             {place?.pack && (
               <p class="muted">Bonus : quelques mots de la langue de la région t’attendent dans ton itinéraire.</p>
             )}
@@ -153,16 +137,7 @@ export function Onboarding() {
           <section class="ob-step" aria-labelledby="ob-3">
             <h1 id="ob-3">Quand pars-tu ?</h1>
             <p class="muted">Pour estimer ce que tu retiendras le jour J.</p>
-            <label class="field">
-              <span>Date de départ</span>
-              <input
-                class="input"
-                type="date"
-                value={trip}
-                min={dayKey(Date.now())}
-                onChange={e => setTrip(e.currentTarget.value)}
-              />
-            </label>
+            <DateField value={trip} onChange={setTrip} />
             <button
               type="button"
               class="btn btn-ghost"

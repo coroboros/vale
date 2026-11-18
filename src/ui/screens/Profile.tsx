@@ -10,17 +10,17 @@ import {
   setSpeechCheck,
   switchProfile,
 } from '../../actions';
-import { COURSES } from '../../content';
 import type { Gender } from '../../content/types';
 import { dayKey, stamps, streak } from '../../engine/progress';
 import { exportBackup, readBackup } from '../../platform/backup';
 import { offlineReady } from '../../platform/pwa';
 import { canHear } from '../../platform/recognition';
-import { CUES, GOALS, PROFILE_COLORS, type Settings } from '../../state/schema';
+import { CUES, GOALS, PROFILE_COLORS, type Settings, tripOf } from '../../state/schema';
 import { course, db, isQuiet, pdata, profile, settings, update } from '../../state/store';
 import { InstallButton } from '../Install';
 import { ChoiceGroup, Sheet, showToast, Toggle } from '../kit';
 import { Stamp } from '../Stamp';
+import { TripFields } from '../Trip';
 
 type Flag = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
 
@@ -101,7 +101,7 @@ export function Profile() {
   const xp = Object.values(data.days).reduce((sum, d) => sum + d.xp, 0);
   const minutes = Math.round(Object.values(data.days).reduce((sum, d) => sum + d.ms, 0) / 60000);
   const learned = Object.keys(data.mem).length;
-  const region = c.regions.find(r => r.id === p.region);
+  const region = c.regions.find(r => r.id === tripOf(p).region);
 
   return (
     <>
@@ -149,44 +149,9 @@ export function Profile() {
         </div>
       </section>
 
-      <section class="section card" aria-label="Voyage">
+      <section class="section card form" aria-label="Voyage">
         <h2>Voyage</h2>
-        <fieldset class="field">
-          <legend>Langue</legend>
-          <div class="chips">
-            {COURSES.map(x => (
-              <button
-                key={x.id}
-                type="button"
-                class="chip"
-                aria-pressed={p.course === x.id}
-                onClick={() => editProfile({ course: x.id, region: 'autre' })}
-              >
-                {x.name}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-        <label class="field">
-          <span>Destination</span>
-          <select class="input" value={p.region} onChange={e => editProfile({ region: e.currentTarget.value })}>
-            {c.regions.map(r => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label class="field">
-          <span>Date de départ</span>
-          <input
-            class="input"
-            type="date"
-            value={p.trip}
-            min={today}
-            onChange={e => editProfile({ trip: e.currentTarget.value })}
-          />
-        </label>
+        <TripFields />
       </section>
 
       <section class="section card" aria-label="Rythme">

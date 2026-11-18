@@ -197,6 +197,29 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await expect(page.locator('.stop.started, .stop.done').first()).toBeVisible();
 });
 
+test('« Mon voyage » switches language and destination from Home, and each language keeps its trip', async ({
+  page,
+}) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  const trip = page.getByRole('button', { name: /^Mon voyage/ });
+  await expect(trip).toContainText('Espagnol · Barcelone');
+  await trip.click();
+  await page.getByText('Italien', { exact: true }).click();
+  await page.getByRole('button', { name: 'Venise' }).click();
+  await page.getByLabel('Date de départ').fill('2027-04-02');
+  await page.getByRole('button', { name: 'C’est noté' }).click();
+  await expect(page.getByRole('heading', { name: 'Ciao, Adrien!' })).toBeVisible();
+  await expect(page.locator('.postcard-place')).toHaveText('Venezia');
+  await trip.click();
+  await page.getByText('Espagnol', { exact: true }).click();
+  await expect(page.getByLabel('Date de départ')).toHaveValue('2026-12-20');
+  await page.getByRole('button', { name: 'C’est noté' }).click();
+  await expect(page.locator('.postcard-place')).toHaveText('Barcelona');
+  await page.reload();
+  await expect(trip).toContainText('Espagnol · Barcelone');
+});
+
 test('quiet mode: nothing speaks on its own, the listening drills wait, the sound comes back', async ({ page }) => {
   await onboard(page);
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();

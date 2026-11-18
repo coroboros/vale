@@ -18,7 +18,7 @@ import { checkSpeech, type SpeechCheck } from '../../src/engine/pronunciation';
 import { seeded } from '../../src/engine/random';
 import { DAY_MS } from '../../src/engine/time';
 import { migrateV3 } from '../../src/state/migrate';
-import { blankData, blankDay, QUIET_MS, quietActive, sanitize } from '../../src/state/schema';
+import { blankData, blankDay, QUIET_MS, quietActive, sanitize, tripOf } from '../../src/state/schema';
 import { searchCourse, searchHistory } from '../../src/translate';
 
 beforeAll(initMemory);
@@ -217,9 +217,21 @@ describe('saved data', () => {
       profiles: [{ id: 'x', name: 'Léa', goal: 999, trip: 'demain' }],
       data: { x: { jokers: 9 } },
     });
-    expect(db.profiles[0]).toMatchObject({ goal: 40, trip: '', course: 'es', gender: 'm' });
+    expect(db.profiles[0]).toMatchObject({ goal: 40, trips: {}, course: 'es', gender: 'm' });
     expect(db.data.x!.jokers).toBe(2);
     expect(db.data.x!.mem).toEqual({});
+  });
+
+  it('keeps one trip per language, and turns an older single trip into the current language’s', () => {
+    const old = sanitize({ profiles: [{ id: 'x', name: 'Léa', course: 'it', region: 'roma', trip: '2027-04-02' }] });
+    const p = old.profiles[0]!;
+    expect(p.trips).toEqual({ it: { region: 'roma', date: '2027-04-02' } });
+    expect(tripOf(p)).toEqual({ region: 'roma', date: '2027-04-02' });
+    expect(tripOf({ ...p, course: 'es' })).toEqual({ region: 'autre', date: '' });
+    const kept = sanitize({
+      profiles: [{ id: 'y', name: 'Tom', course: 'es', trips: { es: { region: 'madrid', date: 'soon' }, it: 7 } }],
+    });
+    expect(kept.profiles[0]!.trips).toEqual({ es: { region: 'madrid', date: '' } });
   });
 
   it('fills new settings in, keeps valid ones and drops wrong or unknown ones', () => {
@@ -267,7 +279,11 @@ describe('saved data', () => {
     const db = migrateV3(v3, NOW)!;
     expect(db.active).toBe('p2');
     expect(db.profiles.map(p => p.gender)).toEqual(['m', 'f']);
-    expect(db.profiles[0]).toMatchObject({ region: 'barcelone', trip: '2026-12-01', goal: 60, course: 'es' });
+    expect(db.profiles[0]).toMatchObject({
+      trips: { es: { region: 'barcelone', date: '2026-12-01' } },
+      goal: 60,
+      course: 'es',
+    });
     expect(db.settings).toMatchObject({ autoplay: false, slow: true, sfx: false });
     const p1 = db.data.p1!;
     expect(Object.keys(p1.mem).sort()).toEqual(['es:buenas', 'es:hola']);

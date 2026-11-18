@@ -196,6 +196,7 @@ export function ChoiceGroup<T extends string | number>({
   value,
   onChange,
   numbered,
+  showLabel,
 }: {
   name: string;
   label: string;
@@ -203,10 +204,11 @@ export function ChoiceGroup<T extends string | number>({
   value: T | null;
   onChange: (value: T) => void;
   numbered?: boolean;
+  showLabel?: boolean;
 }) {
   return (
     <fieldset class="choices">
-      <legend class="sr-only">{label}</legend>
+      <legend class={showLabel ? 'choices-label' : 'sr-only'}>{label}</legend>
       {options.map((o, i) => (
         <label key={String(o.value)} class="choice" lang={o.lang}>
           <input

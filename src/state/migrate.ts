@@ -3,7 +3,7 @@
 import { indexOf, itemKey } from '../content';
 import { es } from '../content/courses/es';
 import { seedFromLevel } from '../engine/memory';
-import { blankData, blankDay, blankDB, type DB, GOALS, PROFILE_COLORS } from './schema';
+import { blankData, blankDay, blankDB, type DB, GOALS, isDay, PROFILE_COLORS } from './schema';
 
 interface V3Data {
   p?: Record<string, { l: number; t: number }>;
@@ -54,8 +54,12 @@ export function migrateV3(raw: unknown, now: number): DB | null {
     gender: p.g === 'a' ? 'f' : 'm',
     color: p.color ?? PROFILE_COLORS[i % PROFILE_COLORS.length]!,
     course: es.id,
-    region: es.regions.some(r => r.id === raw.dest) ? raw.dest! : 'autre',
-    trip: /^\d{4}-\d{2}-\d{2}$/.test(raw.date ?? '') ? raw.date! : '',
+    trips: {
+      [es.id]: {
+        region: es.regions.some(r => r.id === raw.dest) ? raw.dest! : 'autre',
+        date: isDay(raw.date) ? raw.date : '',
+      },
+    },
     goal: GOALS.some(g => g.xp === raw.goal) ? raw.goal! : 40,
     cue: '',
   }));

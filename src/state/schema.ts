@@ -7,15 +7,20 @@ const DB_VERSION = 4;
 export const STORAGE_KEY = 'db-v4';
 export const LEGACY_KEY = 'vale-v3';
 
+export interface Trip {
+  region: string;
+  /** YYYY-MM-DD, or '' when unknown. */
+  date: string;
+}
+
 export interface Profile {
   id: string;
   name: string;
   gender: Gender;
   color: string;
   course: string;
-  region: string;
-  /** YYYY-MM-DD, or '' when unknown. */
-  trip: string;
+  /** By course: switching language keeps each one's destination and date. */
+  trips: Record<string, Trip>;
   /** XP per day. */
   goal: number;
   /** When the learner plans to practise (implementation intention), or ''. */
@@ -38,6 +43,20 @@ export interface Settings {
 
 const SPEECH_CHECK = ['ask', 'on', 'off'] as const;
 type SpeechCheckChoice = (typeof SPEECH_CHECK)[number];
+
+export const tripOf = (p: Profile): Trip => p.trips[p.course] ?? { region: 'autre', date: '' };
+
+export const isDay = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+
+/** Before trips by course, a profile had one `region` and one `trip` date. */
+function repairTrips(p: Partial<Profile> & { region?: unknown; trip?: unknown }, course: string): Record<string, Trip> {
+  const trips: Record<string, Trip> = {};
+  for (const [id, t] of Object.entries(p.trips && typeof p.trips === 'object' ? p.trips : {}))
+    if (t && typeof t.region === 'string') trips[id] = { region: t.region, date: isDay(t.date) ? t.date : '' };
+  if (!trips[course] && (typeof p.region === 'string' || isDay(p.trip)))
+    trips[course] = { region: typeof p.region === 'string' ? p.region : 'autre', date: isDay(p.trip) ? p.trip : '' };
+  return trips;
+}
 
 /** Long enough for a commute. */
 export const QUIET_MS = HOUR_MS;
@@ -207,8 +226,7 @@ export function sanitize(raw: unknown): DB {
           gender: p.gender === 'f' ? 'f' : 'm',
           color: typeof p.color === 'string' ? p.color : PROFILE_COLORS[0],
           course: typeof p.course === 'string' ? p.course : 'es',
-          region: typeof p.region === 'string' ? p.region : 'autre',
-          trip: typeof p.trip === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(p.trip) ? p.trip : '',
+          trips: repairTrips(p, typeof p.course === 'string' ? p.course : 'es'),
           goal: GOALS.some(g => g.xp === p.goal) ? p.goal : 40,
           cue: typeof p.cue === 'string' ? p.cue : '',
         }))

@@ -15,7 +15,17 @@ import {
   setAudio,
 } from './engine/session';
 import { soundFor, stopSpeech } from './platform/speech';
-import { blankData, type DB, newId, type Profile, type ProfileData, QUIET_MS, type Translation } from './state/schema';
+import {
+  blankData,
+  type DB,
+  newId,
+  type Profile,
+  type ProfileData,
+  QUIET_MS,
+  type Translation,
+  type Trip,
+  tripOf,
+} from './state/schema';
 import { cindex, pdata, profile, update, updateData } from './state/store';
 import { sentenceKey } from './translation-api';
 import { showToast } from './ui/kit';
@@ -58,7 +68,7 @@ export function startSession(mode: Mode, title: string, now = Date.now()): void 
   const p = profile.value;
   if (!p) return;
   const index = cindex.value;
-  const pool = buildPool(mode, { index, data: pdata.value, now, horizon: arrivalTime(p.trip, now) });
+  const pool = buildPool(mode, { index, data: pdata.value, now, horizon: arrivalTime(tripOf(p).date, now) });
   if (!pool.length) {
     showToast(
       mode.kind === 'practice' && mode.focus === 'mistakes'
@@ -168,7 +178,7 @@ function finish(r: Running, now: number): Summary {
 }
 
 function awardStamps(data: ProfileData, p: Profile, now: number): string[] {
-  const earned = newStamps({ data, course: courseById(p.course), region: p.region, today: dayKey(now) });
+  const earned = newStamps({ data, course: courseById(p.course), region: tripOf(p).region, today: dayKey(now) });
   for (const id of earned) data.stamps[id] = now;
   return earned;
 }
@@ -292,10 +302,18 @@ export function switchProfile(id: string): void {
   settleDay();
 }
 
-export function editProfile(patch: Partial<Omit<Profile, 'id'>>): void {
+export function editProfile(patch: Partial<Omit<Profile, 'id' | 'trips'>>): void {
   update(draft => {
     const p = draft.profiles.find(x => x.id === draft.active);
     if (p) Object.assign(p, patch);
+  });
+}
+
+/** For the course being learnt. */
+export function editTrip(patch: Partial<Trip>): void {
+  update(draft => {
+    const p = draft.profiles.find(x => x.id === draft.active);
+    if (p) p.trips[p.course] = { ...tripOf(p), ...patch };
   });
 }
 
