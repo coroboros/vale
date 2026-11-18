@@ -28,6 +28,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Bernard's eyes following a finger on the iPhone, and his blinking.
 - The « Imagine » photo on an older iPhone: the slow zoom under the frosted card (smoothness), and
   how fast the photo appears on a slow connection (it loads one step ahead, about 250 KB).
+- Bernard everywhere on the iPhone: his eyes following a finger and blinking in lessons, on the
+  home card and in « Imagine », without slowing the screen; the flag on his shell at small sizes.
 - « Mon voyage » on the iPhone: switching language and destination from the home screen, then
   back, keeps each language's destination and date.
 - The pronunciation check on the iPhone, in Safari and from the home screen: two tries in a row.
@@ -51,6 +53,16 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - Draw the other destinations (Madrid, Valencia, Florence, Naples, Milan, Sicily, Porto, the
   Algarve, Madeira, the Azores, Edinburgh, Dublin, New York); the rest use the generic coast for
   now.
+- **Photos that make you want to go.** One sunny, iconic photo per destination and per practice
+  moment (morning coffee, commute, lunch, evening golden hour), from Unsplash: RUNBOOK.md, step 6.
+- **« Imagine », the sound of the place.** Once recorded voices exist, the phrase plays by itself as
+  the photo appears, over a soft sound of the place (a café, a tram bell); silent in quiet mode.
+- **A game worth coming back to, from the evidence** (docs/LEARNING.md, game layer). Game fiction:
+  Bernard's trip as a story that advances with each lesson. Travellers on one phone as a team:
+  a shared weekly goal (collaboration) with a friendly ranking (competition). Endowed progress:
+  count onboarding towards the first daily goal (Nunes & Drèze, 2006). Goal gradient: « plus que
+  deux phrases » near the goal, where effort speeds up (Kivetz, Urminsky & Zheng, 2006). Rewards
+  stay informative, never paid per task (Deci, Koestner & Ryan, 1999).
 - **Understand what you hear and read.** Translation the other way (any course language into
   French), from typed text first, then from a photo of a menu or a sign.
 - **Measure before claiming.** Opt-in, anonymous counts (sessions finished, day-1 and day-7 return,
@@ -60,7 +72,7 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   sent by the Worker with VAPID keys.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
 - More languages: Brazilian Portuguese (its own pronunciation and words), Greek, German; one
-  theme and shell pattern per country.
+  flag per country (theme colours and Bernard's shell).
 - **French as a language to learn.** Everything is written for French speakers (the interface,
   the French-reader pronunciation, the notes), so teaching French needs an interface in another
   language, English first, and content written for its speakers: a project of its own.

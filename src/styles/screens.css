@@ -665,9 +665,9 @@
   }
 
   .choice.right {
+    --edge: var(--ok-solid);
     border-color: var(--ok-solid);
     background: var(--ok-fill);
-    box-shadow: 0 3px 0 var(--ok-solid);
   }
 
   .choice.wrong,
@@ -708,10 +708,10 @@
   }
 
   .tile:disabled {
+    --depth: 0px;
     color: transparent;
     background: var(--sunk);
     border-color: var(--sunk);
-    box-shadow: none;
   }
 
   .big-input {
@@ -735,7 +735,8 @@
     border-radius: 50%;
     background: var(--accent);
     color: var(--on-accent);
-    box-shadow: 0 6px 0 var(--accent-deep);
+    --edge: var(--accent-deep);
+    --depth: 6px;
   }
 
   .mic.on {
@@ -748,7 +749,7 @@
   .mic.small {
     width: 76px;
     height: 76px;
-    box-shadow: 0 4px 0 var(--accent-deep);
+    --depth: 4px;
   }
 
   .speak-ask {
@@ -812,9 +813,9 @@
   }
 
   .pair.solved {
+    --depth: 0px;
     opacity: 0.35;
     border-style: dashed;
-    box-shadow: none;
   }
 
   .pair.wrong {
@@ -1001,16 +1002,12 @@
     border-radius: var(--r-l);
     border: 2px solid var(--line);
     background: var(--surface);
-    box-shadow: 0 4px 0 var(--line);
+    --edge: var(--line);
+    --depth: 4px;
   }
 
   .tile-card:disabled {
     opacity: 0.5;
-  }
-
-  .tile-card:active:not(:disabled) {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 var(--line);
   }
 
   .tile-icon {
@@ -1751,7 +1748,9 @@
     right: 14px;
   }
 
+  /* Room for Bernard, perched in the corner beside a title that now carries a name. */
   .has-photo .ob-imagine h1 {
+    padding-right: 80px;
     color: #fff;
   }
 

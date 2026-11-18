@@ -5,7 +5,7 @@ import { itemKey } from '../../content';
 import type { Course, Step, Unit } from '../../content/types';
 import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible } from '../../engine/progress';
 import { tripOf } from '../../state/schema';
-import { cindex, course, pdata, profile, theme } from '../../state/store';
+import { cindex, course, pdata, profile } from '../../state/store';
 import { Daily } from '../Daily';
 import { Bar, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
@@ -159,7 +159,7 @@ export function Home() {
       <section class="postcard" aria-label="Ton voyage">
         <div class="postcard-view" aria-hidden="true">
           <Scenery place={trip.region} />
-          <Mascot size={112} pattern={theme.value.pattern} mood={pct >= 80 ? 'cheer' : 'idle'} decorative />
+          <Mascot size={112} mood={pct >= 80 ? 'cheer' : 'idle'} decorative />
         </div>
         <div class="postcard-text">
           <p class="postcard-place" lang={c.lang}>

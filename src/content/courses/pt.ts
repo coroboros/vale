@@ -44,7 +44,7 @@ export const pt: Course = {
   native: 'Português',
   hello: 'Olá!',
   greet: name => `Olá, ${name}!`,
-  theme: 'azulejo',
+  flag: 'pt',
   phonetics:
     'La syllabe accentuée est en capitales. « ch » = le s en fin de syllabe (et souvent le x), « gn » = nh, ' +
     '« ly » = lh, « r » est roulé une fois, « rr » se dit comme le r français, « ou » = o sans accent et u, ' +

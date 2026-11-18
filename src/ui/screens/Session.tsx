@@ -12,7 +12,7 @@ import { canHear, listen, probe, whereHeard } from '../../platform/recognition';
 import { canRecord, playTake, releaseMic, startRecording, stopRecording } from '../../platform/recorder';
 import { play } from '../../platform/sfx';
 import { say, stopSpeech } from '../../platform/speech';
-import { autoplays, course, isQuiet, settings, theme } from '../../state/store';
+import { autoplays, course, isQuiet, settings } from '../../state/store';
 import { Bar, ChoiceGroup, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
 import { Stamp } from '../Stamp';
@@ -60,7 +60,7 @@ function FeedbackPanel({ fb, card, onNext }: { fb: NonNullable<Feedback>; card: 
   return (
     <div class={`feedback ${fb.neutral ? 'neutral' : ok ? 'ok' : 'ko'}`} aria-live="polite">
       <div class="feedback-body">
-        <Mascot size={64} mood={fb.neutral ? 'idle' : ok ? 'happy' : 'oops'} pattern={theme.value.pattern} decorative />
+        <Mascot size={64} mood={fb.neutral ? 'idle' : ok ? 'happy' : 'oops'} decorative />
         <div class="feedback-text">
           <p class="feedback-title">{title}</p>
           {card && (
@@ -633,7 +633,7 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
         : 'Session terminée';
   return (
     <div class="ticket-wrap">
-      <Mascot mood={o.passed ? 'cheer' : 'idle'} size={150} pattern={theme.value.pattern} motion="jump" />
+      <Mascot mood={o.passed ? 'cheer' : 'idle'} size={150} motion="jump" />
       <h1>{headline}</h1>
       <section class="ticket" aria-label="Bilan de la session">
         <p class="ticket-title">{title}</p>

@@ -115,6 +115,7 @@
 
   .btn {
     --edge: var(--line-strong);
+    --depth: 4px;
     min-height: 52px;
     display: inline-flex;
     align-items: center;
@@ -129,23 +130,59 @@
     background: var(--surface);
     color: var(--ink);
     border: 2px solid var(--line-strong);
-    box-shadow: 0 4px 0 var(--edge);
-    transition:
-      transform 0.08s ease,
-      box-shadow 0.08s ease,
-      background 0.15s ease;
     text-align: center;
     user-select: none;
   }
 
-  .btn:active:not(:disabled) {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 var(--edge);
-  }
-
   .btn:disabled {
     opacity: 0.45;
-    box-shadow: 0 4px 0 var(--edge);
+  }
+
+  /* One motion for every raised control, like a key: it rises under the pointer and sinks when
+     pressed. Each control only sets its edge colour and depth. */
+  :is(.btn, .play, .mic, .choice, .tile, .pair, .tile-card) {
+    box-shadow: 0 var(--depth) 0 var(--edge);
+    transition:
+      transform var(--t-press) ease,
+      box-shadow var(--t-press) ease,
+      background-color var(--t-hover) ease,
+      border-color var(--t-hover) ease;
+  }
+
+  @media (hover: hover) {
+    :is(.btn, .play, .mic, .choice, .tile, .pair, .tile-card):hover:not(:disabled, .btn-ghost) {
+      transform: translateY(-2px);
+      box-shadow: 0 calc(var(--depth) + 2px) 0 var(--edge);
+      transition-duration: var(--t-hover);
+    }
+  }
+
+  :is(.btn, .play, .mic, .choice, .tile, .pair, .tile-card):active:not(:disabled, .btn-ghost) {
+    transform: translateY(calc(var(--depth) - 1px));
+    box-shadow: 0 1px 0 var(--edge);
+    transition-duration: var(--t-press);
+  }
+
+  /* Flat controls tint under the pointer and give a little when pressed. */
+  :is(.icon-btn, .chip, .nav-item, .btn-ghost) {
+    transition:
+      background-color var(--t-hover) ease,
+      transform var(--t-press) ease;
+  }
+
+  @media (hover: hover) {
+    :is(.icon-btn, .chip, .nav-item, .btn-ghost):hover:not(
+        :disabled,
+        [aria-pressed="true"],
+        [aria-checked="true"],
+        [aria-current="page"]
+      ) {
+      background-color: var(--sunk);
+    }
+  }
+
+  :is(.icon-btn, .chip, .nav-item, .btn-ghost):active:not(:disabled) {
+    transform: scale(0.96);
   }
 
   .btn-primary {
@@ -171,9 +208,9 @@
 
   .btn-ghost {
     --edge: transparent;
+    --depth: 0px;
     border-color: transparent;
     background: transparent;
-    box-shadow: none;
     color: var(--accent-ink);
   }
 
@@ -191,10 +228,6 @@
     color: var(--ink-soft);
   }
 
-  .icon-btn:hover {
-    background: var(--sunk);
-  }
-
   .play {
     width: 56px;
     height: 56px;
@@ -204,25 +237,22 @@
     border-radius: var(--r-m);
     background: var(--accent);
     color: var(--on-accent);
-    box-shadow: 0 4px 0 var(--accent-deep);
+    --edge: var(--accent-deep);
+    --depth: 4px;
   }
 
   .play.small {
     width: 44px;
     height: 44px;
     border-radius: 14px;
-    box-shadow: 0 3px 0 var(--accent-deep);
+    --depth: 3px;
   }
 
   .play.soft {
     background: var(--accent-soft);
     color: var(--accent-ink);
-    box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 45%, transparent);
-  }
-
-  .play:active {
-    transform: translateY(2px);
-    box-shadow: 0 1px 0 var(--accent-deep);
+    --edge: color-mix(in srgb, var(--accent) 45%, transparent);
+    --depth: 3px;
   }
 
   .chips {
@@ -263,9 +293,10 @@
   .choice,
   .tile,
   .pair {
+    --edge: var(--line);
+    --depth: 3px;
     border: 2px solid var(--line);
     background: var(--surface);
-    box-shadow: 0 3px 0 var(--line);
   }
 
   .choice {
@@ -283,9 +314,9 @@
   }
 
   .choice:has(input:checked) {
+    --edge: var(--accent-deep);
     border-color: var(--accent-deep);
     background: var(--accent-soft);
-    box-shadow: 0 3px 0 var(--accent-deep);
   }
 
   .choice:has(input:focus-visible) {

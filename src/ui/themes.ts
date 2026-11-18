@@ -1,9 +1,13 @@
 /**
- * Red and green hues are reserved for answer feedback, so no accent uses them. Contrast pairs are
- * checked by tests/unit/themes.test.ts (WCAG 2.2 AA).
+ * Each course wears its country's colours: the accent comes from the flag, the full flag goes on
+ * Bernard's shell. Red stays the colour of wrong answers, so it appears only inside flags, never on
+ * buttons: Portugal's flag is mostly red, so its accent is the blue of its azulejos. Contrast pairs
+ * are checked by tests/unit/themes.test.ts (WCAG 2.2 AA).
  */
+import type { Flag } from '../content/types';
+
 export interface Theme {
-  id: string;
+  id: Flag;
   /** Fill of primary actions and progress. */
   accent: string;
   /** Pressed edge and shadow of accent surfaces. */
@@ -14,54 +18,48 @@ export interface Theme {
   accentInk: string;
   /** Tinted backgrounds. */
   accentSoft: string;
-  /** Second colour of the shell motif. */
+  /** The flag's second colour, for small marks such as avatars. */
   motif: string;
-  pattern: 'tiles' | 'waves' | 'azulejo' | 'checks';
 }
 
-export const THEMES: Record<string, Theme> = {
-  sol: {
-    id: 'sol',
-    accent: '#FFB21E',
-    accentDeep: '#D98A00',
+export const THEMES: Record<Flag, Theme> = {
+  es: {
+    id: 'es',
+    accent: '#F1BF00',
+    accentDeep: '#C29200',
     onAccent: '#16213E',
     accentInk: '#8A5300',
-    accentSoft: '#FFF3D6',
-    motif: '#2357C6',
-    pattern: 'tiles',
+    accentSoft: '#FFF4CC',
+    motif: '#AA151B',
   },
-  laguna: {
-    id: 'laguna',
-    accent: '#0B7C8C',
-    accentDeep: '#075A66',
+  it: {
+    id: 'it',
+    accent: '#007A3D',
+    accentDeep: '#00572B',
     onAccent: '#FFFFFF',
-    accentInk: '#0A6B79',
-    accentSoft: '#DDF3F5',
-    motif: '#F2C230',
-    pattern: 'waves',
+    accentInk: '#006B35',
+    accentSoft: '#E1F2E7',
+    motif: '#CE2B37',
   },
-  azulejo: {
-    id: 'azulejo',
+  pt: {
+    id: 'pt',
     accent: '#1D5FBF',
     accentDeep: '#123F85',
     onAccent: '#FFFFFF',
     accentInk: '#1A56AD',
     accentSoft: '#E2ECFA',
-    motif: '#F4B400',
-    pattern: 'azulejo',
+    motif: '#046A38',
   },
-  tamise: {
-    id: 'tamise',
-    accent: '#6A4CB0',
-    accentDeep: '#4A3387',
+  gb: {
+    id: 'gb',
+    accent: '#012169',
+    accentDeep: '#000F3D',
     onAccent: '#FFFFFF',
-    accentInk: '#5E42A4',
-    accentSoft: '#EEE8F8',
-    motif: '#F2C230',
-    pattern: 'checks',
+    accentInk: '#012169',
+    accentSoft: '#E5E9F5',
+    motif: '#C8102E',
   },
 };
-
 export function themeVars(theme: Theme): Record<string, string> {
   return {
     '--accent': theme.accent,

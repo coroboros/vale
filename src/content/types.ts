@@ -81,6 +81,8 @@ export interface Pack {
 export interface Region {
   id: string;
   name: string;
+  /** Where you are once there, with the French preposition: « à Rome », « en Andalousie », « aux Açores ». */
+  at: string;
   native: string;
   pack?: string;
   tip?: Note;
@@ -125,6 +127,8 @@ interface Numbers {
   confusable(n: number): number[];
 }
 
+export type Flag = 'es' | 'it' | 'pt' | 'gb';
+
 export interface Course {
   id: string;
   /** BCP 47, for speech and `lang` attributes. */
@@ -134,7 +138,8 @@ export interface Course {
   hello: string;
   /** Greeting with the learner's name, punctuated the way the language does it. */
   greet(name: string): string;
-  theme: string;
+  /** The country whose flag dresses the course: theme colours and Bernard's shell. */
+  flag: Flag;
   phonetics: string;
   /**
    * Ids of phrases that show every phonetic convention at work (they teach it to the translator).

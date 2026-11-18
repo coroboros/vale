@@ -620,28 +620,30 @@ export const extras: Extra[] = [
 ];
 
 export const regions: Region[] = [
-  { id: 'lisbonne', name: 'Lisbonne', native: 'Lisboa' },
+  { id: 'lisbonne', name: 'Lisbonne', at: 'à Lisbonne', native: 'Lisboa' },
   {
     id: 'porto',
     name: 'Porto',
+    at: 'à Porto',
     native: 'Porto',
     tip: {
       title: 'Mots du Nord',
       desc: 'À Porto, l’expresso est un « cimbalino » et la pression un « fino ». Le v se dit souvent comme un b.',
     },
   },
-  { id: 'algarve', name: 'Algarve', native: 'Algarve' },
-  { id: 'madere', name: 'Madère', native: 'Madeira' },
+  { id: 'algarve', name: 'Algarve', at: 'en Algarve', native: 'Algarve' },
+  { id: 'madere', name: 'Madère', at: 'à Madère', native: 'Madeira' },
   {
     id: 'acores',
     name: 'Açores',
+    at: 'aux Açores',
     native: 'Açores',
     tip: {
       title: 'Accent des Açores',
       desc: 'L’accent de São Miguel est réputé difficile, même pour les Portugais du continent : n’hésite pas à dire « Pode repetir? ».',
     },
   },
-  { id: 'autre', name: 'Ailleurs', native: 'Portugal' },
+  { id: 'autre', name: 'Ailleurs', at: 'au Portugal', native: 'Portugal' },
 ];
 
 export const card: SurvivalCard = {

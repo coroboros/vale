@@ -52,7 +52,7 @@ export const it: Course = {
   native: 'Italiano',
   hello: 'Ciao!',
   greet: name => `Ciao, ${name}!`,
-  theme: 'laguna',
+  flag: 'it',
   phonetics:
     'La syllabe accentuée est en capitales. « tch » = c devant e ou i, « dj » = g devant e ou i, ' +
     '« ly » = gli, « ch » = sc devant e ou i, « ts » et « dz » = z. Une consonne doublée se tient un instant. ' +

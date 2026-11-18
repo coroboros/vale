@@ -41,16 +41,18 @@ export function stopSpeech(): void {
   if (supported) speechSynthesis.cancel();
 }
 
-/** Resolves on end, or after a timeout: some engines drop the event. */
+/**
+ * Resolves on end, or after a timeout: some engines drop the event. Without a voice for the
+ * language it stays silent: the engine would read the phrase with the default voice, often English.
+ */
 export function say(text: string, opts: { lang: string; slow?: boolean; variant?: number }): Promise<void> {
-  if (!supported) return Promise.resolve();
+  const list = supported ? voicesFor(opts.lang) : [];
+  if (!list.length) return Promise.resolve();
   stopSpeech();
-  const list = voicesFor(opts.lang);
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = opts.lang;
   const variant = settings.value.variedVoices ? (opts.variant ?? 0) : 0;
-  const voice = list[variant % Math.max(1, list.length)];
-  if (voice) utterance.voice = voice;
+  utterance.voice = list[variant % list.length]!;
   utterance.rate = opts.slow ? 0.68 : 0.92;
   return new Promise(resolve => {
     const done = () => {

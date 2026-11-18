@@ -2,7 +2,7 @@ import { signal } from '@preact/signals';
 import { Snail, Volume2, X } from 'lucide-preact';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import { say } from '../platform/speech';
+import { canSpeak, say } from '../platform/speech';
 import { settings } from '../state/store';
 
 export function Bar({ value, label, tone }: { value: number; label: string; tone?: 'ok' }) {
@@ -164,6 +164,7 @@ export function Say({
   variant?: number;
 }) {
   const Icon = slow ? Snail : Volume2;
+  if (!canSpeak(lang)) return null;
   return (
     <button
       type="button"

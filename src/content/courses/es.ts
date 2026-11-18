@@ -49,7 +49,7 @@ export const es: Course = {
   native: 'Español',
   hello: '¡Hola!',
   greet: name => `¡Hola, ${name}!`,
-  theme: 'sol',
+  flag: 'es',
   phonetics:
     'La syllabe accentuée est en capitales. « th » se dit comme en anglais (z, ce, ci), « kh » est un j raclé, ' +
     '« y » remplace ll, « gn » remplace ñ, « r » est roulé une fois, « rr » longuement. ' +

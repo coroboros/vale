@@ -39,7 +39,7 @@ export const en: Course = {
   native: 'English',
   hello: 'Hello!',
   greet: name => `Hello, ${name}!`,
-  theme: 'tamise',
+  flag: 'gb',
   phonetics:
     'La syllabe accentuée est en capitales. « th » se dit la langue entre les dents, « dh » de même en faisant ' +
     'vibrer la voix ; le « h » se souffle ; « w » = ou très bref ; le « r » ne se roule pas et se tait en fin ' +

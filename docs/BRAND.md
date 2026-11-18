@@ -26,10 +26,10 @@ and the name on the app stores.
 ## Bernard
 
 A hermit crab, *bernard-l’ermite* in French, who carries his home on his back like luggage. His
-shell takes the colours and pattern of the country being learned. He jumps when a session goes
-well, makes a sorry face when an answer is wrong, and never scolds. On the welcome screen his
-eyes follow the mouse or the finger and he blinks; both stop for people who ask for less motion,
-and the blinking stops when the journey is paused.
+shell wears the flag of the country being learned. He jumps when a session goes well, makes a
+sorry face when an answer is wrong, and never scolds. Wherever he appears, his eyes follow the
+mouse or the finger and he blinks, as on the welcome screen; both stop for people who ask for
+less motion, and the blinking stops when the welcome journey is paused.
 
 ## App icon
 
@@ -41,20 +41,31 @@ The maskable copy shrinks him to 80 %, inside the circle of radius 40 % that And
 
 ## Colours and type
 
-Each language has a theme (`src/ui/themes.ts`), applied to primary actions, progress and the shell:
+Each course wears its country's colours (`src/ui/themes.ts`, keyed by the course's `flag`): the
+accent goes on primary actions and progress, the whole flag on Bernard's shell.
 
-| Theme | Language | Accent | Shell motif |
+| Country | Course | Accent | Shell |
 | --- | --- | --- | --- |
-| Sol | Spanish | sun yellow `#FFB21E` | blue tiles |
-| Laguna | Italian | lagoon teal `#0B7C8C` | yellow waves |
-| Azulejo | Portuguese | tile blue `#1D5FBF` | yellow azulejo diamonds |
-| Tamise | English | royal purple `#6A4CB0` | gold checks |
+| Spain | Spanish | flag gold `#F1BF00` | red and gold bands |
+| Italy | Italian | flag green `#007A3D` | green, white and red |
+| Portugal | Portuguese | azulejo blue `#1D5FBF` | green and red, the armillary sphere |
+| United Kingdom | English | Union Jack navy `#012169` | the Union Jack |
 
 - Warm paper background `#FFFAF3`, ink `#16213E`.
-- Red and green are kept for right and wrong answers only, so no theme uses them.
+- Red is kept for wrong answers, so it appears only inside flags. Portugal's flag is mostly red,
+  hence the blue of its azulejos. Italy's green sits close to the right-answer green, which is
+  why right and wrong answers always come with an icon and words, never colour alone.
 - Every text and background pair meets WCAG 2.2 AA; a unit test checks the tokens.
 - Type: Bricolage Grotesque for titles, Atkinson Hyperlegible Next for text (drawn for legibility,
   with distinct letter shapes and a slashed zero).
+
+## Motion
+
+Two families, one rule each, defined once in `src/styles/kit.css`. Raised controls (buttons,
+answer choices, tiles, the play and microphone buttons) behave like keys: they rise by 2 px under
+a mouse and sink when pressed. Flat controls (icon buttons, chips, navigation) take a tint under
+a mouse and give a little when pressed. Hover effects only exist on devices that can hover, and
+all of it stops for people who ask for less motion.
 
 ## Photos
 

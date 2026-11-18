@@ -64,9 +64,18 @@ In this order, each with its tests:
 1. Privacy-friendly measurement of the funnel (sessions, return on day 1 and day 7, translations
    used, where people stop). Nothing about the content of translations. Needed to prove any of
    the claims in docs/LEARNING.md and to price anything.
-2. The learner's own destination in the home card; more drawn destinations.
-3. Translation the other way (understand a menu or a reply).
-4. AI voices for every phrase (docs/VOICE.md). From you: a Fish Audio API key with a few dollars
+2. Photos from Unsplash for « Imagine ». From you: an Unsplash Access Key (unsplash.com/oauth/
+   applications → *New Application*), stored as the `UNSPLASH_ACCESS_KEY` GitHub secret. Then
+   Claude: `brand/photos.py` searches Unsplash per destination and per practice moment (morning
+   coffee: morning light; commute: a lively street; lunch: a sunny terrace; evening: golden hour),
+   picks from contact sheets, triggers each photo's download endpoint once and records the
+   photographer. As the API terms require, the app shows Unsplash's own image URLs (sized and
+   encoded by their CDN, so the 15 MB in `public/photos/` leave the repository) and credits
+   « Photo : name sur Unsplash » with links. README says that this step loads an image from
+   images.unsplash.com, the only request the app makes to another site.
+3. More drawn destinations (the home card already shows the learner's own).
+4. Translation the other way (understand a menu or a reply).
+5. AI voices for every phrase (docs/VOICE.md). From you: a Fish Audio API key with a few dollars
    of credit, stored as the `FISH_API_KEY` GitHub secret, and a native speaker to approve the
    voices.
 

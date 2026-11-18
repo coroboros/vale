@@ -5,8 +5,10 @@
 import type { RefObject } from 'preact';
 import { useEffect, useId, useRef } from 'preact/hooks';
 import { BRAND } from '../brand';
+import type { Flag } from '../content/types';
+import { reducedMotion } from '../platform/env';
+import { theme } from '../state/store';
 import { easeVars } from './ease';
-import type { Theme } from './themes';
 
 export type Mood = 'idle' | 'happy' | 'oops' | 'cheer' | 'sleep';
 
@@ -29,7 +31,7 @@ function useAliveEyes(
 ) {
   useEffect(() => {
     const el = svg.current;
-    if (!el || !followPointer) return;
+    if (!el || !followPointer || reducedMotion()) return;
     const pupils = easeVars(el, ['--px', '--py'], 0.2, rest);
     let idle = 0;
     const lookAt = (e: PointerEvent) => {
@@ -55,7 +57,7 @@ function useAliveEyes(
 
   useEffect(() => {
     const el = svg.current;
-    if (!el || !blinks) return;
+    if (!el || !blinks || reducedMotion()) return;
     let timer = 0;
     const once = () => {
       el.classList.remove('blink');
@@ -107,54 +109,64 @@ function Eye({ x, y, mood }: { x: number; y: number; mood: Mood }) {
   );
 }
 
-function Motif({ pattern }: { pattern: Theme['pattern'] }) {
-  if (pattern === 'checks') {
+const RED = { es: '#AA151B', it: '#CE2B37', pt: '#DA291C', gb: '#C8102E' };
+
+/** The flag fills the shell's circle (centre 73,48, radius 34). */
+function FlagArt({ flag }: { flag: Flag }) {
+  const [x, y, s] = [39, 14, 68];
+  if (flag === 'es') {
     return (
-      <g stroke="var(--motif)">
-        <path d="M36 24 H110 M36 52 H110 M36 80 H110 M58 8 V92 M86 8 V92" stroke-width="3.2" />
-        <path d="M36 31 H110 M36 59 H110 M65 8 V92 M93 8 V92" stroke-width="1.2" />
+      <g>
+        <rect x={x} y={y} width={s} height={s} fill={RED.es} />
+        <rect x={x} y={y + s / 4} width={s} height={s / 2} fill="#F1BF00" />
       </g>
     );
   }
-  if (pattern === 'azulejo') {
-    const tile = (x: number, y: number) => (
-      <g key={`${x}-${y}`} transform={`translate(${x} ${y}) rotate(45)`}>
-        <rect x="-5.5" y="-5.5" width="11" height="11" fill="none" stroke="var(--motif)" stroke-width="2.2" />
-        <circle r="1.9" fill="var(--motif)" />
-      </g>
-    );
-    return <g>{[tile(58, 28), tile(86, 34), tile(52, 50), tile(92, 56), tile(74, 72)]}</g>;
-  }
-  if (pattern === 'waves') {
+  if (flag === 'it') {
     return (
-      <g fill="none" stroke="var(--motif)" stroke-width="2.6" stroke-linecap="round">
-        <path d="M52 30 q5 -5 10 0 t10 0 t10 0" />
-        <path d="M46 46 q5 -5 10 0 t10 0 t10 0 t10 0" />
-        <path d="M50 62 q5 -5 10 0 t10 0 t10 0" />
+      <g>
+        <rect x={x} y={y} width={s / 3} height={s} fill="#009246" />
+        <rect x={x + s / 3} y={y} width={s / 3} height={s} fill="#F4F5F0" />
+        <rect x={x + (2 * s) / 3} y={y} width={s / 3} height={s} fill={RED.it} />
       </g>
     );
   }
-  const rosette = (x: number, y: number) => (
-    <g key={`${x}-${y}`} transform={`translate(${x} ${y})`}>
-      <circle r="4.2" fill="var(--motif)" />
-      <circle r="1.6" fill="var(--accent)" />
+  if (flag === 'pt') {
+    const split = x + (2 * s) / 5;
+    return (
+      <g>
+        <rect x={x} y={y} width={s} height={s} fill={RED.pt} />
+        <rect x={x} y={y} width={split - x} height={s} fill="#046A38" />
+        <circle cx={split} cy={48} r="10" fill="none" stroke="#FFE000" stroke-width="2.6" />
+        <path d={`M${split - 4} 43.5 h8 v6 a4 4 0 0 1 -8 0 z`} fill="#fff" stroke={RED.pt} stroke-width="1.6" />
+      </g>
+    );
+  }
+  return (
+    <g>
+      <rect x={x} y={y} width={s} height={s} fill="#012169" />
+      <path d={`M${x} ${y} L${x + s} ${y + s} M${x + s} ${y} L${x} ${y + s}`} stroke="#fff" stroke-width="13" />
+      <path d={`M${x} ${y} L${x + s} ${y + s} M${x + s} ${y} L${x} ${y + s}`} stroke={RED.gb} stroke-width="4.4" />
+      <path d={`M73 ${y} V${y + s} M${x} 48 H${x + s}`} stroke="#fff" stroke-width="20" />
+      <path d={`M73 ${y} V${y + s} M${x} 48 H${x + s}`} stroke={RED.gb} stroke-width="11" />
     </g>
   );
-  return <g>{[rosette(58, 28), rosette(86, 34), rosette(52, 50), rosette(92, 56), rosette(74, 72)]}</g>;
 }
 
+/** Bernard everywhere is the Bernard of the welcome flight: he watches the pointer and blinks. */
 export function Mascot({
   mood = 'idle',
   size = 120,
-  pattern = 'tiles',
+  flag = theme.value.id,
   motion,
   decorative,
-  followPointer = false,
-  blinks = false,
+  followPointer = true,
+  blinks = true,
 }: {
   mood?: Mood;
   size?: number;
-  pattern?: Theme['pattern'];
+  /** The current course's country unless a screen shows another one. */
+  flag?: Flag;
   motion?: 'bob' | 'jump';
   /** When the text next to it already says everything. */
   decorative?: boolean;
@@ -183,14 +195,15 @@ export function Mascot({
       <clipPath id={clip}>
         <circle cx="73" cy="48" r="34" />
       </clipPath>
-      <g clip-path={`url(#${clip})`} opacity="0.9">
-        <Motif pattern={pattern} />
+      <g clip-path={`url(#${clip})`}>
+        <FlagArt flag={flag} />
+        <ellipse cx="60" cy="31" rx="15" ry="8" fill="#fff" opacity="0.22" transform="rotate(-28 60 31)" />
       </g>
       <path
         d="M73 48 m-4 0 a4 4 0 1 1 8 0 a8 8 0 1 1 -16 0 a14 14 0 1 1 28 0 a20 20 0 1 1 -40 0"
         fill="none"
-        stroke="var(--accent-deep)"
-        stroke-width="3"
+        stroke="rgb(22 33 62 / 30%)"
+        stroke-width="2.6"
         stroke-linecap="round"
       />
       <ellipse cx="46" cy="66" rx="13" ry="15" fill="var(--accent-deep)" />

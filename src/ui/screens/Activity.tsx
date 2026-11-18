@@ -7,7 +7,7 @@ import { pricePuzzle } from '../../engine/prices';
 import { seeded, shuffle } from '../../engine/random';
 import { play } from '../../platform/sfx';
 import { canSpeak, say, stopSpeech } from '../../platform/speech';
-import { autoplays, cindex, course, db, pdata, profile, theme } from '../../state/store';
+import { autoplays, cindex, course, db, pdata, profile } from '../../state/store';
 import { Mascot } from '../Mascot';
 import type { Activity as Kind } from '../router';
 import { back } from '../router';
@@ -33,7 +33,7 @@ function End({ title, detail, onAgain }: { title: string; detail: string; onAgai
   useEffect(() => play('done'), []);
   return (
     <div class="activity-end">
-      <Mascot mood="cheer" size={130} pattern={theme.value.pattern} motion="jump" />
+      <Mascot mood="cheer" size={130} motion="jump" />
       <h2>{title}</h2>
       <p class="muted">{detail}</p>
       <div class="judge">

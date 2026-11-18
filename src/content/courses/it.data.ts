@@ -563,21 +563,22 @@ export const extras: Extra[] = [
 ];
 
 export const regions: Region[] = [
-  { id: 'roma', name: 'Rome', native: 'Roma' },
-  { id: 'firenze', name: 'Florence', native: 'Firenze' },
+  { id: 'roma', name: 'Rome', at: 'à Rome', native: 'Roma' },
+  { id: 'firenze', name: 'Florence', at: 'à Florence', native: 'Firenze' },
   {
     id: 'venezia',
     name: 'Venise',
+    at: 'à Venise',
     native: 'Venezia',
     tip: {
       title: 'Plan de Venise',
       desc: 'Les rues s’appellent « calle » et les places « campo ». Seule la place Saint-Marc est une « piazza ».',
     },
   },
-  { id: 'milano', name: 'Milan', native: 'Milano' },
-  { id: 'napoli', name: 'Naples et le Sud', native: 'Napoli' },
-  { id: 'sicilia', name: 'Sicile', native: 'Sicilia' },
-  { id: 'autre', name: 'Ailleurs', native: 'Italia' },
+  { id: 'milano', name: 'Milan', at: 'à Milan', native: 'Milano' },
+  { id: 'napoli', name: 'Naples et le Sud', at: 'à Naples', native: 'Napoli' },
+  { id: 'sicilia', name: 'Sicile', at: 'en Sicile', native: 'Sicilia' },
+  { id: 'autre', name: 'Ailleurs', at: 'en Italie', native: 'Italia' },
 ];
 
 export const card: SurvivalCard = {

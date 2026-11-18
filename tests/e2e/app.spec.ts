@@ -10,6 +10,8 @@ const FAKE_VOICES = () => {
     { name: 'Mónica', lang: 'es-ES', localService: true, default: false, voiceURI: 'm' },
     { name: 'Paulina', lang: 'es-MX', localService: true, default: false, voiceURI: 'p' },
     { name: 'Alice', lang: 'it-IT', localService: true, default: false, voiceURI: 'a' },
+    { name: 'Joana', lang: 'pt-PT', localService: true, default: false, voiceURI: 'j' },
+    { name: 'Daniel', lang: 'en-GB', localService: true, default: false, voiceURI: 'd' },
     { name: 'Thomas', lang: 'fr-FR', localService: true, default: true, voiceURI: 't' },
   ];
   const spoken: string[] = [];
@@ -105,7 +107,10 @@ async function onboard(page: Page, name = 'Adrien', check: (step: string) => Pro
   await page.getByText('Régulier').click();
   await page.getByRole('button', { name: 'Avec mon café du matin' }).click();
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await expect(page.getByRole('heading', { name: 'Imagine.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: `Imagine, ${name}.` })).toBeVisible();
+  await expect(page.locator('.ob-lead')).toHaveText(
+    'Le dimanche 20 décembre au petit matin, tu arrives à Barcelone. Tu pousses la porte d’un café et tu dis :',
+  );
 }
 
 /** Looping animations excepted, so checks see the final look. */

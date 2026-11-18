@@ -10,6 +10,7 @@ import { COURSES } from '../../content';
 import type { Gender } from '../../content/types';
 import { CUES, GOALS, PROFILE_COLORS } from '../../state/schema';
 import { InstallButton } from '../Install';
+import { imagineWords } from '../imagine';
 import { ChoiceGroup, Say } from '../kit';
 import { Mascot } from '../Mascot';
 import { Porthole, type Stop } from '../Porthole';
@@ -22,7 +23,7 @@ const JOURNEY: Stop[] = (() => {
   const byCourse = COURSES.map(c =>
     c.regions
       .filter(r => hasScenery(r.id))
-      .map(r => ({ place: r.id, greeting: c.greet(r.native), lang: c.lang, theme: THEMES[c.theme] ?? THEMES.sol! })),
+      .map(r => ({ place: r.id, greeting: c.greet(r.native), lang: c.lang, theme: THEMES[c.flag] })),
   );
   const longest = Math.max(...byCourse.map(list => list.length));
   return Array.from({ length: longest }, (_, i) => byCourse.flatMap(list => list[i] ?? []));
@@ -59,7 +60,7 @@ export function Onboarding() {
   const [goal, setGoal] = useState(40);
   const [cue, setCue] = useState('');
   const c = COURSES.find(x => x.id === courseId)!;
-  const theme = THEMES[c.theme] ?? THEMES.sol!;
+  const theme = THEMES[c.flag];
   const place = c.regions.find(r => r.id === region);
   const firstLine = c.scenes[0]?.lines.find(l => l.who === 'you');
   const sentence = firstLine && firstLine.who === 'you' ? firstLine.options[0]! : c.hello;
@@ -68,6 +69,12 @@ export function Onboarding() {
   const photo = photoOf(c.id, region);
   const [brokenPhoto, setBrokenPhoto] = useState('');
   const shownPhoto = step === last && photo && photo.id !== brokenPhoto ? photo : undefined;
+  const words = imagineWords({
+    travellers: people.map(t => t.name.trim()).filter(Boolean),
+    at: place?.at ?? 'sur place',
+    date: trip,
+    cue,
+  });
 
   useEffect(() => {
     if (step === last - 1 && photo) preload(photo);
@@ -248,12 +255,9 @@ export function Onboarding() {
 
         {step === 6 && (
           <section class="ob-step ob-imagine" aria-labelledby="ob-6">
-            <h1 id="ob-6">Imagine.</h1>
-            {shownPhoto && <Mascot size={72} pattern={theme.pattern} mood="cheer" motion="bob" decorative />}
-            <p class="ob-lead">
-              Tu arrives {place && place.id !== 'autre' ? `à ${place.name}` : 'sur place'}. Tu pousses la porte d’un
-              café et tu dis :
-            </p>
+            <h1 id="ob-6">{words.title}</h1>
+            {shownPhoto && <Mascot size={72} flag={theme.id} mood="cheer" motion="bob" decorative />}
+            <p class="ob-lead">{words.lead}</p>
             {shownPhoto && <Backdrop photo={shownPhoto} onError={() => setBrokenPhoto(shownPhoto.id)} />}
             <div class="imagine-line">
               <Say text={sentence} lang={c.lang} />
@@ -278,7 +282,7 @@ export function Onboarding() {
                 , recadrée
               </p>
             ) : (
-              <Mascot size={130} pattern={theme.pattern} mood="cheer" motion="bob" />
+              <Mascot size={130} flag={theme.id} mood="cheer" motion="bob" />
             )}
           </section>
         )}

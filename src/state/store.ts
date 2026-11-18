@@ -91,7 +91,7 @@ export const profile = computed(() => db.value.profiles.find(p => p.id === db.va
 export const pdata = computed<ProfileData>(() => db.value.data[db.value.active] ?? blankData());
 export const course = computed(() => courseById(profile.value?.course ?? 'es'));
 export const cindex = computed(() => indexOf(course.value));
-export const theme = computed(() => THEMES[course.value.theme] ?? THEMES.sol!);
+export const theme = computed(() => THEMES[course.value.flag]);
 export const settings = computed(() => db.value.settings);
 
 export const isQuiet = (now = Date.now()) => quietActive(db.value.settings, now);

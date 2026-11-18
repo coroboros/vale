@@ -33,7 +33,7 @@ function Nav({ current }: { current: Tab | null }) {
   return (
     <nav class="nav" aria-label="Navigation principale">
       <div class="nav-brand">
-        <Mascot size={44} pattern={theme.value.pattern} decorative />
+        <Mascot size={44} decorative />
         <span class="wordmark">{BRAND.name.toLowerCase()}</span>
       </div>
       {TABS.map(({ tab, label, href, Icon }) => (

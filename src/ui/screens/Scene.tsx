@@ -6,7 +6,7 @@ import { stamps as allStamps } from '../../engine/progress';
 import { shuffle } from '../../engine/random';
 import { play } from '../../platform/sfx';
 import { say, stopSpeech } from '../../platform/speech';
-import { autoplays, course, theme } from '../../state/store';
+import { autoplays, course } from '../../state/store';
 import { Say } from '../kit';
 import { Mascot } from '../Mascot';
 import { back, go } from '../router';
@@ -176,7 +176,7 @@ export function SceneScreen({ id }: { id: string }) {
       )}
       {finished && (
         <div class="scene-end">
-          <Mascot mood="cheer" size={120} pattern={theme.value.pattern} motion="jump" />
+          <Mascot mood="cheer" size={120} motion="jump" />
           <h2>Scène réussie</h2>
           <p class="muted">
             {misses

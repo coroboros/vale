@@ -241,14 +241,7 @@ export function Porthole({ stops }: { stops: Stop[] }) {
           {stop.greeting}
         </span>
         <span key={`${index}-${hop}`} class="porthole-hop">
-          <Mascot
-            size={140}
-            pattern={stop.theme.pattern}
-            mood="happy"
-            decorative
-            followPointer={!still}
-            blinks={playing && visible}
-          />
+          <Mascot size={140} flag={stop.theme.id} mood="happy" decorative blinks={playing && visible} />
         </span>
       </button>
       {!still && (

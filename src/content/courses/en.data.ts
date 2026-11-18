@@ -699,16 +699,18 @@ export const extras: Extra[] = [
 ];
 
 export const regions: Region[] = [
-  { id: 'londres', name: 'Londres', native: 'London' },
+  { id: 'londres', name: 'Londres', at: 'à Londres', native: 'London' },
   {
     id: 'edimbourg',
     name: 'Édimbourg',
+    at: 'à Édimbourg',
     native: 'Edinburgh',
     tip: { title: 'En Écosse', desc: 'Le r se roule, « wee » veut dire petit et « aye », oui.' },
   },
   {
     id: 'dublin',
     name: 'Dublin',
+    at: 'à Dublin',
     native: 'Dublin',
     tip: {
       title: 'En Irlande',
@@ -718,13 +720,14 @@ export const regions: Region[] = [
   {
     id: 'newyork',
     name: 'New York',
+    at: 'à New York',
     native: 'New York',
     tip: {
       title: 'Aux États-Unis',
       desc: 'On dit check, restroom, subway et to go. Le pourboire (15 à 20 %) est attendu, et les taxes s’ajoutent au prix affiché.',
     },
   },
-  { id: 'autre', name: 'Ailleurs', native: 'United Kingdom' },
+  { id: 'autre', name: 'Ailleurs', at: 'au Royaume-Uni', native: 'United Kingdom' },
 ];
 
 export const card: SurvivalCard = {

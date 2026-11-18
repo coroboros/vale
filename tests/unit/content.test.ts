@@ -84,7 +84,7 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
   });
 
   it('uses an existing theme', () => {
-    expect(THEMES[course.theme]).toBeDefined();
+    expect(THEMES[course.flag]).toBeDefined();
   });
 });
 

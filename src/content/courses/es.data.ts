@@ -1955,29 +1955,34 @@ export const regions: Region[] = [
   {
     id: 'madrid',
     name: 'Madrid',
+    at: 'à Madrid',
     native: 'Madrid',
   },
   {
     id: 'barcelone',
     name: 'Barcelone',
+    at: 'à Barcelone',
     native: 'Barcelona',
     pack: 'ca',
   },
   {
     id: 'valence',
     name: 'Valence',
+    at: 'à Valence',
     native: 'Valencia',
     pack: 'ca',
   },
   {
     id: 'baleares',
     name: 'Baléares',
+    at: 'aux Baléares',
     native: 'Baleares',
     pack: 'ca',
   },
   {
     id: 'andalousie',
     name: 'Andalousie',
+    at: 'en Andalousie',
     native: 'Andalucía',
     tip: {
       title: 'Accent du Sud',
@@ -1987,6 +1992,7 @@ export const regions: Region[] = [
   {
     id: 'canaries',
     name: 'Canaries',
+    at: 'aux Canaries',
     native: 'Canarias',
     tip: {
       title: 'Accent du Sud',
@@ -1996,18 +2002,21 @@ export const regions: Region[] = [
   {
     id: 'paysbasque',
     name: 'Pays basque',
+    at: 'au Pays basque',
     native: 'Euskadi',
     pack: 'eu',
   },
   {
     id: 'galice',
     name: 'Galice',
+    at: 'en Galice',
     native: 'Galicia',
     pack: 'gl',
   },
   {
     id: 'autre',
     name: 'Ailleurs',
+    at: 'en Espagne',
     native: 'España',
   },
 ];
