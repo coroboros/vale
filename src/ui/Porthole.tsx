@@ -3,7 +3,8 @@
  * city, Bernard greets it in its language, then the clouds close and the plane flies on.
  *
  * Play: the view follows the mouse, or the thumb dragged on the glass, like a head moving
- * close to the window. Tapping the window flies on; tapping Bernard makes him say hello.
+ * close to the window, and Bernard's eyes follow it too. Tapping the window flies on; tapping
+ * Bernard makes him say hello. He blinks while the journey plays.
  * Motion stops for people who ask their system for less of it, and the pause button stops
  * the loop for everyone else (WCAG 2.2.2).
  */
@@ -262,7 +263,14 @@ export function Porthole({ stops }: { stops: Stop[] }) {
           {stop.greeting}
         </span>
         <span key={`${index}-${hop}`} class="porthole-hop">
-          <Mascot size={140} pattern={stop.theme.pattern} mood="happy" decorative />
+          <Mascot
+            size={140}
+            pattern={stop.theme.pattern}
+            mood="happy"
+            decorative
+            look={!still}
+            blink={playing && visible}
+          />
         </span>
       </button>
       {!still && (

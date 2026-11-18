@@ -3,7 +3,8 @@
  * changes shell with each language (the course theme). Flat 2D on purpose: in a meta-analysis
  * of pedagogical agents, 2D agents helped learning more than 3D ones (Castro-Alonso et al., 2021).
  */
-import { useId } from 'preact/hooks';
+import type { RefObject } from 'preact';
+import { useEffect, useId, useRef } from 'preact/hooks';
 import { BRAND } from '../brand';
 
 export type Mood = 'idle' | 'happy' | 'oops' | 'cheer' | 'sleep';
@@ -16,10 +17,89 @@ const PUPIL: Record<Mood, [number, number]> = {
   sleep: [0, 0],
 };
 
+/** Midpoint of the eyes in the drawing (viewBox 120 × 102), and how far a pupil may travel. */
+const EYES = { x: 39.5 / 120, y: 32 / 102 };
+const TRAVEL = 3.2;
+
+/**
+ * Eyes that follow the pointer (the mouse anywhere on the page, a finger where it touches) and
+ * blink now and then. Pupils move through --px and --py, in drawing units; a blink is the
+ * `blink` class for one short animation.
+ */
+function useAliveEyes(svg: RefObject<SVGSVGElement | null>, look: boolean, blink: boolean, rest: [number, number]) {
+  useEffect(() => {
+    const el = svg.current;
+    if (!el || !look) return;
+    let target = { x: rest[0], y: rest[1] };
+    let now = { ...target };
+    let frame = 0;
+    let idle = 0;
+    const step = () => {
+      now = { x: now.x + (target.x - now.x) * 0.2, y: now.y + (target.y - now.y) * 0.2 };
+      el.style.setProperty('--px', now.x.toFixed(2));
+      el.style.setProperty('--py', now.y.toFixed(2));
+      frame = Math.abs(target.x - now.x) + Math.abs(target.y - now.y) > 0.02 ? requestAnimationFrame(step) : 0;
+    };
+    const aim = (x: number, y: number) => {
+      target = { x, y };
+      if (!frame) frame = requestAnimationFrame(step);
+    };
+    const lookAt = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width * EYES.x);
+      const dy = e.clientY - (r.top + r.height * EYES.y);
+      const d = Math.hypot(dx, dy) || 1;
+      const k = (Math.min(1, d / 120) * TRAVEL) / d;
+      aim(dx * k, dy * k);
+      // A finger lifts: after a moment Bernard looks back at you.
+      clearTimeout(idle);
+      if (e.pointerType !== 'mouse') idle = window.setTimeout(() => aim(rest[0], rest[1]), 1500);
+    };
+    window.addEventListener('pointermove', lookAt, { passive: true });
+    window.addEventListener('pointerdown', lookAt, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', lookAt);
+      window.removeEventListener('pointerdown', lookAt);
+      cancelAnimationFrame(frame);
+      clearTimeout(idle);
+    };
+  }, [look]);
+
+  useEffect(() => {
+    const el = svg.current;
+    if (!el || !blink) return;
+    let timer = 0;
+    const once = () => {
+      el.classList.remove('blink');
+      void el.getBoundingClientRect(); // restarts the animation if the class was still there
+      el.classList.add('blink');
+    };
+    const schedule = () => {
+      timer = window.setTimeout(
+        () => {
+          once();
+          if (Math.random() < 0.2) window.setTimeout(once, 280); // sometimes twice, as people do
+          schedule();
+        },
+        2200 + Math.random() * 3800,
+      );
+    };
+    const end = (e: AnimationEvent) => {
+      if (e.animationName === 'mascot-blink') el.classList.remove('blink');
+    };
+    el.addEventListener('animationend', end);
+    schedule();
+    return () => {
+      clearTimeout(timer);
+      el.removeEventListener('animationend', end);
+      el.classList.remove('blink');
+    };
+  }, [blink]);
+}
+
 function Eye({ x, y, mood }: { x: number; y: number; mood: Mood }) {
-  const [dx, dy] = PUPIL[mood];
   return (
-    <g>
+    <g class="mascot-eye">
       <circle cx={x} cy={y} r="8.5" fill="#fff" stroke="var(--crab-deep)" stroke-width="2" />
       {mood === 'sleep' ? (
         <path
@@ -30,10 +110,10 @@ function Eye({ x, y, mood }: { x: number; y: number; mood: Mood }) {
           stroke-linecap="round"
         />
       ) : (
-        <>
-          <circle cx={x + dx} cy={y + dy} r="4" fill="var(--ink)" />
-          <circle cx={x + dx + 1.4} cy={y + dy - 1.6} r="1.3" fill="#fff" />
-        </>
+        <g class="mascot-pupil">
+          <circle cx={x} cy={y} r="4" fill="var(--ink)" />
+          <circle cx={x + 1.4} cy={y - 1.6} r="1.3" fill="#fff" />
+        </g>
       )}
     </g>
   );
@@ -64,6 +144,8 @@ export function Mascot({
   pattern = 'tiles',
   motion,
   decorative,
+  look = false,
+  blink = false,
 }: {
   mood?: Mood;
   size?: number;
@@ -71,11 +153,20 @@ export function Mascot({
   motion?: 'bob' | 'jump';
   /** Hide from assistive tech when the text next to it already says everything. */
   decorative?: boolean;
+  /** The eyes follow the pointer. */
+  look?: boolean;
+  /** The eyes blink now and then. */
+  blink?: boolean;
 }) {
   const happy = mood === 'happy' || mood === 'cheer';
   const clip = useId();
+  const svg = useRef<SVGSVGElement>(null);
+  const rest = PUPIL[mood];
+  useAliveEyes(svg, look, blink, rest);
   return (
     <svg
+      ref={svg}
+      style={{ '--px': rest[0], '--py': rest[1] }}
       class={`mascot${motion ? ` ${motion}` : ''}`}
       width={size}
       height={size * 0.85}

@@ -619,6 +619,25 @@
     animation: jump 0.6s var(--spring) both;
   }
 
+  .mascot-pupil {
+    transform: translate(calc(var(--px) * 1px), calc(var(--py) * 1px));
+  }
+
+  .mascot-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .mascot.blink .mascot-eye {
+    animation: mascot-blink 0.18s ease-in-out;
+  }
+
+  @keyframes mascot-blink {
+    50% {
+      transform: scaleY(0.1);
+    }
+  }
+
   .stamp {
     display: block;
     color: var(--accent-ink);

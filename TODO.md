@@ -17,6 +17,7 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Lighthouse on a real phone. Local runs: performance 96, accessibility 100, best practices 100.
 - Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
   overview and on the home screen.
+- Bernard's eyes following a finger on the iPhone, and his blinking.
 
 ## Improve
 

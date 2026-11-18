@@ -330,10 +330,85 @@ test('the welcome window flies on, Bernard speaks, the journey pauses', async ({
   await expect(page.locator('.porthole')).toHaveAttribute('data-playing', 'true');
 });
 
+/** Bernard's pupils on the welcome screen, in drawing units. */
+const pupils = (page: Page) =>
+  page.locator('.porthole-bernard .mascot').evaluate(el => {
+    const style = (el as SVGElement).style;
+    return { x: Number(style.getPropertyValue('--px')), y: Number(style.getPropertyValue('--py')) };
+  });
+
+/** Counts Bernard's blinks from now on. */
+const countBlinks = (page: Page) =>
+  page.evaluate(() => {
+    const w = window as unknown as { __blinks: number };
+    w.__blinks = 0;
+    new MutationObserver(records => {
+      for (const r of records) if ((r.target as Element).classList.contains('blink')) w.__blinks++;
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
+  });
+const blinks = (page: Page) => page.evaluate(() => (window as unknown as { __blinks: number }).__blinks);
+
+test('Bernard’s bubble leaves his eyes visible', async ({ page }) => {
+  for (const viewport of [page.viewportSize()!, { width: 320, height: 568 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('./');
+    await expect(page.locator('.porthole-bubble')).toBeVisible();
+    await settle(page);
+    const covered = await page.evaluate(() => {
+      const b = document.querySelector('.porthole-bubble')!.getBoundingClientRect();
+      const tail = 8; // the point of the bubble, drawn under its box
+      return [...document.querySelectorAll('.porthole-bernard .mascot-eye > circle:first-child')].some(eye => {
+        const e = eye.getBoundingClientRect();
+        return e.left < b.right && e.right > b.left && e.top < b.bottom + tail && e.bottom > b.top;
+      });
+    });
+    expect(covered, `${viewport.width}px`).toBe(false);
+  }
+});
+
+test('Bernard’s eyes follow the mouse and a finger', async ({ page }, info) => {
+  await page.goto('./');
+  await settle(page);
+  const box = (await page.locator('.porthole-bernard .mascot').boundingBox())!;
+  const { width, height } = page.viewportSize()!;
+  const eyes = { x: box.x + box.width * 0.33, y: box.y + box.height * 0.31 };
+  await page.mouse.move(2, eyes.y);
+  await expect.poll(async () => (await pupils(page)).x).toBeLessThan(-2);
+  await page.mouse.move(width - 2, eyes.y);
+  await expect.poll(async () => (await pupils(page)).x).toBeGreaterThan(2);
+  await page.mouse.move(eyes.x, height - 2);
+  await expect.poll(async () => (await pupils(page)).y).toBeGreaterThan(2);
+  if (info.project.name === 'iphone') {
+    // A tap above and to the left of him, away from any button.
+    await page.touchscreen.tap(4, 4);
+    await expect.poll(async () => (await pupils(page)).y).toBeLessThan(-1);
+  }
+});
+
+test('Bernard blinks while the journey plays, and not once it is paused', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('./');
+  await countBlinks(page);
+  await page.clock.runFor(8000);
+  expect(await blinks(page)).toBeGreaterThan(0);
+  await page.getByRole('button', { name: 'Mettre le voyage en pause' }).click();
+  await countBlinks(page);
+  await page.clock.runFor(8000);
+  expect(await blinks(page)).toBe(0);
+});
+
 test('the welcome window stays still for people who ask for less motion', async ({ page }) => {
+  await page.clock.install();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('./');
   await expect(page.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
+  // Bernard neither follows the pointer nor blinks.
+  const rest = await pupils(page);
+  await countBlinks(page);
+  await page.mouse.move(2, 2);
+  await page.clock.runFor(8000);
+  expect(await pupils(page)).toEqual(rest);
+  expect(await blinks(page)).toBe(0);
   await expect(page.locator('.porthole')).toHaveAttribute('data-playing', 'false');
   await expect(page.getByRole('button', { name: 'Mettre le voyage en pause' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Voler vers la destination suivante' }).click();

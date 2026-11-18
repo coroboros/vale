@@ -186,10 +186,11 @@
     filter: drop-shadow(0 8px 10px rgb(22 33 62 / 18%));
   }
 
+  /* Above Bernard's eyes, which start 21 % down his drawing, with room for the tail. */
   .porthole-bubble {
     position: absolute;
-    right: 52%;
-    bottom: 76%;
+    right: 46%;
+    bottom: calc(79% + 12px);
     z-index: 3;
     padding: 9px 14px 10px;
     border-radius: 16px;

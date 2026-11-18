@@ -27,7 +27,9 @@ and the name on the app stores.
 
 A hermit crab, *bernard-l’ermite* in French, who carries his home on his back like luggage. His
 shell takes the colours and pattern of the country being learned. He jumps when a session goes
-well, makes a sorry face when an answer is wrong, and never scolds.
+well, makes a sorry face when an answer is wrong, and never scolds. On the welcome screen his
+eyes follow the mouse or the finger and he blinks; both stop for people who ask for less motion,
+and the blinking stops when the journey is paused.
 
 ## App icon
 
