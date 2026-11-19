@@ -8,7 +8,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
   pronunciation, its note, the scenes, sounds, tips and survival card, in all four languages. The
   Portuguese and English courses were written on 18 November 2026 and nobody has reviewed them
   yet; Spanish and Italian have not had a native review either. The American and Irish packs
-  (19 November) need a speaker from each country.
+  and the Italian, Portuguese and English hotel and shopping lessons (19 November) are newer
+  still.
 
 ## Test for real
 

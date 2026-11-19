@@ -74,6 +74,16 @@ export const en: Course = {
       steps: [{ kind: 'lesson', id: 'ville' }, { kind: 'scene', id: 'station' }, { kind: 'pack' }, { kind: 'review' }],
     },
     {
+      id: 'stay',
+      title: 'Dormir et acheter',
+      steps: [
+        { kind: 'lesson', id: 'hotel' },
+        { kind: 'scene', id: 'hotel' },
+        { kind: 'lesson', id: 'shopping' },
+        { kind: 'review' },
+      ],
+    },
+    {
       id: 'unexpected',
       title: 'Imprévus',
       steps: [{ kind: 'lesson', id: 'urgences' }, { kind: 'scene', id: 'pharmacy' }, { kind: 'review' }],

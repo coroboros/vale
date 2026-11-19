@@ -34,6 +34,16 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
     for (const id of course.phoneticExamples) expect(index.entries.has(id), id).toBe(true);
   });
 
+  it('teaches every situation the README promises, in every language', () => {
+    const steps = course.units.flatMap(u => u.steps);
+    for (const id of ['bar', 'resto', 'ville', 'hotel', 'shopping', 'urgences'])
+      expect(
+        steps.some(s => s.kind === 'lesson' && s.id === id),
+        id,
+      ).toBe(true);
+    expect(steps.some(s => s.kind === 'scene' && s.id === 'hotel')).toBe(true);
+  });
+
   it('gives every scene turn several distinct options', () => {
     for (const scene of course.scenes) {
       for (const line of scene.lines) {
@@ -64,6 +74,14 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
           expect(course.numbers.sayPrice(e, c, e % 2 === 0, money)).not.toMatch(/undefined/);
       expect(course.numbers.confusable(e)).not.toContain(e);
     }
+  });
+
+  it('lets every word its scenes say be tapped for its meaning', () => {
+    for (const scene of course.scenes)
+      for (const line of scene.lines)
+        if (line.who === 'them')
+          for (const word of line.t.split(/\s+/).map(normalize).filter(Boolean))
+            expect(course.gloss[word], `${scene.id}: ${word}`).toBeDefined();
   });
 
   it('keeps its glossary in normalized form', () => {

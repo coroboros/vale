@@ -51,9 +51,13 @@ order:
    focus itself (`dialog.focus()` after `showModal()`: `autofocus` on a `<dialog>` does not behave
    the same in every browser), and Tab reaches the close button with its ring. Tested in
    Chromium; Safari on the iPhone is in TODO.md, « Test for real » (no WebKit here).
-7. **Hotel and shopping lessons exist only in Spanish** (the README promised them everywhere until
-   19 Nov 2026). *Rules first: AGENTS.md.* Write them for Italian, Portuguese and English from the
-   Spanish ones, then the native review (TODO.md).
+7. ✅ 19 Nov 2026. **Hotel and shopping in every language.** Italian, Portuguese and English gain
+   the « Dormir et acheter » leg Spanish had: the hotel lesson and check-in scene, then shopping.
+   Shaped by each country rather than copied: the tourist tax in Italy and Portugal, « Contribuinte? »
+   at Portuguese tills, the receipt's silent p. Phrases already taught elsewhere (paying by card,
+   open and closed) gave way to trying on and paying cash or card. Tests now hold every course to
+   the README's list and every word a scene says to a gloss you can tap (the new scenes lacked
+   them); the native review is in TODO.md.
 8. **French typography: spaces that never break.** A line can split « Bon dia » after its opening
    guillemet, or start with the « : » of « Mémoire à l’arrivée : ». *Rules first: AGENTS.md.* A
    transform on string literals (not a text replace: TypeScript has « ? » and « : » too) puts
