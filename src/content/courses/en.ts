@@ -1,6 +1,6 @@
 import { capitalize, confusableNumbers, FIRST_WORDS, firstAnswer, joinList, phrase } from '../shared';
 import type { Course } from '../types';
-import { card, extras, gloss, lessons, regions, scenes, sounds, tips } from './en.data';
+import { card, extras, gloss, lessons, packs, regions, scenes, sounds, tips } from './en.data';
 
 const UNITS = [
   'zero',
@@ -71,7 +71,7 @@ export const en: Course = {
     {
       id: 'city',
       title: 'En ville',
-      steps: [{ kind: 'lesson', id: 'ville' }, { kind: 'scene', id: 'station' }, { kind: 'review' }],
+      steps: [{ kind: 'lesson', id: 'ville' }, { kind: 'scene', id: 'station' }, { kind: 'pack' }, { kind: 'review' }],
     },
     {
       id: 'unexpected',
@@ -86,7 +86,7 @@ export const en: Course = {
   extras,
   gloss,
   regions,
-  packs: [],
+  packs,
   card,
   arrival: {
     coffee: { place: 'cafe', say: () => firstAnswer(scenes, 'cafe') },

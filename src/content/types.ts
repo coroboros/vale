@@ -70,7 +70,8 @@ export interface Pack {
   native: string;
   /** BCP 47: picks the voice. */
   lang: string;
-  tip: Tip;
+  /** Opens the pack's sheet. */
+  intro: string;
   items: Item[];
 }
 

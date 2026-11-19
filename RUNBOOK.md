@@ -41,10 +41,12 @@ order:
    now moves like the welcome flight: clouds drift, boats rock. « Ailleurs » shows its country's
    emblem, photo and drawing alike, from one field (`emblem`, read by `pictureOf`). A test fails
    when a destination has no drawing; the generic coast is gone.
-5. **American and Irish words, with their voices.** *Rules first: AGENTS.md.* Through the regional
-   packs that already teach Catalan in Barcelona: « Les mots de New York » (check, restroom, subway,
-   to go, the tip) with the en-US voice, Dublin's (grand, the craic) with en-IE. A pack's own
-   language already picks its voice: nothing new to build.
+5. ✅ 19 Nov 2026. **American and Irish words, with their voices.** New York's itinerary gains
+   « L’anglais américain » (the check, the restroom, to go, the subway, uptown and downtown, the
+   first floor…) in an American voice, Dublin's « L’anglais irlandais » (grand, the craic, your
+   round…) in an Irish one when the phone has it, another English voice otherwise. « Bon à savoir »
+   keeps the customs: the tip and the taxes; the euro and the Irish signs (Mná for women, Fir for
+   men). A pack's sheet opens on its `intro`, which replaces a tip whose title nothing showed.
 6. **On the iPhone, a sheet opens with a focus ring on its close button** (screenshot). *Rules
    first: AGENTS.md.* Focus goes to the sheet itself (`autofocus` on the `<dialog>`, to check in
    Safari), so a tap shows no ring and the keyboard still does.

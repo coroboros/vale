@@ -7,7 +7,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - **Native speakers or teachers check every course.** Each phrase, its French-reader
   pronunciation, its note, the scenes, sounds, tips and survival card, in all four languages. The
   Portuguese and English courses were written on 18 November 2026 and nobody has reviewed them
-  yet; Spanish and Italian have not had a native review either.
+  yet; Spanish and Italian have not had a native review either. The American and Irish packs
+  (19 November) need a speaker from each country.
 
 ## Test for real
 

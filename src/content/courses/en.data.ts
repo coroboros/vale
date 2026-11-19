@@ -1,6 +1,6 @@
 // Item ids are stable progress keys: edit text freely, never rename an id.
 // British English, with the American word noted where it differs.
-import type { Extra, Lesson, Region, Scene, Sound, SurvivalCard, Tip } from '../types';
+import type { Extra, Lesson, Pack, Region, Scene, Sound, SurvivalCard, Tip } from '../types';
 
 export const lessons: Lesson[] = [
   {
@@ -713,9 +713,10 @@ export const regions: Region[] = [
     at: 'à Dublin',
     native: 'Dublin',
     flag: 'ie',
+    pack: 'ie',
     tip: {
       title: 'En Irlande',
-      desc: 'On paie en euros, pas en livres. « Grand » veut dire « d’accord », et « the craic », l’ambiance.',
+      desc: 'On paie en euros, pas en livres. Les panneaux sont aussi en irlandais : sur les portes des toilettes, Mná veut dire femmes et Fir, hommes.',
     },
   },
   {
@@ -724,12 +725,172 @@ export const regions: Region[] = [
     at: 'à New York',
     native: 'New York',
     flag: 'us',
+    pack: 'us',
     tip: {
       title: 'Aux États-Unis',
-      desc: 'On dit check, restroom, subway et to go. Le pourboire (15 à 20 %) est attendu, et les taxes s’ajoutent au prix affiché.',
+      desc: 'Le pourboire (15 à 20 %) est attendu, et les taxes s’ajoutent au prix affiché.',
     },
   },
   { id: 'autre', name: 'Ailleurs', at: 'au Royaume-Uni', native: 'United Kingdom', emblem: 'londres' },
+];
+
+export const packs: Pack[] = [
+  {
+    id: 'us',
+    title: 'L’anglais américain',
+    native: 'American English',
+    lang: 'en-US',
+    intro:
+      'De l’autre côté de l’Atlantique, les mots du quotidien changent : l’addition, les toilettes, le métro, et même les étages.',
+    items: [
+      {
+        id: 'us-restroom',
+        t: 'Where’s the restroom?',
+        ph: 'OUÈRZ dheu RÈST-roum ?',
+        fr: 'Où sont les toilettes ?',
+        note: 'On dit aussi bathroom ; toilet désigne plutôt la cuvette.',
+      },
+      {
+        id: 'us-check',
+        t: 'The check, please.',
+        ph: 'dheu TCHÈK, PLIIZ',
+        fr: 'L’addition, s’il vous plaît',
+        note: 'Au Royaume-Uni : the bill. Aux États-Unis, a bill est un billet de banque.',
+      },
+      {
+        id: 'us-for-here-or-to-go',
+        t: 'For here or to go?',
+        ph: 'feur HIR or teu GÔOU ?',
+        fr: 'Sur place ou à emporter ?',
+        note: 'La question posée au comptoir. Au Royaume-Uni : eat in or take away?',
+      },
+      { id: 'us-to-go', t: 'To go, please.', ph: 'teu GÔOU, PLIIZ', fr: 'À emporter, s’il vous plaît' },
+      {
+        id: 'us-tip-included',
+        t: 'Is the tip included?',
+        ph: 'iz dheu TIP inn-KLOU-did ?',
+        fr: 'Le pourboire est compris ?',
+        note: 'Il l’est rarement ; sur l’addition, il s’appelle alors gratuity ou service charge.',
+      },
+      {
+        id: 'us-subway',
+        t: 'The subway',
+        ph: 'dheu SEUB-ouéï',
+        fr: 'Le métro',
+        note: 'Au Royaume-Uni, a subway est un passage souterrain pour piétons.',
+      },
+      {
+        id: 'us-uptown',
+        t: 'Uptown',
+        ph: 'eup-TAOUNN',
+        fr: 'Vers le nord de Manhattan',
+        note: 'Dans le métro, beaucoup d’entrées ne mènent qu’à une direction : Uptown vers le nord, Downtown vers le sud, souvent sans passage entre les quais.',
+      },
+      {
+        id: 'us-downtown',
+        t: 'Downtown',
+        ph: 'daounn-TAOUNN',
+        fr: 'Vers le sud de Manhattan',
+        note: 'Ailleurs aux États-Unis, downtown veut dire le centre-ville.',
+      },
+      {
+        id: 'us-two-blocks',
+        t: 'It’s two blocks away.',
+        ph: 'its TOU BLAKS eu-OUÉÏ',
+        fr: 'C’est à deux rues d’ici',
+        note: 'On compte les distances en blocks, les pâtés de maisons.',
+      },
+      {
+        id: 'us-first-floor',
+        t: 'The first floor',
+        ph: 'dheu FEURST FLOR',
+        fr: 'Le rez-de-chaussée',
+        note: 'Le rez-de-chaussée compte comme premier étage : notre premier étage est leur second floor.',
+      },
+      {
+        id: 'us-elevator',
+        t: 'The elevator',
+        ph: 'dhi È-leu-véï-deur',
+        fr: 'L’ascenseur',
+        note: 'Au Royaume-Uni : the lift.',
+      },
+      {
+        id: 'us-how-are-you-doing',
+        t: 'How are you doing?',
+        ph: 'HAOU eur iou DOU-ing ?',
+        fr: 'Comment ça va ?',
+        note: 'Une façon de dire bonjour : on répond « Good, thanks! » sans entrer dans les détails.',
+      },
+    ],
+  },
+  {
+    id: 'ie',
+    title: 'L’anglais irlandais',
+    native: 'Irish English',
+    lang: 'en-IE',
+    intro:
+      'Les Irlandais parlent anglais avec leurs mots à eux, au pub comme au comptoir : « grand » pour dire que tout va bien, « the craic » pour l’ambiance.',
+    items: [
+      {
+        id: 'ie-grand',
+        t: 'That’s grand.',
+        ph: 'dhats GRANND',
+        fr: 'C’est très bien',
+        note: 'Le mot à tout faire : I’m grand, je vais bien ; that’s grand, ça me va. Rien de grandiose.',
+      },
+      {
+        id: 'ie-craic',
+        t: 'What’s the craic?',
+        ph: 'OUOTS dheu KRAK ?',
+        fr: 'Quoi de neuf ?',
+        note: 'The craic se prononce crack : l’ambiance, le plaisir d’être ensemble. Good craic, une bonne soirée.',
+      },
+      { id: 'ie-thanks-a-million', t: 'Thanks a million.', ph: 'THANKS eu MIL-ieunn', fr: 'Merci mille fois' },
+      { id: 'ie-no-bother', t: 'No bother.', ph: 'nôou BO-dheur', fr: 'Pas de souci', note: 'La réponse à un merci.' },
+      {
+        id: 'ie-fair-play',
+        t: 'Fair play!',
+        ph: 'fèr PLÉÏ !',
+        fr: 'Bravo !',
+        note: 'Pour saluer un exploit ou un beau geste.',
+      },
+      {
+        id: 'ie-deadly',
+        t: 'Deadly!',
+        ph: 'DÈD-li !',
+        fr: 'Génial !',
+        note: 'Rien de mortel : un compliment, surtout à Dublin.',
+      },
+      {
+        id: 'ie-sound',
+        t: 'He’s sound.',
+        ph: 'hiz SAOUNND',
+        fr: 'Il est sympa',
+        note: 'Sound, seul, veut aussi dire : ça marche.',
+      },
+      {
+        id: 'ie-your-round',
+        t: 'It’s your round.',
+        ph: 'its ior RAOUNND',
+        fr: 'C’est ta tournée',
+        note: 'Au pub, chacun paie à son tour la tournée de tout le groupe.',
+      },
+      {
+        id: 'ie-full-irish',
+        t: 'A full Irish, please.',
+        ph: 'eu foul AÏ-rich, PLIIZ',
+        fr: 'Un petit-déjeuner irlandais complet, s’il vous plaît',
+        note: 'Œufs, bacon, saucisses, boudin noir, tomate et toast.',
+      },
+      {
+        id: 'ie-jacks',
+        t: 'Where are the jacks?',
+        ph: 'OUÈR ar dheu DJAKS ?',
+        fr: 'Où sont les toilettes ?',
+        note: 'Familier, entre amis.',
+      },
+    ],
+  },
 ];
 
 export const card: SurvivalCard = {

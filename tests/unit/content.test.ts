@@ -91,6 +91,12 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
     for (const r of course.regions) expect(THEMES[flagOf(course, r.id)]).toBeDefined();
   });
 
+  it('teaches a destination abroad its country’s words, in that country’s voice', () => {
+    const base = course.lang.split('-')[0];
+    for (const r of course.regions)
+      if (r.flag) expect(course.packs.find(p => p.id === r.pack)?.lang, r.id).toBe(`${base}-${r.flag.toUpperCase()}`);
+  });
+
   it('draws every destination, « Ailleurs » through its country’s emblem', () => {
     for (const r of course.regions) expect(hasScenery(pictureOf(course, r.id)), r.id).toBe(true);
   });

@@ -12,14 +12,17 @@ const FAKE_VOICES = () => {
     { name: 'Alice', lang: 'it-IT', localService: true, default: false, voiceURI: 'a' },
     { name: 'Joana', lang: 'pt-PT', localService: true, default: false, voiceURI: 'j' },
     { name: 'Daniel', lang: 'en-GB', localService: true, default: false, voiceURI: 'd' },
+    { name: 'Samantha', lang: 'en-US', localService: true, default: false, voiceURI: 's' },
     { name: 'Thomas', lang: 'fr-FR', localService: true, default: true, voiceURI: 't' },
   ];
   const spoken: string[] = [];
-  (window as unknown as { __spoken: string[] }).__spoken = spoken;
+  const speakers: string[] = [];
+  Object.assign(window, { __spoken: spoken, __speakers: speakers });
   const synth = {
     getVoices: () => voices,
-    speak: (u: { text: string; onend?: () => void }) => {
+    speak: (u: { text: string; voice?: { name: string }; onend?: () => void }) => {
       spoken.push(u.text);
+      speakers.push(u.voice?.name ?? '');
       setTimeout(() => u.onend?.(), 20);
     },
     cancel() {},
@@ -379,7 +382,9 @@ test('prices by ear pay in the destination’s money: dollars in New York', asyn
   for (const price of await prices.allTextContents()) expect(price).toMatch(/^\d+,\d\d \$$/);
 });
 
-test('a regional pack opens with its tip, and the destination’s tip comes first in Phrases', async ({ page }) => {
+test('regional packs open on their introduction and speak in their own voice; the destination’s tip leads Phrases', async ({
+  page,
+}) => {
   await onboard(page);
   await leaveFirstLesson(page);
   await page.getByRole('button', { name: /Le catalan/ }).click();
@@ -398,6 +403,14 @@ test('a regional pack opens with its tip, and the destination’s tip comes firs
   await page.getByRole('button', { name: 'New York' }).click();
   await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
   await page.getByRole('button', { name: 'Fermer' }).click();
+  await page.getByRole('button', { name: /L’anglais américain/ }).click();
+  await expect(sheet).toContainText('les mots du quotidien changent');
+  await expect(sheet.locator('.preview-t').first()).toHaveAttribute('lang', 'en-US');
+  await sheet.getByRole('button', { name: 'Écouter' }).first().click();
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __speakers: string[] }).__speakers.at(-1)))
+    .toBe('Samantha');
+  await sheet.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: 'Phrases' }).click();
   await expect(page.locator('.tips .tip h3').first()).toHaveText('Aux États-Unis');
 });

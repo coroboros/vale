@@ -1743,10 +1743,8 @@ export const packs: Pack[] = [
     title: 'Le catalan',
     native: 'Català',
     lang: 'ca',
-    tip: {
-      title: 'Catalan',
-      desc: 'Tout le monde parle espagnol, mais un « Bon dia » fait toujours plaisir. À Valence, les a se prononcent « a ».',
-    },
+    intro:
+      'Tout le monde parle espagnol, mais un « Bon dia » fait toujours plaisir. À Valence, les a se prononcent « a ».',
     items: [
       {
         id: 'ca-bon-dia',
@@ -1839,10 +1837,8 @@ export const packs: Pack[] = [
     title: 'Le basque',
     native: 'Euskara',
     lang: 'eu',
-    tip: {
-      title: 'Basque',
-      desc: 'Les panneaux sont bilingues et tout le monde parle espagnol. Kaixo et Eskerrik asko ouvrent toutes les portes.',
-    },
+    intro:
+      'Les panneaux sont bilingues et tout le monde parle espagnol. Kaixo et Eskerrik asko ouvrent toutes les portes.',
     items: [
       {
         id: 'eu-kaixo',
@@ -1900,10 +1896,7 @@ export const packs: Pack[] = [
     title: 'Le galicien',
     native: 'Galego',
     lang: 'gl',
-    tip: {
-      title: 'Galicien',
-      desc: 'Proche de l’espagnol et du portugais. Tout le monde parle aussi espagnol.',
-    },
+    intro: 'Proche de l’espagnol et du portugais. Tout le monde parle aussi espagnol.',
     items: [
       {
         id: 'gl-bos-dias',

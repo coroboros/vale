@@ -135,7 +135,7 @@ export function Onboarding() {
             <h1 id="ob-2">Où vas-tu ?</h1>
             <PlaceChoice course={c} value={region} onChange={setRegion} />
             {regionOf(c, region).pack && (
-              <p class="muted">Bonus : quelques mots de la langue de la région t’attendent dans ton itinéraire.</p>
+              <p class="muted">Bonus : quelques mots de la région t’attendent dans ton itinéraire.</p>
             )}
           </section>
         )}

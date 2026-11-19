@@ -74,7 +74,7 @@ function StepSheet({ stop, region, onClose }: { stop: Stop; region: string; onCl
       <p class="muted" lang={lang}>
         {taught.native}
       </p>
-      <p>{lesson ? `${lesson.desc} (${lesson.items.length} phrases)` : pack?.tip.desc}</p>
+      <p>{lesson ? `${lesson.desc} (${lesson.items.length} phrases)` : pack?.intro}</p>
       <Bar value={stop.progress} label="Phrases découvertes" />
       <ul class="preview">
         {taught.items.slice(0, 6).map(item => (
