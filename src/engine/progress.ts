@@ -1,6 +1,7 @@
 /** Evidence for these rules: docs/LEARNING.md. */
-import { type CourseIndex, itemKey, splitKey } from '../content';
-import type { Course, Item, Step } from '../content/types';
+import { type CourseIndex, itemKey, regionOf, splitKey } from '../content';
+import { STORY } from '../content/story';
+import type { Course, Item, Step, Unit } from '../content/types';
 import { blankDay, type DayLog, type Profile, type ProfileData } from '../state/schema';
 import { recall } from './memory';
 import { hashSeed, seeded, shuffle } from './random';
@@ -198,6 +199,21 @@ export function stepProgress(data: ProfileData, course: Course, step: Step, unit
     default:
       return itemsProgress(data, course.id, stepItems(course, step, region));
   }
+}
+
+/**
+ * Bernard's latest postcard from a leg of the trip: his arrival once the leg has begun, the next one
+ * with each step done, the last when the whole leg is.
+ */
+export function postcard(course: Course, unit: Unit, data: ProfileData, region: string): string {
+  const chapter = STORY[unit.id];
+  const progress = unit.steps
+    .filter(step => stepVisible(course, step, region))
+    .map(step => stepProgress(data, course, step, unit.id, region));
+  if (!chapter || !progress.some(v => v > 0)) return '';
+  const done = progress.filter(v => v >= 1).length;
+  const beat = done === progress.length ? chapter[3] : done === 0 ? chapter[0] : done === 1 ? chapter[1] : chapter[2];
+  return beat.replace('{at}', regionOf(course, region).at);
 }
 
 export interface Stamp {

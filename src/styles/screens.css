@@ -186,6 +186,42 @@
     color: var(--crab-deep);
   }
 
+  .unit-postcard {
+    margin-top: 6px;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .unit-postcard strong {
+    color: var(--ink);
+  }
+
+  .from-bernard {
+    width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: var(--r-l);
+    text-align: left;
+  }
+
+  .from-bernard-view {
+    width: clamp(72px, 22vw, 96px);
+    aspect-ratio: 3 / 2;
+    flex: none;
+    border-radius: var(--r-m);
+    overflow: hidden;
+  }
+
+  .from-bernard figcaption {
+    display: grid;
+    gap: 2px;
+  }
+
   .team {
     display: grid;
     gap: 8px;

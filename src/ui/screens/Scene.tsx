@@ -7,6 +7,7 @@ import { shuffle } from '../../engine/random';
 import { play } from '../../platform/sfx';
 import { say, stopSpeech } from '../../platform/speech';
 import { autoplays, course } from '../../state/store';
+import { FromBernard } from '../FromBernard';
 import { Say } from '../kit';
 import { Mascot } from '../Mascot';
 import { back, go } from '../router';
@@ -54,7 +55,7 @@ export function SceneScreen({ id }: { id: string }) {
   const [word, setWord] = useState<{ w: string; fr: string } | null>(null);
   const [wrong, setWrong] = useState<string | null>(null);
   const [misses, setMisses] = useState(0);
-  const [earned, setEarned] = useState<string[] | null>(null);
+  const [earned, setEarned] = useState<{ stamps: string[]; postcard: string } | null>(null);
   const end = useRef<HTMLDivElement>(null);
 
   const line = scene?.lines[step];
@@ -107,7 +108,7 @@ export function SceneScreen({ id }: { id: string }) {
   };
 
   const finished = step >= scene.lines.length;
-  const stampInfo = allStamps(c).filter(s => earned?.includes(s.id));
+  const stampInfo = allStamps(c).filter(s => earned?.stamps.includes(s.id));
 
   return (
     <div class="scene">
@@ -183,6 +184,7 @@ export function SceneScreen({ id }: { id: string }) {
               ? `${misses} hésitation${misses > 1 ? 's' : ''}, c’est comme ça qu’on apprend.`
               : 'Sans une hésitation.'}
           </p>
+          {earned?.postcard && <FromBernard text={earned.postcard} />}
           {stampInfo.map(s => (
             <Stamp key={s.id} id={s.id} label={s.label} date={Date.now()} fresh />
           ))}

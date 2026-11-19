@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { COURSES, courseById, flagOf, indexOf, pictureOf } from '../../src/content';
 import { CUES, cueOf, duringCue } from '../../src/content/cues';
+import { STORY } from '../../src/content/story';
 import { build, canBuild, cardOf, GRADED } from '../../src/engine/exercises';
 import { normalize } from '../../src/engine/grade';
 import { seeded } from '../../src/engine/random';
@@ -42,6 +43,10 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
         id,
       ).toBe(true);
     expect(steps.some(s => s.kind === 'scene' && s.id === 'hotel')).toBe(true);
+  });
+
+  it('gives every leg of the itinerary a chapter of Bernard’s trip', () => {
+    for (const unit of course.units) expect(STORY[unit.id], unit.id).toHaveLength(4);
   });
 
   it('gives every scene turn several distinct options', () => {

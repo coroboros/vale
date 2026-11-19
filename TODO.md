@@ -60,12 +60,6 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   moment (morning coffee, commute, lunch, evening golden hour), from Unsplash: RUNBOOK.md, step C3.
 - **« Imagine », the sound of the place.** Once recorded voices exist, the phrase plays by itself as
   the photo appears, over a soft sound of the place (a café, a tram bell); silent in quiet mode.
-- **A game worth coming back to, from the evidence** (docs/LEARNING.md, game layer). Game fiction:
-  Bernard's trip as a story that advances with each lesson. Travellers on one phone as a team:
-  a shared weekly goal (collaboration) with a friendly ranking (competition). Endowed progress:
-  count onboarding towards the first daily goal (Nunes & Drèze, 2006). Goal gradient: « plus que
-  deux phrases » near the goal, where effort speeds up (Kivetz, Urminsky & Zheng, 2006). Rewards
-  stay informative, never paid per task (Deci, Koestner & Ryan, 1999).
 - **Understand what you hear and read.** Translation the other way (any course language into
   French), from typed text first, then from a photo of a menu or a sign.
 - **Measure before claiming.** Anonymous counts, nothing personal, nothing about the sentences

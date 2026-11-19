@@ -212,8 +212,13 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await playSession(page);
   await expect(page.locator('.ticket')).toContainText('XP');
+  const card = page.locator('.from-bernard');
+  await expect(card).toContainText('Une carte de Bernard');
+  await expect(card).toContainText('« Me voilà à Barcelone !');
+  await expectAccessible(page, 'bilan de session');
   await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
   await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
+  await expect(page.locator('.unit-postcard').first()).toContainText('Bernard : « Me voilà à Barcelone !');
   await expect(page.locator('.readiness')).not.toContainText(' 0 phrases vues');
   await page.reload();
   await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();

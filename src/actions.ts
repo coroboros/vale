@@ -9,6 +9,7 @@ import {
   lessonKey,
   logSession,
   newStamps,
+  postcard,
   spendJokers,
   streak,
   welcomeXp,
@@ -53,6 +54,20 @@ export interface Summary {
   stamps: string[];
   streak: number;
   lessonDone: boolean;
+  /** Bernard's new postcard when the session moved his story on, or ''. */
+  postcard: string;
+}
+
+const postcards = (): string[] => {
+  const p = profile.value;
+  if (!p) return [];
+  const region = tripOf(p).region;
+  return course.value.units.map(unit => postcard(course.value, unit, pdata.value, region));
+};
+
+/** The postcard that a step done since `before` brought, if any. */
+function newPostcard(before: string[]): string {
+  return postcards().find((line, i) => line !== '' && line !== before[i]) ?? '';
 }
 
 export interface Running {
@@ -168,6 +183,7 @@ function finish(r: Running, now: number): Summary {
   let lessonDone = false;
   let earned: string[] = [];
   let days = 0;
+  const before = postcards();
   updateData(data => {
     for (const { key, grade } of result.reviews) data.mem[key] = review(data.mem[key], grade, now, key);
     for (const [key, n] of Object.entries(r.misses)) data.mistakes[key] = (data.mistakes[key] ?? 0) + n;
@@ -203,7 +219,15 @@ function finish(r: Running, now: number): Summary {
     earned = awardStamps(data, p, now);
     days = streak(data, dayKey(now)).days;
   });
-  return { outcome: result, ms: now - r.startedAt, bestCombo: r.bestCombo, stamps: earned, streak: days, lessonDone };
+  return {
+    outcome: result,
+    ms: now - r.startedAt,
+    bestCombo: r.bestCombo,
+    stamps: earned,
+    streak: days,
+    lessonDone,
+    postcard: newPostcard(before),
+  };
 }
 
 function awardStamps(data: ProfileData, p: Profile, now: number): string[] {
@@ -219,16 +243,21 @@ export function closeSession(): void {
   go({ name: 'home' }, { replace: true });
 }
 
-export function completeScene(sceneId: string, correct: number, now = Date.now()): string[] {
+export function completeScene(
+  sceneId: string,
+  correct: number,
+  now = Date.now(),
+): { stamps: string[]; postcard: string } {
   const p = profile.value;
-  if (!p) return [];
+  if (!p) return { stamps: [], postcard: '' };
   let earned: string[] = [];
+  const before = postcards();
   updateData(data => {
     data.scenes[lessonKey(tripOf(p).course, sceneId)] ??= now;
     logSession(data, now, { xp: 5 + correct, sessions: 1, scenes: 1, correct, spoken: 0 }, p.goal);
     earned = awardStamps(data, p, now);
   });
-  return earned;
+  return { stamps: earned, postcard: newPostcard(before) };
 }
 
 export function markSoundsSeen(now = Date.now()): void {

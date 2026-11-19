@@ -4,7 +4,15 @@ import { focusTrip, startSession } from '../../actions';
 import { courseById, flagOf, itemKey, pictureOf, regionOf } from '../../content';
 import { cueOf, duringCue } from '../../content/cues';
 import type { Course, Step, Unit } from '../../content/types';
-import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible } from '../../engine/progress';
+import {
+  arrivalTime,
+  dayKey,
+  daysBetween,
+  postcard,
+  readiness,
+  stepProgress,
+  stepVisible,
+} from '../../engine/progress';
 import { goalOf, orderTrips, tripOf } from '../../state/schema';
 import { cindex, course, pdata, profile } from '../../state/store';
 import { Daily } from '../Daily';
@@ -220,12 +228,18 @@ export function Home() {
         {c.units.map((unit, i) => {
           const unitStops = stops.filter(s => s.unit.id === unit.id);
           const stampId = `${c.id}:${unit.id}`;
+          const card = postcard(c, unit, data, trip.region);
           return (
             <div key={unit.id} class="unit">
               <div class="unit-head">
                 <div>
                   <p class="unit-kicker">Escale {i + 1}</p>
                   <h2>{unit.title}</h2>
+                  {card && (
+                    <p class="unit-postcard">
+                      <strong>Bernard :</strong> « {card} »
+                    </p>
+                  )}
                 </div>
                 <Stamp
                   id={stampId}

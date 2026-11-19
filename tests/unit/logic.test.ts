@@ -1,5 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { courseById, currencyOf, indexOf, itemKey } from '../../src/content';
+import { STORY } from '../../src/content/story';
+import type { Unit } from '../../src/content/types';
 import { grade, normalize, tokens } from '../../src/engine/grade';
 import { initMemory, review } from '../../src/engine/memory';
 import { pricePuzzle } from '../../src/engine/prices';
@@ -8,8 +10,10 @@ import {
   dailyQuests,
   dayKey,
   goalTitle,
+  lessonKey,
   logSession,
   newStamps,
+  postcard,
   readiness,
   repairOffer,
   shiftDay,
@@ -157,6 +161,32 @@ describe('the daily goal', () => {
       'Objectif du jour atteint',
       'Objectif du jour atteint',
     ]);
+  });
+});
+
+describe('Bernard’s trip', () => {
+  it('comes in postcards: his arrival once a leg begins, one more with each step, the last when it is done', () => {
+    const [first, table] = es.units as [Unit, Unit];
+    const data = blankData();
+    const learn = (lessonId: string, all = true) => {
+      const items = es.lessons.find(l => l.id === lessonId)!.items;
+      for (const i of all ? items : items.slice(0, 1))
+        data.mem[itemKey('es', i.id)] = review(undefined, 'good', NOW, i.id);
+    };
+    const card = () => postcard(es, table, data, 'barcelone');
+    expect(card()).toBe('');
+    learn('bar', false);
+    expect(card()).toBe(STORY.table![0]);
+    data.scenes[lessonKey('es', 'cafe')] = NOW;
+    expect(card()).toBe(STORY.table![1]);
+    data.scenes[lessonKey('es', 'tapas')] = NOW;
+    expect(card()).toBe(STORY.table![2]);
+    learn('bar');
+    learn('resto');
+    data.lessons[lessonKey('es', 'review:table')] = NOW;
+    expect(card()).toBe(STORY.table![3]);
+    learn('base', false);
+    expect(postcard(es, first, data, 'barcelone')).toMatch(/^Me voilà à Barcelone\s!/);
   });
 });
 

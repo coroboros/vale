@@ -87,13 +87,14 @@ order:
      people are told ([CNIL, 4 July
      2025](https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience)). *Moi*
      tells them and has the switch, on by default as you chose. Nothing is sent before C1.
-3. **The game layer, from the evidence** (TODO.md). *Rules first: AGENTS.md.* Bernard's trip as a
-   story, the first daily goal already started by onboarding, « plus que deux phrases » near the
-   goal, travellers on one phone as a team.
-   - ✅ 19 Nov 2026: onboarding's answers count for a fifth of the first goal, and the last five
-     points are counted in phrases, with a short session on the ticket to finish.
-   - ✅ 19 Nov 2026: travellers sharing a phone see « Votre équipe »: a weekly goal of five daily
-     goals each, reached together, and who brought what, a crown for the one ahead.
+3. ✅ 19 Nov 2026. **The game layer, from the evidence** (docs/LEARNING.md).
+   - Onboarding's answers count for a fifth of the first goal, and the last five points are
+     counted in phrases, with a short session on the ticket to finish.
+   - Travellers sharing a phone see « Votre équipe »: a weekly goal of five daily goals each,
+     reached together, and who brought what, a crown for the one ahead.
+   - Bernard tells his trip in postcards, four per leg (`src/content/story.ts`): the new one on the
+     session ticket and at the end of a scene, the latest under each leg on home. One line each:
+     thin stories go with larger learning effects than deeper ones.
 4. **Acquisition experiments that need no account** (hypotheses, untested). *Rules first:
    AGENTS.md.* a survival card worth sharing, pages answering « comment commander un café en
    espagnol » that open the right lesson.

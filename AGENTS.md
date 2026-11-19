@@ -94,14 +94,15 @@ kit, the screens), and plan the smallest change. Then:
 ## Map
 
 - `src/content/`: one data file and one rules file per language; `cues.ts`, the practice moments
-  that « Imagine » and home bring back.
+  that « Imagine » and home bring back; `story.ts`, Bernard's postcards, four per leg.
 - `src/engine/`: FSRS memory model, exercise choice, sessions, progress.
 - `src/platform/`: what the browser offers: voices, speech recognition, recording, sounds,
   install, backup.
 - `src/state/`: stored data, repaired by `sanitize`. A profile has a list of trips and the one in
   focus (`tripOf`); progress is keyed by language, so trips in one language share it.
 - `src/ui/`: screens, components (`kit.tsx`), `Imagine.tsx` (closes onboarding and lands every new
-  trip, `screens/Landing.tsx`), `Porthole.tsx` (the welcome flight and the trip being chosen),
+  trip, `screens/Landing.tsx`), `Team.tsx` (travellers sharing a phone), `FromBernard.tsx` (his
+  latest postcard), `Porthole.tsx` (the welcome flight and the trip being chosen),
   `scenery/` (a drawing per destination, one module per country, shared pieces in `parts.tsx`;
   `pictureOf` in `content/` picks a trip's drawing and photo, « Ailleurs » its country's emblem),
   `themes.ts` (colours per country, from the trip's `flagOf`, contrast checked by a test),

@@ -22,6 +22,7 @@ import { canRecord, playTake, releaseMic, startRecording, stopRecording } from '
 import { play } from '../../platform/sfx';
 import { say, stopSpeech } from '../../platform/speech';
 import { autoplays, course, isQuiet, pdata, profile, settings } from '../../state/store';
+import { FromBernard } from '../FromBernard';
 import { Bar, ChoiceGroup, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
 import { Stamp } from '../Stamp';
@@ -688,6 +689,7 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
           {!!today?.welcome && <p class="small muted">Dont {today.welcome} XP pour tes réponses à l’accueil.</p>}
         </div>
       </section>
+      {summary.postcard && <FromBernard text={summary.postcard} />}
       {stampInfo.length > 0 && (
         <div class="new-stamps">
           {stampInfo.map(s => (
