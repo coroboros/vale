@@ -73,10 +73,8 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   the photo appears, over a soft sound of the place (a café, a tram bell); silent in quiet mode.
 - **Understand what you hear and read.** Translation the other way (any course language into
   French), from typed text first, then from a photo of a menu or a sign.
-- **Measure more, as anonymously as the counts** (RUNBOOK.md, C). Answer accuracy per exercise
-  kind, to check the hypotheses in docs/LEARNING.md; a count at the welcome screen, to see who
-  stops before the first lesson, which the counts cannot see today (docs/UX.md). The second is the
-  owner's privacy call.
+- **Answer accuracy per exercise kind**, as anonymous as the counts (RUNBOOK.md, C), to check the
+  hypotheses in docs/LEARNING.md.
 - **Reminders.** Web Push at the practice moment the learner chose (iOS 16.4+ for installed apps),
   sent by the Worker with VAPID keys.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.

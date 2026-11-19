@@ -255,10 +255,16 @@ test('from a page, the first exercise comes 5 screens after its link', async ({ 
 });
 
 test('first launch to first lesson, progress kept after reload', async ({ page }) => {
+  const steps: string[] = [];
+  await page.route(`${TRANSLATE_URL}/count`, async route => {
+    for (const c of route.request().postDataJSON().counts) if (c.name === 'step') steps.push(c.value);
+    await route.fulfill({ status: 204 });
+  });
   await onboard(page);
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await playSession(page);
   await expect(page.locator('.ticket')).toContainText('XP');
+  await expect.poll(() => steps.at(-1)).toBe('lesson-done');
   const card = page.locator('.from-bernard');
   await expect(card).toContainText('Une carte de Bernard');
   await expect(card).toContainText('« Me voilà à Barcelone !');
@@ -752,7 +758,7 @@ test('a situation page answers in the language, speaks its phrases, and opens it
 }) => {
   const counted: string[] = [];
   await page.route(`${TRANSLATE_URL}/count`, async route => {
-    for (const c of route.request().postDataJSON().counts) counted.push(`${c.name} ${c.source}`);
+    for (const c of route.request().postDataJSON().counts) counted.push(`${c.name} ${c.value} ${c.source}`);
     await route.fulfill({ status: 204 });
   });
   await page.goto('./italien/commander-un-cafe/');
@@ -784,7 +790,9 @@ test('a situation page answers in the language, speaks its phrases, and opens it
   await page.getByRole('button', { name: 'Continuer' }).click();
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await expect(page.locator('.ex').first()).toContainText(/caffè|expresso/);
-  await expect.poll(() => counted).toEqual(['new page']);
+  // The steps reached, going back to the language included: the welcome was never shown.
+  const steps = ['destination', 'language', 'date', 'travellers', 'rhythm', 'imagine', 'lesson'];
+  await expect.poll(() => [...counted].sort()).toEqual(['new  page', ...steps.map(s => `step ${s} page`)].sort());
 });
 
 test('a situation page’s lesson opens in the traveller’s trip in that language, or home without one', async ({
@@ -973,16 +981,24 @@ test('desktop sessions work from the keyboard', async ({ page }, info) => {
   await expect(page.locator('.ticket')).toBeVisible();
 });
 
-test('counts a new traveller without saying who, and nothing more once switched off in « Moi »', async ({ page }) => {
+test('counts each first step and a new traveller without saying who, and nothing more once switched off in « Moi »', async ({
+  page,
+}) => {
   const counted: unknown[] = [];
   await page.route(`${TRANSLATE_URL}/count`, async route => {
-    counted.push(route.request().postDataJSON());
+    counted.push(...route.request().postDataJSON().counts);
     await route.fulfill({ status: 204 });
   });
   await onboard(page);
   await leaveFirstLesson(page);
   const today = await page.evaluate(() => new Date().toLocaleDateString('sv'));
-  await expect.poll(() => counted).toEqual([{ counts: [{ name: 'new', day: today, value: '', source: '' }] }]);
+  const steps = ['welcome', 'language', 'destination', 'date', 'travellers', 'rhythm', 'imagine', 'lesson'];
+  await expect
+    .poll(() => counted)
+    .toEqual([
+      ...steps.map(value => ({ name: 'step', day: today, value, source: '' })),
+      { name: 'new', day: today, value: '', source: '' },
+    ]);
 
   await page.getByRole('link', { name: 'Moi' }).click();
   const share = page.getByRole('switch', { name: 'Statistiques anonymes' });
@@ -997,7 +1013,32 @@ test('counts a new traveller without saying who, and nothing more once switched 
     document.dispatchEvent(new Event('visibilitychange'));
   });
   await page.waitForTimeout(3500);
-  expect(counted).toHaveLength(1);
+  expect(counted).toHaveLength(steps.length + 1);
+});
+
+test('the welcome offers to switch the anonymous statistics off before onboarding is counted', async ({ page }) => {
+  const counted: { name: string; value: string }[] = [];
+  await page.route(`${TRANSLATE_URL}/count`, async route => {
+    counted.push(...route.request().postDataJSON().counts);
+    await route.fulfill({ status: 204 });
+  });
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Statistiques anonymes' }).click();
+  const share = page.getByRole('switch', { name: 'Statistiques anonymes' });
+  await expect(share).toHaveAttribute('aria-checked', 'true');
+  await expectAccessible(page, 'statistiques anonymes');
+  await share.click();
+  await expect(share).toHaveAttribute('aria-checked', 'false');
+  await page.getByRole('button', { name: 'C’est noté' }).click();
+  await onboard(page);
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.waitForTimeout(3500);
+  // The welcome may have been counted while it was read: nothing after the switch.
+  expect(counted.filter(c => c.value !== 'welcome')).toEqual([]);
 });
 
 test('a traveller sends their card as a picture, and the counts say a card brought them and that they shared', async ({
@@ -1047,7 +1088,9 @@ test('a traveller sends their card as a picture, and the counts say a card broug
       ),
     },
   ]);
-  await expect.poll(() => counted.map(c => `${c.name} ${c.source}`)).toEqual(['new carte', 'shared carte']);
+  await expect
+    .poll(() => counted.filter(c => c.name !== 'step').map(c => `${c.name} ${c.source}`))
+    .toEqual(['new carte', 'shared carte']);
 });
 
 test('translates a sentence, then finds it again offline', async ({ page, context }) => {
@@ -1305,6 +1348,10 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     });
     await page.goto('./');
     await audit(`${size}: welcome`);
+    await page.getByRole('button', { name: 'Statistiques anonymes' }).click();
+    await expect(page.locator('.sheet')).toBeVisible();
+    await audit(`${size}: statistiques anonymes`);
+    await page.getByRole('button', { name: 'C’est noté' }).click();
     // The longest first name the form accepts is 24 characters: layouts are checked near it.
     await onboard(page, 'Marie-Charlotte-Eugénie', step => audit(`${size}: ${step}`));
     await audit(`${size}: onboarding`);

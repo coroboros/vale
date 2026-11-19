@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals';
 import { type CourseIndex, courseById, itemKey } from './content';
-import type { Source } from './counts-api';
-import { closeCounts } from './engine/counts';
+import type { FirstStep, Source } from './counts-api';
+import { closeCounts, closeSteps } from './engine/counts';
 import { review } from './engine/memory';
 import { buildPool } from './engine/pool';
 import {
@@ -38,7 +38,7 @@ import {
   type Trip,
   tripOf,
 } from './state/schema';
-import { cindex, course, pdata, profile, update, updateData } from './state/store';
+import { cindex, course, db, pdata, profile, update, updateData } from './state/store';
 import { sentenceKey } from './translation-api';
 import { showToast } from './ui/kit';
 import { go } from './ui/router';
@@ -170,7 +170,19 @@ export function setQuiet(on: boolean, opts: { forAnHour?: boolean } = {}, now = 
 export function setShareCounts(on: boolean): void {
   update(draft => {
     draft.settings.shareCounts = on;
-    if (!on) for (const data of Object.values(draft.data)) closeCounts(data);
+    if (on) return;
+    for (const data of Object.values(draft.data)) closeCounts(data);
+    closeSteps(draft.funnel);
+  });
+}
+
+/** A newcomer reached a first step: once per phone, it joins the anonymous counts (docs/UX.md). */
+export function reachStep(step: FirstStep, source: Source, now = Date.now()): void {
+  const { funnel, settings } = db.value;
+  if (!settings.shareCounts || funnel.reached.includes(step)) return;
+  update(draft => {
+    if (!draft.funnel.reached.length) Object.assign(draft.funnel, { day: dayKey(now), source });
+    draft.funnel.reached.push(step);
   });
 }
 
@@ -184,7 +196,10 @@ export function advance(now = Date.now()): void {
   const r = running.value;
   if (!r) return;
   stopSpeech();
-  if (!next(r.session, r.index, r.rng)) r.summary = finish(r, now);
+  if (!next(r.session, r.index, r.rng)) {
+    r.summary = finish(r, now);
+    if (db.value.funnel.reached.includes('lesson')) reachStep('lesson-done', db.value.funnel.source, now);
+  }
   touch();
 }
 

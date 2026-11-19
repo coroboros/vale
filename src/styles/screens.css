@@ -2070,6 +2070,14 @@
     background: linear-gradient(to bottom, transparent, var(--page) 16px);
   }
 
+  .counts-link {
+    min-height: var(--tap);
+    margin-block: -8px;
+    padding-inline: 0;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
   .activity-end {
     display: grid;
     justify-items: center;

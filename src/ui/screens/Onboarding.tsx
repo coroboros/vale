@@ -4,13 +4,15 @@
  */
 import { ArrowLeft } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
-import { createProfiles, startFirstLesson } from '../../actions';
+import { createProfiles, reachStep, startFirstLesson } from '../../actions';
 import { BRAND } from '../../brand';
 import { COURSES, courseById, flagOf, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
 import { arrivedFrom } from '../../counts';
+import { FIRST_STEPS } from '../../counts-api';
 import { blankTrip, GOALS, PROFILE_COLORS } from '../../state/schema';
+import { CountsLink } from '../CountsChoice';
 import { Imagine } from '../Imagine';
 import { InstallButton } from '../Install';
 import { ChoiceGroup } from '../kit';
@@ -44,7 +46,9 @@ export function Onboarding() {
   const r = route.value;
   const asked = r.name === 'learn' && COURSES.some(c => c.id === r.course) ? r : null;
   // From a page, its link chose the language and the page introduced Bagage (docs/UX.md).
-  const [step, setStep] = useState(asked ? 2 : 0);
+  const first = asked ? FIRST_STEPS.indexOf('destination') : 0;
+  const [step, setStep] = useState(first);
+  const screen = FIRST_STEPS[step]!;
   const [courseId, setCourseId] = useState(asked?.course ?? COURSES[0]!.id);
   const [region, setRegion] = useState('autre');
   const [trip, setTrip] = useState('');
@@ -53,18 +57,20 @@ export function Onboarding() {
   const [cue, setCue] = useState('');
   const c = COURSES.find(x => x.id === courseId)!;
   const theme = THEMES[flagOf(c, region)];
-  const last = 6;
+  const last = FIRST_STEPS.indexOf('imagine');
   const names = people.map(t => t.name.trim());
-  const canGo = step !== 4 || names.every(Boolean);
+  const canGo = screen !== 'travellers' || names.every(Boolean);
   const photo = photoOf(c.id, region);
   useEffect(() => {
     if (step === last - 1 && photo) preload(photo);
   }, [step, photo?.id]);
+  useEffect(() => reachStep(screen, arrivedFrom()), [screen]);
 
   const setPerson = (i: number, patch: Partial<Traveller>) =>
     setPeople(ps => ps.map((x, j) => (j === i ? { ...x, ...patch } : x)));
 
   const finish = () => {
+    reachStep('lesson', arrivedFrom());
     createProfiles(
       people.map((t, i) => ({
         name: names[i]!,
@@ -81,7 +87,7 @@ export function Onboarding() {
   };
 
   return (
-    <div class={`stage onboarding${step === 0 ? ' is-welcome' : ''}`} style={themeVars(theme)}>
+    <div class={`stage onboarding${screen === 'welcome' ? ' is-welcome' : ''}`} style={themeVars(theme)}>
       {step > 0 && (
         <header class="stage-top">
           <button type="button" class="icon-btn" aria-label="Retour" onClick={() => setStep(step - 1)}>
@@ -96,7 +102,7 @@ export function Onboarding() {
       )}
 
       <main class="stage-body">
-        {step === 0 && (
+        {screen === 'welcome' && (
           <div class="ob-welcome">
             <div class="welcome-art">
               <Porthole stops={JOURNEY} />
@@ -113,6 +119,7 @@ export function Onboarding() {
                   <li key={x}>{x}</li>
                 ))}
               </ul>
+              <CountsLink />
             </div>
             <div class="welcome-actions">
               <button type="button" class="btn btn-primary btn-block" onClick={() => setStep(1)}>
@@ -123,7 +130,7 @@ export function Onboarding() {
           </div>
         )}
 
-        {step === 1 && (
+        {screen === 'language' && (
           <section class="ob-step" aria-labelledby="ob-1">
             <h1 id="ob-1">Quelle langue pour ce voyage ?</h1>
             <LanguageChoice
@@ -136,7 +143,7 @@ export function Onboarding() {
           </section>
         )}
 
-        {step === 2 && (
+        {screen === 'destination' && (
           <section class="ob-step" aria-labelledby="ob-2">
             <h1 id="ob-2">Où vas-tu ?</h1>
             <PlaceChoice course={c} value={region} onChange={setRegion} />
@@ -146,7 +153,7 @@ export function Onboarding() {
           </section>
         )}
 
-        {step === 3 && (
+        {screen === 'date' && (
           <section class="ob-step" aria-labelledby="ob-3">
             <h1 id="ob-3">Quand pars-tu ?</h1>
             <p class="muted">Pour estimer ce que tu retiendras le jour J.</p>
@@ -156,7 +163,7 @@ export function Onboarding() {
               class="btn btn-ghost"
               onClick={() => {
                 setTrip('');
-                setStep(4);
+                setStep(step + 1);
               }}
             >
               Je ne sais pas encore
@@ -164,7 +171,7 @@ export function Onboarding() {
           </section>
         )}
 
-        {step === 4 && (
+        {screen === 'travellers' && (
           <section class="ob-step" aria-labelledby="ob-4">
             <h1 id="ob-4">Qui voyage ?</h1>
             {people.map((t, i) => (
@@ -209,7 +216,7 @@ export function Onboarding() {
           </section>
         )}
 
-        {step === 5 && (
+        {screen === 'rhythm' && (
           <section class="ob-step" aria-labelledby="ob-5">
             <h1 id="ob-5">Ton rythme</h1>
             <ChoiceGroup
@@ -231,7 +238,7 @@ export function Onboarding() {
           </section>
         )}
 
-        {step === 6 && (
+        {screen === 'imagine' && (
           <Imagine
             course={c}
             region={region}
@@ -254,6 +261,7 @@ export function Onboarding() {
               Apprendre ma première phrase
             </button>
           )}
+          {step === first && <CountsLink />}
         </footer>
       )}
     </div>

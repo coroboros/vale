@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { asCounts, type Count, sessionRange } from '../../src/counts-api';
-import { closeCounts, dueCounts, inFirstWeek } from '../../src/engine/counts';
-import { blankData, blankDay, blankTrip, type Profile, type ProfileData } from '../../src/state/schema';
+import { closeCounts, closeSteps, dueCounts, dueSteps, inFirstWeek } from '../../src/engine/counts';
+import { blankData, blankDay, blankDB, blankTrip, type Profile, type ProfileData } from '../../src/state/schema';
 
 const traveller = (since: string, date = ''): Profile => ({
   id: 'p',
@@ -89,6 +89,20 @@ describe('anonymous counts', () => {
     expect(dueCounts(traveller('2026-12-01', '2026-12-02'), data, '2026-12-09')).toEqual([]);
   });
 
+  it('count each first step a phone reached once, from its first day and link, and none once switched off', () => {
+    const { funnel } = blankDB();
+    Object.assign(funnel, {
+      day: '2026-12-01',
+      source: 'page',
+      reached: ['destination', 'date'],
+      sent: ['destination'],
+    });
+    expect(dueSteps(funnel)).toEqual([{ name: 'step', day: '2026-12-01', value: 'date', source: 'page' }]);
+    closeSteps(funnel);
+    funnel.reached.push('travellers');
+    expect(dueSteps(funnel)).toEqual([]);
+  });
+
   it('give sessions as ranges, never exact numbers', () => {
     expect([0, 1, 3, 7, 12].map(sessionRange)).toEqual(['0', '1', '2-4', '5-9', '10+']);
   });
@@ -99,6 +113,7 @@ describe('anonymous counts', () => {
       { name: 'new', day: '2026-12-11', value: '', source: 'page' },
       { name: 'shared', day: '2026-12-10', value: '', source: 'carte' },
       { name: 'departure', day: '2026-01-01', value: '5-9', source: '' },
+      { name: 'step', day: '2026-12-10', value: 'lesson-done', source: '' },
     ];
     expect(asCounts({ counts: valid }, today)).toEqual(valid);
     for (const counts of [
@@ -110,8 +125,10 @@ describe('anonymous counts', () => {
       [{ name: 'new', day: today, value: '', source: 'newsletter' }],
       [{ name: 'new', day: today, value: '' }],
       [{ name: 'departure', day: today, value: '3', source: '' }],
+      [{ name: 'step', day: today, value: 'Léa', source: '' }],
+      [{ name: 'step', day: today, value: '', source: '' }],
       [],
-      Array.from({ length: 25 }, () => ({ name: 'new', day: today, value: '', source: '' })),
+      Array.from({ length: 40 }, () => ({ name: 'new', day: today, value: '', source: '' })),
     ])
       expect(asCounts({ counts }, today), JSON.stringify(counts).slice(0, 60)).toBeNull();
     expect(asCounts('new', today)).toBeNull();

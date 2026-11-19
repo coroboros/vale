@@ -123,12 +123,15 @@ real* in TODO.md and report what fails, with a screenshot.
    translation cost with the Console's usage page: about 0.3 cent a sentence is an estimate, not a
    measurement. No consent is needed when counts only serve the publisher's audience measurement,
    produce anonymous statistics, are neither combined with other processing nor passed on, and
-   people are told ([CNIL, 4 July
-   2025](https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience)): *Moi*
-   tells them and has the switch, on by default as you chose.
+   people are told and can easily say no ([CNIL, 4 July
+   2025](https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience)): the
+   first screen and *Moi* tell them and have the switch, on by default as you chose. Before
+   selling anything, a lawyer reads this with the privacy policy (D4; docs/UX.md, « Who stops
+   before the first lesson »).
 2. **Two weeks later, read the figures** (`cd worker && npm run figures`, and Search Console per
    page) against the decision figures below, and choose what comes next from them: widening only
-   once all three are met, more pages where search brings travellers who come back.
+   once all three are met, more pages where search brings travellers who come back, and the
+   screen where most newcomers stop before the first lesson (docs/UX.md).
 3. **Photos from Unsplash for « Imagine ».** *Rules first: AGENTS.md.* `brand/photos.py` searches
    Unsplash per destination and per practice moment (morning coffee: morning light; commute: a
    lively street; lunch: a sunny terrace; evening: golden hour), picks from contact sheets, triggers
@@ -243,6 +246,9 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
   required answer from the app; five from a page's link, which now opens at the destination; a
   first lesson of 18 exercises, about three to four minutes. The return date was studied and waits
   for the pass.
+- 19 Nov 2026. **Where newcomers stop, counted once measurement is on** (docs/UX.md): each
+  onboarding screen a phone reaches, then its first lesson begun and finished, with no identifier;
+  the switch is on the first screen as well as in *Moi*, as the CNIL asks.
 
 ## Working with Claude Code on your Mac
 

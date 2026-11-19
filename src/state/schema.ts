@@ -1,7 +1,7 @@
 /** What Bagage keeps on the device. Only sentences to translate and anonymous counts (counts-api.ts) leave it. */
 
 import type { Gender } from '../content/types';
-import { COUNT_NAMES, type CountName, type Source, sourceOf } from '../counts-api';
+import { COUNT_NAMES, type CountName, FIRST_STEPS, type FirstStep, type Source, sourceOf } from '../counts-api';
 import type { Memory } from '../engine/memory';
 import { HOUR_MS } from '../engine/time';
 
@@ -195,6 +195,8 @@ export interface DB {
   active: string;
   settings: Settings;
   data: Record<string, ProfileData>;
+  /** The first steps this phone reached, from which day and link, and those already counted. */
+  funnel: { day: string; source: Source; reached: FirstStep[]; sent: FirstStep[] };
 }
 
 export const PROFILE_COLORS = ['#1E5FD0', '#D6336C', '#7048E8', '#0B7C8C'] as const;
@@ -257,6 +259,7 @@ export const blankDB = (): DB => ({
   active: '',
   settings: defaultSettings(),
   data: {},
+  funnel: { day: '', source: '', reached: [], sent: [] },
 });
 
 export const newId = () => Math.random().toString(36).slice(2, 10);
@@ -326,6 +329,14 @@ export function sanitize(raw: unknown): DB {
       },
     };
   }
+  const funnel = (src.funnel ?? {}) as Partial<Record<keyof DB['funnel'], unknown>>;
+  const steps = (list: unknown) => (Array.isArray(list) ? FIRST_STEPS.filter(step => list.includes(step)) : []);
+  db.funnel = {
+    day: typeof funnel.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(funnel.day) ? funnel.day : '',
+    source: sourceOf(funnel.source),
+    reached: steps(funnel.reached),
+    sent: steps(funnel.sent),
+  };
   if (!db.profiles.length) db.onboarded = false;
   return db;
 }

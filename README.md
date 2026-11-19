@@ -151,12 +151,14 @@ thousand sentences a month stay well within the default ceiling; with DeepSeek V
 from the cache. Sentences go to Anthropic or Cloudflare through the Worker; apart from the anonymous
 counts below, nothing else about the learner leaves the phone.
 
-**Anonymous counts.** `/count` adds what the app reports (a new traveller, a return on day 1 or day
-7, an install on the home screen, a shared card, the sessions before a first departure as a range,
-each with the link that brought the traveller) to totals per day in D1, for the decision figures
-(RUNBOOK.md) and the links that bring travellers. No identifier and nothing about sentences; a
-traveller can switch them off in *Moi*. They stay off until RUNBOOK C1 (`VITE_COUNTS_URL` and the
-`d1_databases` binding); `npm run figures` in `worker/` reads them.
+**Anonymous counts.** `/count` adds what the app reports (each onboarding screen a phone reaches
+and its first lesson begun and finished, a new traveller, a return on day 1 or day 7, an install on
+the home screen, a shared card, the sessions before a first departure as a range, each with the
+link that brought the traveller) to totals per day in D1, for the decision figures (RUNBOOK.md),
+where newcomers stop (docs/UX.md) and the links that bring travellers. No identifier and nothing
+about sentences; a traveller can switch them off from the first screen or in *Moi*. They stay off
+until RUNBOOK C1 (`VITE_COUNTS_URL` and the `d1_databases` binding); `npm run figures` in `worker/`
+reads them.
 
 ## Deploy the app
 

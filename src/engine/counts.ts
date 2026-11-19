@@ -1,5 +1,5 @@
-import { COUNT_NAMES, type Count, type CountName, sessionRange } from '../counts-api';
-import type { Profile, ProfileData } from '../state/schema';
+import { COUNT_NAMES, type Count, type CountName, FIRST_STEPS, sessionRange } from '../counts-api';
+import type { DB, Profile, ProfileData } from '../state/schema';
 import { daysBetween, shiftDay } from './progress';
 
 /** Active means a finished session: stricter than the app opens that retention benchmarks count. */
@@ -34,4 +34,15 @@ export function dueCounts(p: Profile, data: ProfileData, today: string): Count[]
 /** Switched off: nothing this traveller has done so far will ever be counted. */
 export function closeCounts(data: ProfileData): void {
   data.counts.sent = [...COUNT_NAMES];
+}
+
+/** The first steps this phone reached and has not counted yet. */
+export const dueSteps = (funnel: DB['funnel']): Count[] =>
+  funnel.reached
+    .filter(step => !funnel.sent.includes(step))
+    .map(value => ({ name: 'step', day: funnel.day, value, source: funnel.source }));
+
+/** Switched off: no first step of this phone will ever be counted. */
+export function closeSteps(funnel: DB['funnel']): void {
+  funnel.sent = [...FIRST_STEPS];
 }

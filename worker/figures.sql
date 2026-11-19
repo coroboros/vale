@@ -32,3 +32,11 @@ FROM counts
 WHERE name = 'departure'
 GROUP BY value
 ORDER BY CASE value WHEN '0' THEN 0 WHEN '1' THEN 1 WHEN '2-4' THEN 2 WHEN '5-9' THEN 3 ELSE 4 END;
+
+-- The way to the end of the first lesson (docs/UX.md): phones that reached each step, per link,
+-- all weeks together. A page's link opens at the destination, so its first two steps stay empty.
+SELECT source, value AS step, SUM(n) AS phones
+FROM counts
+WHERE name = 'step'
+GROUP BY source, value
+ORDER BY source, phones DESC;

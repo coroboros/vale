@@ -1,13 +1,31 @@
 /**
  * The anonymous counts behind the decision figures (RUNBOOK.md), shared by the app and the Worker.
  * A count says what happened, on which first day and through which link, never who: no
- * identifier, no sentence. The
- * CNIL exempts such audience measurement from consent when it only produces anonymous statistics
- * for the publisher and people are told (cnil.fr, « Cookies : solutions pour les outils de mesure
- * d’audience », 4 July 2025).
+ * identifier, no sentence. The CNIL exempts such audience measurement from consent when it only
+ * produces anonymous statistics for the publisher, its purposes including navigation problems and
+ * ergonomics, and people are told and can easily say no (cnil.fr, « Cookies : solutions pour les
+ * outils de mesure d’audience », 4 July 2025; « Questions-réponses », 29 April 2026).
  */
-export const COUNT_NAMES = ['new', 'day1', 'day7', 'installed', 'shared', 'departure'] as const;
+export const COUNT_NAMES = ['new', 'day1', 'day7', 'installed', 'shared', 'departure', 'step'] as const;
 export type CountName = (typeof COUNT_NAMES)[number];
+
+/**
+ * A newcomer's way to the end of the first lesson: onboarding's screens in their order
+ * (ui/screens/Onboarding.tsx), then the first lesson begun and finished. Each counts once per
+ * phone, to see where people stop (docs/UX.md).
+ */
+export const FIRST_STEPS = [
+  'welcome',
+  'language',
+  'destination',
+  'date',
+  'travellers',
+  'rhythm',
+  'imagine',
+  'lesson',
+  'lesson-done',
+] as const;
+export type FirstStep = (typeof FIRST_STEPS)[number];
 
 /**
  * The link a traveller first came through, from its `utm_source`: '' when typed or found
@@ -25,15 +43,15 @@ export interface Count {
   name: CountName;
   /** The traveller's first day, so a return joins the day they started. */
   day: string;
-  /** A session range for « departure », '' otherwise. */
+  /** A session range for « departure », a first step for « step », '' otherwise. */
   value: string;
   source: Source;
 }
 
 export const sessionRange = (n: number): string => (n >= 10 ? '10+' : n >= 5 ? '5-9' : n >= 2 ? '2-4' : String(n));
 
-/** Four travellers on one phone, each with every count due at once. */
-const MAX_COUNTS = 4 * COUNT_NAMES.length;
+/** Four travellers on one phone, each with every count due at once, and every first step. */
+const MAX_COUNTS = 4 * COUNT_NAMES.length + FIRST_STEPS.length;
 /** A trip can be planned a year ahead, and its departure counted then. */
 const MAX_AGE_DAYS = 400;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -50,7 +68,7 @@ export function asCounts(body: unknown, today: string): Count[] | null {
     const age = (Date.parse(`${today}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) / 86_400_000;
     // A day ahead: the phone counts in its own time zone.
     if (!(age >= -1 && age <= MAX_AGE_DAYS)) return null;
-    const ranges: readonly unknown[] = name === 'departure' ? SESSION_RANGES : [''];
+    const ranges: readonly unknown[] = name === 'departure' ? SESSION_RANGES : name === 'step' ? FIRST_STEPS : [''];
     if (!ranges.includes(value)) return null;
     counts.push({ name: name as CountName, day, value: value as string, source: source as Source });
   }

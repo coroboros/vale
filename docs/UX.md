@@ -107,9 +107,30 @@ the reason is plain (GOV.UK, above). RUNBOOK E2; TODO.md, « Trips, next ».
   (`openLesson` in `src/actions.ts`; the end-to-end test « … or home without one » holds it).
   Better: « Nouveau voyage » in that language, then that lesson (RUNBOOK A1).
 
+## Who stops before the first lesson (decided 19 November 2026)
+
+The owner asked for it, the legal question decided here. Not legal advice: a lawyer reads it with
+the privacy policy before anything is sold (RUNBOOK D4).
+
+| Finding | Source | Strength |
+| --- | --- | --- |
+| Audience measurement needs no consent when it only serves the publisher, produces anonymous statistics only, allows no tracking across sites or apps and no matching or sharing with others; the publisher must be able to show it. | CNIL, [Questions-réponses](https://cnil.fr/questions-reponses-lignes-directrices-modificatives-et-recommandation-cookies-traceurs), question 9 (29 April 2026) | Strong: the authority for users in France |
+| Its purposes include « détection de problèmes de navigation » and the site's or app's ergonomics; people should be told, in the privacy policy for instance; collected data is kept 25 months at most. | CNIL, [Solutions pour les outils de mesure d'audience](https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience) (4 July 2025) | Strong |
+| Such measurement usually involves personal data, so people keep the right to object, through a mechanism that is « aisément accessible ». | CNIL, Questions-réponses, question 10 | Strong |
+| Tracking links and pixels and other techniques that make a device send information fall under the same rule as cookies. | EDPB, [Guidelines 2/2023 on the technical scope of Art. 5(3) ePrivacy](https://www.edpb.europa.eu/system/files/2024-10/edpb_guidelines_202302_technical_scope_art_53_eprivacydirective_v2_en_0.pdf) (October 2024; summary read) | Strong |
+| The EU's Digital Omnibus, still being negotiated, keeps a consent-free exemption for a service's own aggregated audience measurement, in the Commission's proposal and in the Council's mandate of 21 October 2026. | [PPC Land](https://ppc.land/eu-council-agrees-4-month-cookie-re-ask-wait-for-digital-omnibus-talks/), [Taylor Wessing](https://www.taylorwessing.com/de/global-data-hub/2026/the-digital-omnibus-proposal/gdh---the-digital-omnibus---cookies) | Medium: secondary, not law yet |
+
+Decision: counted, within that exemption. Each onboarding screen a phone reaches, then its first
+lesson begun and finished, is one count, once per phone: its name, the first day and the link
+that brought it (`FIRST_STEPS` in `src/counts-api.ts`); the Worker keeps totals per day and
+nothing per request. The gap this closed was already there: the new traveller's count left three
+seconds after onboarding, while the switch lived only in *Moi*. The first screen now has
+« Statistiques anonymes », which opens what is counted and the switch (`ui/CountsChoice.tsx`);
+switched off, nothing more leaves, steps included. A page's link opens at the destination, which
+carries the same link. Like everything counted, it stays off until RUNBOOK C1.
+
 ## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).
-- Returns on day 1 and day 7, against the thresholds (RUNBOOK C). The counts start once a profile
-  exists, so they cannot see who stops during set-up; seeing it would take a count before the
-  profile, the owner's privacy call (RUNBOOK C1).
+- Once measurement is on (RUNBOOK C1): the screen where most newcomers stop, per link
+  (`npm run figures`), and the returns on day 1 and day 7 against the thresholds (RUNBOOK C).

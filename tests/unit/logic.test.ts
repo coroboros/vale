@@ -357,6 +357,10 @@ describe('saved data', () => {
     });
     expect(db.data.x!.jokers).toBe(2);
     expect(db.data.x!.mem).toEqual({});
+    // The first steps keep the known ones only, in their order, and a first day that is a day.
+    expect(
+      sanitize({ funnel: { day: 'hier', source: 'tv', reached: ['date', 'welcome', 'date', 'menu'], sent: 7 } }).funnel,
+    ).toEqual({ day: '', source: '', reached: ['welcome', 'date'], sent: [] });
   });
 
   it('turns both older trip formats into the list, keeping the language in use in focus', () => {

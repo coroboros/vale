@@ -7,7 +7,6 @@ import {
   resetProgress,
   restoreBackup,
   setQuiet,
-  setShareCounts,
   setSpeechCheck,
   switchProfile,
 } from '../../actions';
@@ -21,6 +20,7 @@ import { offlineReady } from '../../platform/pwa';
 import { canHear } from '../../platform/recognition';
 import { GOALS, PROFILE_COLORS, type Settings, type Profile as Traveller, tripOf } from '../../state/schema';
 import { course, db, isQuiet, pdata, profile, settings, update } from '../../state/store';
+import { CountsRow } from '../CountsChoice';
 import { andList, theLanguage } from '../french';
 import { InstallButton } from '../Install';
 import { ChoiceGroup, Sheet, showToast, Toggle } from '../kit';
@@ -232,18 +232,7 @@ export function Profile() {
             ? 'Prête hors ligne : tout est enregistré sur cet appareil.'
             : 'Tes progrès restent sur cet appareil, sans compte.'}
         </p>
-        {countsOn && (
-          <div class="row">
-            <div class="row-main">
-              <p class="row-title">Statistiques anonymes</p>
-              <p class="row-sub">
-                Combien de voyageurs reviennent ou partagent leur carte, et par quel lien ils sont arrivés, sans savoir
-                qui tu es ni ce que tu traduis
-              </p>
-            </div>
-            <Toggle checked={s.shareCounts} onChange={setShareCounts} label="Statistiques anonymes" />
-          </div>
-        )}
+        {countsOn && <CountsRow />}
         <InstallButton block />
         <div class="judge">
           <button type="button" class="btn btn-block" onClick={() => void exportBackup(db.value)}>
