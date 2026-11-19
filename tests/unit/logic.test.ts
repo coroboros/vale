@@ -15,6 +15,8 @@ import {
   shiftDay,
   spendJokers,
   streak,
+  teamWeek,
+  weekStart,
   welcomeXp,
 } from '../../src/engine/progress';
 import { checkSpeech, type SpeechCheck } from '../../src/engine/pronunciation';
@@ -155,6 +157,33 @@ describe('the daily goal', () => {
       'Objectif du jour atteint',
       'Objectif du jour atteint',
     ]);
+  });
+});
+
+describe('travellers on one phone', () => {
+  it('play as a team over the week, from Monday, highest first', () => {
+    expect(['2026-11-16', '2026-11-19', '2026-11-22'].map(weekStart)).toEqual([
+      '2026-11-16',
+      '2026-11-16',
+      '2026-11-16',
+    ]);
+    const traveller = (id: string, goal: number) => ({
+      ...sanitize({ profiles: [{ id, name: id }] }).profiles[0]!,
+      goal,
+    });
+    const day = (xp: number) => ({ ...blankDay(), xp });
+    const data = {
+      lea: { ...blankData(), days: { '2026-11-15': day(90), '2026-11-17': day(30), '2026-11-19': day(25) } },
+      sam: { ...blankData(), days: { '2026-11-18': day(70) } },
+    };
+    expect(teamWeek([traveller('lea', 40), traveller('sam', 20)], data, '2026-11-19')).toEqual({
+      goal: 300,
+      xp: 125,
+      members: [
+        { id: 'sam', name: 'sam', color: '#1E5FD0', xp: 70 },
+        { id: 'lea', name: 'lea', color: '#1E5FD0', xp: 55 },
+      ],
+    });
   });
 });
 

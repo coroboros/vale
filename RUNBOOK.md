@@ -92,6 +92,8 @@ order:
    goal, travellers on one phone as a team.
    - ✅ 19 Nov 2026: onboarding's answers count for a fifth of the first goal, and the last five
      points are counted in phrases, with a short session on the ticket to finish.
+   - ✅ 19 Nov 2026: travellers sharing a phone see « Votre équipe »: a weekly goal of five daily
+     goals each, reached together, and who brought what, a crown for the one ahead.
 4. **Acquisition experiments that need no account** (hypotheses, untested). *Rules first:
    AGENTS.md.* a survival card worth sharing, pages answering « comment commander un café en
    espagnol » that open the right lesson.

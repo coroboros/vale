@@ -186,6 +186,44 @@
     color: var(--crab-deep);
   }
 
+  .team {
+    display: grid;
+    gap: 8px;
+  }
+
+  .team-list {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .team-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .team-dot {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    border-radius: 50%;
+  }
+
+  .team-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-weight: 650;
+  }
+
+  .team-crown {
+    flex: none;
+    color: var(--crab-deep);
+  }
+
   .quests {
     list-style: none;
     margin: 6px 0 14px;

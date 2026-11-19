@@ -4,6 +4,7 @@ import { dailyQuests, dayKey, goalTitle, questValue, repairOffer, streak } from 
 import { pdata, profile } from '../state/store';
 import { InstallButton } from './Install';
 import { Bar, Ring } from './kit';
+import { Team } from './Team';
 
 export function Daily({ compact }: { compact?: boolean }) {
   const p = profile.value;
@@ -42,6 +43,8 @@ export function Daily({ compact }: { compact?: boolean }) {
           Ta série de {offer.streak} jours peut encore être sauvée : gagne {p.goal * 2} XP aujourd’hui.
         </p>
       )}
+
+      <Team />
 
       {!compact && (
         <section class="card" aria-label="Défis du jour">

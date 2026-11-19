@@ -1,7 +1,7 @@
 /** Evidence for these rules: docs/LEARNING.md. */
 import { type CourseIndex, itemKey, splitKey } from '../content';
 import type { Course, Item, Step } from '../content/types';
-import { blankDay, type DayLog, type ProfileData } from '../state/schema';
+import { blankDay, type DayLog, type Profile, type ProfileData } from '../state/schema';
 import { recall } from './memory';
 import { hashSeed, seeded, shuffle } from './random';
 import { DAY_MS } from './time';
@@ -86,6 +86,48 @@ export function goalTitle(xp: number, goal: number): string {
   if (left === 1) return 'Plus qu’une phrase pour ton objectif du jour';
   if (left <= NEAR_GOAL) return `Plus que ${left} phrases pour ton objectif du jour`;
   return `Encore ${left} XP aujourd’hui`;
+}
+
+/** The Monday of `day`'s week, as French calendars start it. */
+export function weekStart(day: string): string {
+  const [y, m, d] = day.split('-').map(Number) as [number, number, number];
+  return shiftDay(day, -((new Date(y, m - 1, d, 12).getDay() + 6) % 7));
+}
+
+export interface Teammate {
+  id: string;
+  name: string;
+  color: string;
+  xp: number;
+}
+
+/**
+ * Travellers on one phone play as a team: a weekly goal they reach together, five daily goals each,
+ * and who brought what, highest first. Competition with collaboration moved behaviour most in
+ * gamification studies (Sailer & Homner, 2020).
+ */
+export function teamWeek(
+  profiles: readonly Profile[],
+  data: Record<string, ProfileData>,
+  today: string,
+): { goal: number; xp: number; members: Teammate[] } {
+  const from = weekStart(today);
+  const members = profiles
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      color: p.color,
+      xp: Object.entries(data[p.id]?.days ?? {}).reduce(
+        (n, [day, log]) => (day >= from && day <= today ? n + log.xp : n),
+        0,
+      ),
+    }))
+    .sort((a, b) => b.xp - a.xp);
+  return {
+    goal: profiles.reduce((n, p) => n + 5 * p.goal, 0),
+    xp: members.reduce((n, m) => n + m.xp, 0),
+    members,
+  };
 }
 
 export interface Quest {

@@ -744,6 +744,29 @@ test('the first goal starts with the answers of onboarding, and its last XP coun
   await expect(page.locator('.daily-title').first()).toHaveText('Plus que 3 phrases pour ton objectif du jour');
 });
 
+test('two travellers on one phone play as a team', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('button', { name: 'Barcelone' }).click();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByLabel('Date de départ').fill('2026-12-20');
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByLabel('Ton prénom').fill('Léa');
+  await page.getByRole('button', { name: 'On part à deux' }).click();
+  await page.getByLabel('Prénom du second voyageur').fill('Sam');
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByText('Régulier').click();
+  await page.getByRole('button', { name: 'Avec mon café du matin' }).click();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await leaveFirstLesson(page);
+  const team = page.getByRole('region', { name: 'Votre équipe' }).first();
+  await expect(team).toContainText('16/400 XP');
+  await expect(team.locator('.team-name')).toHaveText(['Léa', 'Sam']);
+  await expect(team).toContainText('Encore 384 XP ensemble cette semaine');
+  await expectAccessible(page, 'équipe');
+});
+
 test('desktop sessions work from the keyboard', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'keyboard flow is a desktop concern');
   await onboard(page);
@@ -1050,6 +1073,11 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     await audit(`${size}: landing`);
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.getByRole('button', { name: 'Plus tard' }).click();
+    // A second traveller brings the team card to the home screen and the day column.
+    await page.goto('./#/moi');
+    await page.getByRole('button', { name: 'Ajouter un voyageur' }).click();
+    await page.getByLabel('Prénom').fill('Jean-Baptiste-Alexandre');
+    await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
     for (const hash of SCREENS) {
       await page.goto(`./${hash}`);
       await audit(`${size}: ${hash}`);
