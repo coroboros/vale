@@ -20,6 +20,8 @@ export const BRAND = {
  */
 export const INDEXNOW_KEY = '3052ad8d5d8372cb5fde79a71872af42';
 
+export const siteUrl = (path: string) => new URL(path, BRAND.url).href;
+
 /** « Hors ligne, sans compte, sans pub. » */
 export const promiseLine = () => `${BRAND.promise.map((p, i) => (i ? p.toLowerCase() : p)).join(', ')}.`;
 

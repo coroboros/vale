@@ -5,7 +5,7 @@
  * entry (src/page.tsx).
  */
 import type { HtmlTagDescriptor, Plugin, Rolldown } from 'vite';
-import { appTitle, BRAND, COLORS, description, INDEXNOW_KEY, promiseLine } from '../src/brand.ts';
+import { appTitle, BRAND, COLORS, description, INDEXNOW_KEY, promiseLine, siteUrl } from '../src/brand.ts';
 import { COURSES, pictureOf } from '../src/content/index.ts';
 import { languageOf, pagePath, questionOf, SITUATIONS, type Situation, sceneAfter } from '../src/content/pages.ts';
 import type { Course, Tip } from '../src/content/types.ts';
@@ -21,7 +21,6 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ESCAPES[c]!);
 /** The build's French spacing never reaches this file's strings or the content it reads: done here. */
 const t = (s: string) => esc(frenchProse(s));
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
-const absolute = (path: string) => new URL(path, BRAND.url).href;
 
 interface Assets {
   script: string;
@@ -45,8 +44,8 @@ function shareTags(meta: Meta): [property: string, content: string][] {
     ['og:locale', 'fr_FR'],
     ['og:title', meta.title],
     ['og:description', meta.description],
-    ['og:url', absolute(meta.path)],
-    ['og:image', absolute(SHARE_IMAGE.path)],
+    ['og:url', siteUrl(meta.path)],
+    ['og:image', siteUrl(SHARE_IMAGE.path)],
     ['og:image:width', String(SHARE_IMAGE.width)],
     ['og:image:height', String(SHARE_IMAGE.height)],
     ['og:image:alt', `${BRAND.mascot}, le bernard-l’ermite de ${BRAND.name}, et « ${BRAND.headline} »`],
@@ -61,7 +60,7 @@ function crumbsData(crumbs: Crumbs): string {
     '@type': 'ListItem',
     position: i + 1,
     name: frenchText(name),
-    ...(path === undefined ? {} : { item: absolute(path) }),
+    ...(path === undefined ? {} : { item: siteUrl(path) }),
   }));
   // Inside <script>, only a closing tag could end the data early.
   return JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement }).replace(
@@ -96,7 +95,7 @@ function document(
     <meta http-equiv="Content-Security-Policy" content="${esc(assets.policy)}" />
     <title>${t(meta.title)}</title>
     <meta name="description" content="${t(meta.description)}" />
-    <link rel="canonical" href="${absolute(meta.path)}" />
+    <link rel="canonical" href="${siteUrl(meta.path)}" />
     ${tags}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="${COLORS.page}" />
@@ -267,7 +266,7 @@ export function languageHtml(course: Course, assets: Assets): string {
 }
 
 function sitemap(paths: string[]): string {
-  const urls = ['', ...paths].map(path => `  <url><loc>${absolute(path)}</loc></url>`);
+  const urls = ['', ...paths].map(path => `  <url><loc>${siteUrl(path)}</loc></url>`);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.join('\n')}
@@ -286,7 +285,7 @@ User-agent: *
 Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
-Sitemap: ${absolute('sitemap.xml')}
+Sitemap: ${siteUrl('sitemap.xml')}
 `;
 
 /** What the site holds, for language models (llmstxt.org): Lighthouse's agentic browsing audit reads it. */
@@ -295,9 +294,9 @@ export function llmsTxt(): string {
     const language = languageOf(course);
     const lines = SITUATIONS.map(situation => {
       const lesson = lessonOf(course, situation);
-      return `- [${situation.title} en ${language}](${absolute(pagePath(course, situation))}): ${lesson.items.length} phrases (${lowerFirst(lesson.desc)})`;
+      return `- [${situation.title} en ${language}](${siteUrl(pagePath(course, situation))}): ${lesson.items.length} phrases (${lowerFirst(lesson.desc)})`;
     });
-    return `## ${course.name}\n\n- [${course.name} : les phrases pour voyager](${absolute(`${language}/`)})\n${lines.join('\n')}`;
+    return `## ${course.name}\n\n- [${course.name} : les phrases pour voyager](${siteUrl(`${language}/`)})\n${lines.join('\n')}`;
   });
   return frenchProse(`# ${BRAND.name}
 
@@ -322,7 +321,7 @@ export function searchPages(): Plugin {
       // What Google reads for a site's name, once Bagage has a domain of its own (RUNBOOK B2).
       const site = { '@context': 'https://schema.org', '@type': 'WebSite', name: BRAND.name, url: BRAND.url };
       return [
-        { tag: 'link', attrs: { rel: 'canonical', href: absolute('') }, injectTo: 'head' },
+        { tag: 'link', attrs: { rel: 'canonical', href: siteUrl('') }, injectTo: 'head' },
         { tag: 'script', attrs: { type: 'application/ld+json' }, children: JSON.stringify(site), injectTo: 'head' },
         ...shareTags(meta).map(
           ([property, content]): HtmlTagDescriptor => ({

@@ -32,6 +32,17 @@ person and none in between trips. It only works if acquiring a traveller costs c
 and buying again for the next trip becomes the figure to watch. Test that people pay at all,
 with the simplest payment link, before building accounts and entitlements (RUNBOOK.md, D3).
 
+## Where travellers come from
+
+Two channels cost nothing, and the counts already say which link brought each traveller
+(`utm_source`, RUNBOOK.md, D1): the pages per situation (docs/SEARCH.md) and the survival card,
+sent as a picture to whoever travels with you. People who join through someone they know tend to
+be worth more: at a German bank, customers brought by a referral were worth at least 16 % more and
+left about 18 % more slowly, over some 10,000 customers followed for almost three years ([Schmitt,
+Skiera & Van den Bulte, 2011](https://doi.org/10.1509/jmkg.75.1.46)). Medium for Bagage: the bank
+rewarded each referral and the card carries no reward, and the study speaks of who comes, not of
+how many.
+
 ## How people move from free to paid
 
 Graded by evidence, strongest first:

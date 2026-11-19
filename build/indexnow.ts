@@ -9,9 +9,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BRAND, INDEXNOW_KEY } from '../src/brand.ts';
+import { BRAND, INDEXNOW_KEY, siteUrl } from '../src/brand.ts';
 
-const absolute = (path: string) => new URL(path, BRAND.url).href;
 const timeout = () => AbortSignal.timeout(15_000);
 
 /** Every page of a build, as its folder relative to the app: '' for the app itself. */
@@ -27,7 +26,7 @@ const content = (html: string) => html.replace(/assets\/[\w.-]+/g, 'assets/*');
 
 async function live(path: string): Promise<string | null> {
   // Past any cache, as a crawler arriving after the deploy would read it.
-  const response = await fetch(`${absolute(path)}?fresh=${Date.now()}`, { signal: timeout() });
+  const response = await fetch(`${siteUrl(path)}?fresh=${Date.now()}`, { signal: timeout() });
   return response.ok ? response.text() : null;
 }
 
@@ -56,7 +55,7 @@ export function changes(kept: string, build: string): string[] {
     : [];
   const changed = now.filter(path => read(kept, path) !== read(build, path));
   const removed = listed.filter(path => !now.includes(path));
-  return [...changed, ...removed].map(absolute);
+  return [...changed, ...removed].map(siteUrl);
 }
 
 export async function ping(kept: string, build: string, { wait = 10_000, tries = 48 } = {}): Promise<void> {
@@ -74,7 +73,7 @@ export async function ping(kept: string, build: string, { wait = 10_000, tries =
     body: JSON.stringify({
       host: new URL(BRAND.url).host,
       key: INDEXNOW_KEY,
-      keyLocation: absolute(`${INDEXNOW_KEY}.txt`),
+      keyLocation: siteUrl(`${INDEXNOW_KEY}.txt`),
       urlList,
     }),
     signal: timeout(),

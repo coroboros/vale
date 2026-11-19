@@ -5,7 +5,8 @@ Italy, Portugal or an English-speaking country, plus the Cloudflare Worker in `w
 the app and translates sentences.
 
 What to do next, in order: RUNBOOK.md. Backlog and watch list: TODO.md. Why things are the way
-they are: docs/ (learning evidence, brand, business, market, voice, search).
+they are: docs/ (learning evidence, brand, business, market, voice, search, user experience).
+`CLAUDE.md` only imports this file, so Claude Code reads the same rules.
 
 ## Rules
 

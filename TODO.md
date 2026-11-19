@@ -25,10 +25,9 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
   minute, the Claude spend counted in KV against the Console usage page.
 - Translation quality: the eval grades, then a native speaker on twenty phrases per language,
   and the French-reader pronunciation of Italian stress (often unpredictable from spelling).
-- Lighthouse on a real phone. Local runs: performance 96, accessibility 100, best practices 100.
+- Lighthouse on a real phone; the local measures are in docs/SEARCH.md, « Measured ».
 - Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
   overview and on the home screen.
-- Bernard's eyes following a finger on the iPhone, and his blinking.
 - A lesson's sheet opened from the itinerary in Safari on the iPhone: no ring on its close button
   until Tab reaches it (fixed on 19 Nov 2026, tested in Chromium only).
 - « Imagine » on the iPhone: the photo in plain view at the top, nothing to scroll on an iPhone SE,
@@ -42,7 +41,9 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
   WhatsApp, and the link opens Bagage.
 - A situation page on the iPhone, in Safari and with the app installed: the phrases speak, and
   « Apprendre ces phrases » opens the lesson. A language page (`espagnol/`): its trail back, and
-  « Apprendre l’espagnol » into onboarding.
+  « Apprendre l’espagnol » into onboarding, at « Où vas-tu ? ».
+- The first lesson from a fresh start: the minutes on its ticket (docs/UX.md estimates three to
+  four).
 - A link to Bagage pasted in Messages and WhatsApp: the preview shows the title and the picture
   with Bernard (`og.png`).
 - « Mes voyages » on the iPhone: adding a second trip, switching the one in focus from the home
@@ -72,9 +73,10 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   the photo appears, over a soft sound of the place (a café, a tram bell); silent in quiet mode.
 - **Understand what you hear and read.** Translation the other way (any course language into
   French), from typed text first, then from a photo of a menu or a sign.
-- **Measure before claiming.** Anonymous counts, nothing personal, nothing about the sentences
-  translated: the decision figures are in RUNBOOK.md; answer accuracy per exercise kind
-  then checks the hypotheses in docs/LEARNING.md.
+- **Measure more, as anonymously as the counts** (RUNBOOK.md, C). Answer accuracy per exercise
+  kind, to check the hypotheses in docs/LEARNING.md; a count at the welcome screen, to see who
+  stops before the first lesson, which the counts cannot see today (docs/UX.md). The second is the
+  owner's privacy call.
 - **Reminders.** Web Push at the practice moment the learner chose (iOS 16.4+ for installed apps),
   sent by the Worker with VAPID keys.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
@@ -86,8 +88,8 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **Cloud backup and sync, paid.** Encrypted on the phone, kept on Cloudflare R2, sold alone or
   inside the pass and the subscription; it costs us almost nothing (docs/BUSINESS.md, costs
   checked 18 November 2026). Profiles shared across phones come with it.
-- **Trips, next.** A return date (the pass needs one: docs/BUSINESS.md), so home moves to the next
-  trip on its own and a trip's stamps carry its dates.
+- **Trips, next.** No return date before the pass, which asks for one when bought (RUNBOOK.md,
+  E2): studied and measured in docs/UX.md, « The return date ».
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
 
 ## Watch
@@ -116,5 +118,4 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **Infrastructure as code.** `worker/wrangler.jsonc` describes the Worker, its assets, KV and
   rate limit, and CI deploys it. Consider Pulumi when DNS, a custom domain and several
   environments arrive.
-- A custom domain for the app (then its address no longer depends on Cloudflare's subdomain).
 - Lighthouse in CI with budgets (performance, accessibility, best practices).

@@ -32,7 +32,7 @@ quickly: check again before deciding.
    sound, from a button in the exercise (Duolingo's « Can't listen now ») or the speaker in the
    session bar.
 
-Plans for 2 and 3, and what is left of 1, are in TODO.md.
+Plans for 2 and 3, and what is left of 1: TODO.md describes them, RUNBOOK.md says when.
 
 ## What this means (inference)
 

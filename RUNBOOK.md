@@ -15,9 +15,10 @@ what exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-1. **A return date for each trip.** *Rules first: AGENTS.md.* Once a trip ends, home moves to the
-   next one on its own, the trip's stamps carry its dates, and the pass has the date it needs
-   (docs/BUSINESS.md; TODO.md, « Trips, next »).
+1. **A page's lesson in a new language.** *Rules first: AGENTS.md.* A traveller with no trip in
+   that language now lands on home without a word: open « Nouveau voyage » in that language, then
+   that lesson, and update the end-to-end test that holds today's behaviour (docs/UX.md, « Found,
+   not done »).
 2. **A pronunciation check that stays on the computer.** *Rules first: AGENTS.md.* Chrome on a
    computer recognises speech on the device once its language pack is installed: offer that pack
    (`SpeechRecognition.install()`) where Bagage now falls back on the online service, after
@@ -193,7 +194,9 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
    AGENTS.md.*
 2. Payments (the pass, then a subscription), following the D2 decision, and entitlements
    checked by the Worker, which then sends the Content Security Policy as a header, with
-   `frame-ancestors 'none'` on those pages (a `<meta>` cannot carry it). *Rules first: AGENTS.md.*
+   `frame-ancestors 'none'` on those pages (a `<meta>` cannot carry it). The pass asks for the
+   return date when bought, not before (docs/UX.md, « The return date »). *Rules first:
+   AGENTS.md.*
 3. Premium content served by the Worker after purchase (what ships in the app bundle is free by
    nature), and per-user quotas on translation and AI conversation. *Rules first: AGENTS.md.*
 4. Cloud backup and sync, encrypted on the phone, kept on R2: alone or inside the pass and the
@@ -236,9 +239,15 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
 - 19 Nov 2026. **The first screen, measured with a slow phone's network and processor**: the
   welcome's largest paint comes at 1.6 s, under the 2.5 s of a good page, so nothing changes;
   real visitors' figures will tell (docs/SEARCH.md, « Measured »).
+- 19 Nov 2026. **The way to the first lesson, measured** (docs/UX.md): seven screens and one
+  required answer from the app; five from a page's link, which now opens at the destination; a
+  first lesson of 18 exercises, about three to four minutes. The return date was studied and waits
+  for the pass.
 
 ## Working with Claude Code on your Mac
 
-Clone the repository, open the folder in Claude Code (v2.1.277 or later reads AGENTS.md on its
-own), and say which step of this runbook to continue. AGENTS.md gives any coding agent, Claude
-Code or Codex, the project's rules, commands and map; `npm run check` runs every test.
+Clone the repository, open the folder in Claude Code and say which step of this runbook to
+continue. AGENTS.md gives any coding agent the project's rules, commands and map: Codex reads it
+itself, and Claude Code through `CLAUDE.md`, which imports it, whatever its version and settings.
+`npm run check` runs every test. Now and then, run `/doctor prompt-audit` in Claude Code (v2.1.283
+or later): it lists stale paths, stale commands and instructions that contradict each other.

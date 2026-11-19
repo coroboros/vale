@@ -43,7 +43,8 @@ interface Traveller {
 export function Onboarding() {
   const r = route.value;
   const asked = r.name === 'learn' && COURSES.some(c => c.id === r.course) ? r : null;
-  const [step, setStep] = useState(0);
+  // From a page, its link chose the language and the page introduced Bagage (docs/UX.md).
+  const [step, setStep] = useState(asked ? 2 : 0);
   const [courseId, setCourseId] = useState(asked?.course ?? COURSES[0]!.id);
   const [region, setRegion] = useState('autre');
   const [trip, setTrip] = useState('');

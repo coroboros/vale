@@ -37,20 +37,24 @@ connected, the app and its translation service are served by one Worker; see RUN
   otherwise online, so you are asked once first. Without it, you record yourself and compare.
 - **Pages per situation**, readable without the app: « Comment commander un café en espagnol ? »
   and five more questions in each language, with the phrases, how to say them, the tips for that
-  moment and the scene that uses them. « Apprendre ces phrases » opens that lesson in the app. A
-  page per language gathers its six situations and opens its course.
+  moment and the scene that uses them. « Apprendre ces phrases » opens that lesson in the app,
+  where a newcomer starts at the destination, the language already chosen. A page per language
+  gathers its six situations and opens its course.
 - **A survival card** to show in a restaurant: allergies and diet, in the local language, and each
   trip's hotel and address. It also goes out as a picture, to send to whoever travels with you.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
   Bernard, a hermit crab whose shell wears the country's flag and who sends a postcard from the trip
-  as each leg advances. The answers of onboarding already count towards the first goal, and its last few points are counted in phrases. Travellers sharing
-  a phone play as a team: a weekly goal together, and who brought what. Mistakes never block a
-  lesson.
+  as each leg advances. The answers of onboarding already count towards the first goal, and its
+  last few points are counted in phrases. Travellers sharing a phone play as a team: a weekly goal
+  together, and who brought what. Mistakes never block a lesson.
 - **Shared phone friendly.** Several profiles on one device, backup export and import.
 
-Why each of these choices: [docs/LEARNING.md](docs/LEARNING.md). Name and identity:
-[docs/BRAND.md](docs/BRAND.md). Business model: [docs/BUSINESS.md](docs/BUSINESS.md). What to do
-next, in order: [RUNBOOK.md](RUNBOOK.md); backlog: [TODO.md](TODO.md).
+Why each choice, with its sources: how it teaches, [docs/LEARNING.md](docs/LEARNING.md); the way
+to the first lesson, [docs/UX.md](docs/UX.md); name and identity, [docs/BRAND.md](docs/BRAND.md);
+voices, [docs/VOICE.md](docs/VOICE.md); search, [docs/SEARCH.md](docs/SEARCH.md); what others
+ship, [docs/MARKET.md](docs/MARKET.md); business model, [docs/BUSINESS.md](docs/BUSINESS.md). What
+to do next, in order: [RUNBOOK.md](RUNBOOK.md); backlog: [TODO.md](TODO.md); rules for coding
+agents: [AGENTS.md](AGENTS.md).
 
 ## Install
 

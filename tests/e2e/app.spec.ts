@@ -224,6 +224,36 @@ async function playStep(page: Page, keyboard = false) {
   await page.waitForTimeout(60);
 }
 
+/** Screens a newcomer goes through before the first exercise, answering only what is required. */
+async function screensBeforeFirstExercise(page: Page, url: string) {
+  await page.goto(url);
+  for (let screens = 0; screens < 12; screens++) {
+    if (await page.locator('.ex').first().isVisible()) return screens;
+    const heading = await page.locator('h1').first().textContent();
+    const name = page.getByLabel('Ton prénom');
+    if (await name.isVisible()) await name.fill('Léa');
+    await page.locator('.welcome-actions .btn-primary, .stage-foot .btn-primary').first().click();
+    await expect
+      .poll(
+        async () =>
+          (await page.locator('.ex').count()) > 0 || (await page.locator('h1').first().textContent()) !== heading,
+      )
+      .toBe(true);
+  }
+  throw new Error('no exercise after 12 screens');
+}
+
+// Every screen before the first exercise loses some newcomers: adding one updates docs/UX.md.
+test('the first exercise comes 7 screens after the welcome, the first name the only answer required', async ({
+  page,
+}) => {
+  expect(await screensBeforeFirstExercise(page, './')).toBe(7);
+});
+
+test('from a page, the first exercise comes 5 screens after its link', async ({ page }) => {
+  expect(await screensBeforeFirstExercise(page, './?utm_source=page#/apprendre/es/bar')).toBe(5);
+});
+
 test('first launch to first lesson, progress kept after reload', async ({ page }) => {
   await onboard(page);
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
@@ -740,7 +770,10 @@ test('a situation page answers in the language, speaks its phrases, and opens it
 
   await page.getByRole('link', { name: 'Apprendre ces phrases' }).click();
   await expect(page).toHaveURL(/\/\?utm_source=page#\/apprendre\/it\/bar$/);
-  await page.getByRole('button', { name: 'C’est parti' }).click();
+  // The link chose the language and the page introduced Bagage: the app starts at the destination.
+  await expect(page.getByRole('heading', { name: 'Où vas-tu ?' })).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Étape 2 sur 6' })).toBeVisible();
+  await page.getByRole('button', { name: 'Retour' }).click();
   await expect(page.getByRole('radio', { name: /^Italien/ })).toBeChecked();
   await page.getByRole('button', { name: 'Continuer' }).click();
   await page.getByRole('button', { name: 'Rome' }).click();
@@ -778,7 +811,9 @@ test('a language page leads to its situations and back, and into its course in t
   await page.getByRole('navigation', { name: 'Fil d’Ariane' }).getByRole('link', { name: 'Portugais' }).click();
   await page.getByRole('link', { name: 'Apprendre le portugais' }).click();
   await expect(page).toHaveURL(/\/\?utm_source=page#\/apprendre\/pt$/);
-  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await expect(page.getByRole('heading', { name: 'Où vas-tu ?' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lisbonne' })).toBeVisible();
+  await page.getByRole('button', { name: 'Retour' }).click();
   await expect(page.getByRole('radio', { name: /^Portugais/ })).toBeChecked();
 });
 
