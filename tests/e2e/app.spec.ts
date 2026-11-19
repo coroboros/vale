@@ -389,6 +389,9 @@ test('regional packs open on their introduction and speak in their own voice; th
   await leaveFirstLesson(page);
   await page.getByRole('button', { name: /Le catalan/ }).click();
   const sheet = page.locator('.sheet');
+  await expect(page.locator('.sheet-dialog')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(sheet.getByRole('button', { name: 'Fermer' })).toBeFocused();
   await expect(sheet).toContainText('un « Bon dia » fait toujours plaisir');
   await expect(sheet.locator('.preview-t').first()).toHaveAttribute('lang', 'ca');
   await expectAccessible(page, 'pack sheet');

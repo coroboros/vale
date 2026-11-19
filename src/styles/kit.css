@@ -537,6 +537,12 @@
     display: none;
   }
 
+  /* The sheet itself takes focus when it opens; Tab goes on to its first control, which shows the
+     ring. */
+  .sheet-dialog:focus {
+    outline: none;
+  }
+
   .sheet-dialog::backdrop {
     background: rgb(22 33 62 / 40%);
     animation: fade-in 0.18s ease both;

@@ -82,7 +82,10 @@ export function Sheet({
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = ref.current;
-    if (dialog && !dialog.open) dialog.showModal();
+    if (!dialog || dialog.open) return;
+    dialog.showModal();
+    // showModal focuses the close button, and Safari on iPhone rings it even after a tap.
+    dialog.focus();
   }, []);
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: the backdrop click mirrors Escape, which <dialog> handles natively

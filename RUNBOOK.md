@@ -47,9 +47,10 @@ order:
    round…) in an Irish one when the phone has it, another English voice otherwise. « Bon à savoir »
    keeps the customs: the tip and the taxes; the euro and the Irish signs (Mná for women, Fir for
    men). A pack's sheet opens on its `intro`, which replaces a tip whose title nothing showed.
-6. **On the iPhone, a sheet opens with a focus ring on its close button** (screenshot). *Rules
-   first: AGENTS.md.* Focus goes to the sheet itself (`autofocus` on the `<dialog>`, to check in
-   Safari), so a tap shows no ring and the keyboard still does.
+6. ✅ 19 Nov 2026. **A sheet no longer opens with a ring on its close button.** The sheet takes
+   focus itself (`dialog.focus()` after `showModal()`: `autofocus` on a `<dialog>` does not behave
+   the same in every browser), and Tab reaches the close button with its ring. Tested in
+   Chromium; Safari on the iPhone is in TODO.md, « Test for real » (no WebKit here).
 7. **Hotel and shopping lessons exist only in Spanish** (the README promised them everywhere until
    19 Nov 2026). *Rules first: AGENTS.md.* Write them for Italian, Portuguese and English from the
    Spanish ones, then the native review (TODO.md).
