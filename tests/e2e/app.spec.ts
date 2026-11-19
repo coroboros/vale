@@ -92,8 +92,13 @@ const hearNext = (page: Page, next: unknown) =>
   page.evaluate(n => (window as unknown as { __hearing: Hearing }).__hearing.queue.push(n), next);
 const started = (page: Page) => page.evaluate(() => (window as unknown as { __hearing: Hearing }).__hearing.started);
 
-async function onboard(page: Page, name = 'Adrien', check: (step: string) => Promise<void> = async () => {}) {
-  await page.goto('./');
+async function onboard(
+  page: Page,
+  name = 'Adrien',
+  check: (step: string) => Promise<void> = async () => {},
+  url = './',
+) {
+  await page.goto(url);
   await page.getByRole('button', { name: 'C’est parti' }).click();
   await check('language');
   await page.getByRole('button', { name: 'Continuer' }).click();
@@ -673,6 +678,58 @@ test('opens without network once visited', async ({ page, context }) => {
   await context.setOffline(false);
 });
 
+test('a situation page answers in the language, speaks its phrases, and opens its lesson in the app', async ({
+  page,
+}) => {
+  const counted: string[] = [];
+  await page.route(`${TRANSLATE_URL}/count`, async route => {
+    for (const c of route.request().postDataJSON().counts) counted.push(`${c.name} ${c.source}`);
+    await route.fulfill({ status: 204 });
+  });
+  await page.goto('./italien/commander-un-cafe/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comment commander un café en italien ?');
+  await expect(page.locator('.page-t').first()).toHaveAttribute('lang', 'it-IT');
+  await page.getByRole('button', { name: 'Écouter' }).first().click();
+  expect(await page.evaluate(() => (window as unknown as { __speakers: string[] }).__speakers)).toEqual(['Alice']);
+  await expectAccessible(page, 'page de situation');
+
+  await page.getByRole('link', { name: 'Apprendre ces phrases' }).click();
+  await expect(page).toHaveURL(/\/\?utm_source=page#\/apprendre\/it\/bar$/);
+  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await expect(page.getByRole('radio', { name: /^Italien/ })).toBeChecked();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('button', { name: 'Rome' }).click();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('button', { name: 'Je ne sais pas encore' }).click();
+  await page.getByLabel('Ton prénom').fill('Léa');
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  await expect(page.locator('.ex').first()).toContainText(/caffè|expresso/);
+  await expect.poll(() => counted).toEqual(['new page']);
+});
+
+test('a situation page’s lesson opens in the traveller’s trip in that language, or home without one', async ({
+  page,
+}) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await page.goto('./#/apprendre/es/bar');
+  await expect(page).toHaveURL(/#\/session$/);
+  await expect(page.locator('.ex').first()).toContainText('café');
+  await page.goto('./#/apprendre/it/bar');
+  await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
+});
+
+test('the app, once installed, leaves the situation pages to the network', async ({ page }) => {
+  await page.goto('./');
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.reload();
+  expect(await page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await page.goto('./espagnol/demander-de-l-aide/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comment demander de l’aide en espagnol ?');
+});
+
 test('offers to install the app, with the browser dialog when available', async ({ page }) => {
   await page.goto('./');
   const install = page.getByRole('button', { name: 'Installer l’app' });
@@ -789,7 +846,7 @@ test('counts a new traveller without saying who, and nothing more once switched 
   await onboard(page);
   await leaveFirstLesson(page);
   const today = await page.evaluate(() => new Date().toLocaleDateString('sv'));
-  await expect.poll(() => counted).toEqual([{ counts: [{ name: 'new', day: today, value: '' }] }]);
+  await expect.poll(() => counted).toEqual([{ counts: [{ name: 'new', day: today, value: '', source: '' }] }]);
 
   await page.getByRole('link', { name: 'Moi' }).click();
   const share = page.getByRole('switch', { name: 'Statistiques anonymes' });
@@ -805,6 +862,53 @@ test('counts a new traveller without saying who, and nothing more once switched 
   });
   await page.waitForTimeout(3500);
   expect(counted).toHaveLength(1);
+});
+
+test('a traveller sends their card as a picture, and the counts say a card brought them and that they shared', async ({
+  page,
+}) => {
+  const counted: { name: string; source: string }[] = [];
+  await page.route(`${TRANSLATE_URL}/count`, async route => {
+    counted.push(...route.request().postDataJSON().counts);
+    await route.fulfill({ status: 204 });
+  });
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true }),
+  );
+  await onboard(page, 'Adrien', undefined, './?utm_source=carte');
+  await leaveFirstLesson(page);
+  await page.getByRole('link', { name: 'Carte' }).click();
+
+  // Where the browser cannot share a file, the picture is saved instead.
+  await page.getByRole('button', { name: 'Partager ma carte' }).click();
+  await expect(page.getByRole('link', { name: 'Enregistrer l’image' })).toHaveAttribute(
+    'download',
+    'bagage-ma-carte.png',
+  );
+  const preview = page.locator('.share-preview');
+  expect(await preview.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1080);
+  await expectAccessible(page, 'partager ma carte');
+  await page.getByRole('button', { name: 'Fermer' }).click();
+
+  await page.evaluate(() => {
+    const sent: { type: string; text: string }[] = [];
+    Object.assign(window, { __sent: sent });
+    Object.defineProperty(navigator, 'canShare', { value: (d: { files?: File[] }) => !!d.files?.length });
+    Object.defineProperty(navigator, 'share', {
+      value: async (d: { files: File[]; text: string }) => sent.push({ type: d.files[0]!.type, text: d.text }),
+    });
+  });
+  await page.getByRole('button', { name: 'Partager ma carte' }).click();
+  await page.getByRole('button', { name: 'Partager', exact: true }).click();
+  expect(await page.evaluate(() => (window as unknown as { __sent: unknown[] }).__sent)).toEqual([
+    {
+      type: 'image/png',
+      text: expect.stringMatching(
+        /^Ma carte pour voyager à Barcelone, faite avec Bagage\s: https:.+\?utm_source=carte$/,
+      ),
+    },
+  ]);
+  await expect.poll(() => counted.map(c => `${c.name} ${c.source}`)).toEqual(['new carte', 'shared carte']);
 });
 
 test('translates a sentence, then finds it again offline', async ({ page, context }) => {
@@ -1049,6 +1153,8 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     expect(problems, where).toEqual([]);
   };
   const run = async (size: string) => {
+    await page.goto('./anglais/commander-au-restaurant/');
+    await audit(`${size}: page de situation`);
     await page.goto('./');
     // Back to a first launch. The app saves pending changes when the page goes away, so that save
     // is switched off before the data is cleared.
@@ -1087,6 +1193,10 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
       await page.goto(`./${hash}`);
       await audit(`${size}: ${hash}`);
     }
+    await page.goto('./#/carte');
+    await page.getByRole('button', { name: 'Partager ma carte' }).click();
+    await expect(page.locator('.share-preview')).toBeVisible();
+    await audit(`${size}: partager ma carte`);
   };
   await run(`${page.viewportSize()!.width}px`);
   // The phone run also covers a small phone (iPhone SE, first model) and a tablet.

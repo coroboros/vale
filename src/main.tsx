@@ -12,7 +12,7 @@ import { initMemory } from './engine/memory';
 import { requestPersistence } from './platform/backup';
 import { initInstall } from './platform/install';
 import { initPWA } from './platform/pwa';
-import { initSpeech } from './platform/speech';
+import { initVoices } from './platform/voices';
 import { loadDB, theme, watchStorage } from './state/store';
 import { App } from './ui/App';
 import { initRouter } from './ui/router';
@@ -25,7 +25,7 @@ async function boot() {
   watchStorage();
   settleDay();
   initRouter();
-  initSpeech();
+  initVoices();
   initInstall();
   initPWA();
   initCounts();

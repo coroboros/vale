@@ -23,11 +23,12 @@ export function dueCounts(p: Profile, data: ProfileData, today: string): Count[]
     ['day1', age >= 1 && active(data, shiftDay(p.since, 1)), ''],
     ['day7', age >= 7 && active(data, shiftDay(p.since, 7)), ''],
     ['installed', data.counts.installed, ''],
+    ['shared', data.counts.shared, ''],
     ['departure', !!departure && departure <= today, sessionRange(sessionsBetween(data, p.since, departure ?? ''))],
   ];
   return due
     .filter(([name, now]) => now && !data.counts.sent.includes(name))
-    .map(([name, , value]) => ({ name, day: p.since, value }));
+    .map(([name, , value]) => ({ name, day: p.since, value, source: data.counts.source }));
 }
 
 /** Switched off: nothing this traveller has done so far will ever be counted. */

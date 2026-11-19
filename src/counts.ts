@@ -4,6 +4,7 @@
  * any change, when the app goes to the background, or at the next start if it could not leave.
  */
 import { effect } from '@preact/signals';
+import { type Source, sourceOf } from './counts-api';
 import { dueCounts, inFirstWeek } from './engine/counts';
 import { dayKey } from './engine/progress';
 import { isStandalone } from './platform/env';
@@ -12,6 +13,9 @@ import { db, update } from './state/store';
 const ENDPOINT = ((import.meta.env.VITE_COUNTS_URL as string | undefined) ?? '').replace(/\/$/, '');
 
 export const countsOn = ENDPOINT !== '';
+
+/** The link this visit came through, so a new traveller's counts say which experiment brought them. */
+export const arrivedFrom = (): Source => sourceOf(new URLSearchParams(location.search).get('utm_source'));
 
 let sending = false;
 

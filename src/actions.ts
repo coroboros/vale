@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals';
 import { type CourseIndex, courseById, itemKey } from './content';
+import type { Source } from './counts-api';
 import { closeCounts } from './engine/counts';
 import { review } from './engine/memory';
 import { buildPool } from './engine/pool';
@@ -115,10 +116,20 @@ export function startSession(
   go({ name: 'session' }, { replace });
 }
 
-/** How a language begins, after onboarding or a new trip. */
-export function startFirstLesson(options?: { replace?: boolean }): void {
-  const first = course.value.lessons[0];
-  if (first) startSession({ kind: 'lesson', lessonId: first.id }, first.title, options);
+/** How a language begins, after onboarding or a new trip: the first lesson, or a situation page's. */
+export function startFirstLesson({ replace, lessonId }: { replace?: boolean; lessonId?: string } = {}): void {
+  const { lessons } = course.value;
+  const lesson = lessons.find(l => l.id === lessonId) ?? lessons[0];
+  if (lesson) startSession({ kind: 'lesson', lessonId: lesson.id }, lesson.title, { replace });
+}
+
+/** A situation page's lesson for a traveller already here: in their trip in that language, if any. */
+export function openLesson(courseId: string, lessonId: string): void {
+  const trip = profile.value?.trips.find(t => t.course === courseId);
+  if (trip) {
+    focusTrip(trip.id);
+    startFirstLesson({ replace: true, lessonId });
+  } else go({ name: 'home' }, { replace: true });
 }
 
 export function submitAnswer(correct: boolean): void {
@@ -345,12 +356,13 @@ export function forgetTranslation(id: string): void {
 /** `welcome`: the travellers come out of onboarding, whose answers count towards their first goal. */
 export function createProfiles(
   profiles: Omit<Profile, 'id' | 'since'>[],
-  { now = Date.now(), welcome = false }: { now?: number; welcome?: boolean } = {},
+  { now = Date.now(), welcome = false, source = '' }: { now?: number; welcome?: boolean; source?: Source } = {},
 ): void {
   update(draft => {
     for (const p of profiles) {
       const id = newId();
       const data = blankData();
+      data.counts.source = source;
       if (!draft.settings.shareCounts) closeCounts(data);
       if (welcome) logSession(data, now, { xp: welcomeXp(p.goal), welcome: welcomeXp(p.goal) }, p.goal);
       draft.profiles.push({ ...p, id, since: dayKey(now) });
@@ -358,6 +370,13 @@ export function createProfiles(
     }
     draft.active = draft.profiles[0]?.id ?? '';
     draft.onboarded = true;
+  });
+}
+
+/** The traveller sent their card, or saved its picture to send: counted once (counts-api.ts). */
+export function markShared(): void {
+  updateData(data => {
+    data.counts.shared = true;
   });
 }
 

@@ -9,12 +9,14 @@ import { BRAND } from '../../brand';
 import { COURSES, courseById, flagOf, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
+import { arrivedFrom } from '../../counts';
 import { blankTrip, GOALS, PROFILE_COLORS } from '../../state/schema';
 import { Imagine } from '../Imagine';
 import { InstallButton } from '../Install';
 import { ChoiceGroup } from '../kit';
 import { Porthole, type Stop, stopOf } from '../Porthole';
 import { photoOf, preload } from '../photos';
+import { route } from '../router';
 import { DateField, LanguageChoice, PlaceChoice } from '../Trip';
 import { THEMES, themeVars } from '../themes';
 
@@ -39,8 +41,10 @@ interface Traveller {
 }
 
 export function Onboarding() {
+  const r = route.value;
+  const asked = r.name === 'learn' && COURSES.some(c => c.id === r.course) ? r : null;
   const [step, setStep] = useState(0);
-  const [courseId, setCourseId] = useState(COURSES[0]!.id);
+  const [courseId, setCourseId] = useState(asked?.course ?? COURSES[0]!.id);
   const [region, setRegion] = useState('autre');
   const [trip, setTrip] = useState('');
   const [people, setPeople] = useState<Traveller[]>([{ name: '', gender: 'f' }]);
@@ -70,9 +74,9 @@ export function Onboarding() {
         goal,
         cue,
       })),
-      { welcome: true },
+      { welcome: true, source: arrivedFrom() },
     );
-    startFirstLesson();
+    startFirstLesson({ lessonId: asked?.course === c.id ? asked.lesson : undefined });
   };
 
   return (

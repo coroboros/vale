@@ -35,6 +35,10 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
   installed app.
 - Bernard everywhere on the iPhone: his eyes following a finger and blinking in lessons, on the
   home card and in « Imagine », without slowing the screen; the flag on his shell at small sizes.
+- Sharing the card on the iPhone and on Android: the picture and its link arrive in Messages and
+  WhatsApp, and the link opens Bagage.
+- A situation page on the iPhone, in Safari and with the app installed: the phrases speak, and
+  « Apprendre ces phrases » opens the lesson.
 - « Mes voyages » on the iPhone: adding a second trip, switching the one in focus from the home
   screen and from *Moi*, the next-trip card once a trip has begun, and *Phrases* switching
   language.

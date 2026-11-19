@@ -7,6 +7,8 @@ import { type Plugin, parseAst } from 'vite';
 
 const BREAKABLE = / (?=[:;?!%»])|(?<=«) /g;
 
+export const frenchText = (text: string) => text.replace(BREAKABLE, '\u00a0');
+
 interface Span {
   start: number;
   end: number;
@@ -29,7 +31,7 @@ export function frenchSpaces(code: string, fileName: string): string {
   let out = '';
   let done = 0;
   for (const { start, end } of spans.sort((a, b) => a.start - b.start)) {
-    out += code.slice(done, start) + code.slice(start, end).replace(BREAKABLE, '\u00a0');
+    out += code.slice(done, start) + frenchText(code.slice(start, end));
     done = end;
   }
   return out + code.slice(done);

@@ -1437,6 +1437,36 @@
     min-height: 44px;
   }
 
+  .card-share {
+    display: grid;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .card-share h2 {
+    font-size: var(--step-1);
+  }
+
+  .share-card {
+    display: grid;
+    gap: 14px;
+  }
+
+  .share-preview {
+    display: block;
+    max-width: 100%;
+    max-height: 52dvh;
+    margin-inline: auto;
+    border-radius: var(--r-m);
+    border: 1.5px solid var(--line);
+  }
+
+  .share-wait {
+    min-height: 120px;
+    display: grid;
+    place-items: center;
+  }
+
   .show {
     position: fixed;
     inset: 0;

@@ -10,7 +10,9 @@ export type Route =
   | { name: 'scene'; id: string }
   | { name: 'sounds' }
   | { name: 'activity'; kind: Activity }
-  | { name: 'landing' };
+  | { name: 'landing' }
+  /** A situation page's lesson (build/pages.ts). */
+  | { name: 'learn'; course: string; lesson: string };
 
 const TAB_PATHS: Record<Tab, string> = {
   home: '/',
@@ -31,6 +33,8 @@ function parse(hash: string): Route {
   if (path === '/arrivee') return { name: 'landing' };
   const scene = path.match(/^\/scene\/([\w-]+)$/);
   if (scene) return { name: 'scene', id: scene[1]! };
+  const learn = path.match(/^\/apprendre\/(\w+)\/([\w-]+)$/);
+  if (learn) return { name: 'learn', course: learn[1]!, lesson: learn[2]! };
   const game = path.match(/^\/jeu\/(\w+)$/);
   if (game && ACTIVITIES.includes(game[1] as Activity)) return { name: 'activity', kind: game[1] as Activity };
   return { name: 'home' };
@@ -48,6 +52,8 @@ function pathOf(r: Route): string {
       return `/scene/${r.id}`;
     case 'activity':
       return `/jeu/${r.kind}`;
+    case 'learn':
+      return `/apprendre/${r.course}/${r.lesson}`;
     default:
       return TAB_PATHS[r.name];
   }

@@ -4,13 +4,26 @@ import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { frenchTypography } from './build/french-spaces.ts';
+import { situationPages } from './build/pages.ts';
 import { BRAND, COLORS } from './src/brand.ts';
+import { COURSES } from './src/content/index.ts';
+import { languageOf } from './src/content/pages.ts';
 
 export default defineConfig({
   // Relative URLs: the same build runs from GitHub Pages (/vale/) and from any other host.
   base: './',
   // No source maps in the published app: the code is private.
-  build: { target: 'es2022', sourcemap: false },
+  build: {
+    target: 'es2022',
+    sourcemap: false,
+    // The situation pages (build/pages.ts) carry their own small entry.
+    rolldownOptions: {
+      input: {
+        index: fileURLToPath(new URL('./index.html', import.meta.url)),
+        page: fileURLToPath(new URL('./src/page.tsx', import.meta.url)),
+      },
+    },
+  },
   plugins: [
     frenchTypography(fileURLToPath(new URL('./src/', import.meta.url))),
     preact(),
@@ -18,6 +31,7 @@ export default defineConfig({
       name: 'brand-html',
       transformIndexHtml: html => html.replaceAll('%BRAND_NAME%', BRAND.name).replaceAll('%BRAND_PAGE%', COLORS.page),
     },
+    situationPages(),
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
@@ -28,8 +42,14 @@ export default defineConfig({
       includeManifestIcons: false,
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        // Only the Latin subsets are ever used; skip the others.
-        globIgnores: ['**/*vietnamese*', '**/*cyrillic*', '**/*greek*'],
+        // Only the Latin subsets are ever used; skip the others. The situation pages are read online.
+        globIgnores: [
+          '**/*vietnamese*',
+          '**/*cyrillic*',
+          '**/*greek*',
+          'assets/page-*',
+          ...COURSES.map(c => `${languageOf(c)}/**`),
+        ],
       },
       manifest: {
         id: './',

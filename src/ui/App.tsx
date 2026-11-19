@@ -1,6 +1,6 @@
 import { Dumbbell, IdCard, Languages, MapPinned, User } from 'lucide-preact';
 import { useEffect, useErrorBoundary } from 'preact/hooks';
-import { running } from '../actions';
+import { openLesson, running } from '../actions';
 import { BRAND } from '../brand';
 import { exportBackup } from '../platform/backup';
 import { applyUpdate, updateReady } from '../platform/pwa';
@@ -127,6 +127,10 @@ function Screen() {
   if (r.name === 'scene') return <SceneScreen id={r.id} />;
   if (r.name === 'activity') return <Activity kind={r.kind} />;
   if (r.name === 'landing') return <Landing />;
+  if (r.name === 'learn') {
+    openLesson(r.course, r.lesson);
+    return null;
+  }
 
   const tab = isTab(r) ? r.name : null;
   return (

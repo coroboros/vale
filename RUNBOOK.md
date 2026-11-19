@@ -95,9 +95,20 @@ order:
    - Bernard tells his trip in postcards, four per leg (`src/content/story.ts`): the new one on the
      session ticket and at the end of a scene, the latest under each leg on home. One line each:
      thin stories go with larger learning effects than deeper ones.
-4. **Acquisition experiments that need no account** (hypotheses, untested). *Rules first:
-   AGENTS.md.* a survival card worth sharing, pages answering « comment commander un café en
-   espagnol » that open the right lesson.
+4. ✅ 19 Nov 2026. **Acquisition experiments that need no account** (hypotheses, untested until the
+   figures say otherwise).
+   - *Carte* sends the card as a picture (the destination's drawing, Bernard, the
+     phrases over their French), through the phone's share sheet or saved where there is none,
+     with a link marked `utm_source=carte`. The counts now say which link brought each traveller
+     (`carte`, `page`, or none) and who shared or saved their card; `npm run figures` reads them
+     per link.
+   - Situation pages, built from the lessons with the app (`src/content/pages.ts`,
+     `build/pages.ts`): six questions people type before leaving, from « Comment dire bonjour » to
+     « Comment demander de l’aide », in each language (24 pages, such as
+     `espagnol/commander-un-cafe/`), with the phrases, their pronunciation, the device's voice and
+     the scene that uses them, plus a `sitemap.xml`. « Apprendre ces phrases » opens the app on that lesson (`#/apprendre/es/bar`):
+     onboarding in that language for a newcomer, the lesson at once in a traveller's trip in it.
+     Installed copies of the app leave the pages to the network.
 
 Done at your request, outside this order: ✅ 18 Nov 2026, **several trips at once** (two in a row,
 several languages, two in one language), each with its own hotel and address on the card; home
@@ -148,7 +159,8 @@ docs/BUSINESS.md and docs/MARKET.md are public until then.
 *Rules first: AGENTS.md.*
 
 - Remove the GitHub Pages branch of the *deploy* job in `.github/workflows/ci.yml`.
-- `BRAND.url` (`src/brand.ts`) and the README link: the Cloudflare address.
+- `BRAND.url` (`src/brand.ts`) and the README link: the Cloudflare address. The situation pages'
+  canonical addresses and `sitemap.xml` follow it.
 - `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: keep only the local dev servers.
 - Delete the `TRANSLATE_URL` variable if it was ever set.
 
@@ -170,7 +182,13 @@ this). Paste the suggested `MODELS` into the `vars` of `worker/wrangler.jsonc`, 
 Safari → the Cloudflare address → *Partager → Sur l'écran d'accueil*. Then go through *Test for
 real* in TODO.md and report what fails, with a screenshot.
 
-### B6. Keys, when you have them
+### B6. Tell Google about the situation pages (optional, 10 minutes, after B3)
+
+Search engines find the pages through links; this only makes it sooner. Google Search Console →
+*Add property → URL prefix* → the Cloudflare address → method *HTML file*: send Claude the file's
+name, Claude publishes it, you click *Verify*. Then *Sitemaps* → `sitemap.xml` → *Submit*.
+
+### B7. Keys, when you have them
 
 - **Unsplash** for the « Imagine » photos: step C3.
 - **Fish Audio** for the voices: a key with a few dollars of credit as the `FISH_API_KEY` GitHub

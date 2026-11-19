@@ -422,11 +422,15 @@ describe('saved data', () => {
         { id: 'x', name: 'Léa', since: '2026-12-01' },
         { id: 'y', name: 'Sam', since: 'hier' },
       ],
-      data: { x: { counts: { sent: ['new', 'oops'], installed: 'yes' } } },
+      data: { x: { counts: { sent: ['new', 'oops'], installed: 'yes', shared: true, source: 'carte' } } },
     });
     expect(db.profiles.map(p => p.since)).toEqual(['2026-12-01', '']);
-    expect(db.data.x!.counts).toEqual({ sent: ['new'], installed: false });
-    expect(db.data.y!.counts).toEqual({ sent: [], installed: false });
+    expect(db.data.x!.counts).toEqual({ sent: ['new'], installed: false, shared: true, source: 'carte' });
+    expect(db.data.y!.counts).toEqual({ sent: [], installed: false, shared: false, source: '' });
+    expect(
+      sanitize({ profiles: [{ id: 'z', name: 'Zoé' }], data: { z: { counts: { source: 'spam' } } } }).data.z!.counts
+        .source,
+    ).toBe('');
     expect(db.settings.shareCounts).toBe(true);
   });
 

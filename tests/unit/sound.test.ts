@@ -65,7 +65,7 @@ describe('sound settings', () => {
       },
     );
     const speech = await import('../../src/platform/speech');
-    speech.initSpeech();
+    (await import('../../src/platform/voices')).initVoices();
     await withSettings({ variedVoices: true });
     await speech.say('hola', { lang: 'es-ES', variant: 1 });
     await withSettings({ variedVoices: false });

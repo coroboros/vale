@@ -23,7 +23,7 @@ describe('anonymous counts', () => {
   it('count a new traveller on their first day, once', () => {
     const data = blankData();
     expect(dueCounts(traveller('2026-12-01'), data, '2026-12-01')).toEqual([
-      { name: 'new', day: '2026-12-01', value: '' },
+      { name: 'new', day: '2026-12-01', value: '', source: '' },
     ]);
     data.counts.sent.push('new');
     expect(dueCounts(traveller('2026-12-01'), data, '2026-12-01')).toEqual([]);
@@ -40,8 +40,8 @@ describe('anonymous counts', () => {
     expect(names(dueCounts(p, data, '2026-12-09'))).toEqual(['day1']);
     studied(data, '2026-12-08');
     expect(dueCounts(p, data, '2026-12-08')).toEqual([
-      { name: 'day1', day: '2026-12-01', value: '' },
-      { name: 'day7', day: '2026-12-01', value: '' },
+      { name: 'day1', day: '2026-12-01', value: '', source: '' },
+      { name: 'day7', day: '2026-12-01', value: '', source: '' },
     ]);
   });
 
@@ -53,7 +53,9 @@ describe('anonymous counts', () => {
     studied(data, '2026-12-10');
     studied(data, '2026-12-20', 3);
     expect(dueCounts(p, data, '2026-12-19')).toEqual([]);
-    expect(dueCounts(p, data, '2026-12-20')).toEqual([{ name: 'departure', day: '2026-12-01', value: '2-4' }]);
+    expect(dueCounts(p, data, '2026-12-20')).toEqual([
+      { name: 'departure', day: '2026-12-01', value: '2-4', source: '' },
+    ]);
     expect(names(dueCounts(traveller('2026-12-01', '2026-11-20'), data, '2026-12-20'))).toEqual([]);
   });
 
@@ -65,8 +67,18 @@ describe('anonymous counts', () => {
       inFirstWeek(traveller(''), '2026-12-01'),
     ]).toEqual([true, false, false]);
     const data = blankData();
-    data.counts = { sent: ['new'], installed: true };
+    data.counts = { ...data.counts, sent: ['new'], installed: true };
     expect(names(dueCounts(p, data, '2026-12-03'))).toEqual(['installed']);
+  });
+
+  it('count a shared card once, and say which link every count of a traveller came through', () => {
+    const data = blankData();
+    data.counts = { ...data.counts, sent: ['new'], shared: true, source: 'carte' };
+    expect(dueCounts(traveller('2026-12-01'), data, '2026-12-04')).toEqual([
+      { name: 'shared', day: '2026-12-01', value: '', source: 'carte' },
+    ]);
+    data.counts.sent.push('shared');
+    expect(dueCounts(traveller('2026-12-01'), data, '2026-12-04')).toEqual([]);
   });
 
   it('say nothing of older profiles, or once switched off', () => {
@@ -84,19 +96,22 @@ describe('anonymous counts', () => {
   it('reach the service only as names, first days and ranges', () => {
     const today = '2026-12-10';
     const valid = [
-      { name: 'new', day: '2026-12-11', value: '' },
-      { name: 'departure', day: '2026-01-01', value: '5-9' },
+      { name: 'new', day: '2026-12-11', value: '', source: 'page' },
+      { name: 'shared', day: '2026-12-10', value: '', source: 'carte' },
+      { name: 'departure', day: '2026-01-01', value: '5-9', source: '' },
     ];
     expect(asCounts({ counts: valid }, today)).toEqual(valid);
     for (const counts of [
-      [{ name: 'user', day: today, value: '' }],
-      [{ name: 'new', day: '10/12/2026', value: '' }],
-      [{ name: 'new', day: '2026-12-12', value: '' }],
-      [{ name: 'new', day: '2025-11-01', value: '' }],
-      [{ name: 'new', day: today, value: 'Léa' }],
-      [{ name: 'departure', day: today, value: '3' }],
+      [{ name: 'user', day: today, value: '', source: '' }],
+      [{ name: 'new', day: '10/12/2026', value: '', source: '' }],
+      [{ name: 'new', day: '2026-12-12', value: '', source: '' }],
+      [{ name: 'new', day: '2025-11-01', value: '', source: '' }],
+      [{ name: 'new', day: today, value: 'Léa', source: '' }],
+      [{ name: 'new', day: today, value: '', source: 'newsletter' }],
+      [{ name: 'new', day: today, value: '' }],
+      [{ name: 'departure', day: today, value: '3', source: '' }],
       [],
-      Array.from({ length: 21 }, () => ({ name: 'new', day: today, value: '' })),
+      Array.from({ length: 25 }, () => ({ name: 'new', day: today, value: '', source: '' })),
     ])
       expect(asCounts({ counts }, today), JSON.stringify(counts).slice(0, 60)).toBeNull();
     expect(asCounts('new', today)).toBeNull();

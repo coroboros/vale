@@ -115,9 +115,9 @@ async function overLimit(request: Request, env: Env): Promise<boolean> {
 }
 
 const COUNTS_TABLE =
-  'CREATE TABLE IF NOT EXISTS counts (day TEXT NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, name, value))';
+  'CREATE TABLE IF NOT EXISTS counts (day TEXT NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL, source TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, name, value, source))';
 const ADD_COUNT =
-  'INSERT INTO counts (day, name, value, n) VALUES (?1, ?2, ?3, 1) ON CONFLICT (day, name, value) DO UPDATE SET n = n + 1';
+  'INSERT INTO counts (day, name, value, source, n) VALUES (?1, ?2, ?3, ?4, 1) ON CONFLICT (day, name, value, source) DO UPDATE SET n = n + 1';
 
 /** Each count adds one to its day's total: nothing is kept per request, so nothing points back to a phone. */
 async function count(request: Request, env: Env, cors: Headers): Promise<Response> {
@@ -131,7 +131,10 @@ async function count(request: Request, env: Env, cors: Headers): Promise<Respons
   if ('error' in read) return json(read, 400, cors);
   const counts = asCounts(read.body, new Date().toISOString().slice(0, 10));
   if (!counts) return json({ error: 'invalid_counts' }, 400, cors);
-  await db.batch([db.prepare(COUNTS_TABLE), ...counts.map(c => db.prepare(ADD_COUNT).bind(c.day, c.name, c.value))]);
+  await db.batch([
+    db.prepare(COUNTS_TABLE),
+    ...counts.map(c => db.prepare(ADD_COUNT).bind(c.day, c.name, c.value, c.source)),
+  ]);
   return new Response(null, { status: 204, headers: cors });
 }
 

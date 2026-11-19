@@ -1,10 +1,15 @@
-import { Maximize2, Pencil, X } from 'lucide-preact';
-import { useState } from 'preact/hooks';
-import { editTrip } from '../../actions';
-import { regionOf, splitKey } from '../../content';
+import { Download, Maximize2, Pencil, Share, X } from 'lucide-preact';
+import { useEffect, useState } from 'preact/hooks';
+import { editTrip, markShared } from '../../actions';
+import { BRAND } from '../../brand';
+import { flagOf, pictureOf, regionOf, splitKey } from '../../content';
+import { canShareFile, shareFile } from '../../platform/share';
 import { type SurvivalCardData, tripOf } from '../../state/schema';
 import { cindex, course, pdata, profile, updateData } from '../../state/store';
+import { cardPicture } from '../card-image';
 import { Say, Sheet } from '../kit';
+import { Mascot } from '../Mascot';
+import { Scenery } from '../scenery/Scenery';
 
 interface Line {
   id: string;
@@ -127,6 +132,67 @@ function EditSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
+function ShareSheet({ lines, onClose }: { lines: Line[]; onClose: () => void }) {
+  const c = course.value;
+  const { region } = tripOf(profile.value!);
+  const place = regionOf(c, region);
+  const [file, setFile] = useState<File | null>(null);
+  const [url, setUrl] = useState('');
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let link = '';
+    cardPicture({
+      view: <Scenery place={pictureOf(c, region)} />,
+      bernard: <Mascot flag={flagOf(c, region)} followPointer={false} blinks={false} decorative />,
+      title: place.native,
+      phrases: lines,
+    }).then(
+      picture => {
+        link = URL.createObjectURL(picture);
+        setFile(picture);
+        setUrl(link);
+      },
+      () => setFailed(true),
+    );
+    return () => URL.revokeObjectURL(link);
+  }, []);
+  const text = `Ma carte pour voyager ${place.at}, faite avec ${BRAND.name} : ${BRAND.url}?utm_source=carte`;
+  return (
+    <Sheet title="Partager ma carte" onClose={onClose}>
+      <div class="share-card">
+        {file ? (
+          <img
+            class="share-preview"
+            src={url}
+            alt={`Ta carte pour voyager ${place.at} : le dessin, Bernard et tes phrases`}
+          />
+        ) : (
+          <p class="share-wait muted" role="status">
+            {failed ? 'L’image n’a pas pu être préparée.' : 'Préparation de l’image…'}
+          </p>
+        )}
+        <p class="muted small">Elle reprend tout ce qui est sur ta carte.</p>
+        {file &&
+          (canShareFile(file) ? (
+            <button
+              type="button"
+              class="btn btn-primary btn-block"
+              onClick={async () => {
+                if (await shareFile(file, text)) markShared();
+              }}
+            >
+              <Share size={18} aria-hidden="true" /> Partager
+            </button>
+          ) : (
+            <a class="btn btn-primary btn-block" href={url} download={file.name} onClick={markShared}>
+              <Download size={18} aria-hidden="true" /> Enregistrer l’image
+            </a>
+          ))}
+      </div>
+    </Sheet>
+  );
+}
+
 function Show({ line, onClose }: { line: Line; onClose: () => void }) {
   return (
     <div class="show" role="dialog" aria-modal="true" aria-label="Phrase en grand">
@@ -145,6 +211,7 @@ function Show({ line, onClose }: { line: Line; onClose: () => void }) {
 export function CardScreen() {
   const lines = useLines();
   const [editing, setEditing] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [shown, setShown] = useState<Line | null>(null);
   return (
     <>
@@ -173,7 +240,15 @@ export function CardScreen() {
           </li>
         ))}
       </ul>
+      <section class="card-share" aria-labelledby="card-share">
+        <h2 id="card-share">Pour qui voyage avec toi</h2>
+        <p class="muted">Ta carte en image, à envoyer par message.</p>
+        <button type="button" class="btn btn-block" onClick={() => setSharing(true)}>
+          <Share size={18} aria-hidden="true" /> Partager ma carte
+        </button>
+      </section>
       {editing && <EditSheet onClose={() => setEditing(false)} />}
+      {sharing && <ShareSheet lines={lines} onClose={() => setSharing(false)} />}
       {shown && <Show line={shown} onClose={() => setShown(null)} />}
     </>
   );

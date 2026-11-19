@@ -236,7 +236,10 @@ export function Profile() {
           <div class="row">
             <div class="row-main">
               <p class="row-title">Statistiques anonymes</p>
-              <p class="row-sub">Combien de voyageurs reviennent, sans savoir qui tu es ni ce que tu traduis</p>
+              <p class="row-sub">
+                Combien de voyageurs reviennent ou partagent leur carte, et par quel lien ils sont arrivés, sans savoir
+                qui tu es ni ce que tu traduis
+              </p>
             </div>
             <Toggle checked={s.shareCounts} onChange={setShareCounts} label="Statistiques anonymes" />
           </div>

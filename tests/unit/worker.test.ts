@@ -258,26 +258,28 @@ describe('anonymous counts', () => {
     const { totals, sql, send } = counting({ AI: undefined });
     const res = await send({
       counts: [
-        { name: 'new', day: today, value: '' },
-        { name: 'new', day: today, value: '' },
-        { name: 'departure', day: today, value: '2-4' },
+        { name: 'new', day: today, value: '', source: 'carte' },
+        { name: 'new', day: today, value: '', source: 'carte' },
+        { name: 'departure', day: today, value: '2-4', source: '' },
       ],
     });
     expect(res.status).toBe(204);
     expect(res.headers.get('access-control-allow-origin')).toBe(ORIGIN);
     expect(sql[0]).toMatch(/^CREATE TABLE IF NOT EXISTS counts/);
-    expect(Object.fromEntries(totals)).toEqual({ [`${today}|new|`]: 2, [`${today}|departure|2-4`]: 1 });
+    expect(Object.fromEntries(totals)).toEqual({ [`${today}|new||carte`]: 2, [`${today}|departure|2-4|`]: 1 });
   });
 
   it('refuse what is not a count, and strangers', async () => {
     const { totals, send } = counting();
-    expect((await send({ counts: [{ name: 'user', day: today, value: 'Léa' }] })).status).toBe(400);
-    expect((await send({ counts: [{ name: 'new', day: today, value: '' }] }, 'https://evil.example')).status).toBe(403);
+    expect((await send({ counts: [{ name: 'user', day: today, value: 'Léa', source: '' }] })).status).toBe(400);
+    expect(
+      (await send({ counts: [{ name: 'new', day: today, value: '', source: '' }] }, 'https://evil.example')).status,
+    ).toBe(403);
     expect(totals.size).toBe(0);
   });
 
   it('say so when the database is not bound', async () => {
     const { send } = counting({ COUNTS: undefined });
-    expect((await send({ counts: [{ name: 'new', day: today, value: '' }] })).status).toBe(503);
+    expect((await send({ counts: [{ name: 'new', day: today, value: '', source: '' }] })).status).toBe(503);
   });
 });

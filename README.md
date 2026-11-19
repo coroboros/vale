@@ -35,8 +35,11 @@ connected, the app and its translation service are served by one Worker; see RUN
 - **Say it, see what was understood.** In speaking exercises, the browser's speech recognition
   marks the words it heard and the ones it missed. The browser runs it on the phone when it can,
   otherwise online, so you are asked once first. Without it, you record yourself and compare.
+- **Pages per situation**, readable without the app: « Comment commander un café en espagnol ? »
+  and five more questions in each language, with the phrases, how to say them and the scene that
+  uses them. « Apprendre ces phrases » opens that lesson in the app.
 - **A survival card** to show in a restaurant: allergies and diet, in the local language, and each
-  trip's hotel and address.
+  trip's hotel and address. It also goes out as a picture, to send to whoever travels with you.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
   Bernard, a hermit crab whose shell wears the country's flag and who sends a postcard from the trip
   as each leg advances. The answers of onboarding already count towards the first goal, and its last few points are counted in phrases. Travellers sharing
@@ -82,7 +85,7 @@ requested).
 
 ```
 src/
-  content/      courses (one file of data and one of rules per language), shared types
+  content/      courses (one file of data and one of rules per language), situation pages, types
   engine/       memory model, exercise choice, sessions, progress, prices
   state/        schema, migrations from earlier versions, store
   platform/     speech, recording, sound effects, install, backups, service worker client
@@ -92,6 +95,8 @@ src/
   counts.ts     anonymous counts, sent once the build names a service
   counts-api.ts contract shared with the Worker
   sw.ts         service worker: precache, offline navigation
+  page.tsx      the situation pages' script: the destination's drawing, the voices
+build/          build steps: French spacing, the situation pages and sitemap
 worker/         Cloudflare Worker: serves the app, translates (/translate), counts (/count)
 tests/          unit/ (Vitest) and e2e/ (Playwright)
 ```
@@ -141,8 +146,9 @@ from the cache. Sentences go to Anthropic or Cloudflare through the Worker; apar
 counts below, nothing else about the learner leaves the phone.
 
 **Anonymous counts.** `/count` adds what the app reports (a new traveller, a return on day 1 or day
-7, an install on the home screen, the sessions before a first departure as a range) to totals per
-day in D1, for the decision figures of RUNBOOK A2. No identifier and nothing about sentences; a
+7, an install on the home screen, a shared card, the sessions before a first departure as a range,
+each with the link that brought the traveller) to totals per day in D1, for the decision figures of
+RUNBOOK A2 and the experiments of A4. No identifier and nothing about sentences; a
 traveller can switch them off in *Moi*. They stay off until RUNBOOK C1 (`VITE_COUNTS_URL` and the
 `d1_databases` binding); `npm run figures` in `worker/` reads them.
 

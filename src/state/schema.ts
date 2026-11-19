@@ -1,7 +1,7 @@
 /** What Bagage keeps on the device. Only sentences to translate and anonymous counts (counts-api.ts) leave it. */
 
 import type { Gender } from '../content/types';
-import { COUNT_NAMES, type CountName } from '../counts-api';
+import { COUNT_NAMES, type CountName, type Source, sourceOf } from '../counts-api';
 import type { Memory } from '../engine/memory';
 import { HOUR_MS } from '../engine/time';
 
@@ -181,8 +181,11 @@ export interface ProfileData {
   card: SurvivalCardData;
   stats: Stats;
   translations: Translation[];
-  /** What this traveller has added to the anonymous counts, and whether they opened Bagage from the home screen in their first week. */
-  counts: { sent: CountName[]; installed: boolean };
+  /**
+   * What this traveller has added to the anonymous counts; whether they opened Bagage from the home
+   * screen in their first week, and shared their card; the link they came through.
+   */
+  counts: { sent: CountName[]; installed: boolean; shared: boolean; source: Source };
 }
 
 export interface DB {
@@ -232,7 +235,7 @@ export const blankData = (): ProfileData => ({
   card: { allergens: [], diets: [] },
   stats: { spoken: 0, prices: 0, pairs: 0, duels: 0, perfect: 0 },
   translations: [],
-  counts: { sent: [], installed: false },
+  counts: { sent: [], installed: false, shared: false, source: '' },
 });
 
 const defaultSettings = (): Settings => ({
@@ -318,6 +321,8 @@ export function sanitize(raw: unknown): DB {
       counts: {
         sent: Array.isArray(d.counts?.sent) ? d.counts.sent.filter(name => COUNT_NAMES.includes(name)) : [],
         installed: d.counts?.installed === true,
+        shared: d.counts?.shared === true,
+        source: sourceOf(d.counts?.source),
       },
     };
   }
