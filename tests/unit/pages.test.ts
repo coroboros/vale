@@ -4,7 +4,7 @@ import { BRAND, INDEXNOW_KEY } from '../../src/brand';
 import { COURSES, courseById } from '../../src/content';
 import { pagePath, questionOf, SITUATIONS, sceneAfter } from '../../src/content/pages';
 
-const ASSETS = { script: 'assets/page-1.js', styles: ['assets/page-1.css'] };
+const ASSETS = { script: 'assets/page-1.js', styles: ['assets/page-1.css'], policy: "script-src 'self'" };
 const situation = (lesson: string) => SITUATIONS.find(s => s.lesson === lesson)!;
 
 /** The structured data a page gives search engines, as they would read it. */
@@ -47,6 +47,7 @@ describe('situation pages', () => {
     expect(html).toContain('href="../../italien/commander-un-cafe/"');
     expect(html).toContain('<link rel="stylesheet" href="../../assets/page-1.css" />');
     expect(html).toContain('style="--accent: #F1BF00;');
+    expect(html).toContain(`<meta http-equiv="Content-Security-Policy" content="script-src 'self'" />`);
     expect(html).not.toContain('Bon à savoir');
     expect(html).not.toMatch(/ [?!:;»]|« /);
   });

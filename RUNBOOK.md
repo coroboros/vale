@@ -280,8 +280,14 @@ Then Bing Webmaster Tools → *Import* from Google Search Console: Bing also fee
 4. **Legal and the name.** Terms of sale, privacy policy (GDPR), the company that invoices,
    Anthropic's terms for serving paying customers; the name checked at INPI and EUIPO (classes 9
    and 41), the domain and the store names.
-5. **A Content Security Policy** in `public/_headers`, tested end to end, before accounts and
-   payments.
+5. ✅ 19 Nov 2026. **A Content Security Policy**, tested end to end (`build/csp.ts`): only the
+   app's own scripts run, and it reaches nothing but its origin and the translation and count
+   services the build names. In a `<meta>` tag rather than `public/_headers`: GitHub Pages ignores
+   headers, and the end-to-end tests run under it (any test fails if the policy refuses something
+   of ours; one checks that an injected script is refused). A `<meta>` cannot carry
+   `frame-ancestors` ([CSP](https://w3c.github.io/webappsec-csp/#meta-element)), so framing stays
+   allowed. With accounts and payments (E): the Worker sends it as a header, with
+   `frame-ancestors 'none'` on those pages.
 
 ## E. The business model (Claude, once D says go)
 

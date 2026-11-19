@@ -123,6 +123,8 @@ kit, the screens), and plan the smallest change. Then:
 - `src/counts-api.ts`: the anonymous counts behind the decision figures, shared with the Worker;
   `src/engine/counts.ts` works out what a traveller adds, `src/counts.ts` sends it.
 - `build/french-spaces.ts`: the build step that keeps French punctuation on its word's line.
+- `build/csp.ts`: the Content Security Policy of the app and its pages, as a `<meta>` tag; a new
+  service or image host goes there, or the end-to-end tests fail.
 - `build/pages.ts`: writes the pages for search engines next to the app (situations, languages),
   `sitemap.xml`, `robots.txt`, the IndexNow key file, and the app's canonical and sharing tags;
   the pages' script and styles are the build's `page` entry, `src/page.tsx` and `styles/page.css`.

@@ -48,10 +48,21 @@ const NO_RECOGNITION = () => {
   Reflect.deleteProperty(window, 'webkitSpeechRecognition');
 };
 
+/** What the Content Security Policy refused during a test (build/csp.ts): it must refuse nothing of ours. */
+let refused: string[] = [];
+
 test.beforeEach(async ({ page }) => {
+  refused = [];
+  page.on('console', message => {
+    if (message.text().includes('Content Security Policy')) refused.push(message.text());
+  });
   await page.addInitScript(FAKE_VOICES);
   await page.addInitScript(NO_RECOGNITION);
   await page.route(`${TRANSLATE_URL}/count`, route => route.fulfill({ status: 204 }));
+});
+
+test.afterEach(() => {
+  expect(refused, 'refused by the Content Security Policy').toEqual([]);
 });
 
 /** A speech recogniser that hears what the test queued: transcripts, an error, or nothing at all. */
@@ -786,6 +797,26 @@ test('the app, once installed, leaves the situation pages to the network', async
   expect(await page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await page.goto('./espagnol/demander-de-l-aide/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comment demander de l’aide en espagnol ?');
+});
+
+test('the app and its pages run their own scripts only', async ({ page }) => {
+  for (const path of ['./', './espagnol/']) {
+    await page.goto(path);
+    await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute(
+      'content',
+      new RegExp(`script-src 'self';.*connect-src 'self' ${TRANSLATE_URL}`),
+    );
+    const ran = await page.evaluate(async () => {
+      const script = document.createElement('script');
+      script.textContent = 'window.__injected = true';
+      document.head.append(script);
+      await new Promise(resolve => setTimeout(resolve, 50));
+      return (window as unknown as { __injected?: boolean }).__injected === true;
+    });
+    expect(ran, path).toBe(false);
+  }
+  expect(refused).toEqual([expect.stringMatching(/inline script/), expect.stringMatching(/inline script/)]);
+  refused = [];
 });
 
 test('offers to install the app, with the browser dialog when available', async ({ page }) => {

@@ -11,6 +11,7 @@ import { languageOf, pagePath, questionOf, SITUATIONS, type Situation, sceneAfte
 import type { Course, Tip } from '../src/content/types.ts';
 import { ofLanguage, theLanguage } from '../src/ui/french.ts';
 import { THEMES, themeVars } from '../src/ui/themes.ts';
+import { securityPolicy } from './csp.ts';
 import { frenchProse, frenchText } from './french-spaces.ts';
 
 const SHARE_IMAGE = { path: 'og.png', width: 1200, height: 630 };
@@ -25,6 +26,8 @@ const absolute = (path: string) => new URL(path, BRAND.url).href;
 interface Assets {
   script: string;
   styles: string[];
+  /** The Content Security Policy (build/csp.ts). */
+  policy: string;
 }
 
 interface Meta {
@@ -90,6 +93,7 @@ function document(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="${esc(assets.policy)}" />
     <title>${t(meta.title)}</title>
     <meta name="description" content="${t(meta.description)}" />
     <link rel="canonical" href="${absolute(meta.path)}" />
@@ -275,9 +279,13 @@ ${urls.join('\n')}
 const robots = () => `User-agent: *\nAllow: /\n\nSitemap: ${absolute('sitemap.xml')}\n`;
 
 export function searchPages(): Plugin {
+  let policy = '';
   return {
     name: 'search-pages',
     apply: 'build',
+    configResolved(config) {
+      policy = securityPolicy(config.env);
+    },
     transformIndexHtml: () => {
       const meta: Meta = { title: appTitle(), description: description(), path: '', type: 'website' };
       // What Google reads for a site's name, once Bagage has a domain of its own (RUNBOOK B2).
@@ -310,7 +318,7 @@ export function searchPages(): Plugin {
         for (const css of chunk.viteMetadata?.importedCss ?? []) styles.add(css);
       };
       gather(entry);
-      const assets = { script: entry.fileName, styles: [...styles] };
+      const assets = { script: entry.fileName, styles: [...styles], policy };
       const paths: string[] = [];
       const emit = (path: string, source: string) => {
         paths.push(path);

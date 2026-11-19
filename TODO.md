@@ -97,6 +97,8 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **GitHub Actions.** `ubuntu-latest` moves to Ubuntu 26 (warning in the CI logs); action majors
   (checkout and setup-node v7, upload-artifact v7); minutes once the repository is private.
 - **Dependencies.** Monthly `npm outdated` here and in `worker/`, then `npm run check`.
+- **Content Security Policy.** Unsplash photos (C3) or recorded voices served from elsewhere join
+  `build/csp.ts` when they arrive.
 - **Search.** Google's documentation changelog for structured data and AI features
   (docs/SEARCH.md); the IndexNow step's answer in the deploy log (200 or 202; a warning otherwise).
 - **Flaky end-to-end tests.** Two only failed on GitHub's runners (the first key of the keyboard
