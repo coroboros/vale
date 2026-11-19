@@ -38,7 +38,9 @@ connected, the app and its translation service are served by one Worker; see RUN
 - **A survival card** to show in a restaurant: allergies and diet, in the local language, and each
   trip's hotel and address.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
-  Bernard, a hermit crab whose shell wears the country's flag. Mistakes never block a lesson.
+  Bernard, a hermit crab whose shell wears the country's flag. The answers of onboarding already
+  count towards the first goal, and its last few points are counted in phrases. Mistakes never
+  block a lesson.
 - **Shared phone friendly.** Several profiles on one device, backup export and import.
 
 Why each of these choices: [docs/LEARNING.md](docs/LEARNING.md). Name and identity:

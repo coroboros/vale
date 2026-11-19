@@ -1,10 +1,19 @@
 import { Check, Clock, Flame, Mic, Play, Square, Target, Volume2, VolumeX, X, Zap } from 'lucide-preact';
 import { Fragment } from 'preact';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { advance, closeSession, running, type Summary, setQuiet, setSpeechCheck, submitAnswer } from '../../actions';
+import {
+  advance,
+  closeSession,
+  running,
+  type Summary,
+  setQuiet,
+  setSpeechCheck,
+  startSession,
+  submitAnswer,
+} from '../../actions';
 import type { Card, Exercise } from '../../engine/exercises';
 import { grade, normalize, type Verdict } from '../../engine/grade';
-import { stamps as allStamps } from '../../engine/progress';
+import { stamps as allStamps, dayKey, goalTitle, NEAR_GOAL } from '../../engine/progress';
 import { checkSpeech, type SpeechCheck } from '../../engine/pronunciation';
 import { shuffle } from '../../engine/random';
 import { progress } from '../../engine/session';
@@ -12,7 +21,7 @@ import { canHear, listen, probe, whereHeard } from '../../platform/recognition';
 import { canRecord, playTake, releaseMic, startRecording, stopRecording } from '../../platform/recorder';
 import { play } from '../../platform/sfx';
 import { say, stopSpeech } from '../../platform/speech';
-import { autoplays, course, isQuiet, settings } from '../../state/store';
+import { autoplays, course, isQuiet, pdata, profile, settings } from '../../state/store';
 import { Bar, ChoiceGroup, Phonetic, Say, Sheet } from '../kit';
 import { Mascot } from '../Mascot';
 import { Stamp } from '../Stamp';
@@ -623,6 +632,10 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
   const accuracy = o.total ? Math.round((o.correct / o.total) * 100) : 100;
   const minutes = Math.max(1, Math.round(summary.ms / 60000));
   const stampInfo = allStamps(course.value).filter(s => summary.stamps.includes(s.id));
+  const goal = profile.value!.goal;
+  const today = pdata.value.days[dayKey(Date.now())];
+  const xp = today?.xp ?? 0;
+  const near = goal - xp > 0 && goal - xp <= NEAR_GOAL;
   useEffect(() => play(summary.stamps.length ? 'stamp' : 'done'), []);
   const headline = !o.passed
     ? 'Pas encore, mais c’est noté'
@@ -665,6 +678,15 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
             mémoire
           </p>
         )}
+        <div class="ticket-goal">
+          <p class="ticket-goal-title">{goalTitle(xp, goal)}</p>
+          <Bar
+            value={xp / goal}
+            label={`Objectif du jour : ${xp} XP sur ${goal}`}
+            tone={xp >= goal ? 'ok' : undefined}
+          />
+          {!!today?.welcome && <p class="small muted">Dont {today.welcome} XP pour tes réponses à l’accueil.</p>}
+        </div>
       </section>
       {stampInfo.length > 0 && (
         <div class="new-stamps">
@@ -679,6 +701,17 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
       <button type="button" class="btn btn-primary btn-block" onClick={closeSession} autofocus>
         Continuer
       </button>
+      {near && (
+        <button
+          type="button"
+          class="btn btn-block"
+          onClick={() =>
+            startSession({ kind: 'review', unitId: null }, 'Objectif du jour', { replace: true, max: goal - xp + 2 })
+          }
+        >
+          Atteindre mon objectif
+        </button>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { CircleCheck, Flame, Gift, Shield } from 'lucide-preact';
 import { openChest } from '../actions';
-import { dailyQuests, dayKey, questValue, repairOffer, streak } from '../engine/progress';
+import { dailyQuests, dayKey, goalTitle, questValue, repairOffer, streak } from '../engine/progress';
 import { pdata, profile } from '../state/store';
 import { InstallButton } from './Install';
 import { Bar, Ring } from './kit';
@@ -16,7 +16,6 @@ export function Daily({ compact }: { compact?: boolean }) {
   const quests = dailyQuests(p.id, today, p.goal);
   const done = quests.filter(q => questValue(q, log) >= q.target).length;
   const offer = repairOffer(data, today, p.goal);
-  const left = Math.max(0, p.goal - xp);
 
   return (
     <div class="daily">
@@ -25,7 +24,7 @@ export function Daily({ compact }: { compact?: boolean }) {
           <strong class="num">{xp}</strong>
         </Ring>
         <div class="daily-text">
-          <p class="daily-title">{left ? `Encore ${left} XP aujourd’hui` : 'Objectif du jour atteint'}</p>
+          <p class="daily-title">{goalTitle(xp, p.goal)}</p>
           <p class="muted">Objectif : {p.goal} XP</p>
         </div>
         <div

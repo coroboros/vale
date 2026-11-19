@@ -131,6 +131,8 @@ export interface DayLog {
   perfect: number;
   scenes: number;
   reviews: number;
+  /** XP given that day for the answers of onboarding, counted in `xp` too. */
+  welcome: number;
   chest: boolean;
 }
 
@@ -213,6 +215,7 @@ export const blankDay = (): DayLog => ({
   perfect: 0,
   scenes: 0,
   reviews: 0,
+  welcome: 0,
   chest: false,
 });
 
@@ -303,6 +306,11 @@ export function sanitize(raw: unknown): DB {
         diets: Array.isArray(card.diets) ? card.diets : [],
       },
       stats: { ...base.stats, ...(d.stats ?? {}) },
+      days: Object.fromEntries(
+        Object.entries(d.days ?? {}).flatMap(([day, log]) =>
+          log && typeof log === 'object' ? [[day, { ...blankDay(), ...log }]] : [],
+        ),
+      ),
       frozen: Array.isArray(d.frozen) ? d.frozen : [],
       favorites: Array.isArray(d.favorites) ? d.favorites : [],
       translations: Array.isArray(d.translations) ? d.translations : [],

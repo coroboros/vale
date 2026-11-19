@@ -73,6 +73,21 @@ export function logSession(data: ProfileData, now: number, add: Partial<Record<C
   }
 }
 
+/** The first daily goal starts a fifth done, for the answers of onboarding: a head start makes people finish (Nunes & Drèze, 2006). */
+export const welcomeXp = (goal: number) => Math.round(goal / 5);
+
+/** From here the rest of the goal is counted in phrases, where effort speeds up (Kivetz, Urminsky & Zheng, 2006). */
+export const NEAR_GOAL = 5;
+
+/** A right answer earns at least 1 XP, so the XP left is also the most phrases left. */
+export function goalTitle(xp: number, goal: number): string {
+  const left = goal - xp;
+  if (left <= 0) return 'Objectif du jour atteint';
+  if (left === 1) return 'Plus qu’une phrase pour ton objectif du jour';
+  if (left <= NEAR_GOAL) return `Plus que ${left} phrases pour ton objectif du jour`;
+  return `Encore ${left} XP aujourd’hui`;
+}
+
 export interface Quest {
   id: string;
   label: string;

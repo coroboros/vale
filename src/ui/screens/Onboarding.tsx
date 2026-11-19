@@ -70,6 +70,7 @@ export function Onboarding() {
         goal,
         cue,
       })),
+      { welcome: true },
     );
     startFirstLesson();
   };

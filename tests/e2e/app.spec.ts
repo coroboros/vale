@@ -725,6 +725,25 @@ test('keeps the progress of the previous version', async ({ page }) => {
   await expect(page.getByText('Hola', { exact: true })).toBeVisible();
 });
 
+test('the first goal starts with the answers of onboarding, and its last XP count in phrases', async ({ page }) => {
+  await onboard(page);
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  await playSession(page);
+  await expect(page.locator('.ticket-goal')).toContainText('Dont 8 XP pour tes réponses à l’accueil.');
+  await page.getByRole('button', { name: 'Continuer' }).click();
+
+  // Three XP short of today's goal. The app's own pending save must not overwrite this one.
+  await page.evaluate(() => {
+    const save = Storage.prototype.setItem;
+    Storage.prototype.setItem = () => {};
+    const db = JSON.parse(localStorage.getItem('db-v4')!);
+    db.data[db.active].days[new Date().toLocaleDateString('sv')] = { xp: 37, sessions: 1 };
+    save.call(localStorage, 'db-v4', JSON.stringify(db));
+  });
+  await page.reload();
+  await expect(page.locator('.daily-title').first()).toHaveText('Plus que 3 phrases pour ton objectif du jour');
+});
+
 test('desktop sessions work from the keyboard', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'keyboard flow is a desktop concern');
   await onboard(page);

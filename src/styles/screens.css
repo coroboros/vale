@@ -974,11 +974,21 @@
     color: var(--ink-soft);
   }
 
-  .ticket-foot {
+  .ticket-foot,
+  .ticket-goal {
     margin-top: 16px;
     padding-top: 14px;
     border-top: 2px dashed var(--line);
+  }
+
+  .ticket-foot,
+  .ticket-goal-title {
     font-weight: 700;
+  }
+
+  .ticket-goal {
+    display: grid;
+    gap: 8px;
   }
 
   .new-stamps {

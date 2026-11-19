@@ -7,6 +7,7 @@ import {
   arrivalTime,
   dailyQuests,
   dayKey,
+  goalTitle,
   logSession,
   newStamps,
   readiness,
@@ -14,6 +15,7 @@ import {
   shiftDay,
   spendJokers,
   streak,
+  welcomeXp,
 } from '../../src/engine/progress';
 import { checkSpeech, type SpeechCheck } from '../../src/engine/pronunciation';
 import { seeded } from '../../src/engine/random';
@@ -135,6 +137,24 @@ describe('streak, jokers and repair', () => {
     active(data, ...Array.from({ length: 6 }, (_, i) => shiftDay(today, -6 + i)));
     logSession(data, NOW, { xp: 20, sessions: 1 }, 20);
     expect(data.jokers).toBe(1);
+  });
+});
+
+describe('the daily goal', () => {
+  it('starts a fifth done for travellers coming out of onboarding', () => {
+    expect([20, 40, 60].map(welcomeXp)).toEqual([4, 8, 12]);
+  });
+
+  it('counts its last few XP in phrases', () => {
+    expect([0, 34, 35, 38, 39, 40, 45].map(xp => goalTitle(xp, 40))).toEqual([
+      'Encore 40 XP aujourd’hui',
+      'Encore 6 XP aujourd’hui',
+      'Plus que 5 phrases pour ton objectif du jour',
+      'Plus que 2 phrases pour ton objectif du jour',
+      'Plus qu’une phrase pour ton objectif du jour',
+      'Objectif du jour atteint',
+      'Objectif du jour atteint',
+    ]);
   });
 });
 
@@ -349,6 +369,14 @@ describe('saved data', () => {
     expect(db.data.x!.counts).toEqual({ sent: ['new'], installed: false });
     expect(db.data.y!.counts).toEqual({ sent: [], installed: false });
     expect(db.settings.shareCounts).toBe(true);
+  });
+
+  it('fills in the counters a day log lacks and drops what is not one', () => {
+    const db = sanitize({
+      profiles: [{ id: 'x', name: 'Léa' }],
+      data: { x: { days: { '2026-12-01': { xp: 12, sessions: 1 }, '2026-12-02': 'oops' } } },
+    });
+    expect(db.data.x!.days).toEqual({ '2026-12-01': { ...blankDay(), xp: 12, sessions: 1 } });
   });
 
   it('fills new settings in, keeps valid ones and drops wrong or unknown ones', () => {

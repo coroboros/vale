@@ -3,7 +3,16 @@ import { type CourseIndex, courseById, itemKey } from './content';
 import { closeCounts } from './engine/counts';
 import { review } from './engine/memory';
 import { buildPool } from './engine/pool';
-import { arrivalTime, dayKey, lessonKey, logSession, newStamps, spendJokers, streak } from './engine/progress';
+import {
+  arrivalTime,
+  dayKey,
+  lessonKey,
+  logSession,
+  newStamps,
+  spendJokers,
+  streak,
+  welcomeXp,
+} from './engine/progress';
 import { type Rng, seeded } from './engine/random';
 import {
   answer,
@@ -66,10 +75,11 @@ const touch = () => {
 };
 
 /** `replace`: the session takes the place of the screen that started it, which back then skips. */
+/** `max`: a shorter session than the mode's own, such as the few phrases left before the daily goal. */
 export function startSession(
   mode: Mode,
   title: string,
-  { now = Date.now(), replace = false }: { now?: number; replace?: boolean } = {},
+  { now = Date.now(), replace = false, max }: { now?: number; replace?: boolean; max?: number } = {},
 ): void {
   const p = profile.value;
   if (!p) return;
@@ -84,7 +94,7 @@ export function startSession(
     return;
   }
   const rng = seeded(now);
-  const session = createSession(mode, pool, { audio: soundFor(index.course.lang) });
+  const session = createSession(mode, pool, { audio: soundFor(index.course.lang), max });
   next(session, index, rng);
   running.value = { session, index, rng, title, startedAt: now, combo: 0, bestCombo: 0, misses: {}, summary: null };
   go({ name: 'session' }, { replace });
@@ -303,12 +313,17 @@ export function forgetTranslation(id: string): void {
   });
 }
 
-export function createProfiles(profiles: Omit<Profile, 'id' | 'since'>[], now = Date.now()): void {
+/** `welcome`: the travellers come out of onboarding, whose answers count towards their first goal. */
+export function createProfiles(
+  profiles: Omit<Profile, 'id' | 'since'>[],
+  { now = Date.now(), welcome = false }: { now?: number; welcome?: boolean } = {},
+): void {
   update(draft => {
     for (const p of profiles) {
       const id = newId();
       const data = blankData();
       if (!draft.settings.shareCounts) closeCounts(data);
+      if (welcome) logSession(data, now, { xp: welcomeXp(p.goal), welcome: welcomeXp(p.goal) }, p.goal);
       draft.profiles.push({ ...p, id, since: dayKey(now) });
       draft.data[id] = data;
     }
