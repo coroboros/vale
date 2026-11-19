@@ -38,7 +38,7 @@ function stepTitle(c: Course, step: Step, region: string): { title: string; sub:
       return { title: s?.title ?? '', sub: s ? `Scène : ${s.desc}` : '' };
     }
     case 'pack': {
-      const pack = c.packs.find(p => p.id === c.regions.find(r => r.id === region)?.pack);
+      const pack = c.packs.find(p => p.id === regionOf(c, region).pack);
       return { title: pack?.title ?? 'Langue régionale', sub: pack?.native ?? '' };
     }
     case 'review':
@@ -46,41 +46,42 @@ function stepTitle(c: Course, step: Step, region: string): { title: string; sub:
   }
 }
 
-function openStop(stop: Stop, setLesson: (s: Stop) => void, c: Course, region: string) {
+function openStop(stop: Stop, setSheet: (s: Stop) => void) {
   const { step, unit } = stop;
   if (step.kind === 'sounds') return go({ name: 'sounds' });
   if (step.kind === 'scene') return go({ name: 'scene', id: step.id });
   if (step.kind === 'review') return startSession({ kind: 'review', unitId: unit.id }, `Révision : ${unit.title}`);
-  if (step.kind === 'pack') {
-    const pack = c.regions.find(r => r.id === region)?.pack;
-    if (pack) startSession({ kind: 'pack', packId: pack }, stepTitle(c, step, region).title);
-    return;
-  }
-  setLesson(stop);
+  setSheet(stop);
 }
 
-function LessonSheet({ stop, onClose }: { stop: Stop; onClose: () => void }) {
+/** A lesson, or the regional pack of the destination with its tip, before starting it. */
+function StepSheet({ stop, region, onClose }: { stop: Stop; region: string; onClose: () => void }) {
   const c = course.value;
-  const step = stop.step as { kind: 'lesson'; id: string };
-  const lesson = c.lessons.find(l => l.id === step.id);
+  const { step } = stop;
+  const lesson = step.kind === 'lesson' ? c.lessons.find(l => l.id === step.id) : undefined;
+  const pack = step.kind === 'pack' ? c.packs.find(p => p.id === regionOf(c, region).pack) : undefined;
+  const taught = lesson ?? pack;
   const data = pdata.value;
-  if (!lesson) return null;
+  if (!taught) return null;
+  const lang = pack?.lang ?? c.lang;
   const done = stop.progress >= 1;
+  const start = () =>
+    pack
+      ? startSession({ kind: 'pack', packId: pack.id }, pack.title)
+      : startSession({ kind: 'lesson', lessonId: taught.id }, taught.title);
   return (
-    <Sheet title={lesson.title} onClose={onClose}>
-      <p class="muted" lang={c.lang}>
-        {lesson.native}
+    <Sheet title={taught.title} onClose={onClose}>
+      <p class="muted" lang={lang}>
+        {taught.native}
       </p>
-      <p>
-        {lesson.desc} ({lesson.items.length} phrases)
-      </p>
+      <p>{lesson ? `${lesson.desc} (${lesson.items.length} phrases)` : pack?.tip.desc}</p>
       <Bar value={stop.progress} label="Phrases découvertes" />
       <ul class="preview">
-        {lesson.items.slice(0, 6).map(item => (
+        {taught.items.slice(0, 6).map(item => (
           <li key={item.id}>
-            <Say text={item.t} lang={c.lang} small soft />
+            <Say text={item.t} lang={lang} small soft />
             <div>
-              <p class="preview-t" lang={c.lang}>
+              <p class="preview-t" lang={lang}>
                 {item.t}
                 {data.mem[itemKey(c.id, item.id)] && <Check size={16} class="preview-ok" aria-label="déjà vue" />}
               </p>
@@ -91,14 +92,10 @@ function LessonSheet({ stop, onClose }: { stop: Stop; onClose: () => void }) {
         ))}
       </ul>
       <div class="sheet-actions">
-        <button
-          type="button"
-          class="btn btn-primary btn-block"
-          onClick={() => startSession({ kind: 'lesson', lessonId: lesson.id }, lesson.title)}
-        >
+        <button type="button" class="btn btn-primary btn-block" onClick={start}>
           {done ? 'Réviser cette leçon' : stop.progress > 0 ? 'Continuer' : 'Commencer'}
         </button>
-        {!done && (
+        {lesson && !done && (
           <button
             type="button"
             class="btn btn-block"
@@ -117,7 +114,7 @@ export function Home() {
   const c = course.value;
   const data = pdata.value;
   const now = Date.now();
-  const [lessonStop, setLessonStop] = useState<Stop | null>(null);
+  const [sheetStop, setSheetStop] = useState<Stop | null>(null);
   const [tripOpen, setTripOpen] = useState(false);
 
   const trip = tripOf(p);
@@ -183,11 +180,7 @@ export function Home() {
           </div>
           <div class="postcard-actions">
             {current && (
-              <button
-                type="button"
-                class="btn btn-primary"
-                onClick={() => openStop(current, setLessonStop, c, trip.region)}
-              >
+              <button type="button" class="btn btn-primary" onClick={() => openStop(current, setSheetStop)}>
                 {current.progress > 0 ? 'Continuer' : 'Commencer'} : {stepTitle(c, current.step, trip.region).title}
               </button>
             )}
@@ -253,11 +246,7 @@ export function Home() {
                       key={`${unit.id}-${stop.step.kind}-${'id' in stop.step ? stop.step.id : ''}`}
                       class={`stop ${state}`}
                     >
-                      <button
-                        type="button"
-                        class="stop-btn"
-                        onClick={() => openStop(stop, setLessonStop, c, trip.region)}
-                      >
+                      <button type="button" class="stop-btn" onClick={() => openStop(stop, setSheetStop)}>
                         <span class="stop-mark" aria-hidden="true">
                           {state === 'done' ? <Check size={22} /> : <Icon size={22} />}
                         </span>
@@ -279,7 +268,7 @@ export function Home() {
         })}
       </section>
 
-      {lessonStop && <LessonSheet stop={lessonStop} onClose={() => setLessonStop(null)} />}
+      {sheetStop && <StepSheet stop={sheetStop} region={trip.region} onClose={() => setSheetStop(null)} />}
       {tripOpen && <TripSheet onClose={() => setTripOpen(false)} />}
     </>
   );

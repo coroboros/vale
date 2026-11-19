@@ -29,10 +29,9 @@ order:
    than its course's says so (`flag`), and `flagOf` dresses the trip: theme, Bernard's shell, the
    badges in « Mes voyages ». Ireland in emerald, the United States in canton blue, both
    contrast-tested; Edinburgh keeps the UK's.
-2. **Destination tips are written and never shown.** *Rules first: AGENTS.md.* Eleven destinations
-   have one (« Aux États-Unis », « En Irlande », « En Écosse »…) and so does every regional pack,
-   but no screen reads them. The trip's tip goes first in *Phrases*, « Bon à savoir », and a pack's
-   tip in its lesson.
+2. ✅ 19 Nov 2026. **Destination and pack tips are shown.** *Phrases*, « Bon à savoir », opens on
+   the tips of the traveller's destinations in that language; a regional pack opens a sheet like a
+   lesson's, its tip as the introduction and its words in its own voice.
 3. **Money per destination.** *Rules first: AGENTS.md.* The English price drills are in pounds
    everywhere, while Dublin pays in euros and New York in dollars, as their own tips say. A
    destination sets its currency and the course's `sayPrice` takes it.
@@ -52,6 +51,10 @@ order:
 7. **Hotel and shopping lessons exist only in Spanish** (the README promised them everywhere until
    19 Nov 2026). *Rules first: AGENTS.md.* Write them for Italian, Portuguese and English from the
    Spanish ones, then the native review (TODO.md).
+8. **French typography: spaces that never break.** A line can split « Bon dia » after its opening
+   guillemet, or start with the « : » of « Mémoire à l’arrivée : ». *Rules first: AGENTS.md.* A
+   transform on string literals (not a text replace: TypeScript has « ? » and « : » too) puts
+   non-breaking spaces inside « » and before : ; ? ! %, and a test scans the courses for any left.
 
 1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
    Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,

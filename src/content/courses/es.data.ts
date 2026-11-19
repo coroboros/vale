@@ -1951,6 +1951,11 @@ export const packs: Pack[] = [
   },
 ];
 
+const SOUTH_ACCENT: Tip = {
+  title: 'Accent du Sud',
+  desc: 'Le z et le c se disent souvent « s », et les s en fin de syllabe s’avalent : ¿Cómo estás? devient « ¿Cómo etá? ».',
+};
+
 export const regions: Region[] = [
   {
     id: 'madrid',
@@ -1984,20 +1989,14 @@ export const regions: Region[] = [
     name: 'Andalousie',
     at: 'en Andalousie',
     native: 'Andalucía',
-    tip: {
-      title: 'Accent du Sud',
-      desc: 'Le z et le c se disent souvent « s », et les s en fin de syllabe s’avalent : ¿Cómo estás? devient « ¿Cómo etá? ».',
-    },
+    tip: SOUTH_ACCENT,
   },
   {
     id: 'canaries',
     name: 'Canaries',
     at: 'aux Canaries',
     native: 'Canarias',
-    tip: {
-      title: 'Accent du Sud',
-      desc: 'Le z et le c se disent souvent « s », et les s en fin de syllabe s’avalent : ¿Cómo estás? devient « ¿Cómo etá? ».',
-    },
+    tip: SOUTH_ACCENT,
   },
   {
     id: 'paysbasque',

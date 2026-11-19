@@ -362,6 +362,29 @@ test('a trip wears its destination’s country: Ireland for Dublin, not the Unit
   await expect.poll(accent).toBe('#012169');
 });
 
+test('a regional pack opens with its tip, and the destination’s tip comes first in Phrases', async ({ page }) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await page.getByRole('button', { name: /Le catalan/ }).click();
+  const sheet = page.locator('.sheet');
+  await expect(sheet).toContainText('un « Bon dia » fait toujours plaisir');
+  await expect(sheet.locator('.preview-t').first()).toHaveAttribute('lang', 'ca');
+  await expectAccessible(page, 'pack sheet');
+  await sheet.getByRole('button', { name: 'Commencer' }).click();
+  await expect(page.getByRole('button', { name: 'Quitter la session' })).toBeVisible();
+  await page.getByRole('button', { name: 'Quitter la session' }).click();
+  await page.getByRole('button', { name: 'Quitter', exact: true }).click();
+
+  await page.getByRole('button', { name: /^Mes voyages/ }).click();
+  await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+  await page.getByText('Anglais', { exact: true }).click();
+  await page.getByRole('button', { name: 'New York' }).click();
+  await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await page.getByRole('link', { name: 'Phrases' }).click();
+  await expect(page.locator('.tips .tip h3').first()).toHaveText('Aux États-Unis');
+});
+
 test('the next trip is offered once the one in focus has begun', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-12-22T09:00:00'));
   await onboard(page);

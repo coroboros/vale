@@ -1,11 +1,11 @@
 import { BookmarkCheck, BookmarkPlus, ExternalLink, Search, Sparkles, Star, Trash, WifiOff } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { forgetTranslation, rememberTranslation, setTranslationSaved, toggleFavorite } from '../../actions';
-import { courseById, type Entry, indexOf, itemKey, splitKey } from '../../content';
+import { courseById, type Entry, indexOf, itemKey, regionOf, splitKey } from '../../content';
 import type { Course, Item } from '../../content/types';
 import { online } from '../../platform/env';
 import type { Translation } from '../../state/schema';
-import { course, languages, pdata } from '../../state/store';
+import { course, languages, pdata, profile } from '../../state/store';
 import { deeplLink, hasTranslator, searchCourse, searchHistory, translateOnline } from '../../translate';
 import { MAX_TRANSLATE_CHARS, sentenceKey } from '../../translation-api';
 import { Phonetic, Say, showToast } from '../kit';
@@ -164,6 +164,10 @@ export function Phrases() {
   const c = others.find(x => x.id === picked) ?? course.value;
   const index = indexOf(c);
   const data = pdata.value;
+  // Where the traveller goes in this language comes first: Venice's streets, New York's tips.
+  const destinationTips = [
+    ...new Set(profile.value!.trips.flatMap(t => (t.course === c.id ? (regionOf(c, t.region).tip ?? []) : []))),
+  ];
   const [query, setQuery] = useState('');
   const q = query.trim();
   const history = data.translations.filter(t => t.course === c.id);
@@ -325,7 +329,7 @@ export function Phrases() {
           <section class="section" aria-label="Bon à savoir">
             <h2>Bon à savoir</h2>
             <div class="tips">
-              {c.tips.map(t => (
+              {[...destinationTips, ...c.tips].map(t => (
                 <article key={t.title} class="card tip">
                   <h3>{t.title}</h3>
                   <p class="muted">{t.desc}</p>

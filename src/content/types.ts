@@ -63,11 +63,6 @@ export interface Extra {
   items: Phrase[];
 }
 
-interface Note {
-  title: string;
-  desc: string;
-}
-
 /** A regional language taught as a bonus lesson (Catalan in Barcelona…). */
 export interface Pack {
   id: string;
@@ -75,7 +70,7 @@ export interface Pack {
   native: string;
   /** BCP 47: picks the voice. */
   lang: string;
-  tip: Note;
+  tip: Tip;
   items: Item[];
 }
 
@@ -86,7 +81,7 @@ export interface Region {
   at: string;
   native: string;
   pack?: string;
-  tip?: Note;
+  tip?: Tip;
   /** When the destination is in another country than the course's: Dublin, New York. */
   flag?: Flag;
 }
