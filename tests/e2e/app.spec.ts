@@ -300,6 +300,7 @@ test('« Mes voyages » keeps several trips, even in one language, and Home foll
   await trips.click();
   const window = sheet.locator('.porthole');
   await expect(window.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
+  await expect(window).toHaveAttribute('data-playing', 'true');
   await expectAccessible(page, 'mes voyages');
 
   await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();

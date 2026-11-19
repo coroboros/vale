@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { COURSES, courseById, flagOf, indexOf } from '../../src/content';
+import { COURSES, courseById, flagOf, indexOf, pictureOf } from '../../src/content';
 import { CUES, cueOf, duringCue } from '../../src/content/cues';
 import { build, canBuild, cardOf, GRADED } from '../../src/engine/exercises';
 import { normalize } from '../../src/engine/grade';
 import { seeded } from '../../src/engine/random';
+import { hasScenery } from '../../src/ui/scenery/Scenery';
 import { THEMES } from '../../src/ui/themes';
 
 describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) => {
@@ -88,6 +89,10 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
 
   it('dresses every destination in an existing theme', () => {
     for (const r of course.regions) expect(THEMES[flagOf(course, r.id)]).toBeDefined();
+  });
+
+  it('draws every destination, « Ailleurs » through its country’s emblem', () => {
+    for (const r of course.regions) expect(hasScenery(pictureOf(course, r.id)), r.id).toBe(true);
   });
 
   it('says something on landing day for every practice moment, the hotel with the traveller’s name', () => {

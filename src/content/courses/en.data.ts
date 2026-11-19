@@ -729,7 +729,7 @@ export const regions: Region[] = [
       desc: 'On dit check, restroom, subway et to go. Le pourboire (15 à 20 %) est attendu, et les taxes s’ajoutent au prix affiché.',
     },
   },
-  { id: 'autre', name: 'Ailleurs', at: 'au Royaume-Uni', native: 'United Kingdom' },
+  { id: 'autre', name: 'Ailleurs', at: 'au Royaume-Uni', native: 'United Kingdom', emblem: 'londres' },
 ];
 
 export const card: SurvivalCard = {

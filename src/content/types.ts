@@ -84,6 +84,8 @@ export interface Region {
   tip?: Tip;
   /** When the destination is in another country than the course's: Dublin, New York. */
   flag?: Flag;
+  /** « Ailleurs » names no place: this destination pictures the country, photo and drawing. */
+  emblem?: string;
 }
 
 export interface SurvivalCard {

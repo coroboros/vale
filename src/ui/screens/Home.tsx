@@ -1,7 +1,7 @@
 import { BookOpen, Check, ChevronDown, ChevronRight, Ear, MapPin, MessageCircle, Repeat } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { focusTrip, startSession } from '../../actions';
-import { courseById, flagOf, itemKey, regionOf } from '../../content';
+import { courseById, flagOf, itemKey, pictureOf, regionOf } from '../../content';
 import { cueOf, duringCue } from '../../content/cues';
 import type { Course, Step, Unit } from '../../content/types';
 import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible } from '../../engine/progress';
@@ -160,7 +160,7 @@ export function Home() {
 
       <section class="postcard" aria-label="Ton voyage">
         <div class="postcard-view" aria-hidden="true">
-          <Scenery place={trip.region} />
+          <Scenery place={pictureOf(c, trip.region)} />
           <Mascot size={112} mood={pct >= 80 ? 'cheer' : 'idle'} decorative />
         </div>
         <div class="postcard-text">

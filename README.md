@@ -9,9 +9,10 @@ connected, the app and its translation service are served by one Worker; see RUN
 
 ## What it does
 
-- **A flight to begin.** The welcome screen is a cabin window flying to Barcelona, Venice, Lisbon,
-  London, Seville and Rome. The view follows your finger or your mouse, a tap flies on, and Bernard
-  says hello in the local language.
+- **A flight to begin.** The welcome screen is a cabin window flying to Barcelona, Rome, Lisbon,
+  London, Andalusia and Venice. The view follows your finger or your mouse, a tap flies on, and
+  Bernard says hello in the local language. Every destination has its own drawing, from the Puerta
+  de Alcalá to the Brooklyn Bridge.
 - **Trips, not a course.** You pick a destination and a departure date. Plan as many trips as you
   like, two in a row or several languages at once, even two in the same language: the home screen
   follows the one you are preparing, and offers the next one once a trip has begun. The welcome

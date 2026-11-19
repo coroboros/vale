@@ -3,6 +3,7 @@
  * Files come from Wikimedia Commons under free licenses; brand/photos.py fetches and crops them and
  * copies each author and license from Commons into photos.json, so the credit always matches.
  */
+import { courseById, pictureOf } from '../content';
 import list from './photos.json';
 
 export interface Photo {
@@ -17,13 +18,10 @@ export interface Photo {
 
 const PHOTOS: Record<string, Omit<Photo, 'id'>> = list;
 
-/** « Ailleurs » names no place, so it shows the one most travellers picture for the country. */
-const ELSEWHERE: Record<string, string> = { es: 'andalousie', it: 'roma', pt: 'lisbonne', en: 'londres' };
-
 export function photoOf(courseId: string, regionId: string): Photo | undefined {
-  const id = regionId === 'autre' ? ELSEWHERE[courseId] : regionId;
-  const photo = id ? PHOTOS[id] : undefined;
-  return id && photo ? { id, ...photo } : undefined;
+  const id = pictureOf(courseById(courseId), regionId);
+  const photo = PHOTOS[id];
+  return photo ? { id, ...photo } : undefined;
 }
 
 /** Phones held upright get a 9:16 crop around the landmark instead of a sliver of the wide frame. */

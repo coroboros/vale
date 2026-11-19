@@ -35,12 +35,12 @@ order:
 3. ✅ 19 Nov 2026. **Money per destination.** The currency follows the trip's country
    (`currencyOf`): price drills in Dublin are in euro (« four euro twenty », the Irish way), in New
    York in dollars (« four dollars and twenty cents »), and the game's icon follows.
-4. **Every destination drawn, animated like the others.** *Rules first: AGENTS.md.* Seventeen use
-   the generic coast (New York in your screenshot): Madrid, Valence, Baléares, Canaries, Pays
-   basque, Galice; Florence, Milan, Naples, Sicile; Porto, Algarve, Madère, Açores; Édimbourg,
-   Dublin, New York. New York first. « Ailleurs » shows the country's emblem through the same map
-   `photos.ts` uses, shared rather than copied. A test fails when a destination has no drawing, as
-   for photos (the old list in TODO.md had missed four).
+4. ✅ 19 Nov 2026. **Every destination drawn, animated like the others.** The seventeen that
+   showed a generic coast have their own scene, from the Puerta de Alcalá to the Brooklyn Bridge,
+   in one module per country (`scenery/`). The window of the trip being chosen in « Mes voyages »
+   now moves like the welcome flight: clouds drift, boats rock. « Ailleurs » shows its country's
+   emblem, photo and drawing alike, from one field (`emblem`, read by `pictureOf`). A test fails
+   when a destination has no drawing; the generic coast is gone.
 5. **American and Irish words, with their voices.** *Rules first: AGENTS.md.* Through the regional
    packs that already teach Catalan in Barcelona: « Les mots de New York » (check, restroom, subway,
    to go, the tip) with the en-US voice, Dublin's (grand, the craic) with en-IE. A pack's own

@@ -643,7 +643,7 @@ export const regions: Region[] = [
       desc: 'L’accent de São Miguel est réputé difficile, même pour les Portugais du continent : n’hésite pas à dire « Pode repetir? ».',
     },
   },
-  { id: 'autre', name: 'Ailleurs', at: 'au Portugal', native: 'Portugal' },
+  { id: 'autre', name: 'Ailleurs', at: 'au Portugal', native: 'Portugal', emblem: 'lisbonne' },
 ];
 
 export const card: SurvivalCard = {

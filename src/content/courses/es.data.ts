@@ -2017,6 +2017,7 @@ export const regions: Region[] = [
     name: 'Ailleurs',
     at: 'en Espagne',
     native: 'España',
+    emblem: 'andalousie',
   },
 ];
 

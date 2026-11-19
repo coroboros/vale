@@ -578,7 +578,7 @@ export const regions: Region[] = [
   { id: 'milano', name: 'Milan', at: 'à Milan', native: 'Milano' },
   { id: 'napoli', name: 'Naples et le Sud', at: 'à Naples', native: 'Napoli' },
   { id: 'sicilia', name: 'Sicile', at: 'en Sicile', native: 'Sicilia' },
-  { id: 'autre', name: 'Ailleurs', at: 'en Italie', native: 'Italia' },
+  { id: 'autre', name: 'Ailleurs', at: 'en Italie', native: 'Italia', emblem: 'roma' },
 ];
 
 export const card: SurvivalCard = {

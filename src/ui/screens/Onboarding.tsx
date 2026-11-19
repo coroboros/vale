@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createProfiles, startFirstLesson } from '../../actions';
 import { BRAND } from '../../brand';
-import { COURSES, flagOf, regionOf } from '../../content';
+import { COURSES, courseById, flagOf, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
 import { blankTrip, GOALS, PROFILE_COLORS } from '../../state/schema';
@@ -15,15 +15,23 @@ import { InstallButton } from '../Install';
 import { ChoiceGroup } from '../kit';
 import { Porthole, type Stop, stopOf } from '../Porthole';
 import { photoOf, preload } from '../photos';
-import { hasScenery } from '../scenery/Scenery';
 import { DateField, LanguageChoice, PlaceChoice } from '../Trip';
 import { THEMES, themeVars } from '../themes';
 
-const JOURNEY: Stop[] = (() => {
-  const byCourse = COURSES.map(c => c.regions.filter(r => hasScenery(r.id)).map(r => stopOf(c, r)));
-  const longest = Math.max(...byCourse.map(list => list.length));
-  return Array.from({ length: longest }, (_, i) => byCourse.flatMap(list => list[i] ?? []));
-})().flat();
+/** The welcome flight: a short loop over the four languages, rather than every destination. */
+const JOURNEY: Stop[] = (
+  [
+    ['es', 'barcelone'],
+    ['it', 'roma'],
+    ['pt', 'lisbonne'],
+    ['en', 'londres'],
+    ['es', 'andalousie'],
+    ['it', 'venezia'],
+  ] as const
+).map(([courseId, regionId]) => {
+  const c = courseById(courseId);
+  return stopOf(c, regionOf(c, regionId));
+});
 
 interface Traveller {
   name: string;

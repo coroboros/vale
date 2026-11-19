@@ -5,7 +5,7 @@
 import { Pause, Play } from 'lucide-preact';
 import type { RefObject } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { flagOf } from '../content';
+import { flagOf, pictureOf } from '../content';
 import type { Course, Region } from '../content/types';
 import { reducedMotion } from '../platform/env';
 import { say } from '../platform/speech';
@@ -16,6 +16,8 @@ import { THEMES, type Theme, themeVars } from './themes';
 
 export interface Stop {
   place: string;
+  /** The drawing: « Ailleurs » shows its country's emblem. */
+  scene: string;
   greeting: string;
   lang: string;
   theme: Theme;
@@ -162,6 +164,7 @@ function CloudBank() {
 
 export const stopOf = (course: Course, region: Region): Stop => ({
   place: region.id,
+  scene: pictureOf(course, region.id),
   greeting: course.greet(region.native),
   lang: course.lang,
   theme: THEMES[flagOf(course, region.id)],
@@ -177,6 +180,8 @@ export function Porthole({ stops }: { stops: Stop[] }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>(still ? 'stay' : 'arrive');
   const [playing, setPlaying] = useState(!still && !single);
+  // One trip's window does not fly on, but its clouds drift and its boats rock all the same.
+  const alive = single ? !still : playing;
   const [hop, setHop] = useState(0);
   const [intro, setIntro] = useState(!still);
   const visible = usePageVisible();
@@ -234,7 +239,7 @@ export function Porthole({ stops }: { stops: Stop[] }) {
       ref={root}
       class="porthole"
       data-phase={phase}
-      data-playing={playing}
+      data-playing={alive}
       data-intro={intro}
       style={themeVars(stop.theme)}
     >
@@ -251,7 +256,7 @@ export function Porthole({ stops }: { stops: Stop[] }) {
       >
         <span class="porthole-view">
           <span key={`${index}-${stop.place}-${stop.lang}`} class="porthole-land">
-            <Scenery place={stop.place} tall />
+            <Scenery place={stop.scene} tall />
           </span>
           <Wing />
           <CloudBank />
