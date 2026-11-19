@@ -17,8 +17,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
   Spanish, Italian, Portuguese (Portugal) and English (UK) voices (*Réglages → Accessibilité →
   Contenu énoncé*), voice recording, Bernard
   speaking when tapped, the date fields of onboarding and *Moi* (they overflowed on iOS before
-  the fix; the automated check runs in Chromium only), a lesson's sheet opening without a ring on
-  its close button, the American and Irish voices (en-US, en-IE) in their packs.
+  the fix; the automated check runs in Chromium only), the American and Irish voices (en-US,
+  en-IE) in their packs.
 - The welcome flight on an older iPhone (smoothness, battery), with *Réduire les animations* on,
   and in Safari with its toolbars (short screen).
 - Translation: one sentence per language once deployed, a cache hit, a 429 after 20 calls a

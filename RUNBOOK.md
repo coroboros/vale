@@ -101,6 +101,14 @@ between the traveller's languages.
 
 ## B. You, when you can
 
+### B0. Now, in five minutes
+
+1. **Delete the `photos-fetch` branch.** Repository → *Branches* → the bin next to
+   `photos-fetch`. It only ran the photo download; the photos are in `main`.
+2. **One check on your iPhone.** At https://coroboros.github.io/vale/, open a lesson's sheet from
+   the itinerary: its close button should show no ring. If it does, send a screenshot (the fix of
+   19 Nov 2026 could only be tested in Chromium).
+
 ### B1. Connect Cloudflare and the Claude credits (about 15 minutes)
 
 1. **Claim the Max API credits.** On claude.ai in a browser: *Settings → Billing → API credits →
@@ -109,7 +117,8 @@ between the traveller's languages.
 2. **Lock them to zero overspending.** In that Console organisation: buy no credits, leave
    auto-reload off. Then create an API key (*API keys*).
 3. **Cloudflare token.** Dashboard → *My Profile → API Tokens → Create token*, template *Edit
-   Cloudflare Workers*, scoped to your account. Note the **account ID** (*Workers & Pages*, right
+   Cloudflare Workers*, scoped to your account, then add *Account → D1 → Edit*: the template lacks
+   it, and the anonymous counts (C1) need it. Note the **account ID** (*Workers & Pages*, right
    column).
 4. **GitHub secrets.** Repository → *Settings → Secrets and variables → Actions → New repository
    secret*: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ANTHROPIC_API_KEY`.
@@ -164,10 +173,10 @@ real* in TODO.md and report what fails, with a screenshot.
 
 ## C. After going live: measure first (Claude)
 
-1. Switch measurement on (A2). *Rules first: AGENTS.md.* You: let the Cloudflare API token edit
-   D1 (*Account → D1 → Edit*). Claude: uncomment `d1_databases` in `worker/wrangler.jsonc` and set
-   `VITE_COUNTS_URL: .` in the Cloudflare build of `.github/workflows/ci.yml`; the next deploy
-   creates the database, and the first count its table. Check that a new traveller is counted.
+1. Switch measurement on (A2). *Rules first: AGENTS.md.* Uncomment `d1_databases` in
+   `worker/wrangler.jsonc` and set `VITE_COUNTS_URL: .` in the Cloudflare build of
+   `.github/workflows/ci.yml` (the token may edit D1 since B1); the next deploy creates the
+   database, and the first count its table. Check that a new traveller is counted.
    Compare the translation cost with the Console's usage page: about 0.3 cent a sentence is an
    estimate, not a measurement.
 2. Two weeks later, read the figures (`cd worker && npm run figures`) and choose what comes next
