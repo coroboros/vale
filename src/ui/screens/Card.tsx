@@ -1,4 +1,4 @@
-import { Download, Maximize2, Pencil, Share, X } from 'lucide-preact';
+import { Check, Download, Maximize2, Pencil, Share, X } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
 import { editTrip, markShared } from '../../actions';
 import { BRAND } from '../../brand';
@@ -139,6 +139,7 @@ function ShareSheet({ lines, onClose }: { lines: Line[]; onClose: () => void }) 
   const [file, setFile] = useState<File | null>(null);
   const [url, setUrl] = useState('');
   const [failed, setFailed] = useState(false);
+  const [done, setDone] = useState<'' | 'sent' | 'saved'>('');
   useEffect(() => {
     let link = '';
     cardPicture({
@@ -171,20 +172,37 @@ function ShareSheet({ lines, onClose }: { lines: Line[]; onClose: () => void }) 
             {failed ? 'L’image n’a pas pu être préparée.' : 'Préparation de l’image…'}
           </p>
         )}
-        <p class="muted small">Elle reprend tout ce qui est sur ta carte.</p>
+        <p class={done ? 'share-done' : 'muted small'} role="status">
+          {done && <Check size={20} aria-hidden="true" />}
+          {done === 'sent'
+            ? 'Carte envoyée.'
+            : done === 'saved'
+              ? 'Image enregistrée : joins-la à un message.'
+              : 'Elle reprend tout ce qui est sur ta carte.'}
+        </p>
         {file &&
           (canShareFile(file) ? (
             <button
               type="button"
               class="btn btn-primary btn-block"
               onClick={async () => {
-                if (await shareFile(file, text)) markShared();
+                if (!(await shareFile(file, text))) return;
+                markShared();
+                setDone('sent');
               }}
             >
               <Share size={18} aria-hidden="true" /> Partager
             </button>
           ) : (
-            <a class="btn btn-primary btn-block" href={url} download={file.name} onClick={markShared}>
+            <a
+              class="btn btn-primary btn-block"
+              href={url}
+              download={file.name}
+              onClick={() => {
+                markShared();
+                setDone('saved');
+              }}
+            >
               <Download size={18} aria-hidden="true" /> Enregistrer l’image
             </a>
           ))}

@@ -32,7 +32,14 @@ function wrap(ctx: CanvasRenderingContext2D, font: string, text: string, width: 
   return line ? [...lines, line] : lines;
 }
 
-/** An SVG drawn as an image sees no page styles, so its colour variables are resolved first. */
+const settle = (ms: number) => new Promise<void>(done => setTimeout(done, ms));
+
+/**
+ * An SVG drawn as an image sees no page styles, so its colour variables are resolved first. A data
+ * URL, loaded through its events: Safari taints a canvas that drew an SVG from a blob URL, and its
+ * decode() never settles for SVG (WebKit bugs 134503, 198527). A drawing that does not load is left
+ * out rather than holding the whole card back.
+ */
 async function drawSvg(
   ctx: CanvasRenderingContext2D,
   node: VNode,
@@ -49,15 +56,14 @@ async function drawSvg(
     .serializeToString(svg)
     .replace(/var\((--[\w-]+)\)/g, (_, name: string) => css.getPropertyValue(name).trim());
   render(null, host);
-  const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml' }));
-  try {
-    const img = new Image();
-    img.src = url;
-    await img.decode();
-    ctx.drawImage(img, x, y, w, h);
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+  const img = new Image();
+  const loaded = new Promise<boolean>(done => {
+    img.onload = () => done(true);
+    img.onerror = () => done(false);
+    void settle(3000).then(() => done(false));
+  });
+  img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(xml)}`;
+  if (await loaded) ctx.drawImage(img, x, y, w, h);
 }
 
 export async function cardPicture({
@@ -85,7 +91,8 @@ export async function cardPicture({
     mark: `800 54px ${display}`,
     foot: `400 32px ${body}`,
   };
-  await Promise.all(Object.values(font).map(f => document.fonts.load(f)));
+  // Fonts still loading after a moment give way to the fallbacks rather than to an endless wait.
+  await Promise.race([Promise.all(Object.values(font).map(f => document.fonts.load(f))), settle(2000)]);
 
   const measure = document.createElement('canvas').getContext('2d')!;
   const draws: ((ctx: CanvasRenderingContext2D) => void)[] = [];

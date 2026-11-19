@@ -106,14 +106,36 @@ order:
      `build/pages.ts`): six questions people type before leaving, from « Comment dire bonjour » to
      « Comment demander de l’aide », in each language (24 pages, such as
      `espagnol/commander-un-cafe/`), with the phrases, their pronunciation, the device's voice and
-     the scene that uses them, plus a `sitemap.xml`. « Apprendre ces phrases » opens the app on that lesson (`#/apprendre/es/bar`):
-     onboarding in that language for a newcomer, the lesson at once in a traveller's trip in it.
-     Installed copies of the app leave the pages to the network.
+     the scene that uses them, plus a `sitemap.xml`. « Apprendre ces phrases » opens the app on
+     that lesson (`#/apprendre/es/bar`): onboarding in that language for a newcomer, the lesson at
+     once in a traveller's trip in it. Installed copies of the app leave the pages to the network.
+   - 19 Nov 2026, after your test on the iPhone: the card's picture no longer waits forever in
+     Safari (its drawings load from data URLs, without `decode()`), and the sheet says « Carte
+     envoyée » or « Image enregistrée » once done.
+5. **Search, a complete pass to the state of the art** (your priority, 19 Nov 2026). *Rules first:
+   AGENTS.md, research in depth.* Analysis first, every finding sourced, then the changes:
+   - How search works now: Google Search Central (ranking systems, helpful content, spam
+     policies, structured data it still shows), AI Overviews and AI Mode and what they do to
+     clicks, Bing and the answer engines; measured studies over opinions.
+   - What French travellers type before a trip: Google Trends, autocomplete, « Autres questions »,
+     the pages that rank today and what they lack; which questions Bagage can answer best.
+   - Address: authority builds on a domain of one's own; github.io and workers.dev are borrowed.
+     The choice and purchase are yours (D4, worth bringing forward for search), then canonical
+     addresses and redirects on it.
+   - Architecture and content: a page per language and per situation where demand exists, links
+     between them and from the app, titles and descriptions, sharing images, structured data,
+     natives' review (TODO.md), who wrote it and from what sources.
+   - Technical: Core Web Vitals on phones, crawlability, `sitemap.xml`, `robots.txt` at the root of
+     the domain, then Search Console (B6).
+   - Measure per page: impressions and clicks (Search Console), arrivals and day-7 return through
+     the `page` link (A4); scale what the numbers back.
 
 Done at your request, outside this order: ✅ 18 Nov 2026, **several trips at once** (two in a row,
 several languages, two in one language), each with its own hotel and address on the card; home
 follows the trip in focus and offers the next one once a trip has begun; *Phrases* switches
-between the traveller's languages.
+between the traveller's languages. ✅ 19 Nov 2026, **« Imagine » on phones**: the photo in plain view
+at the top, the words on the page below, nothing to scroll from 375 × 667 up, measured against the
+previous design (docs/BRAND.md, Photos).
 
 ## B. You, when you can
 
@@ -182,9 +204,10 @@ this). Paste the suggested `MODELS` into the `vars` of `worker/wrangler.jsonc`, 
 Safari → the Cloudflare address → *Partager → Sur l'écran d'accueil*. Then go through *Test for
 real* in TODO.md and report what fails, with a screenshot.
 
-### B6. Tell Google about the situation pages (optional, 10 minutes, after B3)
+### B6. Search Console (10 minutes, once Bagage has its address, A5)
 
-Search engines find the pages through links; this only makes it sooner. Google Search Console →
+Search engines find the pages through links; this makes it sooner and gives the figures A5 reads
+per page. Google Search Console →
 *Add property → URL prefix* → the Cloudflare address → method *HTML file*: send Claude the file's
 name, Claude publishes it, you click *Verify*. Then *Sitemaps* → `sitemap.xml` → *Submit*.
 

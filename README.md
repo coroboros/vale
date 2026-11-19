@@ -17,7 +17,7 @@ connected, the app and its translation service are served by one Worker; see RUN
   like, two in a row or several languages at once, even two in the same language: the home screen
   follows the one you are preparing, and offers the next one once a trip has begun. The welcome
   window comes back in « Mes voyages », flying to the trip you pick. Onboarding, and every trip you
-  add, ends on « Imagine »: a full-screen photo of your destination, where you hear yourself say
+  add, ends on « Imagine »: a photo of your destination in plain view, where you hear yourself say
   your first words in a scene that matches the moment you chose to practise (the café for the
   morning coffee, the hotel desk, booked in your name, for the evening), then your plan. At that
   moment of the day, the home screen reminds you. It also shows how much of what you learned you

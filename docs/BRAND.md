@@ -72,18 +72,31 @@ all of it stops for people who ask for less motion.
 
 ## Photos
 
-The last step of onboarding (« Imagine ») shows the chosen destination in a full-screen photo:
-the landmark seen from where a traveller would stand, a café terrace or a street rather than an
-aerial view, in daylight. It is the one place where Bagage uses photography; everywhere else
-the scenery is drawn.
+The last step of onboarding (« Imagine ») shows the chosen destination in a photo: the landmark
+seen from where a traveller would stand, a café terrace or a street rather than an aerial view, in
+daylight. It is the one place where Bagage uses photography; everywhere else the scenery is drawn.
 
 - Every photo comes from Wikimedia Commons under a license that allows reuse: public domain,
   CC0, CC BY or CC BY-SA. `brand/photos.py` refuses anything else.
 - The credit under each photo names the author, links the license and the Commons file page,
   and says the photo was cropped, as the CC licenses ask. The script copies author and license
   from Commons into `src/ui/photos.json`, so the credit cannot drift from the file page.
-- The text sits on a frosted card tinted at 62 % near-black: white text keeps 5.4:1 even over a
-  white sky, so the photo itself is never darkened.
+- On a phone or any upright screen, the photo fills the top of the screen untouched and the words
+  sit on the page below it, rising over its lower edge, with Bernard standing on that edge. Asking
+  people to imagine works when the picture is vivid and can backfire when it is not ([Petrova &
+  Cialdini, 2005](https://doi.org/10.1086/497556)); text over a photo either hides it or fails
+  contrast ([NN/g, Harley, 2015](https://www.nngroup.com/articles/text-over-images/)), and
+  viewing time falls off below the first screen
+  ([NN/g, 2018](https://www.nngroup.com/articles/scrolling-and-attention/)). The photo gives way
+  first when the words need room, so nothing scrolls from 375 × 667 up.
+- On a wide screen there is room for both: the whole photo, and the words on a card tinted at 62 %
+  near-black, where white text keeps 5.4:1 even over a white sky.
+- Measured on screenshots of the same step (Andalusia, a short and a 23-letter first name), share of
+  the screen where the photo shows untouched, before and after 19 Nov 2026: 375 × 667, 7 % → 30 to
+  37 %, and no more scrolling (42 to 175 px before); 390 × 844, 9 to 20 % → 28 to 36 %; 768 × 1024,
+  51 to 54 % → 55 to 59 %; 1440 × 900, 57 to 59 % → 81 to 82 %. Only 320 × 568 still scrolls a
+  little (73 px at most, 341 before). Not measured yet: whether it changes who starts the first
+  lesson or comes back.
 - To add or change a destination: edit its entry in `src/ui/photos.json` (Commons file, focus,
   alt text), then run `python3 brand/photos.py fetch render` from a machine that reaches Commons.
   A unit test fails while a destination has no photo or a file is missing.

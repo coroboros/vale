@@ -58,6 +58,12 @@ The one place for them: read this section before writing code for any step.
 - Evidence before claims: cite sources for learning and product claims (docs/LEARNING.md),
   measure before saying something works (tests, Lighthouse, `npm run eval`), and say what is not
   measured.
+- Research in depth before deciding, never from a skim: read each source itself, in full where it
+  is open (say so when only the abstract is), look for the studies that disagree, and weigh them
+  with what the leading practitioners publish: learning science, cognitive psychology, game design,
+  marketing and brand, product strategy. docs/ records each source, how strong it is for Bagage,
+  and what is our inference. To choose between designs, measure them (screenshots, tests) and keep
+  the numbers in docs/.
 - Never commit secrets: they live in GitHub Actions secrets and in Cloudflare. The repository is
   public: no personal or company details in it, and commits never carry the owner's personal
   address.

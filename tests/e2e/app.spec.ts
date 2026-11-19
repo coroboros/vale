@@ -230,7 +230,7 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await expect(page.locator('.stop.started, .stop.done').first()).toBeVisible();
 });
 
-test('« Imagine » shows the destination photo with its credit, and the mascot without it', async ({ page }) => {
+test('« Imagine » shows the destination photo with its credit, and the mascot without it', async ({ page }, info) => {
   await onboard(page);
   const photo = page.getByRole('img', { name: /parc Güell/ });
   await expect(photo).toBeVisible();
@@ -241,6 +241,28 @@ test('« Imagine » shows the destination photo with its credit, and the mascot 
   );
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expectAccessible(page, 'imagine with a photo');
+  // On a phone, upright, the photo stays in plain view with every word below it, and nothing scrolls.
+  if (info.project.name === 'iphone')
+    for (const viewport of [null, { width: 375, height: 667 }]) {
+      if (viewport) {
+        // Small-viewport units follow the first size of the page: a new size needs a new page.
+        await page.setViewportSize(viewport);
+        await onboard(page);
+        await expect.poll(() => photo.evaluate((img: HTMLImageElement) => img.complete)).toBe(true);
+      }
+      const layout = await page.evaluate(() => {
+        const photo = document.querySelector('.imagine-photo')!.getBoundingClientRect();
+        const words = document.querySelector('.imagine-text')!.getBoundingClientRect();
+        const start = document.querySelector('.stage-foot .btn-primary')!.getBoundingClientRect();
+        return {
+          clear: (words.top - photo.top) / innerHeight,
+          scrolls: document.scrollingElement!.scrollHeight > innerHeight + 1,
+          startShown: start.bottom <= innerHeight,
+        };
+      });
+      expect(layout.clear, `photo share at ${page.viewportSize()!.width}px`).toBeGreaterThan(0.3);
+      expect(layout).toMatchObject({ scrolls: false, startShown: true });
+    }
 
   await page.route('**/photos/**', route => route.abort());
   await onboard(page);
@@ -872,22 +894,24 @@ test('a traveller sends their card as a picture, and the counts say a card broug
     counted.push(...route.request().postDataJSON().counts);
     await route.fulfill({ status: 204 });
   });
-  await page.addInitScript(() =>
-    Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true }),
-  );
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true });
+    // As in Safari, where decode() never settles for an SVG image (WebKit bug 198527).
+    HTMLImageElement.prototype.decode = () => new Promise(() => {});
+  });
   await onboard(page, 'Adrien', undefined, './?utm_source=carte');
   await leaveFirstLesson(page);
   await page.getByRole('link', { name: 'Carte' }).click();
 
   // Where the browser cannot share a file, the picture is saved instead.
   await page.getByRole('button', { name: 'Partager ma carte' }).click();
-  await expect(page.getByRole('link', { name: 'Enregistrer l’image' })).toHaveAttribute(
-    'download',
-    'bagage-ma-carte.png',
-  );
+  const save = page.getByRole('link', { name: 'Enregistrer l’image' });
+  await expect(save).toHaveAttribute('download', 'bagage-ma-carte.png');
   const preview = page.locator('.share-preview');
   expect(await preview.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1080);
   await expectAccessible(page, 'partager ma carte');
+  await Promise.all([page.waitForEvent('download'), save.click()]);
+  await expect(page.getByRole('status')).toHaveText('Image enregistrée : joins-la à un message.');
   await page.getByRole('button', { name: 'Fermer' }).click();
 
   await page.evaluate(() => {
@@ -900,6 +924,7 @@ test('a traveller sends their card as a picture, and the counts say a card broug
   });
   await page.getByRole('button', { name: 'Partager ma carte' }).click();
   await page.getByRole('button', { name: 'Partager', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Carte envoyée.');
   expect(await page.evaluate(() => (window as unknown as { __sent: unknown[] }).__sent)).toEqual([
     {
       type: 'image/png',

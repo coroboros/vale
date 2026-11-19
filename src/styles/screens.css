@@ -1461,6 +1461,14 @@
     border: 1.5px solid var(--line);
   }
 
+  .share-done {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--ok);
+  }
+
   .share-wait {
     min-height: 120px;
     display: grid;
@@ -1749,7 +1757,7 @@
   }
 
   .ob-step,
-  .imagine {
+  .imagine-text {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
@@ -1760,7 +1768,7 @@
     font-size: var(--step-1);
   }
 
-  .imagine {
+  .imagine-text {
     justify-items: center;
     text-align: center;
   }
@@ -1779,21 +1787,47 @@
     font-weight: 650;
   }
 
-  /* With a photo, « Imagine » becomes a frosted card over the destination. The tint alone keeps the
-     text readable, so the photo itself can stay bright; the blur only softens it. */
+  /* With a photo, on a phone or any upright screen, the photo fills the top of the screen untouched
+     and the words sit on the page below it, rising over its lower edge: text over a photo either
+     hides the photo or fails contrast (NN/g, Harley, 2015). The photo gives way first when the words
+     need more room. */
   .stage:has(.imagine-photo) {
+    --overlap: 28px;
+    position: relative;
     isolation: isolate;
+    width: 100%;
+    min-height: 100svh;
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 0;
+  }
+
+  .stage:has(.imagine-photo) .stage-top {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    padding: calc(var(--safe-t) + 8px) 20px 0;
+  }
+
+  .stage:has(.imagine-photo) .stage-body {
+    align-content: stretch;
+    padding: 0;
+  }
+
+  .imagine:has(.imagine-photo) {
+    display: grid;
+    grid-template-rows: minmax(7rem, 1fr) auto;
   }
 
   .imagine-photo {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
+    position: relative;
+    margin: 0;
     overflow: hidden;
     background: #101820;
   }
 
   .imagine-photo img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -1807,15 +1841,6 @@
     }
   }
 
-  .imagine-photo::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(to bottom, rgb(0 0 0 / 0.45), transparent 7rem),
-      linear-gradient(to top, rgb(0 0 0 / 0.35), transparent 30%);
-  }
-
   @keyframes photo-arrive {
     from {
       opacity: 0;
@@ -1827,15 +1852,25 @@
     }
   }
 
-  .stage:has(.imagine-photo) :is(.stage-top .icon-btn, .stage-foot .btn-ghost) {
-    color: #fff;
+  /* Small tinted surfaces under the controls, rather than a shade over the whole top of the photo. */
+  .stage:has(.imagine-photo) .stage-top .icon-btn,
+  .stage:has(.imagine-photo) .ob-dots {
     background: var(--photo-tint);
   }
 
+  .stage:has(.imagine-photo) .stage-top .icon-btn {
+    color: #fff;
+  }
+
   @media (hover: hover) {
-    .stage:has(.imagine-photo) :is(.stage-top .icon-btn, .stage-foot .btn-ghost):hover {
+    .stage:has(.imagine-photo) .stage-top .icon-btn:hover {
       background: rgb(10 16 24 / 0.8);
     }
+  }
+
+  .stage:has(.imagine-photo) .ob-dots {
+    padding: 8px 12px;
+    border-radius: var(--r-pill);
   }
 
   .stage:has(.imagine-photo) .ob-dots li {
@@ -1846,54 +1881,40 @@
     background: #fff;
   }
 
-  .stage:has(.imagine-photo) .stage-body {
-    align-content: end;
-  }
-
-  .imagine:has(.imagine-photo) {
+  .imagine:has(.imagine-photo) .imagine-text {
+    --inset: max(20px, calc((100% - 560px) / 2));
     position: relative;
     justify-items: stretch;
     gap: 14px;
-    padding: 22px 20px 18px;
-    color: #fff;
+    margin-top: calc(-1 * var(--overlap));
+    padding: 24px var(--inset) 4px;
+    border-radius: var(--r-l) var(--r-l) 0 0;
+    background: var(--page);
     text-align: left;
   }
 
-  /* On a pseudo-element: a backdrop filter on the card itself would become the frame of the fixed
-     photo inside it, shrinking the photo to the card. */
-  .imagine:has(.imagine-photo)::before {
-    content: "";
+  /* Bernard stands on the edge between the photo and the page. */
+  .imagine:has(.imagine-photo) .imagine-text > .mascot {
     position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: var(--r-l);
-    background: var(--photo-tint);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    backdrop-filter: blur(16px) saturate(1.2);
+    top: -50px;
+    right: calc(var(--inset) - 2px);
   }
 
-  .imagine:has(.imagine-photo) > .mascot {
-    position: absolute;
-    top: 12px;
-    right: 14px;
-  }
-
-  /* Room for Bernard, perched in the corner beside a title that now carries a name. */
   .imagine:has(.imagine-photo) h1 {
-    padding-right: 80px;
-    font-size: clamp(1.75rem, 8.5vw, var(--step-3));
-    color: #fff;
-  }
-
-  .imagine:has(.imagine-photo) .imagine-line {
-    padding: 12px 12px 12px 14px;
-    background: var(--surface);
-    color: var(--ink);
+    padding-right: 72px;
+    font-size: clamp(1.75rem, 8vw, var(--step-3));
   }
 
   .photo-credit {
+    position: absolute;
+    left: 12px;
+    bottom: calc(var(--overlap) + 10px);
+    max-width: calc(100% - 140px);
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: var(--photo-tint);
     font-size: 0.75rem;
-    color: rgb(255 255 255 / 0.88);
+    color: #fff;
   }
 
   /* Vertical padding on inline links grows the tap target to 44 px without changing the line. */
@@ -1902,10 +1923,103 @@
     color: inherit;
   }
 
-  /* Over a photo the actions follow the card: a sticky bar would slide over its text. */
   .stage:has(.imagine-photo) .stage-foot {
-    position: static;
-    background: none;
+    width: min(100%, 560px);
+    margin: 0 auto;
+    padding-inline: 20px;
+    background: var(--page);
+  }
+
+  /* Short phones keep room for the photo: the words get a size smaller. */
+  @media (max-height: 760px) {
+    .imagine:has(.imagine-photo) .imagine-text {
+      gap: 10px;
+      padding-top: 20px;
+    }
+
+    .imagine:has(.imagine-photo) h1 {
+      font-size: var(--step-2);
+    }
+
+    .imagine:has(.imagine-photo) .lead,
+    .imagine:has(.imagine-photo) .imagine-plan {
+      font-size: var(--step-0);
+    }
+
+    .imagine:has(.imagine-photo) .imagine-line {
+      padding: 12px 14px;
+    }
+
+    .imagine:has(.imagine-photo) .imagine-line .big {
+      font-size: var(--step-1);
+    }
+
+    .stage:has(.imagine-photo) .stage-foot {
+      padding-top: 12px;
+    }
+  }
+
+  /* Wide screens have room for both: the whole photo, and the words on a tinted card over it. */
+  @media (min-width: 960px) and (orientation: landscape) {
+    .stage:has(.imagine-photo) {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      padding: calc(var(--safe-t) + 8px) 20px 0;
+    }
+
+    .stage:has(.imagine-photo) .stage-top {
+      position: static;
+      padding: 0;
+    }
+
+    .stage:has(.imagine-photo) .stage-body {
+      align-content: end;
+      padding: 12px 0;
+    }
+
+    .imagine:has(.imagine-photo) {
+      display: block;
+    }
+
+    .imagine-photo {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+
+    .imagine:has(.imagine-photo) .imagine-text {
+      width: 100%;
+      margin: 0;
+      padding: 22px 20px 18px;
+      border-radius: var(--r-l);
+      background: var(--photo-tint);
+      color: #fff;
+      -webkit-backdrop-filter: blur(16px) saturate(1.2);
+      backdrop-filter: blur(16px) saturate(1.2);
+    }
+
+    .imagine:has(.imagine-photo) .imagine-text > .mascot {
+      top: 12px;
+      right: 14px;
+    }
+
+    .imagine:has(.imagine-photo) .imagine-line {
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .photo-credit {
+      bottom: 16px;
+      left: 16px;
+      max-width: none;
+    }
+
+    .stage:has(.imagine-photo) .stage-foot {
+      width: 100%;
+      padding-inline: 0;
+      background: none;
+    }
   }
 
   .keep {

@@ -1,4 +1,8 @@
-/** « Imagine »: the traveller pictured at their destination, closing onboarding and every new trip. */
+/**
+ * « Imagine »: the traveller pictured at their destination, closing onboarding and every new trip.
+ * The photo stays clear and the words sit beside it: asking people to imagine works when the picture
+ * is vivid, and can backfire when it is not (Petrova & Cialdini, 2005).
+ */
 import { useId, useState } from 'preact/hooks';
 import { flagOf, regionOf } from '../content';
 import type { Course } from '../content/types';
@@ -11,23 +15,26 @@ import { type Photo, PORTRAIT, photoFiles, photoOf } from './photos';
 function Backdrop({ photo, onError }: { photo: Photo; onError: () => void }) {
   const files = photoFiles(photo.id);
   return (
-    <picture class="imagine-photo">
-      <source media={PORTRAIT} srcset={files.portrait} />
-      <img
-        src={files.fallback}
-        srcset={files.srcset}
-        sizes="100vw"
-        alt={photo.alt}
-        style={{ '--focus': `${photo.focus * 100}%` }}
-        onError={onError}
-      />
-    </picture>
+    <figure class="imagine-photo">
+      <picture>
+        <source media={PORTRAIT} srcset={files.portrait} />
+        <img
+          src={files.fallback}
+          srcset={files.srcset}
+          sizes="100vw"
+          alt={photo.alt}
+          style={{ '--focus': `${photo.focus * 100}%` }}
+          onError={onError}
+        />
+      </picture>
+      <Credit photo={photo} />
+    </figure>
   );
 }
 
 function Credit({ photo }: { photo: Photo }) {
   return (
-    <p class="photo-credit">
+    <figcaption class="photo-credit">
       Photo :{' '}
       <a href={photo.source} target="_blank" rel="noreferrer">
         {photo.author}
@@ -41,7 +48,7 @@ function Credit({ photo }: { photo: Photo }) {
         photo.license
       )}
       , recadrée
-    </p>
+    </figcaption>
   );
 }
 
@@ -76,18 +83,20 @@ export function Imagine({
   });
   return (
     <section class="imagine" aria-labelledby={heading}>
-      <h1 id={heading}>{words.title}</h1>
-      {shown && <Mascot size={72} flag={flag} mood="cheer" motion="bob" decorative />}
-      <p class="lead">{words.lead}</p>
       {shown && <Backdrop photo={shown} onError={() => setBroken(shown.id)} />}
-      <div class="imagine-line">
-        <Say text={words.sentence} lang={c.lang} />
-        <p class="big" lang={c.lang}>
-          {words.sentence}
-        </p>
+      <div class="imagine-text">
+        {shown && <Mascot size={72} flag={flag} mood="cheer" motion="bob" decorative />}
+        <h1 id={heading}>{words.title}</h1>
+        <p class="lead">{words.lead}</p>
+        <div class="imagine-line">
+          <Say text={words.sentence} lang={c.lang} />
+          <p class="big" lang={c.lang}>
+            {words.sentence}
+          </p>
+        </div>
+        <p class="imagine-plan">{words.plan}</p>
+        {!shown && <Mascot size={130} flag={flag} mood="cheer" motion="bob" />}
       </div>
-      <p class="imagine-plan">{words.plan}</p>
-      {shown ? <Credit photo={shown} /> : <Mascot size={130} flag={flag} mood="cheer" motion="bob" />}
     </section>
   );
 }
