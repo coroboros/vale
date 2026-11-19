@@ -137,7 +137,10 @@ several languages, two in one language), each with its own hotel and address on 
 follows the trip in focus and offers the next one once a trip has begun; *Phrases* switches
 between the traveller's languages. ✅ 19 Nov 2026, **« Imagine » on phones**: the photo in plain view
 at the top, the words on the page below, nothing to scroll from 375 × 667 up, measured against the
-previous design (docs/BRAND.md, Photos).
+previous design (docs/BRAND.md, Photos). ✅ 19 Nov 2026, **Bernard and a moving drawing on the
+pages**: the app's own Bernard, alive and in the course's flag, replaces the icon by the name; the
+drawing moves as in the app's windows and pauses, like a trip's window in « Mes voyages » now
+does (docs/BRAND.md, Motion).
 
 ## B. You, when you can
 
