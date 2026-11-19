@@ -58,10 +58,11 @@ order:
    open and closed) gave way to trying on and paying cash or card. Tests now hold every course to
    the README's list and every word a scene says to a gloss you can tap (the new scenes lacked
    them); the native review is in TODO.md.
-8. **French typography: spaces that never break.** A line can split « Bon dia » after its opening
-   guillemet, or start with the « : » of « Mémoire à l’arrivée : ». *Rules first: AGENTS.md.* A
-   transform on string literals (not a text replace: TypeScript has « ? » and « : » too) puts
-   non-breaking spaces inside « » and before : ; ? ! %, and a test scans the courses for any left.
+8. ✅ 19 Nov 2026. **French typography: spaces that never break.** A build step
+   (`build/french-spaces.ts`, on Vite's own parser) makes the space before : ; ? ! % and inside « »
+   non-breaking in the text of string literals, templates and JSX, never in the code around it;
+   writers keep typing plain spaces. Tests cover the transform and scan the courses for any
+   breakable space left.
 
 1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
    Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,

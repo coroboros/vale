@@ -1,7 +1,9 @@
 /// <reference types="vitest/config" />
+import { fileURLToPath } from 'node:url';
 import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { frenchTypography } from './build/french-spaces.ts';
 import { BRAND, COLORS } from './src/brand.ts';
 
 export default defineConfig({
@@ -10,6 +12,7 @@ export default defineConfig({
   // No source maps in the published app: the code is private.
   build: { target: 'es2022', sourcemap: false },
   plugins: [
+    frenchTypography(fileURLToPath(new URL('./src/', import.meta.url))),
     preact(),
     {
       name: 'brand-html',

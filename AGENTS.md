@@ -49,7 +49,8 @@ The one place for them: read this section before writing code for any step.
   animation.
 - Colours from the tokens and the trip's theme; red only for wrong answers.
 - App text: plain French, sentence case, « tu » for one traveller and « vous » for a group, the
-  same name for an action through a whole flow, French typography (« », ’).
+  same name for an action through a whole flow, French typography (« », ’). Type plain spaces
+  before : ; ? ! % and inside « »: the build makes them non-breaking (`build/french-spaces.ts`).
 
 ### Evidence and safety
 
@@ -106,6 +107,7 @@ kit, the screens), and plan the smallest change. Then:
   `photos.json` (one photo per destination with its credit, written by `brand/photos.py`; files in
   `public/photos/`).
 - `src/translation-api.ts`: the request and answer shared with the Worker.
+- `build/french-spaces.ts`: the build step that keeps French punctuation on its word's line.
 - `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget), `claude.ts`,
   `workers-ai.ts`, `prompt.ts`.
 - `tests/unit/` (Vitest) and `tests/e2e/` (Playwright on iPhone and desktop viewports).

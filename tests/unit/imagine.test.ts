@@ -17,9 +17,9 @@ describe('the words of « Imagine »', () => {
       }),
     ).toEqual({
       title: 'Imagine, Adrien.',
-      lead: 'Le samedi 19\u00a0décembre au petit matin, tu arrives à Rome. Tu pousses la porte d’un café et tu dis :',
+      lead: 'Le samedi 19\u00a0décembre au petit matin, tu arrives à Rome. Tu pousses la porte d’un café et tu dis\u00a0:',
       sentence: 'Un café con leche, por favor.',
-      plan: 'Ton plan : 10 minutes par jour au café du matin, jusqu’au 19\u00a0décembre.',
+      plan: 'Ton plan\u00a0: 10 minutes par jour au café du matin, jusqu’au 19\u00a0décembre.',
     });
   });
 
@@ -34,10 +34,10 @@ describe('the words of « Imagine »', () => {
     });
     expect(words.title).toBe('Imaginez, Adrien, Léa et Sam.');
     expect(words.lead).toBe(
-      'Un soir, au coucher du soleil, vous arrivez aux Açores. Vous posez vos valises à la réception et vous dites :',
+      'Un soir, au coucher du soleil, vous arrivez aux Açores. Vous posez vos valises à la réception et vous dites\u00a0:',
     );
     expect(words.sentence).toBe('Tenho uma reserva em nome de Adrien.');
-    expect(words.plan).toBe('Votre plan : 5 minutes par jour le soir, avant de dormir.');
+    expect(words.plan).toBe('Votre plan\u00a0: 5 minutes par jour le soir, avant de dormir.');
   });
 
   it('pictures commuters at the end of the journey, and writes the first of the month « 1er »', () => {
@@ -49,9 +49,11 @@ describe('the words of « Imagine »', () => {
       cue: 'commute',
       minutes: 15,
     });
-    expect(words.lead).toBe('Le lundi 1er\u00a0février, tu poses enfin le pied à Londres. À la gare, tu demandes :');
+    expect(words.lead).toBe(
+      'Le lundi 1er\u00a0février, tu poses enfin le pied à Londres. À la gare, tu demandes\u00a0:',
+    );
     expect(words.sentence).toBe('Which platform?');
-    expect(words.plan).toBe('Ton plan : 15 minutes par jour dans les transports, jusqu’au 1er\u00a0février.');
+    expect(words.plan).toBe('Ton plan\u00a0: 15 minutes par jour dans les transports, jusqu’au 1er\u00a0février.');
   });
 
   it('seats a lunch-break learner on a terrace, with a full stop after a bare phrase', () => {
@@ -63,7 +65,7 @@ describe('the words of « Imagine »', () => {
       cue: 'lunch',
       minutes: 10,
     });
-    expect(words.lead).toBe('Un midi, tu arrives à Rome. Tu t’installes en terrasse et tu dis :');
+    expect(words.lead).toBe('Un midi, tu arrives à Rome. Tu t’installes en terrasse et tu dis\u00a0:');
     expect(words.sentence).toBe('Il menù, per favore.');
   });
 
@@ -76,7 +78,7 @@ describe('the words of « Imagine »', () => {
       cue: '',
       minutes: 10,
     });
-    expect(words.lead).toBe('Un jour, tu arrives en Andalousie. Tu pousses la porte d’un café et tu dis :');
-    expect(words.plan).toBe('Ton plan : 10 minutes par jour.');
+    expect(words.lead).toBe('Un jour, tu arrives en Andalousie. Tu pousses la porte d’un café et tu dis\u00a0:');
+    expect(words.plan).toBe('Ton plan\u00a0: 10 minutes par jour.');
   });
 });
