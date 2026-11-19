@@ -87,6 +87,8 @@ export interface Region {
   native: string;
   pack?: string;
   tip?: Note;
+  /** When the destination is in another country than the course's: Dublin, New York. */
+  flag?: Flag;
 }
 
 export interface SurvivalCard {
@@ -139,7 +141,7 @@ interface Numbers {
   confusable(n: number): number[];
 }
 
-export type Flag = 'es' | 'it' | 'pt' | 'gb';
+export type Flag = 'es' | 'it' | 'pt' | 'gb' | 'ie' | 'us';
 
 export interface Course {
   id: string;
@@ -150,7 +152,7 @@ export interface Course {
   hello: string;
   /** Greeting with the learner's name, punctuated the way the language does it. */
   greet(name: string): string;
-  /** The country whose flag dresses the course: theme colours and Bernard's shell. */
+  /** The country whose flag dresses the course, unless the destination has its own (`flagOf`). */
   flag: Flag;
   phonetics: string;
   /**

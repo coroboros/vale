@@ -1,8 +1,9 @@
 /**
- * Each course wears its country's colours: the accent comes from the flag, the full flag goes on
- * Bernard's shell. Red stays the colour of wrong answers, so it appears only inside flags, never on
- * buttons: Portugal's flag is mostly red, so its accent is the blue of its azulejos. Contrast pairs
- * are checked by tests/unit/themes.test.ts (WCAG 2.2 AA).
+ * Each trip wears its country's colours (`flagOf`): the accent comes from the flag, the full flag
+ * goes on Bernard's shell. Red stays the colour of wrong answers, so it appears only inside flags,
+ * never on buttons: Portugal's flag is mostly red, so its accent is the blue of its azulejos, and
+ * the United States' is the blue of its canton. Contrast pairs are checked by
+ * tests/unit/themes.test.ts (WCAG 2.2 AA).
  */
 import type { Flag } from '../content/types';
 
@@ -58,6 +59,24 @@ export const THEMES: Record<Flag, Theme> = {
     accentInk: '#012169',
     accentSoft: '#E5E9F5',
     motif: '#C8102E',
+  },
+  ie: {
+    id: 'ie',
+    accent: '#1FA36A',
+    accentDeep: '#127A4E',
+    onAccent: '#16213E',
+    accentInk: '#0B6B42',
+    accentSoft: '#DFF3E9',
+    motif: '#FF883E',
+  },
+  us: {
+    id: 'us',
+    accent: '#3C3B6E',
+    accentDeep: '#24234A',
+    onAccent: '#FFFFFF',
+    accentInk: '#3C3B6E',
+    accentSoft: '#E8E8F3',
+    motif: '#B22234',
   },
 };
 export function themeVars(theme: Theme): Record<string, string> {

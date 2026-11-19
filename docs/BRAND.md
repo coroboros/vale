@@ -41,8 +41,9 @@ The maskable copy shrinks him to 80 %, inside the circle of radius 40 % that And
 
 ## Colours and type
 
-Each course wears its country's colours (`src/ui/themes.ts`, keyed by the course's `flag`): the
-accent goes on primary actions and progress, the whole flag on Bernard's shell.
+Each trip wears its country's colours (`src/ui/themes.ts`, from `flagOf`: the destination's flag
+when it is in another country than the course's, else the course's): the accent goes on primary
+actions and progress, the whole flag on Bernard's shell.
 
 | Country | Course | Accent | Shell |
 | --- | --- | --- | --- |
@@ -50,6 +51,8 @@ accent goes on primary actions and progress, the whole flag on Bernard's shell.
 | Italy | Italian | flag green `#007A3D` | green, white and red |
 | Portugal | Portuguese | azulejo blue `#1D5FBF` | green and red, the armillary sphere |
 | United Kingdom | English | Union Jack navy `#012169` | the Union Jack |
+| Ireland | English, in Dublin | emerald `#1FA36A`, ink text | green, white and orange |
+| United States | English, in New York | canton blue `#3C3B6E` | stripes and a starred canton |
 
 - Warm paper background `#FFFAF3`, ink `#16213E`.
 - Red is kept for wrong answers, so it appears only inside flags. Portugal's flag is mostly red,

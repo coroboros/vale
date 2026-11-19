@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COURSES, indexOf } from '../../src/content';
+import { COURSES, courseById, flagOf, indexOf } from '../../src/content';
 import { CUES, cueOf, duringCue } from '../../src/content/cues';
 import { build, canBuild, cardOf, GRADED } from '../../src/engine/exercises';
 import { normalize } from '../../src/engine/grade';
@@ -84,13 +84,26 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
     }
   });
 
-  it('uses an existing theme', () => {
-    expect(THEMES[course.flag]).toBeDefined();
+  it('dresses every destination in an existing theme', () => {
+    for (const r of course.regions) expect(THEMES[flagOf(course, r.id)]).toBeDefined();
   });
 
   it('says something on landing day for every practice moment, the hotel with the traveller’s name', () => {
     for (const cue of CUES) expect(course.arrival[cue.id].say('Léa')).toMatch(/\p{L}/u);
     expect(course.arrival.evening.say('Léa')).toContain('Léa');
+  });
+});
+
+describe('flags', () => {
+  it('follow the destination’s country when it differs from the course’s', () => {
+    const en = courseById('en');
+    expect(['londres', 'edimbourg', 'dublin', 'newyork', 'autre'].map(id => flagOf(en, id))).toEqual([
+      'gb',
+      'gb',
+      'ie',
+      'us',
+      'gb',
+    ]);
   });
 });
 

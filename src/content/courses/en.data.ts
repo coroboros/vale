@@ -712,6 +712,7 @@ export const regions: Region[] = [
     name: 'Dublin',
     at: 'à Dublin',
     native: 'Dublin',
+    flag: 'ie',
     tip: {
       title: 'En Irlande',
       desc: 'On paie en euros, pas en livres. « Grand » veut dire « d’accord », et « the craic », l’ambiance.',
@@ -722,6 +723,7 @@ export const regions: Region[] = [
     name: 'New York',
     at: 'à New York',
     native: 'New York',
+    flag: 'us',
     tip: {
       title: 'Aux États-Unis',
       desc: 'On dit check, restroom, subway et to go. Le pourboire (15 à 20 %) est attendu, et les taxes s’ajoutent au prix affiché.',

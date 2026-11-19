@@ -2,7 +2,7 @@
 import { Pencil, Plus, Trash2 } from 'lucide-preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { addTrip, editTrip, focusTrip, removeTrip } from '../actions';
-import { COURSES, courseById, regionOf } from '../content';
+import { COURSES, courseById, flagOf, regionOf } from '../content';
 import type { Course } from '../content/types';
 import { dayKey, daysBetween, learntIn } from '../engine/progress';
 import { blankTrip, orderTrips, type Trip, tripOf } from '../state/schema';
@@ -121,7 +121,7 @@ export function TripList({ onEdit, onAdd }: { onEdit: (id: string) => void; onAd
         value={p.trip}
         options={orderTrips(p.trips, today).map(t => ({
           value: t.id,
-          icon: <FlagDot flag={courseById(t.course).flag} />,
+          icon: <FlagDot flag={flagOf(courseById(t.course), t.region)} />,
           title: tripName(t),
           sub: departure(t.date, today),
           aside: (

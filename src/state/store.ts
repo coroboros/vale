@@ -1,5 +1,5 @@
 import { computed, signal } from '@preact/signals';
-import { COURSES, courseById, indexOf, splitKey } from '../content';
+import { COURSES, courseById, flagOf, indexOf, splitKey } from '../content';
 import { THEMES } from '../ui/themes';
 import { migrateV3 } from './migrate';
 import {
@@ -106,7 +106,10 @@ export const languages = computed(() => {
   ]);
   return [...ids].flatMap(id => COURSES.filter(c => c.id === id));
 });
-export const theme = computed(() => THEMES[course.value.flag]);
+export const theme = computed(() => {
+  const p = profile.value;
+  return THEMES[p ? flagOf(course.value, tripOf(p).region) : course.value.flag];
+});
 export const settings = computed(() => db.value.settings);
 
 export const isQuiet = (now = Date.now()) => quietActive(db.value.settings, now);

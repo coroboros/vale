@@ -1,7 +1,7 @@
 import { BookOpen, Check, ChevronDown, ChevronRight, Ear, MapPin, MessageCircle, Repeat } from 'lucide-preact';
 import { useState } from 'preact/hooks';
 import { focusTrip, startSession } from '../../actions';
-import { courseById, itemKey, regionOf } from '../../content';
+import { courseById, flagOf, itemKey, regionOf } from '../../content';
 import { cueOf, duringCue } from '../../content/cues';
 import type { Course, Step, Unit } from '../../content/types';
 import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible } from '../../engine/progress';
@@ -206,7 +206,7 @@ export function Home() {
 
       {next && (
         <section class="card next-trip" aria-label="Voyage suivant">
-          <FlagDot flag={courseById(next.course).flag} size={36} />
+          <FlagDot flag={flagOf(courseById(next.course), next.region)} size={36} />
           <p>
             <strong>Prochain voyage : {tripName(next)}</strong>
             <span class="small muted">{departure(next.date, today)}</span>

@@ -100,7 +100,7 @@ kit, the screens), and plan the smallest change. Then:
   focus (`tripOf`); progress is keyed by language, so trips in one language share it.
 - `src/ui/`: screens, components (`kit.tsx`), `Imagine.tsx` (closes onboarding and lands every new
   trip, `screens/Landing.tsx`), `Porthole.tsx` and `scenery/` (the welcome flight),
-  `themes.ts` (colours per country, from the course's `flag`, contrast checked by a test),
+  `themes.ts` (colours per country, from the trip's `flagOf`, contrast checked by a test),
   `photos.json` (one photo per destination with its credit, written by `brand/photos.py`; files in
   `public/photos/`).
 - `src/translation-api.ts`: the request and answer shared with the Worker.

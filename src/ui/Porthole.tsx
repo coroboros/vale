@@ -5,6 +5,7 @@
 import { Pause, Play } from 'lucide-preact';
 import type { RefObject } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { flagOf } from '../content';
 import type { Course, Region } from '../content/types';
 import { reducedMotion } from '../platform/env';
 import { say } from '../platform/speech';
@@ -163,7 +164,7 @@ export const stopOf = (course: Course, region: Region): Stop => ({
   place: region.id,
   greeting: course.greet(region.native),
   lang: course.lang,
-  theme: THEMES[course.flag],
+  theme: THEMES[flagOf(course, region.id)],
 });
 
 /**

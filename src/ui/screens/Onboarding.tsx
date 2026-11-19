@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createProfiles, startFirstLesson } from '../../actions';
 import { BRAND } from '../../brand';
-import { COURSES, regionOf } from '../../content';
+import { COURSES, flagOf, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
 import { blankTrip, GOALS, PROFILE_COLORS } from '../../state/schema';
@@ -39,7 +39,7 @@ export function Onboarding() {
   const [goal, setGoal] = useState(40);
   const [cue, setCue] = useState('');
   const c = COURSES.find(x => x.id === courseId)!;
-  const theme = THEMES[c.flag];
+  const theme = THEMES[flagOf(c, region)];
   const last = 6;
   const names = people.map(t => t.name.trim());
   const canGo = step !== 4 || names.every(Boolean);

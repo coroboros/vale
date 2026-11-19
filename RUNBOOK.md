@@ -25,10 +25,10 @@ Portuguese and English are new and wait for the native review (TODO.md).
 **Then, what does not match yet** (checked on 19 Nov 2026 after your iPhone screenshots), in this
 order:
 
-1. **Dublin and New York wear the British flag**. *Rules first: AGENTS.md.* Bernard's shell and the
-   theme come from the course, so Dublin, in Ireland, not the United Kingdom, shows the Union Jack.
-   A destination can set its own flag (Ireland, United States), theme colours contrast-tested like
-   the others; Edinburgh keeps the UK's.
+1. ✅ 19 Nov 2026. **Dublin and New York wear their own flags.** A destination in another country
+   than its course's says so (`flag`), and `flagOf` dresses the trip: theme, Bernard's shell, the
+   badges in « Mes voyages ». Ireland in emerald, the United States in canton blue, both
+   contrast-tested; Edinburgh keeps the UK's.
 2. **Destination tips are written and never shown.** *Rules first: AGENTS.md.* Eleven destinations
    have one (« Aux États-Unis », « En Irlande », « En Écosse »…) and so does every regional pack,
    but no screen reads them. The trip's tip goes first in *Phrases*, « Bon à savoir », and a pack's

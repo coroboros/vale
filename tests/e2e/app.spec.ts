@@ -343,6 +343,25 @@ test('« Mes voyages » keeps several trips, even in one language, and Home foll
   await expect(page.getByRole('button', { name: 'Traduire en italien' })).toBeVisible();
 });
 
+test('a trip wears its destination’s country: Ireland for Dublin, not the United Kingdom', async ({ page }) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  const accent = () =>
+    page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim());
+  const addTrip = async (place: string) => {
+    await page.getByRole('button', { name: /^Mes voyages/ }).click();
+    await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+    await page.getByText('Anglais', { exact: true }).click();
+    await page.getByRole('button', { name: place }).click();
+    await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+    await page.getByRole('button', { name: 'Fermer' }).click();
+  };
+  await addTrip('Dublin');
+  await expect.poll(accent).toBe('#1FA36A');
+  await addTrip('Londres');
+  await expect.poll(accent).toBe('#012169');
+});
+
 test('the next trip is offered once the one in focus has begun', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-12-22T09:00:00'));
   await onboard(page);

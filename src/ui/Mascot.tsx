@@ -109,7 +109,7 @@ function Eye({ x, y, mood }: { x: number; y: number; mood: Mood }) {
   );
 }
 
-const RED = { es: '#AA151B', it: '#CE2B37', pt: '#DA291C', gb: '#C8102E' };
+const RED = { es: '#AA151B', it: '#CE2B37', pt: '#DA291C', gb: '#C8102E', us: '#B22234' };
 
 /** The flag fills the shell's circle (centre 73,48, radius 34). */
 function FlagArt({ flag }: { flag: Flag }) {
@@ -128,6 +128,30 @@ function FlagArt({ flag }: { flag: Flag }) {
         <rect x={x} y={y} width={s / 3} height={s} fill="#009246" />
         <rect x={x + s / 3} y={y} width={s / 3} height={s} fill="#F4F5F0" />
         <rect x={x + (2 * s) / 3} y={y} width={s / 3} height={s} fill={RED.it} />
+      </g>
+    );
+  }
+  if (flag === 'ie') {
+    return (
+      <g>
+        <rect x={x} y={y} width={s / 3} height={s} fill="#169B62" />
+        <rect x={x + s / 3} y={y} width={s / 3} height={s} fill="#F4F5F0" />
+        <rect x={x + (2 * s) / 3} y={y} width={s / 3} height={s} fill="#FF883E" />
+      </g>
+    );
+  }
+  if (flag === 'us') {
+    const band = s / 13;
+    return (
+      <g>
+        <rect x={x} y={y} width={s} height={s} fill="#F4F5F0" />
+        {Array.from({ length: 7 }, (_, i) => (
+          <rect key={i} x={x} y={y + 2 * i * band} width={s} height={band} fill={RED.us} />
+        ))}
+        <rect x={x} y={y} width={s * 0.48} height={band * 7} fill="#3C3B6E" />
+        {Array.from({ length: 9 }, (_, i) => (
+          <circle key={i} cx={x + 12 + (i % 3) * 9} cy={y + 13 + Math.floor(i / 3) * 10} r="1.9" fill="#fff" />
+        ))}
       </g>
     );
   }

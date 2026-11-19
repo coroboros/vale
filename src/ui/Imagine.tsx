@@ -1,6 +1,6 @@
 /** « Imagine »: the traveller pictured at their destination, closing onboarding and every new trip. */
 import { useId, useState } from 'preact/hooks';
-import { regionOf } from '../content';
+import { flagOf, regionOf } from '../content';
 import type { Course } from '../content/types';
 import { goalOf } from '../state/schema';
 import { imagineWords } from './imagine-words';
@@ -62,6 +62,7 @@ export function Imagine({
   goal: number;
 }) {
   const heading = useId();
+  const flag = flagOf(c, region);
   const photo = photoOf(c.id, region);
   const [broken, setBroken] = useState('');
   const shown = photo && photo.id !== broken ? photo : undefined;
@@ -76,7 +77,7 @@ export function Imagine({
   return (
     <section class="imagine" aria-labelledby={heading}>
       <h1 id={heading}>{words.title}</h1>
-      {shown && <Mascot size={72} flag={c.flag} mood="cheer" motion="bob" decorative />}
+      {shown && <Mascot size={72} flag={flag} mood="cheer" motion="bob" decorative />}
       <p class="lead">{words.lead}</p>
       {shown && <Backdrop photo={shown} onError={() => setBroken(shown.id)} />}
       <div class="imagine-line">
@@ -86,7 +87,7 @@ export function Imagine({
         </p>
       </div>
       <p class="imagine-plan">{words.plan}</p>
-      {shown ? <Credit photo={shown} /> : <Mascot size={130} flag={c.flag} mood="cheer" motion="bob" />}
+      {shown ? <Credit photo={shown} /> : <Mascot size={130} flag={flag} mood="cheer" motion="bob" />}
     </section>
   );
 }
