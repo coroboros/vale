@@ -1,7 +1,7 @@
 /**
  * Situation pages: what travellers search for before leaving, answered by a lesson of each course
  * and the scene that follows it on the itinerary. `build/pages.ts` writes them as static pages
- * next to the app (RUNBOOK A4).
+ * next to the app (docs/SEARCH.md).
  */
 import type { Course, Scene } from './types';
 

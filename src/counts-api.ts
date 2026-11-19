@@ -1,5 +1,5 @@
 /**
- * The anonymous counts behind the decision figures (RUNBOOK A2), shared by the app and the Worker.
+ * The anonymous counts behind the decision figures (RUNBOOK.md), shared by the app and the Worker.
  * A count says what happened, on which first day and through which link, never who: no
  * identifier, no sentence. The
  * CNIL exempts such audience measurement from consent when it only produces anonymous statistics
@@ -11,7 +11,7 @@ export type CountName = (typeof COUNT_NAMES)[number];
 
 /**
  * The link a traveller first came through, from its `utm_source`: '' when typed or found
- * elsewhere, `carte` for a shared survival card, `page` for a situation page (RUNBOOK A4).
+ * elsewhere, `carte` for a shared survival card, `page` for a page beside the app (build/pages.ts).
  */
 const SOURCES = ['', 'carte', 'page'] as const;
 export type Source = (typeof SOURCES)[number];

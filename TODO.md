@@ -29,6 +29,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
   overview and on the home screen.
 - Bernard's eyes following a finger on the iPhone, and his blinking.
+- A lesson's sheet opened from the itinerary in Safari on the iPhone: no ring on its close button
+  until Tab reaches it (fixed on 19 Nov 2026, tested in Chromium only).
 - « Imagine » on the iPhone: the photo in plain view at the top, nothing to scroll on an iPhone SE,
   the slow zoom smooth on an older iPhone, and how fast the photo appears on a slow connection (it
   loads one step ahead, about 250 KB).
@@ -71,7 +73,7 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **Understand what you hear and read.** Translation the other way (any course language into
   French), from typed text first, then from a photo of a menu or a sign.
 - **Measure before claiming.** Anonymous counts, nothing personal, nothing about the sentences
-  translated: the decision figures are in RUNBOOK.md (A2); answer accuracy per exercise kind
+  translated: the decision figures are in RUNBOOK.md; answer accuracy per exercise kind
   then checks the hypotheses in docs/LEARNING.md.
 - **Reminders.** Web Push at the practice moment the learner chose (iOS 16.4+ for installed apps),
   sent by the Worker with VAPID keys.
@@ -86,12 +88,6 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   checked 18 November 2026). Profiles shared across phones come with it.
 - **Trips, next.** A return date (the pass needs one: docs/BUSINESS.md), so home moves to the next
   trip on its own and a trip's stamps carry its dates.
-- **A faster first screen.** The welcome's largest paint, its wordmark, comes at 2.7 s on
-  Lighthouse 12.8's slow phone (good is under 2.5 s), though 13.6 says 0.9 s with the same
-  settings: real visitors' figures decide (Search Console). It waits for the main script, 108 KB
-  compressed, which carries all four courses (187 KB of source). Loading a course when a trip needs it, or
-  writing the welcome into the page at build time, would let it paint before the script runs;
-  measure before and after (docs/SEARCH.md, « Measured »).
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
 
 ## Watch
@@ -105,6 +101,10 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **Dependencies.** Monthly `npm outdated` here and in `worker/`, then `npm run check`.
 - **Content Security Policy.** Unsplash photos (C3) or recorded voices served from elsewhere join
   `build/csp.ts` when they arrive.
+- **First screen speed.** 1.6 s measured with a slow phone's network and processor in Chrome
+  (docs/SEARCH.md, « Measured »). Once real visitors come, Search Console's Core Web Vitals: past
+  2.5 s, load a course only when a trip needs it (the main script, 108 KB compressed, carries all
+  four), or write the welcome into the page at build time.
 - **Search.** Google's documentation changelog for structured data and AI features
   (docs/SEARCH.md); the IndexNow step's answer in the deploy log (200 or 202; a warning otherwise).
 - **Flaky end-to-end tests.** Two only failed on GitHub's runners (the first key of the keyboard

@@ -83,7 +83,7 @@ kit, the screens), and plan the smallest change. Then:
 2. `npm run check` passes.
 3. Looked at on a phone (390 and 320 px wide) and a desktop, from screenshots.
 4. The docs move in the same commit: README for what travellers get, the map below, RUNBOOK.md
-   (tick the step with the date), TODO.md, docs/ for evidence.
+   (the step moves to « Done », with the date), TODO.md, docs/ for evidence.
 5. Commit (a short imperative summary, then a bulleted body), push, CI green.
 6. When an agent gets something wrong about this repository, fix this file in the same change.
 

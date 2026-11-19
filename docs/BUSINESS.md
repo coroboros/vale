@@ -1,7 +1,7 @@
 # Business model: proposal
 
 Status: a proposal to decide on, not a plan. Every figure below is an outside benchmark or an
-estimate; ours will only be known once measurement (RUNBOOK.md, A2 and C1) is live.
+estimate; ours will only be known once measurement (RUNBOOK.md, C1 and « Decision figures ») is live.
 
 ## Principles
 
@@ -68,7 +68,7 @@ Graded by evidence, strongest first:
 ## Cloud backup: an option to study
 
 Today the only copy of someone's progress is on their phone. Safari deletes it after seven days
-of Safari use without a visit, unless the app is on the home screen (RUNBOOK.md, A1); a lost or
+of Safari use without a visit, unless the app is on the home screen (RUNBOOK.md, « Done »); a lost or
 replaced phone loses it, and a second device cannot share it. *Moi* offers a manual export, and
 that stays free.
 

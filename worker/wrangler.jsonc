@@ -20,7 +20,7 @@
   },
   // Created on the first deploy (automatic provisioning).
   "kv_namespaces": [{ "binding": "CACHE" }],
-  // The anonymous counts behind the decision figures (RUNBOOK A2): totals per day in D1. Switched
+  // The anonymous counts behind the decision figures (RUNBOOK.md): totals per day in D1. Switched
   // on at RUNBOOK C1, once the API token may edit D1 (the « Edit Cloudflare Workers » template may
   // not); the next deploy then creates the database. `npm run figures` reads it.
   // "d1_databases": [{ "binding": "COUNTS", "database_name": "bagage-counts" }],

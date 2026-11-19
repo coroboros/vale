@@ -149,8 +149,8 @@ counts below, nothing else about the learner leaves the phone.
 
 **Anonymous counts.** `/count` adds what the app reports (a new traveller, a return on day 1 or day
 7, an install on the home screen, a shared card, the sessions before a first departure as a range,
-each with the link that brought the traveller) to totals per day in D1, for the decision figures of
-RUNBOOK A2 and the experiments of A4. No identifier and nothing about sentences; a
+each with the link that brought the traveller) to totals per day in D1, for the decision figures
+(RUNBOOK.md) and the links that bring travellers. No identifier and nothing about sentences; a
 traveller can switch them off in *Moi*. They stay off until RUNBOOK C1 (`VITE_COUNTS_URL` and the
 `d1_databases` binding); `npm run figures` in `worker/` reads them.
 

@@ -1,4 +1,4 @@
--- The decision figures (RUNBOOK A2), per week of first use, for weeks whose travellers have all
+-- The decision figures (RUNBOOK.md), per week of first use, for weeks whose travellers have all
 -- passed day 7, with two more days for phones that report late.
 SELECT
   strftime('%Y-%W', day) AS week,
@@ -12,8 +12,8 @@ GROUP BY week
 HAVING travellers > 0
 ORDER BY week;
 
--- Per link travellers first came through (RUNBOOK A4), same weeks: '' is a direct visit, `carte`
--- a shared survival card, `page` a situation page.
+-- Per link travellers first came through (src/counts-api.ts), same weeks: '' is a direct visit,
+-- `carte` a shared survival card, `page` a page beside the app.
 SELECT
   source,
   SUM(CASE WHEN name = 'new' THEN n ELSE 0 END) AS travellers,

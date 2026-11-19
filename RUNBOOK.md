@@ -1,7 +1,8 @@
 # Runbook
 
-What to do next, in order, and how. Tick a step when it is done, with the date. The backlog and
-the watch list live in TODO.md; the reasons behind product choices in docs/.
+What to do next, in order, and how. A step done moves to « Done » at the end, with its date; its
+details stay in that day's commit and in docs/. The backlog and the watch list live in TODO.md,
+the reasons behind product choices in docs/.
 
 Owner: **you** (needs your accounts or your phone) or **Claude** (code, in a Claude Code session).
 
@@ -9,148 +10,25 @@ Every step that changes code starts with the rules in AGENTS.md, « Rules » (th
 coding agents read that file on their own): each step below says so.
 
 Rule since the external review of 18 November 2026: **measure before widening**. No new language
-and no live conversation before the numbers below say people come back. Quality work on what
-exists (voices, photos) waits only for its keys.
+and no live conversation before the decision figures (C) say people come back. Quality work on
+what exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-✅ 19 Nov 2026, at your request: **« Imagine » for every new trip, and the practice moment used
-everywhere.** A trip added in « Mes voyages » lands on « Imagine » for it (`#/arrivee`), the
-component onboarding ends on too. Each moment has its scene and sentence, taken from the course
-where it teaches one: the café, a terrace (a pub in English), the taxi or the station, the hotel
-desk booked in the learner's name; the dream ends on the plan (minutes, moment, date). Home brings
-the moment back at that hour while the daily goal is open. The hotel sentences in Italian,
-Portuguese and English are new and wait for the native review (TODO.md).
-
-**Then, what does not match yet** (checked on 19 Nov 2026 after your iPhone screenshots), in this
-order:
-
-1. ✅ 19 Nov 2026. **Dublin and New York wear their own flags.** A destination in another country
-   than its course's says so (`flag`), and `flagOf` dresses the trip: theme, Bernard's shell, the
-   badges in « Mes voyages ». Ireland in emerald, the United States in canton blue, both
-   contrast-tested; Edinburgh keeps the UK's.
-2. ✅ 19 Nov 2026. **Destination and pack tips are shown.** *Phrases*, « Bon à savoir », opens on
-   the tips of the traveller's destinations in that language; a regional pack opens a sheet like a
-   lesson's, its tip as the introduction and its words in its own voice.
-3. ✅ 19 Nov 2026. **Money per destination.** The currency follows the trip's country
-   (`currencyOf`): price drills in Dublin are in euro (« four euro twenty », the Irish way), in New
-   York in dollars (« four dollars and twenty cents »), and the game's icon follows.
-4. ✅ 19 Nov 2026. **Every destination drawn, animated like the others.** The seventeen that
-   showed a generic coast have their own scene, from the Puerta de Alcalá to the Brooklyn Bridge,
-   in one module per country (`scenery/`). The window of the trip being chosen in « Mes voyages »
-   now moves like the welcome flight: clouds drift, boats rock. « Ailleurs » shows its country's
-   emblem, photo and drawing alike, from one field (`emblem`, read by `pictureOf`). A test fails
-   when a destination has no drawing; the generic coast is gone.
-5. ✅ 19 Nov 2026. **American and Irish words, with their voices.** New York's itinerary gains
-   « L’anglais américain » (the check, the restroom, to go, the subway, uptown and downtown, the
-   first floor…) in an American voice, Dublin's « L’anglais irlandais » (grand, the craic, your
-   round…) in an Irish one when the phone has it, another English voice otherwise. « Bon à savoir »
-   keeps the customs: the tip and the taxes; the euro and the Irish signs (Mná for women, Fir for
-   men). A pack's sheet opens on its `intro`, which replaces a tip whose title nothing showed.
-6. ✅ 19 Nov 2026. **A sheet no longer opens with a ring on its close button.** The sheet takes
-   focus itself (`dialog.focus()` after `showModal()`: `autofocus` on a `<dialog>` does not behave
-   the same in every browser), and Tab reaches the close button with its ring. Tested in
-   Chromium; Safari on the iPhone is in TODO.md, « Test for real » (no WebKit here).
-7. ✅ 19 Nov 2026. **Hotel and shopping in every language.** Italian, Portuguese and English gain
-   the « Dormir et acheter » leg Spanish had: the hotel lesson and check-in scene, then shopping.
-   Shaped by each country rather than copied: the tourist tax in Italy and Portugal, « Contribuinte? »
-   at Portuguese tills, the receipt's silent p. Phrases already taught elsewhere (paying by card,
-   open and closed) gave way to trying on and paying cash or card. Tests now hold every course to
-   the README's list and every word a scene says to a gloss you can tap (the new scenes lacked
-   them); the native review is in TODO.md.
-8. ✅ 19 Nov 2026. **French typography: spaces that never break.** A build step
-   (`build/french-spaces.ts`, on Vite's own parser) makes the space before : ; ? ! % and inside « »
-   non-breaking in the text of string literals, templates and JSX, never in the code around it;
-   writers keep typing plain spaces. Tests cover the transform and scan the courses for any
-   breakable space left.
-
-1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
-   Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,
-   2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Home now asks
-   iPhone users in Safari to install once they have progress to lose; the app already asked the
-   browser to keep its data at every start. Export from *Moi* remains the backup.
-2. ✅ 19 Nov 2026. **Measurement, ready to switch on.** The decision figures, set by you on
-   19 Nov 2026: widen (a new language, live conversation) only when day-1 return reaches 30 %,
-   day-7 return 15 % and installs on the home screen by day 7 20 %, read over weeks of first use
-   whose travellers have passed day 7. Sessions finished before the first departure are read
-   alongside, with no threshold yet; the pass (offers seen, then taps) comes with the pass.
-   - A return is a session finished on that exact day: stricter than the app opens behind the
-     benchmarks (an average iOS app keeps 24 % on day 1 and 8 % on day 7, AppsFlyer 2024).
-   - Read the figures with at least 100 travellers (my proposal): a 15 % rate is then known within
-     about 7 points either way.
-   - The phone works the counts out from its own day log and sends each once
-     (`src/engine/counts.ts`, `src/counts.ts`): a name, the first day and, for a departure, a
-     session range. No identifier, nothing about sentences. The Worker adds each to a total per
-     day (`/count`, D1) and keeps no row per request.
-   - CNIL: no consent needed when the counts only serve the publisher's audience measurement,
-     produce anonymous statistics, are neither combined with other processing nor passed on, and
-     people are told ([CNIL, 4 July
-     2025](https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience)). *Moi*
-     tells them and has the switch, on by default as you chose. Nothing is sent before C1.
-3. ✅ 19 Nov 2026. **The game layer, from the evidence** (docs/LEARNING.md).
-   - Onboarding's answers count for a fifth of the first goal, and the last five points are
-     counted in phrases, with a short session on the ticket to finish.
-   - Travellers sharing a phone see « Votre équipe »: a weekly goal of five daily goals each,
-     reached together, and who brought what, a crown for the one ahead.
-   - Bernard tells his trip in postcards, four per leg (`src/content/story.ts`): the new one on the
-     session ticket and at the end of a scene, the latest under each leg on home. One line each:
-     thin stories go with larger learning effects than deeper ones.
-4. ✅ 19 Nov 2026. **Acquisition experiments that need no account** (hypotheses, untested until the
-   figures say otherwise).
-   - *Carte* sends the card as a picture (the destination's drawing, Bernard, the
-     phrases over their French), through the phone's share sheet or saved where there is none,
-     with a link marked `utm_source=carte`. The counts now say which link brought each traveller
-     (`carte`, `page`, or none) and who shared or saved their card; `npm run figures` reads them
-     per link.
-   - Situation pages, built from the lessons with the app (`src/content/pages.ts`,
-     `build/pages.ts`): six questions people type before leaving, from « Comment dire bonjour » to
-     « Comment demander de l’aide », in each language (24 pages, such as
-     `espagnol/commander-un-cafe/`), with the phrases, their pronunciation, the device's voice and
-     the scene that uses them, plus a `sitemap.xml`. « Apprendre ces phrases » opens the app on
-     that lesson (`#/apprendre/es/bar`): onboarding in that language for a newcomer, the lesson at
-     once in a traveller's trip in it. Installed copies of the app leave the pages to the network.
-   - 19 Nov 2026, after your test on the iPhone: the card's picture no longer waits forever in
-     Safari (its drawings load from data URLs, without `decode()`), and the sheet says « Carte
-     envoyée » or « Image enregistrée » once done.
-5. ✅ 19 Nov 2026, all that needs no domain. **Search, a complete pass** (your priority). The
-   analysis, its sources and what each is worth are in docs/SEARCH.md: Google's AI answers run on
-   its usual ranking, so the work is SEO; they halve clicks when they answer in a line (Pew), so
-   the pages give more than a line; Bing feeds ChatGPT search, so IndexNow. Built:
-   - Situation pages titled in the words people type (« Commander un café en espagnol : 12
-     phrases avec la prononciation »), with their « Bon à savoir » tips, a trail back to their
-     language with breadcrumb data, and who wrote them.
-   - A page per language (`espagnol/`, `italien/`, `portugais/`, `anglais/`): its six situations,
-     its tips, and « Apprendre l’espagnol » into the app (`#/apprendre/es`).
-   - The app's own title, canonical address, sharing tags and picture (`node brand/og.ts`), and
-     the `WebSite` data that names the site once it has a domain; `sitemap.xml` with the 29
-     addresses, `robots.txt` ready for the domain's root.
-   - The deploy job tells IndexNow which pages changed or went, once the new version is online
-     (`build/indexnow.ts`).
-   - Lighthouse before and after: docs/SEARCH.md, « Measured ».
-
-   Waits for you: the domain (B2, candidates in docs/SEARCH.md), Search Console (B7). Then what
-   French travellers type, read in Search Console (Trends and autocomplete cannot be read from
-   here), and more pages where the numbers back them.
-
-Done at your request, outside this order: ✅ 18 Nov 2026, **several trips at once** (two in a row,
-several languages, two in one language), each with its own hotel and address on the card; home
-follows the trip in focus and offers the next one once a trip has begun; *Phrases* switches
-between the traveller's languages. ✅ 19 Nov 2026, **« Imagine » on phones**: the photo in plain view
-at the top, the words on the page below, nothing to scroll from 375 × 667 up, measured against the
-previous design (docs/BRAND.md, Photos). ✅ 19 Nov 2026, **Bernard and a moving drawing on the
-pages**: the app's own Bernard, alive and in the course's flag, replaces the icon by the name; the
-drawing moves as in the app's windows and pauses, like a trip's window in « Mes voyages » now
-does (docs/BRAND.md, Motion).
+1. **A return date for each trip.** *Rules first: AGENTS.md.* Once a trip ends, home moves to the
+   next one on its own, the trip's stamps carry its dates, and the pass has the date it needs
+   (docs/BUSINESS.md; TODO.md, « Trips, next »).
+2. **A pronunciation check that stays on the computer.** *Rules first: AGENTS.md.* Chrome on a
+   computer recognises speech on the device once its language pack is installed: offer that pack
+   (`SpeechRecognition.install()`) where Bagage now falls back on the online service, after
+   checking the API's current state (TODO.md, « Pronunciation, the rest »).
 
 ## B. You, when you can
 
-### B0. Now, in five minutes
+### B0. Now, in two minutes
 
-1. **Delete the `photos-fetch` branch.** Repository → *Branches* → the bin next to
-   `photos-fetch`. It only ran the photo download; the photos are in `main`.
-2. **One check on your iPhone.** At https://coroboros.github.io/vale/, open a lesson's sheet from
-   the itinerary: its close button should show no ring. If it does, send a screenshot (the fix of
-   19 Nov 2026 could only be tested in Chromium).
+Delete the `photos-fetch` branch: repository → *Branches* → the bin next to `photos-fetch`. It
+only ran the photo download; the photos are in `main`.
 
 ### B1. Connect Cloudflare and the Claude credits (about 15 minutes)
 
@@ -171,38 +49,47 @@ does (docs/BRAND.md, Motion).
 6. **Check.** Open the address, go to *Phrases*, translate « Je voudrais un late checkout ».
    In the Cloudflare dashboard, the Worker's logs show the model used.
 
-### B2. An address of our own (you, 15 minutes, early: search builds on it)
+### B2. An address of our own (15 minutes, early: search builds on it)
 
 1. Check the name first (D4): INPI and EUIPO searches for « Bagage » in classes 9 and 41.
 2. Buy the domain where the Worker runs: Cloudflare dashboard → *Domain Registration → Register
    Domains*. Tell Claude which one; docs/SEARCH.md lists candidates (not checked: domain
    registries cannot be queried from here).
-3. Claude then moves `BRAND.url`, the canonical addresses and the sitemap to it, and gives the
-   Worker its custom domain.
 
-### B3. Make the repository private, then rename it (5 minutes)
+### B3. Move to the address (Claude)
 
-Right after B1 works (GitHub Pages stops serving a private repository on the free plan):
-docs/BUSINESS.md and docs/MARKET.md are public until then.
+*Rules first: AGENTS.md.*
+
+- `BRAND.url` (`src/brand.ts`) and the README link: the domain from B2, or the Cloudflare address
+  until then. The pages' canonical addresses, `sitemap.xml`, `robots.txt`, `llms.txt` and
+  IndexNow follow it; the Worker gets the domain.
+- A last GitHub Pages build whose pages point to their new addresses (with the canonical tag), so
+  search engines move what they have indexed; then the *deploy* job loses its GitHub Pages branch.
+- `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: keep only the local dev servers.
+- Delete the `TRANSLATE_URL` variable if it was ever set.
+
+### B4. Search Console (10 minutes, once Bagage has its domain)
+
+Search engines find the pages through links and the sitemap; this makes it sooner and gives the
+figures per page (docs/SEARCH.md, « How we will know »). Google Search Console → *Add property →
+Domain* → the domain from B2 → verify through DNS (Search Console walks you through Cloudflare).
+Then *Sitemaps* → `sitemap.xml` → *Submit*, and leave the site in the generative AI features.
+Then Bing Webmaster Tools → *Import* from Google Search Console: Bing also feeds ChatGPT search.
+Last, isitagentready.com and Lighthouse's « Agentic browsing » on the domain (docs/SEARCH.md,
+« Agents »).
+
+### B5. Make the repository private, then rename it (5 minutes, a few weeks after B4)
+
+Once Search Console shows the pages at their new addresses: GitHub Pages stops serving a private
+repository on the free plan, and with it the pointers of B3. docs/BUSINESS.md and docs/MARKET.md
+are public until then.
 
 1. Repository → *Settings → General → Danger Zone → Change visibility → Private*.
 2. Same page, *Repository name*: `bagage` → *Rename*.
 3. *Settings → Pages*: unpublish, then delete the `gh-pages` branch.
 4. On any clone: `git remote set-url origin https://github.com/coroboros/bagage.git`.
 
-### B4. Tidy up after the move (Claude)
-
-*Rules first: AGENTS.md.*
-
-- Remove the GitHub Pages branch of the *deploy* job in `.github/workflows/ci.yml`.
-- `BRAND.url` (`src/brand.ts`) and the README link: the domain from B2, or the Cloudflare address
-  until then. The pages' canonical addresses, `sitemap.xml`, `robots.txt` and IndexNow follow it.
-- Before B3 stops GitHub Pages: leave pages at the github.io addresses that point to the new ones
-  for a few weeks, so search engines move what they have indexed (docs/SEARCH.md).
-- `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: keep only the local dev servers.
-- Delete the `TRANSLATE_URL` variable if it was ever set.
-
-### B5. Pick the Workers AI models with data (you run it, Claude reads it)
+### B6. Pick the Workers AI models with data (you run it, Claude reads it)
 
 The fallback models are chosen from general evidence, not measured on our sentences yet.
 
@@ -215,20 +102,10 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… npm run eval
 The token needs the *Workers AI* permission (add it to the deploy token or create one just for
 this). Paste the suggested `MODELS` into the `vars` of `worker/wrangler.jsonc`, commit, push.
 
-### B6. Install and test on your iPhones (Claude fixes)
+### B7. Install and test on your iPhones (Claude fixes)
 
 Safari → the Cloudflare address → *Partager → Sur l'écran d'accueil*. Then go through *Test for
 real* in TODO.md and report what fails, with a screenshot.
-
-### B7. Search Console (10 minutes, once Bagage has its domain)
-
-Search engines find the pages through links and the sitemap; this makes it sooner and gives the
-figures per page (docs/SEARCH.md, « How we will know »). Google Search Console → *Add property →
-Domain* → the domain from B2 → verify through DNS (Search Console walks you through Cloudflare).
-Then *Sitemaps* → `sitemap.xml` → *Submit*, and leave the site in the generative AI features.
-Then Bing Webmaster Tools → *Import* from Google Search Console: Bing also feeds ChatGPT search.
-Last, isitagentready.com and Lighthouse's « Agentic browsing » on the domain (docs/SEARCH.md,
-« Agents »): AI training is allowed, as you chose on 19 Nov 2026.
 
 ### B8. Keys, when you have them
 
@@ -238,24 +115,46 @@ Last, isitagentready.com and Lighthouse's « Agentic browsing » on the domain (
 
 ## C. After going live: measure first (Claude)
 
-1. Switch measurement on (A2). *Rules first: AGENTS.md.* Uncomment `d1_databases` in
+1. **Switch measurement on.** *Rules first: AGENTS.md.* Uncomment `d1_databases` in
    `worker/wrangler.jsonc` and set `VITE_COUNTS_URL: .` in the Cloudflare build of
    `.github/workflows/ci.yml` (the token may edit D1 since B1); the next deploy creates the
-   database, and the first count its table. Check that a new traveller is counted.
-   Compare the translation cost with the Console's usage page: about 0.3 cent a sentence is an
-   estimate, not a measurement.
-2. Two weeks later, read the figures (`cd worker && npm run figures`) and choose what comes next
-   from them.
-3. Photos from Unsplash for « Imagine ». *Rules first: AGENTS.md.* `brand/photos.py` searches
+   database, and the first count its table. Check that a new traveller is counted. Compare the
+   translation cost with the Console's usage page: about 0.3 cent a sentence is an estimate, not a
+   measurement. No consent is needed when counts only serve the publisher's audience measurement,
+   produce anonymous statistics, are neither combined with other processing nor passed on, and
+   people are told ([CNIL, 4 July
+   2025](https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience)): *Moi*
+   tells them and has the switch, on by default as you chose.
+2. **Two weeks later, read the figures** (`cd worker && npm run figures`, and Search Console per
+   page) against the decision figures below, and choose what comes next from them: widening only
+   once all three are met, more pages where search brings travellers who come back.
+3. **Photos from Unsplash for « Imagine ».** *Rules first: AGENTS.md.* `brand/photos.py` searches
    Unsplash per destination and per practice moment (morning coffee: morning light; commute: a
    lively street; lunch: a sunny terrace; evening: golden hour), picks from contact sheets, triggers
    each photo's download endpoint once and records the photographer. As the API terms require, the
    app shows Unsplash's own image URLs (sized and encoded by their CDN, so the 15 MB in
    `public/photos/` leave the repository) and credits « Photo : name sur Unsplash » with links.
-   README says that this step loads an image from images.unsplash.com, the only request the app
-   makes to another site.
-4. AI voices for every phrase (docs/VOICE.md), with the Fish Audio key. *Rules first: AGENTS.md.*
-5. Translation the other way: understand a menu or a reply. *Rules first: AGENTS.md.*
+   `images.unsplash.com` joins `build/csp.ts`, and README says it is the only site the app then
+   loads anything from.
+4. **AI voices for every phrase** (docs/VOICE.md), with the Fish Audio key. *Rules first: AGENTS.md.*
+5. **Translation the other way**: understand a menu or a reply. *Rules first: AGENTS.md.*
+
+### Decision figures
+
+Set by you on 19 Nov 2026. Widen (a new language, live conversation) only when, over weeks of
+first use whose travellers have all passed day 7:
+
+- day-1 return reaches 30 %, day-7 return 15 %, and installs on the home screen by day 7 20 %;
+- with at least 100 travellers read (my proposal): a 15 % rate is then known within about 7
+  points either way.
+
+A return is a session finished on that exact day: stricter than the app opens behind the
+benchmarks (an average iOS app keeps 24 % on day 1 and 8 % on day 7, AppsFlyer 2024). Sessions
+finished before the first departure are read alongside, with no threshold yet; the pass (offers
+seen, then taps) comes with the pass. The phone works the counts out from its own day log and
+sends each once (`src/engine/counts.ts`, `src/counts.ts`): a name, the first day, the link that
+brought the traveller and, for a departure, a session range. No identifier, nothing about
+sentences; the Worker adds each to a total per day (`/count`, D1) and keeps no row per request.
 
 ## D. Before selling anything (you decide, Claude prepares)
 
@@ -285,14 +184,6 @@ Last, isitagentready.com and Lighthouse's « Agentic browsing » on the domain (
 4. **Legal and the name.** Terms of sale, privacy policy (GDPR), the company that invoices,
    Anthropic's terms for serving paying customers; the name checked at INPI and EUIPO (classes 9
    and 41), the domain and the store names.
-5. ✅ 19 Nov 2026. **A Content Security Policy**, tested end to end (`build/csp.ts`): only the
-   app's own scripts run, and it reaches nothing but its origin and the translation and count
-   services the build names. In a `<meta>` tag rather than `public/_headers`: GitHub Pages ignores
-   headers, and the end-to-end tests run under it (any test fails if the policy refuses something
-   of ours; one checks that an injected script is refused). A `<meta>` cannot carry
-   `frame-ancestors` ([CSP](https://w3c.github.io/webappsec-csp/#meta-element)), so framing stays
-   allowed. With accounts and payments (E): the Worker sends it as a header, with
-   `frame-ancestors 'none'` on those pages.
 
 ## E. The business model (Claude, once D says go)
 
@@ -301,13 +192,50 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
 1. Accounts (only when buying or syncing; the app stays usable without one). *Rules first:
    AGENTS.md.*
 2. Payments (the pass, then a subscription), following the D2 decision, and entitlements
-   checked by the Worker. *Rules first: AGENTS.md.*
+   checked by the Worker, which then sends the Content Security Policy as a header, with
+   `frame-ancestors 'none'` on those pages (a `<meta>` cannot carry it). *Rules first: AGENTS.md.*
 3. Premium content served by the Worker after purchase (what ships in the app bundle is free by
    nature), and per-user quotas on translation and AI conversation. *Rules first: AGENTS.md.*
 4. Cloud backup and sync, encrypted on the phone, kept on R2: alone or inside the pass and the
    subscription (docs/BUSINESS.md). *Rules first: AGENTS.md.*
 5. The live conversation partner, light on data (docs/VOICE.md), if the figures justify it. *Rules
    first: AGENTS.md.*
+
+## Done
+
+- 18 Nov 2026. **Keep progress on iPhones.** Home asks iPhone users in Safari to install once they
+  have progress to lose: Safari deletes a site's data after seven days of use without a visit,
+  apps on the home screen keep theirs ([WebKit,
+  2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Export in
+  *Moi* remains the backup.
+- 18 Nov 2026. **Several trips at once**: two in a row, several languages, two in one language,
+  each with its hotel and address on the card; home follows the trip in focus and offers the next
+  one once a trip has begun; *Phrases* switches between the traveller's languages.
+- 19 Nov 2026. **Measurement, ready to switch on** (C1, « Decision figures »).
+- 19 Nov 2026. **The game layer, from the evidence** (docs/LEARNING.md): onboarding's answers count
+  toward the first goal; « Votre équipe » for travellers sharing a phone; Bernard's postcards,
+  four per leg.
+- 19 Nov 2026. **Acquisition experiments that need no account**: the card sent as a picture
+  (`utm_source=carte`) and pages per situation (`utm_source=page`); the counts say which link
+  brought each traveller (`npm run figures`).
+- 19 Nov 2026. **« Imagine » for every new trip**, the practice moment brought back at its hour,
+  and on phones the photo in plain view, measured against the previous design (docs/BRAND.md,
+  Photos).
+- 19 Nov 2026. **After your iPhone screenshots**: Dublin and New York in their own flags;
+  destination and pack tips shown; money per destination; every destination drawn and animated;
+  American and Irish words with their voices; sheets that open without a ring on their close
+  button; hotel and shopping in every language; French spaces that never break.
+- 19 Nov 2026. **Search, all that needs no domain** (docs/SEARCH.md): pages per situation and per
+  language with their trail, titles in the words people type, a sharing picture, the sitemap,
+  `robots.txt` with your content signals (AI training allowed), `llms.txt`, IndexNow told at each
+  deploy.
+- 19 Nov 2026. **A Content Security Policy** (`build/csp.ts`), tested end to end: only the app's own
+  scripts run; in a `<meta>` tag, since GitHub Pages ignores headers.
+- 19 Nov 2026. **Bernard and a moving drawing on the pages**, and a pause on every moving drawing
+  (docs/BRAND.md, Motion).
+- 19 Nov 2026. **The first screen, measured with a slow phone's network and processor**: the
+  welcome's largest paint comes at 1.6 s, under the 2.5 s of a good page, so nothing changes;
+  real visitors' figures will tell (docs/SEARCH.md, « Measured »).
 
 ## Working with Claude Code on your Mac
 

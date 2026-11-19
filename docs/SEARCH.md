@@ -1,7 +1,7 @@
 # Search
 
 How people should find Bagage from a search engine or an AI answer: what the sources say, what
-was built (RUNBOOK A5), what was measured, and what waits for the owner. Each source is graded
+was built, what was measured, and what waits for the owner. Each source is graded
 for Bagage: **strong** (primary documentation or a large measured study), **medium** (secondary
 reports, or a study far from our case), **weak** (opinion). *Inference* marks our own reading.
 
@@ -11,7 +11,7 @@ reports, or a study far from our case), **weak** (opinion). *Inference* marks ou
   host, until Bagage has a domain (RUNBOOK B2).
 - 29 addresses for search engines: the app, a page per language (4) and a page per situation and
   language (24), all in `sitemap.xml`.
-- Not yet: a domain, Search Console, Bing Webmaster Tools (owner, B2 and B7).
+- Not yet: a domain, Search Console, Bing Webmaster Tools (owner, B2 and B4).
 
 ## What the sources say
 
@@ -45,12 +45,12 @@ reports, or a study far from our case), **weak** (opinion). *Inference* marks ou
   (« phrases espagnol voyage ») long before they search for it by name; a domain where the name
   stands with « app » or a French extension helps those who do.
 - No figures on what French travellers type: Google Trends and autocomplete cannot be read from
-  this workspace. Search Console will give the real queries per page after B7; until then the six
+  this workspace. Search Console will give the real queries per page after B4; until then the six
   situations follow the lessons that already exist.
 
-## What was built (A5, 19 November 2026)
+## What was built (19 November 2026)
 
-- **Situation pages** (from A4): titles in the words people type (« Commander un café en espagnol :
+- **Situation pages** (first built that day to test acquisition): titles in the words people type (« Commander un café en espagnol :
   12 phrases avec la prononciation »), descriptions quoting the first phrases, the « Bon à savoir »
   tips of that situation (each course tip now names its lesson), a visible trail and its
   `BreadcrumbList` data, a footer saying who wrote the phrases and that natives will review them.
@@ -75,8 +75,8 @@ reports, or a study far from our case), **weak** (opinion). *Inference* marks ou
 ## Measured
 
 Median of three runs on a local preview of each build, Lighthouse's mobile settings (slow 4G, a
-CPU four times slower). Before: the commit before A5; after: A5 with the content signals and
-`llms.txt` of the same day. With Lighthouse 13.6, the current version:
+CPU four times slower). Before: the commit before this pass; after: the pass, with the content
+signals and `llms.txt` of the same day. With Lighthouse 13.6, the current version:
 
 | Page | Performance | Accessibility | Best practices | SEO | Agentic browsing | Largest paint | Layout shift |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -101,8 +101,12 @@ under Lighthouse 12.8, first measured:
   page). On github.io the file at the host's root is not ours, so that gain shows on the domain
   only (B2).
 - Speed did not move. The two versions, with the same settings, disagree on the app's largest
-  paint (2.7 s for 12.8, 0.9 s for 13.6): their simulations differ, not the app. Real visitors'
-  Core Web Vitals settle it once there is traffic (Search Console).
+  paint (2.7 s for 12.8, 0.9 s for 13.6): they simulate the slow phone rather than slow the page
+  down. Slowed for real in Chrome instead (the same network figures and processor factor, five
+  cold loads each), the welcome paints its largest element at 1.6 s (1.5 to 1.9 s) and a page at
+  0.5 s: under the 2.5 s of a good page, so nothing changes. This machine's processor, even slowed,
+  is quicker than many phones': real visitors' Core Web Vitals settle it once there is traffic
+  (Search Console).
 
 ## Agents: Cloudflare's Agent Readiness score
 
@@ -146,7 +150,7 @@ and nothing about travellers. The first run (19 November 2026) sent 29 addresses
 - **Links from the app's welcome screen to the language pages.** Links from the most-linked page
   would help crawlers find and weigh the pages, but a link there competes with « C’est parti »,
   and a traveller sent by a card who detoured through a page would come back counted as arriving
-  from a page (A4). Revisit if Search Console reports the pages as « Détectée, actuellement non
+  from a page (the counts by link). Revisit if Search Console reports the pages as « Détectée, actuellement non
   indexée ».
 - **More pages per wording** (« commander une bière en espagnol »…): scaled content abuse. A page
   is added when it carries something of its own: a lesson and its scene.
@@ -167,13 +171,13 @@ and nothing about travellers. The first run (19 November 2026) sent 29 addresses
   - `monbagage.app`, `bagage-app.fr`: if the first two are taken.
 - **Moving the addresses.** Once the domain serves the app, the github.io addresses should say
   where the pages went for a few weeks (pages that point to the new address, with their canonical
-  tag), so do B3 (private repository, which stops GitHub Pages) after search engines have moved.
+  tag), so B5 (private repository, which stops GitHub Pages) waits until search engines have moved.
   The IndexNow step then reports the old addresses as gone.
-- **B7, Search Console**, then Bing Webmaster Tools (it imports the Search Console site in a click):
+- **B4, Search Console**, then Bing Webmaster Tools (it imports the Search Console site in a click):
   submit `sitemap.xml`, watch the indexing report, and keep the site in AI features.
 
 ## How we will know
 
 - Per page: impressions, clicks and queries in Search Console; its generative AI report.
 - Per link: new travellers arriving through `utm_source=page` and their day-7 return, against the
-  thresholds of A2 (`npm run figures`). Scale the pages and situations the numbers back.
+  decision figures (RUNBOOK.md; `npm run figures`). Scale the pages and situations the numbers back.
