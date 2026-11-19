@@ -1,8 +1,9 @@
 /**
  * The browser's own speech recognition. Chrome on a computer promises to stay on the device once
- * its language pack is installed (processLocally). Safari requires on-device recognition whenever
- * the language allows it (WebKit, WebSpeechRecognizerTask.mm). Otherwise the browser's online service
- * hears the audio, as Chrome does on Android. Bagage keeps neither the audio nor the transcript.
+ * its language pack is installed (processLocally), and offers the pack to pages (install(), which
+ * needs a tap to start a download). Safari requires on-device recognition whenever the language
+ * allows it (WebKit, WebSpeechRecognizerTask.mm). Otherwise the browser's online service hears the
+ * audio, as Chrome does on Android. Bagage keeps neither the audio nor the transcript.
  */
 import { setAudioSession } from './audio';
 
@@ -26,6 +27,7 @@ interface Recognizer {
 interface RecognizerClass {
   new (): Recognizer;
   available?: (options: { langs: string[]; processLocally: boolean }) => Promise<Availability>;
+  install?: (options: { langs: string[]; processLocally: boolean }) => Promise<boolean>;
 }
 
 const { SpeechRecognition, webkitSpeechRecognition } = window as Window & {
@@ -41,6 +43,8 @@ const REFUSED = new Set(['not-allowed', 'service-not-allowed', 'language-not-sup
 /** Refused or deaf: the rest of the visit does without. */
 let broken = false;
 const where = new Map<string, Where | null>();
+/** Heard online for now, on the device once the browser downloads the language's pack. */
+const installable = new Set<string>();
 
 export const canHear = () => !!Recognition && !broken;
 
@@ -53,6 +57,24 @@ export async function probe(lang: string): Promise<void> {
     Recognition.available?.({ langs: [lang], processLocally }).catch(() => undefined);
   const [local, any] = await Promise.all([ask(true), ask(false)]);
   where.set(lang, local === 'available' ? 'device' : any === 'unavailable' ? null : 'browser');
+  if ((local === 'downloadable' || local === 'downloading') && any !== 'unavailable' && Recognition.install)
+    installable.add(lang);
+}
+
+export const canInstall = (lang: string) => installable.has(lang);
+
+/** Brave answers that the pack is downloading and never finishes: past this, Bagage stops waiting. */
+const INSTALL_MS = 120_000;
+
+/** Call it from the tap itself: the browser starts a download only on a fresh user gesture. */
+export async function installPack(lang: string): Promise<boolean> {
+  installable.delete(lang);
+  const ok = await Promise.race([
+    Recognition!.install!({ langs: [lang], processLocally: true }).catch(() => false),
+    new Promise<boolean>(resolve => setTimeout(() => resolve(false), INSTALL_MS)),
+  ]);
+  if (ok) where.set(lang, 'device');
+  return ok;
 }
 
 /** Waiting for speech, then for its end: a recogniser silent past these has gone deaf (WebKit bug 321436). */

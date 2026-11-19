@@ -15,10 +15,7 @@ what exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-1. **A pronunciation check that stays on the computer.** *Rules first: AGENTS.md.* Chrome on a
-   computer recognises speech on the device once its language pack is installed: offer that pack
-   (`SpeechRecognition.install()`) where Bagage now falls back on the online service, after
-   checking the API's current state (TODO.md, « Pronunciation, the rest »).
+Nothing left that needs no one: the next steps wait for your accounts (B) or for live figures (C).
 
 ## B. You, when you can
 
@@ -247,6 +244,11 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
   the switch is on the first screen as well as in *Moi*, as the CNIL asks.
 - 19 Nov 2026. **A page's lesson in a new language**: a traveller with no trip in it gets
   « Nouveau voyage » in that language, then that lesson (docs/UX.md, « Changed »).
+- 19 Nov 2026. **A pronunciation check that stays on the computer**: where Chrome would hear the
+  voice online, the check offers to download the language once
+  ([`SpeechRecognition.install()`](https://developer.mozilla.org/docs/Web/API/SpeechRecognition/install_static),
+  Chrome 139 and later), then listens on the device; a download that fails or never ends (Brave)
+  leaves the online check on offer.
 
 ## Working with Claude Code on your Mac
 

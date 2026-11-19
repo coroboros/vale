@@ -17,7 +17,7 @@ import { stamps as allStamps, dayKey, goalTitle, NEAR_GOAL } from '../../engine/
 import { checkSpeech, type SpeechCheck } from '../../engine/pronunciation';
 import { shuffle } from '../../engine/random';
 import { progress } from '../../engine/session';
-import { canHear, listen, probe, whereHeard } from '../../platform/recognition';
+import { canHear, canInstall, installPack, listen, probe, whereHeard } from '../../platform/recognition';
 import { canRecord, playTake, releaseMic, startRecording, stopRecording } from '../../platform/recorder';
 import { play } from '../../platform/sfx';
 import { say, stopSpeech } from '../../platform/speech';
@@ -345,6 +345,8 @@ function Dictation({
 const ASK_DEVICE = 'La reconnaissance vocale tourne sur ton appareil : ta voix n’en sort pas.';
 const ASK_BROWSER =
   'Ton navigateur reconnaît ta voix : sur ton appareil quand il le peut, sinon par son service en ligne (Apple, Google…). Bagage ne garde rien.';
+const ASK_INSTALL =
+  'Ton navigateur peut reconnaître ta voix sur ton appareil après un téléchargement, une seule fois : ta voix n’en sortira pas. Sinon, son service en ligne l’entend. Bagage ne garde rien.';
 
 /**
  * With the browser's speech recognition, the learner sees which words it heard; without it, they
@@ -366,7 +368,9 @@ function Speak({
   const choice = settings.value.speechCheck;
   const [where, setWhere] = useState(() => whereHeard(card.lang));
   const checks = !quiet && choice !== 'off' && canHear() && !!where;
-  const [state, setState] = useState<'ready' | 'asking' | 'starting' | 'listening' | 'recording' | 'revealed'>('ready');
+  const [state, setState] = useState<
+    'ready' | 'asking' | 'installing' | 'starting' | 'listening' | 'recording' | 'revealed'
+  >('ready');
   const [note, setNote] = useState('');
   const [last, setLast] = useState<SpeechCheck | null>(null);
   const [take, setTake] = useState<string | null>(null);
@@ -408,11 +412,11 @@ function Speak({
       if (!revealed.current) reveal(null);
     }
   };
-  const hear = () => {
+  const hear = (at = where) => {
     stopSpeech();
     setNote('');
     setState('starting');
-    const run = listen(card.lang, where || 'browser', () => setState('listening'));
+    const run = listen(card.lang, at || 'browser', () => setState('listening'));
     cancel.current = run.cancel;
     void run.done.then(h => {
       cancel.current = null;
@@ -440,11 +444,33 @@ function Speak({
     if (checks) return hear();
     if (mic) await record();
   };
+  const installing = useRef(false);
   const choose = (on: boolean) => {
+    installing.current = false;
     setSpeechCheck(on);
     if (on) hear();
     else if (mic) void record();
     else setState('ready');
+  };
+  // Chrome on a computer: its language pack keeps the voice on the device, instead of its online service.
+  const offer = where === 'browser' && (canInstall(card.lang) || state === 'installing');
+  const install = async () => {
+    if (installing.current) return;
+    installing.current = true;
+    setNote('');
+    setState('installing');
+    const ok = await installPack(card.lang);
+    // The learner may have chosen otherwise meanwhile: the pack still serves the next phrases.
+    if (!installing.current || !alive.current || revealed.current) return;
+    installing.current = false;
+    if (!ok) {
+      setNote('Le téléchargement n’a pas abouti.');
+      setState('asking');
+      return;
+    }
+    setWhere('device');
+    setSpeechCheck(true);
+    hear('device');
   };
   useKeys(k => {
     if (judged) return;
@@ -490,18 +516,33 @@ function Speak({
     <div class="ex">
       <p class="ex-kicker">{quiet ? 'Dis-le dans ta tête' : 'Dis-le à voix haute'}</p>
       <p class="big prompt-fr">{card.item.fr}</p>
-      {state === 'asking' ? (
+      {state === 'asking' || state === 'installing' ? (
         <div class="speak-ask">
           <p class="speak-ask-title">Je te dis ce que j’ai compris ?</p>
-          <p class="muted">{where === 'device' ? ASK_DEVICE : ASK_BROWSER}</p>
+          <p class="muted" aria-live="polite">
+            {state === 'installing'
+              ? 'Téléchargement de la reconnaissance vocale, une seule fois…'
+              : `${note ? `${note} ` : ''}${offer ? ASK_INSTALL : where === 'device' ? ASK_DEVICE : ASK_BROWSER}`}
+          </p>
           <div class="judge">
             <button type="button" class="btn btn-block" onClick={() => choose(false)}>
               {mic ? 'Juste m’enregistrer' : 'Non merci'}
             </button>
-            <button ref={yes} type="button" class="btn btn-primary btn-block" onClick={() => choose(true)}>
-              Vérifier ma prononciation
+            <button
+              ref={yes}
+              type="button"
+              class="btn btn-primary btn-block"
+              aria-disabled={state === 'installing'}
+              onClick={() => (offer ? void install() : choose(true))}
+            >
+              {offer ? 'Installer et vérifier' : 'Vérifier ma prononciation'}
             </button>
           </div>
+          {offer && state === 'asking' && (
+            <button type="button" class="btn btn-ghost btn-block" onClick={() => choose(true)}>
+              Vérifier en ligne
+            </button>
+          )}
         </div>
       ) : state !== 'revealed' ? (
         <div class="speak-zone">

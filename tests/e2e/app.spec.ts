@@ -65,14 +65,29 @@ test.afterEach(() => {
   expect(refused, 'refused by the Content Security Policy').toEqual([]);
 });
 
-/** A speech recogniser that hears what the test queued: transcripts, an error, or nothing at all. */
-const FAKE_RECOGNITION = (onDevice: boolean) => {
+/**
+ * A speech recogniser that hears what the test queued: transcripts, an error, or nothing at all.
+ * `device` or `online` only; `pack` and `broken-pack` offer a language pack, which installs or not.
+ */
+const FAKE_RECOGNITION = (mode: string) => {
   type Next = { transcripts: string[] } | { error: string } | 'deaf';
-  const hearing = { queue: [] as Next[], started: [] as { lang: string; processLocally: boolean }[] };
+  const hearing = {
+    queue: [] as Next[],
+    started: [] as { lang: string; processLocally: boolean }[],
+    installed: [] as string[][],
+  };
   (window as unknown as { __hearing: typeof hearing }).__hearing = hearing;
+  let local = mode === 'device';
   class Recognition {
     static available = async (o: { processLocally: boolean }) =>
-      o.processLocally && !onDevice ? 'downloadable' : 'available';
+      o.processLocally && !local ? 'downloadable' : 'available';
+    static install = mode.endsWith('pack')
+      ? async (o: { langs: string[] }) => {
+          hearing.installed.push(o.langs);
+          local = mode === 'pack';
+          return local;
+        }
+      : undefined;
     lang = '';
     processLocally = false;
     onstart: (() => void) | null = null;
@@ -99,7 +114,7 @@ const FAKE_RECOGNITION = (onDevice: boolean) => {
   Object.assign(window, { SpeechRecognition: Recognition, webkitSpeechRecognition: Recognition });
 };
 
-type Hearing = { queue: unknown[]; started: { lang: string; processLocally: boolean }[] };
+type Hearing = { queue: unknown[]; started: { lang: string; processLocally: boolean }[]; installed: string[][] };
 const hearNext = (page: Page, next: unknown) =>
   page.evaluate(n => (window as unknown as { __hearing: Hearing }).__hearing.queue.push(n), next);
 const started = (page: Page) => page.evaluate(() => (window as unknown as { __hearing: Hearing }).__hearing.started);
@@ -648,7 +663,7 @@ test('« Je ne peux pas écouter maintenant » swaps the listening exercise and 
 });
 
 test('the pronunciation check asks first, marks the words it heard, and a retry shows progress', async ({ page }) => {
-  await page.addInitScript(FAKE_RECOGNITION, false);
+  await page.addInitScript(FAKE_RECOGNITION, 'online');
   await toSpeakingDrill(page);
   const mic = page.getByRole('button', { name: 'Dire la phrase' });
   await mic.click();
@@ -687,9 +702,40 @@ test('the pronunciation check asks first, marks the words it heard, and a retry 
   expect(runs.every(r => r.lang === 'es-ES' && !r.processLocally)).toBe(true);
 });
 
+test('on a computer without the language pack, the check offers it, then listens on the device', async ({ page }) => {
+  await page.addInitScript(FAKE_RECOGNITION, 'pack');
+  await toSpeakingDrill(page);
+  await page.getByRole('button', { name: 'Dire la phrase' }).click();
+  const ask = page.locator('.speak-ask');
+  await expect(ask).toContainText('après un téléchargement, une seule fois');
+  await expect(ask.getByRole('button', { name: 'Vérifier en ligne' })).toBeVisible();
+  await expectAccessible(page, 'pack de langue');
+  await hearNext(page, { transcripts: ['mmm'] });
+  await ask.getByRole('button', { name: 'Installer et vérifier' }).click();
+  await expect(page.locator('.feedback-title')).toHaveText('Pas encore compris');
+  expect(await page.evaluate(() => (window as unknown as { __hearing: Hearing }).__hearing.installed)).toEqual([
+    ['es-ES'],
+  ]);
+  expect(await started(page)).toEqual([{ lang: 'es-ES', processLocally: true }]);
+});
+
+test('a language pack that fails to install leaves the online check on offer', async ({ page }) => {
+  await page.addInitScript(FAKE_RECOGNITION, 'broken-pack');
+  await toSpeakingDrill(page);
+  await page.getByRole('button', { name: 'Dire la phrase' }).click();
+  await page.getByRole('button', { name: 'Installer et vérifier' }).click();
+  const ask = page.locator('.speak-ask');
+  await expect(ask).toContainText('Le téléchargement n’a pas abouti.');
+  await expect(ask).toContainText('sinon par son service en ligne');
+  await hearNext(page, { transcripts: ['mmm'] });
+  await ask.getByRole('button', { name: 'Vérifier ma prononciation' }).click();
+  await expect(page.locator('.feedback-title')).toHaveText('Pas encore compris');
+  expect(await started(page)).toEqual([{ lang: 'es-ES', processLocally: false }]);
+});
+
 test('on the device, the check says so; declined, the learner records; deaf, it gives way', async ({ page }) => {
   await page.clock.install();
-  await page.addInitScript(FAKE_RECOGNITION, true);
+  await page.addInitScript(FAKE_RECOGNITION, 'device');
   await toSpeakingDrill(page);
   await page.getByRole('button', { name: 'Dire la phrase' }).click();
   await expect(page.locator('.speak-ask')).toContainText('ta voix n’en sort pas');

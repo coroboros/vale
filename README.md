@@ -34,7 +34,9 @@ connected, the app and its translation service are served by one Worker; see RUN
   hand in every language you travel with or have learnt.
 - **Say it, see what was understood.** In speaking exercises, the browser's speech recognition
   marks the words it heard and the ones it missed. The browser runs it on the phone when it can,
-  otherwise online, so you are asked once first. Without it, you record yourself and compare.
+  otherwise online, so you are asked once first; Chrome on a computer can download the language
+  once to keep your voice on the device, and Bagage offers it then. Without recognition, you record
+  yourself and compare.
 - **Pages per situation**, readable without the app: « Comment commander un café en espagnol ? »
   and five more questions in each language, with the phrases, how to say them, the tips for that
   moment and the scene that uses them. « Apprendre ces phrases » opens that lesson in the app,

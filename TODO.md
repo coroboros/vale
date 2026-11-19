@@ -64,9 +64,9 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **Live conversation partner.** Talk with Bernard by voice in the course's situations, audio only
   and light on data (Opus over WebRTC, a data-saver mode, megabytes shown): docs/VOICE.md.
 - **Pronunciation, the rest.** Where the browser has no recogniser (Firefox) or gives up, a short
-  clip sent to the Worker. On Chrome for computers, offer the on-device language pack
-  (`SpeechRecognition.install()`) instead of the online service. Stress and intonation need more
-  than word recognition.
+  clip sent to the Worker. The language pack of Chrome for computers is offered when the check is
+  first asked: a learner who chose the online service before is not offered it again. Stress and
+  intonation need more than word recognition.
 - **Photos that make you want to go.** One sunny, iconic photo per destination and per practice
   moment (morning coffee, commute, lunch, evening golden hour), from Unsplash: RUNBOOK.md, step C3.
 - **« Imagine », the sound of the place.** Once recorded voices exist, the phrase plays by itself as
