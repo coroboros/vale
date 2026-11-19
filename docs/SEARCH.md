@@ -64,8 +64,8 @@ reports, or a study far from our case), **weak** (opinion). *Inference* marks ou
   tags and the manifest.
 - **The sharing picture** (`public/og.png`, drawn by `node brand/og.ts`): Bernard on the blue of the
   app icon, the promise and the four languages, so a link reads as the app people install.
-- **For crawlers**: `sitemap.xml` with the 29 addresses; `robots.txt`, which counts once at the root
-  of the domain.
+- **For crawlers**: `sitemap.xml` with the 29 addresses; `robots.txt` with the owner's content
+  signals, which counts once at the root of the domain; `llms.txt`, every page for language models.
 - **IndexNow** (`build/indexnow.ts`): the key file sits beside the app; the deploy job keeps the
   live pages, publishes, waits for the new version to be online, then sends only the addresses
   that changed or disappeared. The key is public by design: it only proves the addresses are ours.
@@ -74,8 +74,20 @@ reports, or a study far from our case), **weak** (opinion). *Inference* marks ou
 
 ## Measured
 
-Lighthouse 12.8, mobile settings, median of three runs on a local preview of each build (before:
-the previous commit; after: this change).
+Median of three runs on a local preview of each build, Lighthouse's mobile settings (slow 4G, a
+CPU four times slower). Before: the commit before A5; after: A5 with the content signals and
+`llms.txt` of the same day. With Lighthouse 13.6, the current version:
+
+| Page | Performance | Accessibility | Best practices | SEO | Agentic browsing | Largest paint | Layout shift |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| The app, before | 100 | 100 | 100 | 91 | 50 | 0.9 s | 0 |
+| The app, after | 100 | 100 | 100 | 100 | 75 | 0.9 s | 0 |
+| `espagnol/commander-un-cafe/`, before | 100 | 100 | 100 | 92 | 50 | 0.9 s | 0 |
+| `espagnol/commander-un-cafe/`, after | 100 | 100 | 100 | 100 | 75 | 0.9 s | 0 |
+| `espagnol/` (new) | 100 | 100 | 100 | 100 | 75 | 0.9 s | 0 |
+
+The only audit still failing is the ARD manifest, by choice (« Agents » below). The same pages
+under Lighthouse 12.8, first measured:
 
 | Page | Performance | Accessibility | Best practices | SEO | Largest paint | Layout shift |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,9 +100,9 @@ the previous commit; after: this change).
 - The only SEO check that failed before was `robots.txt` (the preview answered with the app's
   page). On github.io the file at the host's root is not ours, so that gain shows on the domain
   only (B2).
-- Speed did not move: the pages add no weight to the app, which still reaches its largest paint in
-  about 2.7 s on Lighthouse's slow phone network. Laboratory figures: real visitors' Core Web
-  Vitals need traffic, then show in Search Console.
+- Speed did not move. The two versions, with the same settings, disagree on the app's largest
+  paint (2.7 s for 12.8, 0.9 s for 13.6): their simulations differ, not the app. Real visitors'
+  Core Web Vitals settle it once there is traffic (Search Console).
 
 ## Agents: Cloudflare's Agent Readiness score
 
@@ -109,9 +121,18 @@ figures).
 | `robots.txt`, sitemap | Built; `robots.txt` counts at the root of a domain only | Scan once the domain serves the app (B2): on github.io the host's root is not ours |
 | Content readable without scripts | Yes: every phrase is in the page's HTML | None |
 | Markdown on request | Not offered | Cloudflare converts pages for paid plans only (Pro and up, [docs](https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents)); our Worker could build it from the courses once it serves the site. The agents that ask for it today are mostly coding tools, not travellers' assistants: it waits |
-| Content Signals | Not set | Owner: may AI models train on the pages (`ai-train`)? `search` and `ai-input` would be yes. Measured: Lighthouse 12.8 reports the line as an unknown directive (SEO 100 → 92), while [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309#section-2.2.4) lets crawlers read records outside the protocol and Google's parser skips them |
-| AI crawler rules | Every crawler allowed | Explicit rules follow the `ai-train` answer |
+| Content Signals | `search=yes, ai-input=yes, ai-train=yes` | The owner's choice (19 Nov 2026): being read, cited and learnt by AI models helps a new name. Measured with Lighthouse 13.6, the current version: the `robots.txt` audit passes and SEO stays at 100 (version 12.8 called the line an unknown directive). [Google](https://developers.google.com/search/reference/robots_txt) supports four fields and skips invalid lines, so search is untouched; the signals speak to the crawlers that read them ([Cloudflare's policy](https://blog.cloudflare.com/content-signals-policy/)) |
+| AI crawler rules | Every crawler allowed by `User-agent: *` | No group per crawler: a crawler follows only the group naming it ([RFC 9309](https://www.rfc-editor.org/rfc/rfc9309)), so a group of its own would hide the general one, signals included, and allow nothing more |
 | Web Bot Auth, API catalog, OAuth, MCP, Agent Skills, commerce | Not applicable | Bagage calls no other site, opens no public API (translation runs on our credits) and has no accounts yet |
+
+Lighthouse 13 adds an « Agentic browsing » category, still in development by its own account,
+which weighs four audits: a well-formed accessibility tree, layout stability, an `llms.txt` with a
+title and links ([llmstxt.org](https://llmstxt.org/)), and an Agentic Resource Discovery manifest
+(`/.well-known/ard.json`); WebMCP audits are listed without weight. Bagage passes the first two
+(its accessibility is tested end to end) and now writes `llms.txt` from the courses: every page with
+its summary, under the name and what Bagage is. Google Search does not read it (the AI guide
+above); Lighthouse's audit does. No ARD manifest: it lists resources offered to agents, and Bagage
+offers none yet.
 
 ## IndexNow and privacy
 

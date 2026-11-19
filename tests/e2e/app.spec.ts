@@ -793,6 +793,7 @@ test('search engines find every page, its picture for shared links, and the proo
   expect(listed).toContain('italien/arriver-a-l-hotel/');
   for (const path of listed.slice(1)) expect((await request.get(`./${path}`)).ok(), path).toBe(true);
   expect(await (await request.get('./robots.txt')).text()).toContain(`Sitemap: ${BRAND.url}sitemap.xml`);
+  expect(await (await request.get('./llms.txt')).text()).toMatch(/^# Bagage\n/);
   expect(await (await request.get(`./${INDEXNOW_KEY}.txt`)).text()).toBe(INDEXNOW_KEY);
   expect((await request.get('./og.png')).headers()['content-type']).toBe('image/png');
   await page.goto('./');

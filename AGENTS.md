@@ -59,7 +59,8 @@ The one place for them: read this section before writing code for any step.
 
 - Evidence before claims: cite sources for learning and product claims (docs/LEARNING.md),
   measure before saying something works (tests, Lighthouse, `npm run eval`), and say what is not
-  measured.
+  measured. Measure with a tool's current version (`npx lighthouse@latest`): an older Lighthouse
+  once called a valid `robots.txt` line an error.
 - Research in depth before deciding, never from a skim: read each source itself, in full where it
   is open (say so when only the abstract is), look for the studies that disagree, and weigh them
   with what the leading practitioners publish: learning science, cognitive psychology, game design,
@@ -128,7 +129,8 @@ kit, the screens), and plan the smallest change. Then:
 - `build/csp.ts`: the Content Security Policy of the app and its pages, as a `<meta>` tag; a new
   service or image host goes there, or the end-to-end tests fail.
 - `build/pages.ts`: writes the pages for search engines next to the app (situations, languages),
-  `sitemap.xml`, `robots.txt`, the IndexNow key file, and the app's canonical and sharing tags;
+  `sitemap.xml`, `robots.txt` with the owner's content signals, `llms.txt`, the IndexNow key file,
+  and the app's canonical and sharing tags;
   the pages' script and styles are the build's `page` entry, `src/page.tsx` and `styles/page.css`.
   `build/indexnow.ts`: the deploy job's step that tells IndexNow which pages changed (docs/SEARCH.md).
 - `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget, the counts' daily totals),

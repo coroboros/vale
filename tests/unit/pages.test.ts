@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { languageHtml, situationHtml } from '../../build/pages';
+import { languageHtml, llmsTxt, robots, situationHtml } from '../../build/pages';
 import { BRAND, INDEXNOW_KEY } from '../../src/brand';
 import { COURSES, courseById } from '../../src/content';
 import { pagePath, questionOf, SITUATIONS, sceneAfter } from '../../src/content/pages';
@@ -97,6 +97,27 @@ describe('language pages', () => {
       [2, 'Espagnol', undefined],
     ]);
     expect(html).not.toMatch(/ [?!:;»]|« /);
+  });
+});
+
+describe('files for crawlers and language models', () => {
+  it('lets search, AI answers and AI training use the pages, and points to the sitemap', () => {
+    const lines = robots().split('\n');
+    expect(lines).toContain('Content-Signal: search=yes, ai-input=yes, ai-train=yes');
+    // One group for every crawler: one of its own would make that crawler skip the signals.
+    expect(lines.filter(line => line.startsWith('User-agent:'))).toEqual(['User-agent: *']);
+    expect(lines).toContain('Sitemap: https://coroboros.github.io/vale/sitemap.xml');
+  });
+
+  it('lists every page for language models, under the name and what Bagage is', () => {
+    const text = llmsTxt();
+    expect(text.split('\n')[0]).toBe('# Bagage');
+    expect(text).toContain(`> ${BRAND.headline}\u00a0:`);
+    const linked = [...text.matchAll(/\]\((https:[^)]+)\)/g)].map(([, url]) => url);
+    for (const course of COURSES) {
+      expect(linked).toContain(`${BRAND.url}${course.name.toLowerCase()}/`);
+      for (const s of SITUATIONS) expect(linked).toContain(`${BRAND.url}${pagePath(course, s)}`);
+    }
   });
 });
 

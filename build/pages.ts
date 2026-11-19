@@ -275,8 +275,39 @@ ${urls.join('\n')}
 `;
 }
 
-/** Search engines read it at the root of a domain only: it counts once the app has its own (RUNBOOK B2). */
-const robots = () => `User-agent: *\nAllow: /\n\nSitemap: ${absolute('sitemap.xml')}\n`;
+/**
+ * Read at the root of a domain only: it counts once the app has its own (RUNBOOK B2). The owner chose
+ * on 19 Nov 2026 to let search, AI answers and AI training use the pages; Google skips the line,
+ * which only the crawlers that read Content Signals act on (docs/SEARCH.md, « Agents »).
+ */
+export const robots = () =>
+  `# Content signals (https://contentsignals.org/): search, AI answers and AI training may use these pages.
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+Sitemap: ${absolute('sitemap.xml')}
+`;
+
+/** What the site holds, for language models (llmstxt.org): Lighthouse's agentic browsing audit reads it. */
+export function llmsTxt(): string {
+  const sections = COURSES.map(course => {
+    const language = languageOf(course);
+    const lines = SITUATIONS.map(situation => {
+      const lesson = lessonOf(course, situation);
+      return `- [${situation.title} en ${language}](${absolute(pagePath(course, situation))}): ${lesson.items.length} phrases (${lowerFirst(lesson.desc)})`;
+    });
+    return `## ${course.name}\n\n- [${course.name} : les phrases pour voyager](${absolute(`${language}/`)})\n${lines.join('\n')}`;
+  });
+  return frenchProse(`# ${BRAND.name}
+
+> ${description()}
+
+Phrases de voyage pour francophones, chacune avec sa prononciation écrite à la française, des dialogues pour s’entraîner et l’app qui les fait réviser : ${BRAND.url}
+
+${sections.join('\n\n')}
+`);
+}
 
 export function searchPages(): Plugin {
   let policy = '';
@@ -330,6 +361,7 @@ export function searchPages(): Plugin {
       }
       this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap(paths) });
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots() });
+      this.emitFile({ type: 'asset', fileName: 'llms.txt', source: llmsTxt() });
       this.emitFile({ type: 'asset', fileName: `${INDEXNOW_KEY}.txt`, source: INDEXNOW_KEY });
     },
   };

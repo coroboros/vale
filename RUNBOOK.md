@@ -227,8 +227,8 @@ figures per page (docs/SEARCH.md, « How we will know »). Google Search Console
 Domain* → the domain from B2 → verify through DNS (Search Console walks you through Cloudflare).
 Then *Sitemaps* → `sitemap.xml` → *Submit*, and leave the site in the generative AI features.
 Then Bing Webmaster Tools → *Import* from Google Search Console: Bing also feeds ChatGPT search.
-Last, isitagentready.com on the domain, and your answer on AI training (`ai-train`), which decides
-the Content Signals line and the AI crawler rules in `robots.txt` (docs/SEARCH.md, « Agents »).
+Last, isitagentready.com and Lighthouse's « Agentic browsing » on the domain (docs/SEARCH.md,
+« Agents »): AI training is allowed, as you chose on 19 Nov 2026.
 
 ### B8. Keys, when you have them
 
