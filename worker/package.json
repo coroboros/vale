@@ -7,7 +7,8 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "logs": "wrangler tail",
-    "eval": "tsx eval/run.ts"
+    "eval": "tsx eval/run.ts",
+    "figures": "wrangler d1 execute bagage-counts --remote --file figures.sql"
   },
   "devDependencies": {
     "wrangler": "^4.162.0",

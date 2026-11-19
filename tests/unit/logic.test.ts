@@ -337,6 +337,20 @@ describe('saved data', () => {
     expect(order.map(x => x.id)).toEqual(['soon', 'later', 'undated', 'past']);
   });
 
+  it('keeps a traveller’s first day and what they counted, and counts nothing for older profiles', () => {
+    const db = sanitize({
+      profiles: [
+        { id: 'x', name: 'Léa', since: '2026-12-01' },
+        { id: 'y', name: 'Sam', since: 'hier' },
+      ],
+      data: { x: { counts: { sent: ['new', 'oops'], installed: 'yes' } } },
+    });
+    expect(db.profiles.map(p => p.since)).toEqual(['2026-12-01', '']);
+    expect(db.data.x!.counts).toEqual({ sent: ['new'], installed: false });
+    expect(db.data.y!.counts).toEqual({ sent: [], installed: false });
+    expect(db.settings.shareCounts).toBe(true);
+  });
+
   it('fills new settings in, keeps valid ones and drops wrong or unknown ones', () => {
     const db = sanitize({ settings: { autoplay: false, sfx: 'no', quietUntil: '12', legacy: 1 } });
     expect(db.settings).toMatchObject({ autoplay: false, sfx: true, quiet: false, quietUntil: 0, speechCheck: 'ask' });

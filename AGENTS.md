@@ -37,7 +37,8 @@ The one place for them: read this section before writing code for any step.
 - Stored data: `sanitize` repairs every stored value on load, so a new field gets its default
   there, with a test; a migration in `migrate.ts` only when repair cannot do it. Item ids key the
   learner's progress: never rename them.
-- `src/content/` and `src/translation-api.ts` stay free of browser APIs: the Worker imports them.
+- `src/content/`, `src/translation-api.ts` and `src/counts-api.ts` stay free of browser APIs: the
+  Worker imports them.
 
 ### Interface
 
@@ -107,7 +108,9 @@ kit, the screens), and plan the smallest change. Then:
   `photos.json` (one photo per destination with its credit, written by `brand/photos.py`; files in
   `public/photos/`).
 - `src/translation-api.ts`: the request and answer shared with the Worker.
+- `src/counts-api.ts`: the anonymous counts behind the decision figures, shared with the Worker;
+  `src/engine/counts.ts` works out what a traveller adds, `src/counts.ts` sends it.
 - `build/french-spaces.ts`: the build step that keeps French punctuation on its word's line.
-- `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget), `claude.ts`,
-  `workers-ai.ts`, `prompt.ts`.
+- `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget, the counts' daily totals),
+  `claude.ts`, `workers-ai.ts`, `prompt.ts`; `worker/figures.sql` reads the decision figures.
 - `tests/unit/` (Vitest) and `tests/e2e/` (Playwright on iPhone and desktop viewports).

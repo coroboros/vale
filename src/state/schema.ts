@@ -1,5 +1,7 @@
-/** Everything stays on the device: nothing is sent anywhere. */
+/** What Bagage keeps on the device. Only sentences to translate and anonymous counts (counts-api.ts) leave it. */
+
 import type { Gender } from '../content/types';
+import { COUNT_NAMES, type CountName } from '../counts-api';
 import type { Memory } from '../engine/memory';
 import { HOUR_MS } from '../engine/time';
 
@@ -32,6 +34,8 @@ export interface Profile {
   goal: number;
   /** When the learner plans to practise (implementation intention), or ''. */
   cue: string;
+  /** The traveller's first day, from which the anonymous counts reckon; '' for older profiles. */
+  since: string;
 }
 
 export interface Settings {
@@ -46,6 +50,8 @@ export interface Settings {
   quietUntil: number;
   /** Word-by-word feedback from the browser's speech recognition: 'ask' first, as the audio may go online. */
   speechCheck: SpeechCheckChoice;
+  /** Anonymous counts of who comes back (counts-api.ts): on unless switched off in « Moi ». */
+  shareCounts: boolean;
 }
 
 const SPEECH_CHECK = ['ask', 'on', 'off'] as const;
@@ -173,6 +179,8 @@ export interface ProfileData {
   card: SurvivalCardData;
   stats: Stats;
   translations: Translation[];
+  /** What this traveller has added to the anonymous counts, and whether they opened Bagage from the home screen in their first week. */
+  counts: { sent: CountName[]; installed: boolean };
 }
 
 export interface DB {
@@ -221,6 +229,7 @@ export const blankData = (): ProfileData => ({
   card: { allergens: [], diets: [] },
   stats: { spoken: 0, prices: 0, pairs: 0, duels: 0, perfect: 0 },
   translations: [],
+  counts: { sent: [], installed: false },
 });
 
 const defaultSettings = (): Settings => ({
@@ -232,6 +241,7 @@ const defaultSettings = (): Settings => ({
   quiet: false,
   quietUntil: 0,
   speechCheck: 'ask',
+  shareCounts: true,
 });
 
 export const blankDB = (): DB => ({
@@ -274,6 +284,7 @@ export function sanitize(raw: unknown): DB {
           ...repairTrips(p),
           goal: goalOf(p.goal).xp,
           cue: typeof p.cue === 'string' ? p.cue : '',
+          since: typeof p.since === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(p.since) ? p.since : '',
         }))
     : [];
   db.active = db.profiles.some(p => p.id === src.active) ? (src.active as string) : (db.profiles[0]?.id ?? '');
@@ -296,6 +307,10 @@ export function sanitize(raw: unknown): DB {
       favorites: Array.isArray(d.favorites) ? d.favorites : [],
       translations: Array.isArray(d.translations) ? d.translations : [],
       jokers: Number.isFinite(d.jokers) ? Math.max(0, Math.min(2, d.jokers as number)) : 0,
+      counts: {
+        sent: Array.isArray(d.counts?.sent) ? d.counts.sent.filter(name => COUNT_NAMES.includes(name)) : [],
+        installed: d.counts?.installed === true,
+      },
     };
   }
   if (!db.profiles.length) db.onboarded = false;

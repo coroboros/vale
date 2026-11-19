@@ -7,12 +7,14 @@ import {
   resetProgress,
   restoreBackup,
   setQuiet,
+  setShareCounts,
   setSpeechCheck,
   switchProfile,
 } from '../../actions';
 import { courseById, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
+import { countsOn } from '../../counts';
 import { dayKey, stamps, streak } from '../../engine/progress';
 import { exportBackup, readBackup } from '../../platform/backup';
 import { offlineReady } from '../../platform/pwa';
@@ -228,8 +230,17 @@ export function Profile() {
         <p class="muted">
           {offlineReady.value
             ? 'Prête hors ligne : tout est enregistré sur cet appareil.'
-            : 'Tout reste sur cet appareil, sans compte.'}
+            : 'Tes progrès restent sur cet appareil, sans compte.'}
         </p>
+        {countsOn && (
+          <div class="row">
+            <div class="row-main">
+              <p class="row-title">Statistiques anonymes</p>
+              <p class="row-sub">Combien de voyageurs reviennent, sans savoir qui tu es ni ce que tu traduis</p>
+            </div>
+            <Toggle checked={s.shareCounts} onChange={setShareCounts} label="Statistiques anonymes" />
+          </div>
+        )}
         <InstallButton block />
         <div class="judge">
           <button type="button" class="btn btn-block" onClick={() => void exportBackup(db.value)}>

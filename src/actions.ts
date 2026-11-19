@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals';
 import { type CourseIndex, courseById, itemKey } from './content';
+import { closeCounts } from './engine/counts';
 import { review } from './engine/memory';
 import { buildPool } from './engine/pool';
 import { arrivalTime, dayKey, lessonKey, logSession, newStamps, spendJokers, streak } from './engine/progress';
@@ -126,6 +127,13 @@ export function setQuiet(on: boolean, opts: { forAnHour?: boolean } = {}, now = 
     touch();
   }
   if (on && opts.forAnHour) showToast(`Mode discret jusqu’à ${clock(now + QUIET_MS)} : pas d’écoute, pas de son.`);
+}
+
+export function setShareCounts(on: boolean): void {
+  update(draft => {
+    draft.settings.shareCounts = on;
+    if (!on) for (const data of Object.values(draft.data)) closeCounts(data);
+  });
 }
 
 export function setSpeechCheck(on: boolean): void {
@@ -295,12 +303,14 @@ export function forgetTranslation(id: string): void {
   });
 }
 
-export function createProfiles(profiles: Omit<Profile, 'id'>[]): void {
+export function createProfiles(profiles: Omit<Profile, 'id' | 'since'>[], now = Date.now()): void {
   update(draft => {
     for (const p of profiles) {
       const id = newId();
-      draft.profiles.push({ ...p, id });
-      draft.data[id] = blankData();
+      const data = blankData();
+      if (!draft.settings.shareCounts) closeCounts(data);
+      draft.profiles.push({ ...p, id, since: dayKey(now) });
+      draft.data[id] = data;
     }
     draft.active = draft.profiles[0]?.id ?? '';
     draft.onboarded = true;

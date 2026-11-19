@@ -218,3 +218,66 @@ describe('translation worker', () => {
     expect((await unset.call({ text: 'Bonjour', course: 'es' })).status).toBe(500);
   });
 });
+
+describe('anonymous counts', () => {
+  const today = new Date().toISOString().slice(0, 10);
+
+  function counting(overrides: Partial<Env> = {}) {
+    const totals = new Map<string, number>();
+    const sql: string[] = [];
+    const statement = (text: string) => {
+      const s = { text, values: [] as string[], bind: (...values: string[]) => Object.assign(s, { values }) };
+      return s;
+    };
+    const COUNTS = {
+      prepare: statement,
+      batch: async (list: ReturnType<typeof statement>[]) => {
+        for (const s of list) {
+          sql.push(s.text);
+          const key = s.values.join('|');
+          if (s.values.length) totals.set(key, (totals.get(key) ?? 0) + 1);
+        }
+        return [];
+      },
+    } as unknown as Env['COUNTS'];
+    const { env } = setup({ COUNTS, ...overrides });
+    const send = (body: unknown, origin = ORIGIN) =>
+      handle(
+        new Request('https://translate.example.workers.dev/count', {
+          method: 'POST',
+          headers: { origin, 'content-type': 'application/json' },
+          body: JSON.stringify(body),
+        }),
+        env,
+        { waitUntil() {} },
+      );
+    return { totals, sql, send };
+  }
+
+  it('add each count to its day’s total and keep nothing else, with or without a translation provider', async () => {
+    const { totals, sql, send } = counting({ AI: undefined });
+    const res = await send({
+      counts: [
+        { name: 'new', day: today, value: '' },
+        { name: 'new', day: today, value: '' },
+        { name: 'departure', day: today, value: '2-4' },
+      ],
+    });
+    expect(res.status).toBe(204);
+    expect(res.headers.get('access-control-allow-origin')).toBe(ORIGIN);
+    expect(sql[0]).toMatch(/^CREATE TABLE IF NOT EXISTS counts/);
+    expect(Object.fromEntries(totals)).toEqual({ [`${today}|new|`]: 2, [`${today}|departure|2-4`]: 1 });
+  });
+
+  it('refuse what is not a count, and strangers', async () => {
+    const { totals, send } = counting();
+    expect((await send({ counts: [{ name: 'user', day: today, value: 'Léa' }] })).status).toBe(400);
+    expect((await send({ counts: [{ name: 'new', day: today, value: '' }] }, 'https://evil.example')).status).toBe(403);
+    expect(totals.size).toBe(0);
+  });
+
+  it('say so when the database is not bound', async () => {
+    const { send } = counting({ COUNTS: undefined });
+    expect((await send({ counts: [{ name: 'new', day: today, value: '' }] })).status).toBe(503);
+  });
+});

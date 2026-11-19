@@ -69,14 +69,24 @@ order:
    2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Home now asks
    iPhone users in Safari to install once they have progress to lose; the app already asked the
    browser to keep its data at every start. Export from *Moi* remains the backup.
-2. **Measurement, ready to switch on.** *Rules first: AGENTS.md.* Fix the decision figures first,
-   then build anonymous counts (no identifier, nothing about sentences translated) in the app and
-   the Worker, tested locally, switched on at step C1. The figures:
-   - return on day 1 and day 7 (share of new learners active again);
-   - share installed on the home screen by day 7;
-   - sessions completed before the departure date;
-   - later, the pass: offers seen, then taps.
-   Check the CNIL's conditions for consent-free audience measurement before switching on.
+2. ✅ 19 Nov 2026. **Measurement, ready to switch on.** The decision figures, set by you on
+   19 Nov 2026: widen (a new language, live conversation) only when day-1 return reaches 30 %,
+   day-7 return 15 % and installs on the home screen by day 7 20 %, read over weeks of first use
+   whose travellers have passed day 7. Sessions finished before the first departure are read
+   alongside, with no threshold yet; the pass (offers seen, then taps) comes with the pass.
+   - A return is a session finished on that exact day: stricter than the app opens behind the
+     benchmarks (an average iOS app keeps 24 % on day 1 and 8 % on day 7, AppsFlyer 2024).
+   - Read the figures with at least 100 travellers (my proposal): a 15 % rate is then known within
+     about 7 points either way.
+   - The phone works the counts out from its own day log and sends each once
+     (`src/engine/counts.ts`, `src/counts.ts`): a name, the first day and, for a departure, a
+     session range. No identifier, nothing about sentences. The Worker adds each to a total per
+     day (`/count`, D1) and keeps no row per request.
+   - CNIL: no consent needed when the counts only serve the publisher's audience measurement,
+     produce anonymous statistics, are neither combined with other processing nor passed on, and
+     people are told ([CNIL, 4 July
+     2025](https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience)). *Moi*
+     tells them and has the switch, on by default as you chose. Nothing is sent before C1.
 3. **The game layer, from the evidence** (TODO.md). *Rules first: AGENTS.md.* Bernard's trip as a
    story, the first daily goal already started by onboarding, « plus que deux phrases » near the
    goal, travellers on one phone as a team.
@@ -154,9 +164,14 @@ real* in TODO.md and report what fails, with a screenshot.
 
 ## C. After going live: measure first (Claude)
 
-1. Switch measurement on (A2). *Rules first: AGENTS.md.* Compare the translation cost with the
-   Console's usage page: about 0.3 cent a sentence is an estimate, not a measurement.
-2. Two weeks later, read the figures and choose what comes next from them.
+1. Switch measurement on (A2). *Rules first: AGENTS.md.* You: let the Cloudflare API token edit
+   D1 (*Account → D1 → Edit*). Claude: uncomment `d1_databases` in `worker/wrangler.jsonc` and set
+   `VITE_COUNTS_URL: .` in the Cloudflare build of `.github/workflows/ci.yml`; the next deploy
+   creates the database, and the first count its table. Check that a new traveller is counted.
+   Compare the translation cost with the Console's usage page: about 0.3 cent a sentence is an
+   estimate, not a measurement.
+2. Two weeks later, read the figures (`cd worker && npm run figures`) and choose what comes next
+   from them.
 3. Photos from Unsplash for « Imagine ». *Rules first: AGENTS.md.* `brand/photos.py` searches
    Unsplash per destination and per practice moment (morning coffee: morning light; commute: a
    lively street; lunch: a sunny terrace; evening: golden hour), picks from contact sheets, triggers

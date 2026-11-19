@@ -15,7 +15,7 @@ export function phrase(lessons: readonly Lesson[], id: string): string {
 /** What the traveller says first in a scene: the right answer of its first turn. */
 export function firstAnswer(scenes: readonly Scene[], id: string): string {
   const turn = scenes.find(s => s.id === id)?.lines.find(l => l.who === 'you');
-  if (!turn || turn.who !== 'you') throw new Error(`No first answer in scene ${id}`);
+  if (turn?.who !== 'you') throw new Error(`No first answer in scene ${id}`);
   return turn.options[0]!;
 }
 

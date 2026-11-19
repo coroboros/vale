@@ -1,10 +1,12 @@
 /**
  * Claude first when a key is set, within a monthly budget, then open models on Workers AI. Every
  * answer is kept in KV, so a sentence is paid for once. Only the app's origins may call, a few times
- * a minute per IP. Request and answer: src/translation-api.ts.
+ * a minute per IP. Request and answer: src/translation-api.ts. /count adds the app's anonymous counts
+ * (src/counts-api.ts) to totals per day in D1.
  */
 import { COURSES } from '../../src/content';
 import type { Course } from '../../src/content/types';
+import { asCounts } from '../../src/counts-api';
 import { asTranslated, MAX_TRANSLATE_CHARS, sentenceKey, type Translated } from '../../src/translation-api';
 import { CLAUDE_DEFAULTS, translateWithClaude } from './claude';
 import { PROMPT_VERSION, UpstreamError } from './prompt';
@@ -16,6 +18,13 @@ interface Cache {
 }
 interface Limiter {
   limit(options: { key: string }): Promise<{ success: boolean }>;
+}
+interface Statement {
+  bind(...values: string[]): Statement;
+}
+interface Database {
+  prepare(sql: string): Statement;
+  batch(statements: Statement[]): Promise<unknown>;
 }
 
 export interface Env {
@@ -33,6 +42,8 @@ export interface Env {
   ALLOWED_ORIGINS?: string;
   CACHE?: Cache;
   LIMITER?: Limiter;
+  /** D1: the anonymous counts. */
+  COUNTS?: Database;
 }
 
 interface Context {
@@ -75,22 +86,53 @@ async function cacheKey(course: Course, text: string) {
   return `t${PROMPT_VERSION}:${course.id}:${hex}`;
 }
 
-async function readInput(request: Request): Promise<{ text: string; course: Course } | { error: string }> {
+async function readJson(request: Request): Promise<{ body: unknown } | { error: string }> {
   if (!request.headers.get('content-type')?.includes('application/json')) return { error: 'expected_json' };
   const raw = await request.text();
   if (raw.length > MAX_BODY) return { error: 'too_long' };
-  let body: unknown;
   try {
-    body = JSON.parse(raw);
+    return { body: JSON.parse(raw) };
   } catch {
     return { error: 'invalid_json' };
   }
-  const { text, course } = (body ?? {}) as Record<string, unknown>;
+}
+
+async function readInput(request: Request): Promise<{ text: string; course: Course } | { error: string }> {
+  const read = await readJson(request);
+  if ('error' in read) return read;
+  const { text, course } = (read.body ?? {}) as Record<string, unknown>;
   const clean = typeof text === 'string' ? text.normalize('NFC').replace(/\s+/g, ' ').trim() : '';
   if (!/\p{L}/u.test(clean)) return { error: 'empty_text' };
   if (clean.length > MAX_TRANSLATE_CHARS) return { error: 'too_long' };
   const found = COURSES.find(c => c.id === course);
   return found ? { text: clean, course: found } : { error: 'unknown_course' };
+}
+
+async function overLimit(request: Request, env: Env): Promise<boolean> {
+  if (!env.LIMITER) return false;
+  const { success } = await env.LIMITER.limit({ key: request.headers.get('cf-connecting-ip') ?? 'unknown' });
+  return !success;
+}
+
+const COUNTS_TABLE =
+  'CREATE TABLE IF NOT EXISTS counts (day TEXT NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, name, value))';
+const ADD_COUNT =
+  'INSERT INTO counts (day, name, value, n) VALUES (?1, ?2, ?3, 1) ON CONFLICT (day, name, value) DO UPDATE SET n = n + 1';
+
+/** Each count adds one to its day's total: nothing is kept per request, so nothing points back to a phone. */
+async function count(request: Request, env: Env, cors: Headers): Promise<Response> {
+  const db = env.COUNTS;
+  if (!db) {
+    console.error('No counts database: bind D1 as COUNTS.');
+    return json({ error: 'not_configured' }, 503, cors);
+  }
+  if (await overLimit(request, env)) return json({ error: 'rate_limited' }, 429, { ...cors, 'retry-after': '60' });
+  const read = await readJson(request);
+  if ('error' in read) return json(read, 400, cors);
+  const counts = asCounts(read.body, new Date().toISOString().slice(0, 10));
+  if (!counts) return json({ error: 'invalid_counts' }, 400, cors);
+  await db.batch([db.prepare(COUNTS_TABLE), ...counts.map(c => db.prepare(ADD_COUNT).bind(c.day, c.name, c.value))]);
+  return new Response(null, { status: 204, headers: cors });
 }
 
 const spendKey = (now = new Date()) => `spend:claude:${now.toISOString().slice(0, 7)}`;
@@ -153,7 +195,8 @@ export async function handle(
   ctx: Context,
   fetcher: typeof fetch = (input, init) => fetch(input, init),
 ): Promise<Response> {
-  if (new URL(request.url).pathname !== '/translate') return json({ error: 'not_found' }, 404);
+  const path = new URL(request.url).pathname;
+  if (path !== '/translate' && path !== '/count') return json({ error: 'not_found' }, 404);
 
   // The app is served from this same Worker; other origins must be listed (local dev servers).
   const origin = request.headers.get('origin') ?? '';
@@ -164,6 +207,7 @@ export async function handle(
 
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
   if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { ...cors, allow: 'POST, OPTIONS' });
+  if (path === '/count') return count(request, env, cors);
 
   const input = await readInput(request);
   if ('error' in input) return json(input, 400, cors);
@@ -173,10 +217,7 @@ export async function handle(
     return json({ error: 'not_configured' }, 500, cors);
   }
 
-  if (env.LIMITER) {
-    const { success } = await env.LIMITER.limit({ key: request.headers.get('cf-connecting-ip') ?? 'unknown' });
-    if (!success) return json({ error: 'rate_limited' }, 429, { ...cors, 'retry-after': '60' });
-  }
+  if (await overLimit(request, env)) return json({ error: 'rate_limited' }, 429, { ...cors, 'retry-after': '60' });
 
   const key = await cacheKey(input.course, input.text);
   const cached = asTranslated(await env.CACHE?.get(key, 'json').catch(() => null));

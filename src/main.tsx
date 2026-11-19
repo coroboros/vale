@@ -7,6 +7,7 @@ import './styles/journey.css';
 import './styles/screens.css';
 import { render } from 'preact';
 import { settleDay } from './actions';
+import { initCounts } from './counts';
 import { initMemory } from './engine/memory';
 import { requestPersistence } from './platform/backup';
 import { initInstall } from './platform/install';
@@ -27,6 +28,7 @@ async function boot() {
   initSpeech();
   initInstall();
   initPWA();
+  initCounts();
   void requestPersistence();
   applyTheme(theme.value);
   render(<App />, document.getElementById('app')!);

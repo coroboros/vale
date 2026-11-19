@@ -23,7 +23,7 @@ export default defineConfig({
   // A separate build, wired to a fake translation service that the tests answer themselves.
   webServer: {
     command: 'vite build --outDir .e2e-dist --emptyOutDir && vite preview --outDir .e2e-dist --port 4174 --strictPort',
-    env: { VITE_TRANSLATE_URL: TRANSLATE_URL },
+    env: { VITE_TRANSLATE_URL: TRANSLATE_URL, VITE_COUNTS_URL: TRANSLATE_URL },
     url: 'http://localhost:4174/',
     reuseExistingServer: false,
     timeout: 120_000,

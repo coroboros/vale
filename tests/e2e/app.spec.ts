@@ -50,6 +50,7 @@ const NO_RECOGNITION = () => {
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(FAKE_VOICES);
   await page.addInitScript(NO_RECOGNITION);
+  await page.route(`${TRANSLATE_URL}/count`, route => route.fulfill({ status: 204 }));
 });
 
 /** A speech recogniser that hears what the test queued: transcripts, an error, or nothing at all. */
@@ -730,6 +731,33 @@ test('desktop sessions work from the keyboard', async ({ page }, info) => {
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await playSession(page, true);
   await expect(page.locator('.ticket')).toBeVisible();
+});
+
+test('counts a new traveller without saying who, and nothing more once switched off in « Moi »', async ({ page }) => {
+  const counted: unknown[] = [];
+  await page.route(`${TRANSLATE_URL}/count`, async route => {
+    counted.push(route.request().postDataJSON());
+    await route.fulfill({ status: 204 });
+  });
+  await onboard(page);
+  await leaveFirstLesson(page);
+  const today = await page.evaluate(() => new Date().toLocaleDateString('sv'));
+  await expect.poll(() => counted).toEqual([{ counts: [{ name: 'new', day: today, value: '' }] }]);
+
+  await page.getByRole('link', { name: 'Moi' }).click();
+  const share = page.getByRole('switch', { name: 'Statistiques anonymes' });
+  await expect(share).toHaveAttribute('aria-checked', 'true');
+  await share.click();
+  await expect(share).toHaveAttribute('aria-checked', 'false');
+  await page.getByRole('button', { name: 'Ajouter un voyageur' }).click();
+  await page.getByLabel('Prénom').fill('Sam');
+  await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.waitForTimeout(3500);
+  expect(counted).toHaveLength(1);
 });
 
 test('translates a sentence, then finds it again offline', async ({ page, context }) => {

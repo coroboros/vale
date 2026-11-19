@@ -86,8 +86,10 @@ src/
   ui/           screens, components, themes per language
   translate.ts  phrase search and the translation client
   translation-api.ts  contract shared with the Worker
+  counts.ts     anonymous counts, sent once the build names a service
+  counts-api.ts contract shared with the Worker
   sw.ts         service worker: precache, offline navigation
-worker/         Cloudflare Worker: serves the app, translates (/translate)
+worker/         Cloudflare Worker: serves the app, translates (/translate), counts (/count)
 tests/          unit/ (Vitest) and e2e/ (Playwright)
 ```
 
@@ -132,8 +134,14 @@ each language. Put it in the `vars` of `worker/wrangler.jsonc`.
 Cost, estimated and not measured: with Sonnet 5.5 about 0.3 US cents per new sentence, so a few
 thousand sentences a month stay well within the default ceiling; with DeepSeek V4.1 Flash about
 40 Neurons, so about 240 new sentences a day within the free allocation. Repeated sentences come
-from the cache. Sentences go to Anthropic or Cloudflare through the Worker; nothing else about the
-learner leaves the phone.
+from the cache. Sentences go to Anthropic or Cloudflare through the Worker; apart from the anonymous
+counts below, nothing else about the learner leaves the phone.
+
+**Anonymous counts.** `/count` adds what the app reports (a new traveller, a return on day 1 or day
+7, an install on the home screen, the sessions before a first departure as a range) to totals per
+day in D1, for the decision figures of RUNBOOK A2. No identifier and nothing about sentences; a
+traveller can switch them off in *Moi*. They stay off until RUNBOOK C1 (`VITE_COUNTS_URL` and the
+`d1_databases` binding); `npm run figures` in `worker/` reads them.
 
 ## Deploy the app
 

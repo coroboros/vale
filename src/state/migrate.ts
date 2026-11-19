@@ -65,6 +65,7 @@ export function migrateV3(raw: unknown, now: number): DB | null {
     trip: es.id,
     goal: GOALS.some(g => g.xp === raw.goal) ? raw.goal! : 40,
     cue: '',
+    since: '',
   }));
   db.active = db.profiles.some(p => p.id === raw.active) ? raw.active! : db.profiles[0]!.id;
 
