@@ -41,6 +41,9 @@ describe('situation pages', () => {
     );
     expect(html).toContain('content="«\u00a0Un café con leche\u00a0», «\u00a0Un café solo\u00a0»… 12\u00a0phrases');
     expect(html).toContain('<meta property="og:image" content="https://coroboros.github.io/vale/og.png" />');
+    expect(html).toContain(
+      '<a class="page-brand" href="../../"><span class="page-bernard" data-flag="es"></span>bagage</a>',
+    );
     expect(html).toContain('<p class="page-t" lang="es-ES">Un café con leche</p>');
     expect(html).toContain('href="../../?utm_source=page#/apprendre/es/bar"');
     expect(html).toContain('<h2 id="page-scene">En situation\u00a0: au café</h2>');

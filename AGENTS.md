@@ -111,7 +111,9 @@ kit, the screens), and plan the smallest change. Then:
   a file.
 - `src/state/`: stored data, repaired by `sanitize`. A profile has a list of trips and the one in
   focus (`tripOf`); progress is keyed by language, so trips in one language share it.
-- `src/ui/`: screens, components (`kit.tsx`), `Imagine.tsx` (closes onboarding and lands every new
+- `src/ui/`: screens, components (`kit.tsx`), `Mascot.tsx` (Bernard; the app gives him the screen's
+  flag through `ScreenFlag`, so the pages can show him without the app's data), `MotionToggle.tsx`
+  (the pause of every moving drawing), `Imagine.tsx` (closes onboarding and lands every new
   trip, `screens/Landing.tsx`), `Team.tsx` (travellers sharing a phone), `FromBernard.tsx` (his
   latest postcard), `card-image.ts` (the survival card as a picture to send), `Porthole.tsx` (the
   welcome flight and the trip being chosen), `scenery/` (a drawing per destination, one module per

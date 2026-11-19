@@ -67,8 +67,11 @@
     text-decoration: none;
   }
 
-  .page-brand img {
-    border-radius: 10px;
+  /* Bernard's place is kept before he appears, so the name does not jump. */
+  .page-bernard {
+    flex: none;
+    width: 44px;
+    height: 38px;
   }
 
   .page {
@@ -78,12 +81,23 @@
   }
 
   .page-view {
+    position: relative;
     aspect-ratio: 3 / 2;
     overflow: hidden;
     border: 8px solid var(--surface);
     border-radius: 44px;
     background: linear-gradient(var(--accent-soft), var(--page));
     box-shadow: 0 3px 0 var(--line-strong);
+  }
+
+  .page-scenery {
+    height: 100%;
+  }
+
+  .page-view .motion-toggle {
+    position: absolute;
+    top: 12px;
+    right: 12px;
   }
 
   .page h1 {

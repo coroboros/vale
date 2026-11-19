@@ -68,7 +68,9 @@ Two families, one rule each, defined once in `src/styles/kit.css`. Raised contro
 answer choices, tiles, the play and microphone buttons) behave like keys: they rise by 2 px under
 a mouse and sink when pressed. Flat controls (icon buttons, chips, navigation) take a tint under
 a mouse and give a little when pressed. Hover effects only exist on devices that can hover, and
-all of it stops for people who ask for less motion.
+all of it stops for people who ask for less motion. Drawings that keep moving, the welcome
+journey, a trip's window in « Mes voyages » and the pages' drawing, carry the same pause button
+(`MotionToggle`): anything that moves for more than five seconds must offer one (WCAG 2.2.2).
 
 ## Photos
 

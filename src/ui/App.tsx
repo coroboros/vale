@@ -7,7 +7,7 @@ import { applyUpdate, updateReady } from '../platform/pwa';
 import { db, profile, theme } from '../state/store';
 import { Daily } from './Daily';
 import { showToast, ToastHost } from './kit';
-import { Mascot } from './Mascot';
+import { Mascot, ScreenFlag } from './Mascot';
 import { go, isTab, route, type Tab } from './router';
 import { Activity } from './screens/Activity';
 import { CardScreen } from './screens/Card';
@@ -105,12 +105,17 @@ export function App() {
     if (updateReady.value) showToast('Une nouvelle version est prête.', { label: 'Mettre à jour', run: applyUpdate });
   }, [updateReady.value]);
 
-  if (error) return <Crash error={error} reset={reset} />;
   return (
-    <>
-      <Screen />
-      <ToastHost />
-    </>
+    <ScreenFlag.Provider value={t.id}>
+      {error ? (
+        <Crash error={error} reset={reset} />
+      ) : (
+        <>
+          <Screen />
+          <ToastHost />
+        </>
+      )}
+    </ScreenFlag.Provider>
   );
 }
 

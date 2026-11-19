@@ -1,6 +1,7 @@
 /**
- * The situation pages' script (build/pages.ts): the destination's drawing, and each phrase spoken
- * by a voice of the device when it has one for the language.
+ * The script of the pages beside the app (build/pages.ts): Bernard by the name, as in the app, the
+ * destination's drawing moving as in the app's windows, and each phrase spoken by a voice of the
+ * device when it has one for the language.
  */
 import '@fontsource-variable/bricolage-grotesque/wght.css';
 import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
@@ -11,11 +12,37 @@ import './styles/page.css';
 import { effect } from '@preact/signals';
 import { Volume2 } from 'lucide-preact';
 import { render } from 'preact';
+import { useState } from 'preact/hooks';
+import type { Flag } from './content/types';
+import { reducedMotion } from './platform/env';
 import { initVoices, speak, voicesFor } from './platform/voices';
+import { Mascot } from './ui/Mascot';
+import { MotionToggle } from './ui/MotionToggle';
 import { Scenery } from './ui/scenery/Scenery';
 
+function MovingScenery({ place }: { place: string }) {
+  const still = reducedMotion();
+  const [playing, setPlaying] = useState(!still);
+  return (
+    <div class="page-scenery" data-playing={playing}>
+      <Scenery place={place} />
+      {!still && (
+        <MotionToggle
+          playing={playing}
+          onToggle={() => setPlaying(!playing)}
+          pause="Mettre l’animation en pause"
+          resume="Reprendre l’animation"
+        />
+      )}
+    </div>
+  );
+}
+
+const bernard = document.querySelector<HTMLElement>('.page-bernard');
+if (bernard) render(<Mascot size={44} flag={bernard.dataset.flag as Flag} decorative />, bernard);
+
 const view = document.querySelector<HTMLElement>('.page-view');
-if (view?.dataset.scenery) render(<Scenery place={view.dataset.scenery} />, view);
+if (view?.dataset.scenery) render(<MovingScenery place={view.dataset.scenery} />, view);
 
 initVoices();
 for (const slot of document.querySelectorAll<HTMLElement>('.page-say')) {

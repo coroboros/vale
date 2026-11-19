@@ -350,6 +350,11 @@ test('« Mes voyages » keeps several trips, even in one language, and Home foll
   await expect(window.locator('.porthole-bubble')).toHaveText('¡Hola, Barcelona!');
   await expect(window).toHaveAttribute('data-playing', 'true');
   await expectAccessible(page, 'mes voyages');
+  // Its clouds and boats keep moving: like anything moving that long, it can be paused (WCAG 2.2.2).
+  await sheet.getByRole('button', { name: 'Mettre l’animation en pause' }).click();
+  await expect(window).toHaveAttribute('data-playing', 'false');
+  await sheet.getByRole('button', { name: 'Reprendre l’animation' }).click();
+  await expect(window).toHaveAttribute('data-playing', 'true');
 
   await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
   await expect(page.getByRole('radio', { name: /^Espagnol/ })).toBeFocused();
@@ -722,6 +727,12 @@ test('a situation page answers in the language, speaks its phrases, and opens it
   });
   await page.goto('./italien/commander-un-cafe/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comment commander un café en italien ?');
+  // Bernard by the name, in the course's flag, as in the app; the drawing moves until paused.
+  await expect(page.getByRole('link', { name: 'bagage', exact: true }).locator('svg.mascot')).toBeVisible();
+  const drawing = page.locator('.page-scenery');
+  await expect(drawing).toHaveAttribute('data-playing', 'true');
+  await page.getByRole('button', { name: 'Mettre l’animation en pause' }).click();
+  await expect(drawing).toHaveAttribute('data-playing', 'false');
   await expect(page.locator('.page-t').first()).toHaveAttribute('lang', 'it-IT');
   await page.getByRole('button', { name: 'Écouter' }).first().click();
   expect(await page.evaluate(() => (window as unknown as { __speakers: string[] }).__speakers)).toEqual(['Alice']);

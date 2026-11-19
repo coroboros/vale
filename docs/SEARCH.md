@@ -92,6 +92,34 @@ the previous commit; after: this change).
   about 2.7 s on Lighthouse's slow phone network. Laboratory figures: real visitors' Core Web
   Vitals need traffic, then show in Search Console.
 
+## Agents: Cloudflare's Agent Readiness score
+
+[isitagentready.com](https://blog.cloudflare.com/agent-readiness/) (Cloudflare, April 2026) scores
+a site on four dimensions: discoverability (`robots.txt`, sitemap, `Link` headers), content
+(Markdown when an agent asks with `Accept: text/markdown`; `llms.txt` optional and not scored),
+bot access control (Content Signals and AI crawler rules in `robots.txt`, Web Bot Auth) and
+capabilities (Agent Skills, API catalog, OAuth discovery, MCP server card, WebMCP); commerce checks
+are shown but not scored. Cloudflare publishes neither the weights nor the formula, several of the
+standards are drafts, and among the 200,000 most visited domains 78 % have a `robots.txt`, about
+4 % Content Signals and 3.9 % Markdown on request. Strength: medium (the vendor's own tool and
+figures).
+
+| Check | Bagage | Decision |
+| --- | --- | --- |
+| `robots.txt`, sitemap | Built; `robots.txt` counts at the root of a domain only | Scan once the domain serves the app (B2): on github.io the host's root is not ours |
+| Content readable without scripts | Yes: every phrase is in the page's HTML | None |
+| Markdown on request | Not offered | Cloudflare converts pages for paid plans only (Pro and up, [docs](https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents)); our Worker could build it from the courses once it serves the site. The agents that ask for it today are mostly coding tools, not travellers' assistants: it waits |
+| Content Signals | Not set | Owner: may AI models train on the pages (`ai-train`)? `search` and `ai-input` would be yes. Measured: Lighthouse 12.8 reports the line as an unknown directive (SEO 100 → 92), while [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309#section-2.2.4) lets crawlers read records outside the protocol and Google's parser skips them |
+| AI crawler rules | Every crawler allowed | Explicit rules follow the `ai-train` answer |
+| Web Bot Auth, API catalog, OAuth, MCP, Agent Skills, commerce | Not applicable | Bagage calls no other site, opens no public API (translation runs on our credits) and has no accounts yet |
+
+## IndexNow and privacy
+
+The deploy job, on GitHub's servers, sends `api.indexnow.org` the host, the key and the addresses
+of the pages that changed: public addresses only. The app itself sends search engines nothing,
+and nothing about travellers. The first run (19 November 2026) sent 29 addresses, answered 202
+(received, key being checked). Before that day IndexNow appears nowhere in the repository's history.
+
 ## Considered, not done
 
 - **Links from the app's welcome screen to the language pages.** Links from the most-linked page

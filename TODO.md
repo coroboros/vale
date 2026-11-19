@@ -86,6 +86,11 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   checked 18 November 2026). Profiles shared across phones come with it.
 - **Trips, next.** A return date (the pass needs one: docs/BUSINESS.md), so home moves to the next
   trip on its own and a trip's stamps carry its dates.
+- **A faster first screen.** The welcome's largest paint, its wordmark, comes at 2.7 s on
+  Lighthouse's slow phone (good is under 2.5 s): it waits for the main script, 108 KB compressed,
+  which carries all four courses (187 KB of source). Loading a course when a trip needs it, or
+  writing the welcome into the page at build time, would let it paint before the script runs;
+  measure before and after (docs/SEARCH.md, « Measured »).
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
 
 ## Watch

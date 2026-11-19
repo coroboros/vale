@@ -2,7 +2,6 @@
  * Motion stops for people who ask their system for less of it; the pause button stops the loop for
  * everyone else (WCAG 2.2.2). With one stop nothing loops, so there is no pause button.
  */
-import { Pause, Play } from 'lucide-preact';
 import type { RefObject } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { flagOf, pictureOf } from '../content';
@@ -11,6 +10,7 @@ import { reducedMotion } from '../platform/env';
 import { say } from '../platform/speech';
 import { easeVars } from './ease';
 import { Mascot } from './Mascot';
+import { MotionToggle } from './MotionToggle';
 import { Scenery } from './scenery/Scenery';
 import { THEMES, type Theme, themeVars } from './themes';
 
@@ -180,8 +180,9 @@ export function Porthole({ stops }: { stops: Stop[] }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>(still ? 'stay' : 'arrive');
   const [playing, setPlaying] = useState(!still && !single);
-  // One trip's window does not fly on, but its clouds drift and its boats rock all the same.
-  const alive = single ? !still : playing;
+  // One trip's window does not fly on, but its clouds drift and its boats rock until paused.
+  const [calm, setCalm] = useState(false);
+  const alive = single ? !still && !calm : playing;
   const [hop, setHop] = useState(0);
   const [intro, setIntro] = useState(!still);
   const visible = usePageVisible();
@@ -279,18 +280,16 @@ export function Porthole({ stops }: { stops: Stop[] }) {
           {stop.greeting}
         </span>
         <span key={`${index}-${hop}`} class="porthole-hop">
-          <Mascot size={140} flag={stop.theme.id} mood="happy" decorative blinks={(playing || single) && visible} />
+          <Mascot size={140} flag={stop.theme.id} mood="happy" decorative blinks={alive && visible} />
         </span>
       </button>
-      {!still && !single && (
-        <button
-          type="button"
-          class="porthole-toggle"
-          aria-label={playing ? 'Mettre le voyage en pause' : 'Reprendre le voyage'}
-          onClick={togglePlay}
-        >
-          {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
-        </button>
+      {!still && (
+        <MotionToggle
+          playing={alive}
+          onToggle={single ? () => setCalm(!calm) : togglePlay}
+          pause={single ? 'Mettre l’animation en pause' : 'Mettre le voyage en pause'}
+          resume={single ? 'Reprendre l’animation' : 'Reprendre le voyage'}
+        />
       )}
     </div>
   );

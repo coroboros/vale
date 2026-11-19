@@ -69,12 +69,6 @@
     rotate: calc(var(--lx) * 1.6deg);
   }
 
-  .scenery {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
   .porthole .scn-sun {
     transform: translate(calc(var(--lx) * -3px), calc(var(--ly) * -2px));
   }
@@ -93,12 +87,6 @@
 
   .porthole .scn-near {
     transform: translate(calc(var(--lx) * -24px), calc(var(--ly) * -10px));
-  }
-
-  .scn-bob,
-  .scn-drift {
-    transform-box: fill-box;
-    transform-origin: center;
   }
 
   .porthole-wing {
@@ -223,28 +211,11 @@
     rotate: 45deg;
   }
 
-  .porthole-toggle {
+  .porthole .motion-toggle {
     position: absolute;
     top: -3%;
     right: -7%;
     z-index: 3;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border: 0;
-    border-radius: 50%;
-    background: var(--surface);
-    color: var(--ink);
-    box-shadow:
-      0 6px 16px -8px rgb(22 33 62 / 45%),
-      0 0 0 1px rgb(22 33 62 / 8%);
-    cursor: pointer;
-  }
-
-  .porthole-toggle:focus-visible {
-    outline: 3px solid var(--sea);
-    outline-offset: 3px;
   }
 
   .porthole-hint {
@@ -286,22 +257,6 @@
 
   .porthole[data-phase="leave"] .porthole-land {
     animation: porthole-land-out 1.1s ease-in both;
-  }
-
-  .porthole[data-playing="true"] .scn-drift {
-    animation: scn-drift 16s ease-in-out infinite alternate;
-  }
-
-  .porthole[data-playing="true"] .scn-shimmer {
-    animation: scn-shimmer 2.8s ease-in-out infinite alternate;
-  }
-
-  .porthole[data-playing="true"] .scn-bob {
-    animation: scn-bob 2.4s ease-in-out infinite alternate;
-  }
-
-  .porthole[data-playing="true"] .scn-birds {
-    animation: scn-birds 13s linear infinite;
   }
 
   .porthole[data-playing="true"] .porthole-wing {
@@ -390,41 +345,6 @@
   @keyframes porthole-beacon {
     50% {
       opacity: 0.25;
-    }
-  }
-
-  @keyframes scn-drift {
-    to {
-      translate: 16px 0;
-    }
-  }
-
-  @keyframes scn-shimmer {
-    to {
-      translate: -8px 0;
-      opacity: 0.25;
-    }
-  }
-
-  @keyframes scn-bob {
-    to {
-      translate: 0 1.6px;
-      rotate: 1.5deg;
-    }
-  }
-
-  @keyframes scn-birds {
-    from {
-      translate: -40px 4px;
-      opacity: 0;
-    }
-    12%,
-    88% {
-      opacity: 0.8;
-    }
-    to {
-      translate: 70px -8px;
-      opacity: 0;
     }
   }
 }

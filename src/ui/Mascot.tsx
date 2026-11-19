@@ -2,12 +2,11 @@
  * Flat 2D on purpose: 2D pedagogical agents helped learning more than 3D ones (Castro-Alonso et
  * al., 2021).
  */
-import type { RefObject } from 'preact';
-import { useEffect, useId, useRef } from 'preact/hooks';
+import { createContext, type RefObject } from 'preact';
+import { useContext, useEffect, useId, useRef } from 'preact/hooks';
 import { BRAND } from '../brand';
 import type { Flag } from '../content/types';
 import { reducedMotion } from '../platform/env';
-import { theme } from '../state/store';
 import { easeVars } from './ease';
 
 export type Mood = 'idle' | 'happy' | 'oops' | 'cheer' | 'sleep';
@@ -193,11 +192,17 @@ export function FlagDot({ flag, size = 24 }: { flag: Flag; size?: number }) {
   );
 }
 
+/**
+ * The country of the screen: the app gives its trip's (App.tsx). Through context rather than the
+ * store, so Bernard also lives on the pages beside the app without the app's data.
+ */
+export const ScreenFlag = createContext<Flag>('es');
+
 /** Bernard everywhere is the Bernard of the welcome flight: he watches the pointer and blinks. */
 export function Mascot({
   mood = 'idle',
   size = 120,
-  flag = theme.value.id,
+  flag,
   motion,
   decorative,
   followPointer = true,
@@ -213,6 +218,8 @@ export function Mascot({
   followPointer?: boolean;
   blinks?: boolean;
 }) {
+  const screen = useContext(ScreenFlag);
+  const shell = flag ?? screen;
   const happy = mood === 'happy' || mood === 'cheer';
   const clip = useId();
   const svg = useRef<SVGSVGElement>(null);
@@ -236,7 +243,7 @@ export function Mascot({
         <circle cx="73" cy="48" r="34" />
       </clipPath>
       <g clip-path={`url(#${clip})`}>
-        <FlagArt flag={flag} />
+        <FlagArt flag={shell} />
         <ellipse cx="60" cy="31" rx="15" ry="8" fill="#fff" opacity="0.22" transform="rotate(-28 60 31)" />
       </g>
       <path

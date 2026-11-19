@@ -691,6 +691,84 @@
     }
   }
 
+  /* The drawings (ui/scenery/) never move by themselves: what holds one sets data-playing. */
+  .scenery {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .scn-bob,
+  .scn-drift {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  [data-playing="true"] .scn-drift {
+    animation: scn-drift 16s ease-in-out infinite alternate;
+  }
+
+  [data-playing="true"] .scn-shimmer {
+    animation: scn-shimmer 2.8s ease-in-out infinite alternate;
+  }
+
+  [data-playing="true"] .scn-bob {
+    animation: scn-bob 2.4s ease-in-out infinite alternate;
+  }
+
+  [data-playing="true"] .scn-birds {
+    animation: scn-birds 13s linear infinite;
+  }
+
+  @keyframes scn-drift {
+    to {
+      translate: 16px 0;
+    }
+  }
+
+  @keyframes scn-shimmer {
+    to {
+      translate: -8px 0;
+      opacity: 0.25;
+    }
+  }
+
+  @keyframes scn-bob {
+    to {
+      translate: 0 1.6px;
+      rotate: 1.5deg;
+    }
+  }
+
+  @keyframes scn-birds {
+    from {
+      translate: -40px 4px;
+      opacity: 0;
+    }
+    12%,
+    88% {
+      opacity: 0.8;
+    }
+    to {
+      translate: 70px -8px;
+      opacity: 0;
+    }
+  }
+
+  /* Floats over a drawing: the welcome journey's window, a trip's, a page's. */
+  .motion-toggle {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow:
+      0 6px 16px -8px rgb(22 33 62 / 45%),
+      0 0 0 1px rgb(22 33 62 / 8%);
+  }
+
+  .motion-toggle:focus-visible {
+    outline: 3px solid var(--sea);
+    outline-offset: 3px;
+  }
+
   .stamp {
     display: block;
     color: var(--accent-ink);

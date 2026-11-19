@@ -108,11 +108,11 @@ function document(
   </head>
   <body>
     <header class="page-top">
-      <a class="page-brand" href="${root}"><img src="${root}icons/favicon.svg" alt="" width="36" height="36" />${esc(BRAND.name.toLowerCase())}</a>
+      <a class="page-brand" href="${root}"><span class="page-bernard" data-flag="${course.flag}"></span>${esc(BRAND.name.toLowerCase())}</a>
       ${crumbsNav(crumbs, root)}
     </header>
     <main class="page">
-      <div class="page-view" data-scenery="${pictureOf(course, 'autre')}" aria-hidden="true"></div>${main}
+      <div class="page-view" data-scenery="${pictureOf(course, 'autre')}"></div>${main}
     </main>
     <footer class="page-foot">
       <p>${t(`Les phrases et leur prononciation viennent des leçons de ${BRAND.name}, écrites pour les voyageurs francophones ; une relecture par des locuteurs natifs est prévue.`)}</p>
