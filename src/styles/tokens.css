@@ -43,6 +43,8 @@
     --safe-b: env(safe-area-inset-bottom, 0px);
     --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Behind white text over a photo: 4.5:1 or more even over a white sky. */
+    --photo-tint: rgb(10 16 24 / 0.62);
     --t-press: 0.08s;
     --t-hover: 0.16s;
   }

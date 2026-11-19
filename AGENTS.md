@@ -19,8 +19,9 @@ The one place for them: read this section before writing code for any step.
 ### Code
 
 - One source of truth. Each fact, rule or piece of data lives in one module and everything else
-  imports it: lessons and phrases in `src/content/`, colours in `tokens.css` and `themes.ts`,
-  photos in `photos.json`, the choices (`CUES`, `GOALS`) in `schema.ts`. No duplicated logic, no
+  imports it: lessons and phrases in `src/content/`, the practice moments in `content/cues.ts`,
+  colours in `tokens.css` and `themes.ts`, photos in `photos.json`, goals in `schema.ts`, French
+  dates, lists and articles in `ui/french.ts`. No duplicated logic, no
   copied data, no dead code; knip finds unused code, not unused data fields, so check those by
   hand. Prefer deleting to adding.
 - Reuse before writing. Look in `src/ui/kit.tsx` and the screens first; extend a shared component
@@ -30,6 +31,9 @@ The one place for them: read this section before writing code for any step.
   Never what the code does; a clearer name beats a comment.
 - TypeScript strict, Preact with signals, plain CSS in cascade layers (tokens, base, kit,
   screens). No CSS framework.
+- Files: components in PascalCase, modules in lower case (kebab-case for several words). Never two
+  names that differ only by case: macOS file systems ignore case, so the import would pick the
+  wrong one.
 - Stored data: `sanitize` repairs every stored value on load, so a new field gets its default
   there, with a test; a migration in `migrate.ts` only when repair cannot do it. Item ids key the
   learner's progress: never rename them.
@@ -87,13 +91,15 @@ kit, the screens), and plan the smallest change. Then:
 
 ## Map
 
-- `src/content/`: one data file and one rules file per language.
+- `src/content/`: one data file and one rules file per language; `cues.ts`, the practice moments
+  that « Imagine » and home bring back.
 - `src/engine/`: FSRS memory model, exercise choice, sessions, progress.
 - `src/platform/`: what the browser offers: voices, speech recognition, recording, sounds,
   install, backup.
 - `src/state/`: stored data, repaired by `sanitize`. A profile has a list of trips and the one in
   focus (`tripOf`); progress is keyed by language, so trips in one language share it.
-- `src/ui/`: screens, components (`kit.tsx`), `Porthole.tsx` and `scenery/` (the welcome flight),
+- `src/ui/`: screens, components (`kit.tsx`), `Imagine.tsx` (closes onboarding and lands every new
+  trip, `screens/Landing.tsx`), `Porthole.tsx` and `scenery/` (the welcome flight),
   `themes.ts` (colours per country, from the course's `flag`, contrast checked by a test),
   `photos.json` (one photo per destination with its credit, written by `brand/photos.py`; files in
   `public/photos/`).

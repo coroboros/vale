@@ -26,7 +26,7 @@ import {
   type Trip,
   tripOf,
 } from './state/schema';
-import { cindex, pdata, profile, update, updateData } from './state/store';
+import { cindex, course, pdata, profile, update, updateData } from './state/store';
 import { sentenceKey } from './translation-api';
 import { showToast } from './ui/kit';
 import { go } from './ui/router';
@@ -64,7 +64,12 @@ const touch = () => {
   if (running.value) running.value = { ...running.value };
 };
 
-export function startSession(mode: Mode, title: string, now = Date.now()): void {
+/** `replace`: the session takes the place of the screen that started it, which back then skips. */
+export function startSession(
+  mode: Mode,
+  title: string,
+  { now = Date.now(), replace = false }: { now?: number; replace?: boolean } = {},
+): void {
   const p = profile.value;
   if (!p) return;
   const index = cindex.value;
@@ -81,7 +86,13 @@ export function startSession(mode: Mode, title: string, now = Date.now()): void 
   const session = createSession(mode, pool, { audio: soundFor(index.course.lang) });
   next(session, index, rng);
   running.value = { session, index, rng, title, startedAt: now, combo: 0, bestCombo: 0, misses: {}, summary: null };
-  go({ name: 'session' });
+  go({ name: 'session' }, { replace });
+}
+
+/** How a language begins, after onboarding or a new trip. */
+export function startFirstLesson(options?: { replace?: boolean }): void {
+  const first = course.value.lessons[0];
+  if (first) startSession({ kind: 'lesson', lessonId: first.id }, first.title, options);
 }
 
 export function submitAnswer(correct: boolean): void {

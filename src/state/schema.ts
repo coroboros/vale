@@ -192,12 +192,8 @@ export const GOALS = [
   { xp: 60, label: 'Intense', minutes: 15 },
 ] as const;
 
-export const CUES = [
-  { id: 'coffee', label: 'Avec mon café du matin' },
-  { id: 'commute', label: 'Dans les transports' },
-  { id: 'lunch', label: 'À la pause déjeuner' },
-  { id: 'evening', label: 'Le soir, avant de dormir' },
-] as const;
+/** The goal with these daily XP, or the middle one. */
+export const goalOf = (xp: unknown) => GOALS.find(g => g.xp === xp) ?? GOALS[1];
 
 export const blankDay = (): DayLog => ({
   xp: 0,
@@ -276,7 +272,7 @@ export function sanitize(raw: unknown): DB {
           gender: p.gender === 'f' ? 'f' : 'm',
           color: typeof p.color === 'string' ? p.color : PROFILE_COLORS[0],
           ...repairTrips(p),
-          goal: GOALS.some(g => g.xp === p.goal) ? p.goal : 40,
+          goal: goalOf(p.goal).xp,
           cue: typeof p.cue === 'string' ? p.cue : '',
         }))
     : [];

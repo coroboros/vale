@@ -4,12 +4,15 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { addTrip, editTrip, focusTrip, removeTrip } from '../actions';
 import { COURSES, courseById, regionOf } from '../content';
 import type { Course } from '../content/types';
-import { dayKey, daysBetween } from '../engine/progress';
+import { dayKey, daysBetween, learntIn } from '../engine/progress';
 import { blankTrip, orderTrips, type Trip, tripOf } from '../state/schema';
 import { pdata, profile } from '../state/store';
+import { frenchDay } from './french';
 import { ChoiceGroup, Sheet } from './kit';
 import { FlagDot } from './Mascot';
 import { Porthole, stopOf } from './Porthole';
+import { photoOf, preload } from './photos';
+import { go } from './router';
 
 export function LanguageChoice({
   value,
@@ -95,8 +98,6 @@ export function tripName(trip: Pick<Trip, 'course' | 'region'>): string {
   return place.id === 'autre' ? c.name : `${c.name} · ${place.name}`;
 }
 
-const longDay = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-
 /** Days left count down toward the trip; a day already gone is told as a date. */
 export function departure(date: string, today: string): string {
   if (!date) return 'Date de départ à choisir';
@@ -104,8 +105,7 @@ export function departure(date: string, today: string): string {
   if (left > 1) return `Départ dans ${left} jours`;
   if (left === 1) return 'Départ demain';
   if (left === 0) return 'Départ aujourd’hui';
-  const [y, m, d] = date.split('-').map(Number) as [number, number, number];
-  return `Départ le ${longDay.format(new Date(y, m - 1, d))}`;
+  return `Départ le ${frenchDay(date, 'dayYear')}`;
 }
 
 /** Picking a trip puts it in focus: home, lessons and the memory forecast follow it. */
@@ -146,7 +146,6 @@ export function TripList({ onEdit, onAdd }: { onEdit: (id: string) => void; onAd
 }
 
 function TripFields({ trip, onChange }: { trip: Trip; onChange: (patch: Partial<Omit<Trip, 'id'>>) => void }) {
-  const keys = Object.keys(pdata.value.mem);
   return (
     <>
       <LanguageChoice
@@ -154,7 +153,7 @@ function TripFields({ trip, onChange }: { trip: Trip; onChange: (patch: Partial<
         value={trip.course}
         // Another language's destinations: the choice starts again at « Ailleurs ».
         onChange={id => id !== trip.course && onChange({ course: id, region: 'autre' })}
-        seen={id => keys.filter(k => k.startsWith(`${id}:`)).length}
+        seen={id => learntIn(pdata.value, id)}
       />
       <PlaceChoice
         showLabel
@@ -219,6 +218,13 @@ export function TripSheet({ start = { kind: 'list' }, onClose }: { start?: TripV
   const [draft, setDraft] = useState(() => blankTrip(tripOf(p).course));
   const body = useRef<HTMLDivElement>(null);
   const opened = useRef(false);
+  // The landing photo, fetched once the destination stops changing: about 250 KB each.
+  useEffect(() => {
+    const photo = view.kind === 'add' ? photoOf(draft.course, draft.region) : undefined;
+    if (!photo) return;
+    const timer = setTimeout(() => preload(photo), 600);
+    return () => clearTimeout(timer);
+  }, [view.kind, draft.course, draft.region]);
   // The button that changed the view is gone: focus goes to the view's first choice, not to the page.
   useEffect(() => {
     if (opened.current) body.current?.querySelector<HTMLElement>('input:checked')?.focus();
@@ -258,7 +264,8 @@ export function TripSheet({ start = { kind: 'list' }, onClose }: { start?: TripV
               class="btn btn-primary btn-block"
               onClick={() => {
                 addTrip(draft);
-                done();
+                onClose();
+                go({ name: 'landing' });
               }}
             >
               Ajouter ce voyage

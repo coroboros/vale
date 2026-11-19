@@ -2,11 +2,13 @@ import { BookOpen, Check, ChevronDown, ChevronRight, Ear, MapPin, MessageCircle,
 import { useState } from 'preact/hooks';
 import { focusTrip, startSession } from '../../actions';
 import { courseById, itemKey, regionOf } from '../../content';
+import { cueOf, duringCue } from '../../content/cues';
 import type { Course, Step, Unit } from '../../content/types';
 import { arrivalTime, dayKey, daysBetween, readiness, stepProgress, stepVisible } from '../../engine/progress';
-import { orderTrips, tripOf } from '../../state/schema';
+import { goalOf, orderTrips, tripOf } from '../../state/schema';
 import { cindex, course, pdata, profile } from '../../state/store';
 import { Daily } from '../Daily';
+import { ofLanguage } from '../french';
 import { KeepProgress } from '../Install';
 import { Bar, Phonetic, Say, Sheet } from '../kit';
 import { FlagDot, Mascot } from '../Mascot';
@@ -135,6 +137,10 @@ export function Home() {
   const current = stops.find(s => s.progress < 1) ?? null;
   const pct = Math.round(ready.score * 100);
   const when = away ? 'Sur place : à toi de parler' : departure(trip.date, today);
+  const cue = cueOf(p.cue);
+  // Their own moment comes back while today's goal is still open: the cue of the plan they made.
+  const moment =
+    cue && duringCue(cue, new Date(now).getHours()) && (data.days[today]?.xp ?? 0) < p.goal ? cue : undefined;
 
   return (
     <>
@@ -148,6 +154,11 @@ export function Home() {
           <ChevronDown size={18} aria-hidden="true" />
         </button>
         <h1 lang={c.lang}>{c.greet(p.name)}</h1>
+        {moment && (
+          <p class="home-moment">
+            {moment.now} : {goalOf(p.goal).minutes} minutes {ofLanguage(c.name)} ?
+          </p>
+        )}
       </header>
 
       <section class="postcard" aria-label="Ton voyage">

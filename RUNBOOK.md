@@ -14,29 +14,13 @@ exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-**First, at your request (19 Nov 2026): « Imagine » for every new trip, and the practice moment used
-everywhere.** *Rules first: AGENTS.md.* The moment (« Mon moment pour pratiquer », editable in
-*Moi*) is asked once and then only sets the time of day in « Imagine ».
-
-- **New trip.** The form stays in the sheet, with the cabin window showing the destination while
-  it is chosen. « Ajouter ce voyage » lands on onboarding's « Imagine » screen for that trip, full
-  screen: the city's photo (the country's for « Ailleurs »). Only when a trip is created, never on
-  an edit or a switch. One `Imagine` component taken out of `Onboarding.tsx` for both; a
-  full-screen route `#/imagine` for the trip in focus (back works); the photo preloaded once the
-  chosen destination settles (about 250 KB each); the mascot when it fails.
-- **A scene per moment, one photo per city.** Morning coffee: the café (as now). Commute: the
-  taxi or the station. Lunch break: a terrace. Evening, before sleep: the hotel's front desk, with
-  the learner's name in the sentence (« Tengo una reserva a nombre de Adrien »). Sentences come
-  from the courses' scenes and lessons, not new copies; a test checks every language has one for
-  every moment; gender and « vous » for groups as today. Photos per moment stay step C3.
-- **The dream, then the plan.** Under the sentence: « 10 minutes avec ton café du matin, chaque jour
-  jusqu'au 20 décembre » (goal, moment, date), then the first lesson. Positive fantasies alone lower
-  the energy to act ([Kappes & Oettingen, 2011](https://doi.org/10.1016/j.jesp.2011.02.003)); an
-  if-then plan helps (docs/LEARNING.md). Add the first to docs/LEARNING.md.
-- **The moment comes back.** At the chosen time of day, until the goal is met, home says so
-  (« C'est l'heure de ton café : 10 minutes d'espagnol ? »); push reminders later (TODO.md).
-- Tests: add a trip, Rome's « Imagine » per moment, back, no photo, home at the moment, the
-  long-name audit, accessibility.
+✅ 19 Nov 2026, at your request: **« Imagine » for every new trip, and the practice moment used
+everywhere.** A trip added in « Mes voyages » lands on « Imagine » for it (`#/arrivee`), the
+component onboarding ends on too. Each moment has its scene and sentence, taken from the course
+where it teaches one: the café, a terrace (a pub in English), the taxi or the station, the hotel
+desk booked in the learner's name; the dream ends on the plan (minutes, moment, date). Home brings
+the moment back at that hour while the daily goal is open. The hotel sentences in Italian,
+Portuguese and English are new and wait for the native review (TODO.md).
 
 **Then, what does not match yet** (checked on 19 Nov 2026 after your iPhone screenshots), in this
 order:
@@ -65,6 +49,9 @@ order:
 6. **On the iPhone, a sheet opens with a focus ring on its close button** (screenshot). *Rules
    first: AGENTS.md.* Focus goes to the sheet itself (`autofocus` on the `<dialog>`, to check in
    Safari), so a tap shows no ring and the keyboard still does.
+7. **Hotel and shopping lessons exist only in Spanish** (the README promised them everywhere until
+   19 Nov 2026). *Rules first: AGENTS.md.* Write them for Italian, Portuguese and English from the
+   Spanish ones, then the native review (TODO.md).
 
 1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
    Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,

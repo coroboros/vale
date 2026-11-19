@@ -108,8 +108,11 @@ async function onboard(page: Page, name = 'Adrien', check: (step: string) => Pro
   await page.getByRole('button', { name: 'Avec mon café du matin' }).click();
   await page.getByRole('button', { name: 'Continuer' }).click();
   await expect(page.getByRole('heading', { name: `Imagine, ${name}.` })).toBeVisible();
-  await expect(page.locator('.ob-lead')).toHaveText(
+  await expect(page.locator('.imagine .lead')).toHaveText(
     'Le dimanche 20 décembre au petit matin, tu arrives à Barcelone. Tu pousses la porte d’un café et tu dis :',
+  );
+  await expect(page.locator('.imagine-plan')).toHaveText(
+    'Ton plan : 10 minutes par jour au café du matin, jusqu’au 20 décembre.',
   );
 }
 
@@ -227,8 +230,63 @@ test('« Imagine » shows the destination photo with its credit, and the mascot 
 
   await page.route('**/photos/**', route => route.abort());
   await onboard(page);
-  await expect(page.locator('.onboarding')).not.toHaveClass(/has-photo/);
-  await expect(page.locator('.ob-imagine .mascot')).toBeVisible();
+  await expect(page.locator('.imagine-photo')).toHaveCount(0);
+  await expect(page.locator('.imagine .mascot')).toBeVisible();
+});
+
+test('a new trip lands on « Imagine » for it, in the scene of the practice moment', async ({ page }) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await page.getByRole('link', { name: 'Moi' }).click();
+  await page.getByRole('button', { name: 'Le soir, avant de dormir' }).click();
+  await page.getByRole('link', { name: 'Itinéraire' }).click();
+  const addTrip = async (language: string, place: string, date?: string) => {
+    await page.getByRole('button', { name: /^Mes voyages/ }).click();
+    await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+    await page.getByText(language, { exact: true }).click();
+    await page.getByRole('button', { name: place }).click();
+    if (date) await page.getByLabel('Date de départ').fill(date);
+    await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  };
+
+  await addTrip('Italien', 'Rome', '2027-01-10');
+  await expect(page).toHaveURL(/#\/arrivee$/);
+  await expect(page.getByRole('heading', { name: 'Imagine, Adrien.' })).toBeVisible();
+  await expect(page.locator('.imagine .lead')).toHaveText(
+    'Le dimanche 10 janvier au coucher du soleil, tu arrives à Rome. Tu poses ta valise à la réception et tu dis :',
+  );
+  await expect(page.locator('.imagine-line')).toContainText('Ho una prenotazione a nome di Adrien.');
+  await expect(page.locator('.imagine-plan')).toHaveText(
+    'Ton plan : 10 minutes par jour le soir, avant de dormir, jusqu’au 10 janvier.',
+  );
+  await expect(page.getByRole('img', { name: /Panthéon/ })).toBeVisible();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expectAccessible(page, 'landing');
+  await page.getByRole('button', { name: 'Plus tard' }).click();
+  await expect(page.getByRole('heading', { name: 'Ciao, Adrien!' })).toBeVisible();
+
+  // A new language starts with its first lesson; a language already begun goes back to the itinerary.
+  await addTrip('Portugais', 'Lisbonne');
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  await playSession(page);
+  await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
+  await expect(page.getByRole('heading', { name: 'Olá, Adrien!' })).toBeVisible();
+  await addTrip('Portugais', 'Porto');
+  await expect(page.getByRole('button', { name: 'Apprendre ma première phrase' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Voir mon itinéraire' }).click();
+  await expect(page.getByRole('heading', { name: 'Olá, Adrien!' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Mes voyages/ })).toContainText('Portugais · Porto');
+});
+
+test('home brings back the practice moment while the day’s goal is open', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-20T08:30:00'));
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await expect(page.locator('.home-moment')).toHaveText('C’est l’heure de ton café : 10 minutes d’espagnol ?');
+  await page.clock.setFixedTime(new Date('2026-11-20T14:00:00'));
+  await page.reload();
+  await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
+  await expect(page.locator('.home-moment')).toHaveCount(0);
 });
 
 test('« Mes voyages » keeps several trips, even in one language, and Home follows the one in focus', async ({
@@ -252,8 +310,7 @@ test('« Mes voyages » keeps several trips, even in one language, and Home foll
   await page.getByLabel('Date de départ').fill('2027-04-02');
   await expectAccessible(page, 'nouveau voyage');
   await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
-  await expect(page.getByRole('radio', { name: /^Italien · Venise/ })).toBeChecked();
-  await page.getByRole('button', { name: 'C’est noté' }).click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await expect(page.getByRole('heading', { name: 'Ciao, Adrien!' })).toBeVisible();
   await expect(page.locator('.postcard-place')).toHaveText('Venezia');
 
@@ -263,6 +320,8 @@ test('« Mes voyages » keeps several trips, even in one language, and Home foll
   await page.getByText('Espagnol', { exact: true }).click();
   await page.getByRole('button', { name: 'Andalousie' }).click();
   await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await trips.click();
   await expect(sheet.getByRole('radio')).toHaveCount(3);
   await page.getByRole('button', { name: 'Modifier le voyage : Espagnol · Andalousie' }).click();
   await page.getByRole('button', { name: 'Supprimer ce voyage' }).click();
@@ -296,6 +355,8 @@ test('the next trip is offered once the one in focus has begun', async ({ page }
   await page.getByRole('button', { name: 'Rome' }).click();
   await page.getByLabel('Date de départ').fill('2027-01-10');
   await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await page.getByRole('button', { name: /^Mes voyages/ }).click();
   await page.locator('.sheet label').filter({ hasText: 'Espagnol · Barcelone' }).click();
   await page.getByRole('button', { name: 'C’est noté' }).click();
   const next = page.getByRole('region', { name: 'Voyage suivant' });
@@ -322,7 +383,7 @@ test('each trip keeps its own hotel on the card, and Moi lists and switches trip
   await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
   await page.getByText('Portugais', { exact: true }).click();
   await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
-  await expect(page.locator('.sheet')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await expect(page.getByText('Apprend le portugais et l’espagnol pour 2 voyages')).toBeVisible();
   await page.getByRole('link', { name: 'Carte' }).click();
   await expect(page.getByRole('heading', { name: 'Ma carte' })).toBeVisible();
@@ -344,12 +405,10 @@ test('Portuguese and English each play a first lesson to the end', async ({ page
     await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
     await page.getByText(language, { exact: true }).click();
     await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
-    await page.getByRole('button', { name: 'C’est noté' }).click();
-    await expect(page.getByRole('heading', { name: hello })).toBeVisible();
-    await page.getByRole('button', { name: /^Les essentiels/ }).click();
-    await page.getByRole('button', { name: 'Commencer', exact: true }).click();
+    await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
     await playSession(page);
     await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
+    await expect(page.getByRole('heading', { name: hello })).toBeVisible();
   }
 });
 
@@ -745,6 +804,7 @@ test('the welcome window stays still for people who ask for less motion', async 
 const SCREENS = ['#/', '#/entrainement', '#/phrases', '#/carte', '#/moi'];
 
 test('nothing is too small to tap, too close, cut, or wider than the screen', async ({ page }, info) => {
+  test.slow(info.project.name === 'iphone', 'the phone run walks three layouts: phone, small phone, tablet');
   const audit = async (where: string) => {
     await settle(page);
     const problems = await page.evaluate(() => {
@@ -861,8 +921,13 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     await audit(`${size}: mes voyages`);
     await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
     await audit(`${size}: nouveau voyage`);
-    await page.getByRole('button', { name: 'Annuler' }).click();
-    await page.getByRole('button', { name: 'C’est noté' }).click();
+    await page.getByText('Italien', { exact: true }).click();
+    // The photo's slow arrival only delays the check: it is skipped, the layout is the same.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+    await audit(`${size}: landing`);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.getByRole('button', { name: 'Plus tard' }).click();
     for (const hash of SCREENS) {
       await page.goto(`./${hash}`);
       await audit(`${size}: ${hash}`);

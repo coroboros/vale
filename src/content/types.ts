@@ -1,4 +1,5 @@
 /** One course = one target language taught from French. */
+import type { Cue } from './cues';
 
 export type Gender = 'f' | 'm';
 
@@ -111,6 +112,15 @@ export interface Unit {
   steps: Step[];
 }
 
+/** Where « Imagine » sets the traveller's first words on landing day; `imagine.ts` tells it in French. */
+export type ArrivalPlace = 'cafe' | 'terrace' | 'pub' | 'taxi' | 'station' | 'hotel';
+
+interface Arrival {
+  place: ArrivalPlace;
+  /** The traveller's first words there, from the course's lessons or scenes when it teaches them. */
+  say(name: string): string;
+}
+
 interface CardPhrases {
   toHotel(hotel: string): string;
   /** `allergens` are the target-language names, article included ("el marisco"). */
@@ -158,6 +168,8 @@ export interface Course {
   regions: Region[];
   packs: Pack[];
   card: SurvivalCard;
+  /** What the traveller says on landing day, for each practice moment. */
+  arrival: Record<Cue, Arrival>;
   say: CardPhrases;
   numbers: Numbers;
 }

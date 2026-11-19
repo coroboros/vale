@@ -4,17 +4,17 @@
  */
 import { ArrowLeft } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
-import { createProfiles, startSession } from '../../actions';
+import { createProfiles, startFirstLesson } from '../../actions';
 import { BRAND } from '../../brand';
-import { COURSES } from '../../content';
+import { COURSES, regionOf } from '../../content';
+import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
-import { blankTrip, CUES, GOALS, PROFILE_COLORS } from '../../state/schema';
+import { blankTrip, GOALS, PROFILE_COLORS } from '../../state/schema';
+import { Imagine } from '../Imagine';
 import { InstallButton } from '../Install';
-import { imagineWords } from '../imagine';
-import { ChoiceGroup, Say } from '../kit';
-import { Mascot } from '../Mascot';
+import { ChoiceGroup } from '../kit';
 import { Porthole, type Stop, stopOf } from '../Porthole';
-import { type Photo, PORTRAIT, photoFiles, photoOf, preload } from '../photos';
+import { photoOf, preload } from '../photos';
 import { hasScenery } from '../scenery/Scenery';
 import { DateField, LanguageChoice, PlaceChoice } from '../Trip';
 import { THEMES, themeVars } from '../themes';
@@ -24,23 +24,6 @@ const JOURNEY: Stop[] = (() => {
   const longest = Math.max(...byCourse.map(list => list.length));
   return Array.from({ length: longest }, (_, i) => byCourse.flatMap(list => list[i] ?? []));
 })().flat();
-
-function Backdrop({ photo, onError }: { photo: Photo; onError: () => void }) {
-  const files = photoFiles(photo.id);
-  return (
-    <picture class="ob-photo">
-      <source media={PORTRAIT} srcset={files.portrait} />
-      <img
-        src={files.fallback}
-        srcset={files.srcset}
-        sizes="100vw"
-        alt={photo.alt}
-        style={{ '--focus': `${photo.focus * 100}%` }}
-        onError={onError}
-      />
-    </picture>
-  );
-}
 
 interface Traveller {
   name: string;
@@ -57,21 +40,10 @@ export function Onboarding() {
   const [cue, setCue] = useState('');
   const c = COURSES.find(x => x.id === courseId)!;
   const theme = THEMES[c.flag];
-  const place = c.regions.find(r => r.id === region);
-  const firstLine = c.scenes[0]?.lines.find(l => l.who === 'you');
-  const sentence = firstLine && firstLine.who === 'you' ? firstLine.options[0]! : c.hello;
   const last = 6;
-  const canGo = step !== 4 || people.every(t => t.name.trim());
+  const names = people.map(t => t.name.trim());
+  const canGo = step !== 4 || names.every(Boolean);
   const photo = photoOf(c.id, region);
-  const [brokenPhoto, setBrokenPhoto] = useState('');
-  const shownPhoto = step === last && photo && photo.id !== brokenPhoto ? photo : undefined;
-  const words = imagineWords({
-    travellers: people.map(t => t.name.trim()).filter(Boolean),
-    at: place?.at ?? 'sur place',
-    date: trip,
-    cue,
-  });
-
   useEffect(() => {
     if (step === last - 1 && photo) preload(photo);
   }, [step, photo?.id]);
@@ -82,7 +54,7 @@ export function Onboarding() {
   const finish = () => {
     createProfiles(
       people.map((t, i) => ({
-        name: t.name.trim(),
+        name: names[i]!,
         gender: t.gender,
         color: PROFILE_COLORS[i % PROFILE_COLORS.length]!,
         trips: [{ ...blankTrip(c.id, c.id), region, date: trip }],
@@ -91,17 +63,13 @@ export function Onboarding() {
         cue,
       })),
     );
-    const first = c.lessons[0];
-    if (first) startSession({ kind: 'lesson', lessonId: first.id }, first.title);
+    startFirstLesson();
   };
 
   return (
-    <div
-      class={`onboarding${step === 0 ? ' is-welcome' : ''}${shownPhoto ? ' has-photo' : ''}`}
-      style={themeVars(theme)}
-    >
+    <div class={`stage onboarding${step === 0 ? ' is-welcome' : ''}`} style={themeVars(theme)}>
       {step > 0 && (
-        <header class="ob-top">
+        <header class="stage-top">
           <button type="button" class="icon-btn" aria-label="Retour" onClick={() => setStep(step - 1)}>
             <ArrowLeft size={24} />
           </button>
@@ -113,7 +81,7 @@ export function Onboarding() {
         </header>
       )}
 
-      <main class="ob-body">
+      <main class="stage-body">
         {step === 0 && (
           <div class="ob-welcome">
             <div class="welcome-art">
@@ -125,7 +93,7 @@ export function Onboarding() {
             </div>
             <div class="welcome-text">
               <h1 class="wordmark big-mark">{BRAND.name.toLowerCase()}</h1>
-              <p class="ob-lead">{BRAND.tagline}</p>
+              <p class="lead">{BRAND.tagline}</p>
               <ul class="promise">
                 {BRAND.promise.map(x => (
                   <li key={x}>{x}</li>
@@ -158,7 +126,7 @@ export function Onboarding() {
           <section class="ob-step" aria-labelledby="ob-2">
             <h1 id="ob-2">Où vas-tu ?</h1>
             <PlaceChoice course={c} value={region} onChange={setRegion} />
-            {place?.pack && (
+            {regionOf(c, region).pack && (
               <p class="muted">Bonus : quelques mots de la langue de la région t’attendent dans ton itinéraire.</p>
             )}
           </section>
@@ -250,42 +218,19 @@ export function Onboarding() {
         )}
 
         {step === 6 && (
-          <section class="ob-step ob-imagine" aria-labelledby="ob-6">
-            <h1 id="ob-6">{words.title}</h1>
-            {shownPhoto && <Mascot size={72} flag={theme.id} mood="cheer" motion="bob" decorative />}
-            <p class="ob-lead">{words.lead}</p>
-            {shownPhoto && <Backdrop photo={shownPhoto} onError={() => setBrokenPhoto(shownPhoto.id)} />}
-            <div class="imagine-line">
-              <Say text={sentence} lang={c.lang} />
-              <p class="big" lang={c.lang}>
-                {sentence}
-              </p>
-            </div>
-            {shownPhoto ? (
-              <p class="photo-credit">
-                Photo :{' '}
-                <a href={shownPhoto.source} target="_blank" rel="noreferrer">
-                  {shownPhoto.author}
-                </a>
-                ,{' '}
-                {shownPhoto.licenseUrl ? (
-                  <a href={shownPhoto.licenseUrl} target="_blank" rel="noreferrer">
-                    {shownPhoto.license}
-                  </a>
-                ) : (
-                  shownPhoto.license
-                )}
-                , recadrée
-              </p>
-            ) : (
-              <Mascot size={130} flag={theme.id} mood="cheer" motion="bob" />
-            )}
-          </section>
+          <Imagine
+            course={c}
+            region={region}
+            date={trip}
+            travellers={[names[0] ?? '', ...names.slice(1)]}
+            cue={cue}
+            goal={goal}
+          />
         )}
       </main>
 
       {step > 0 && (
-        <footer class="ob-foot">
+        <footer class="stage-foot">
           {step < last ? (
             <button type="button" class="btn btn-primary btn-block" disabled={!canGo} onClick={() => setStep(step + 1)}>
               Continuer

@@ -1,9 +1,23 @@
-import type { Gender, Unit } from './types';
+import type { Gender, Lesson, Scene, Unit } from './types';
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Spanish, Italian and Portuguese share the -o/-a ending. */
 export const genderAO = (text: string, g: Gender) => text.replaceAll('{g}', g === 'f' ? 'a' : 'o');
+
+/** A phrase the course teaches, by item id. A wrong id throws, so the content test catches it. */
+export function phrase(lessons: readonly Lesson[], id: string): string {
+  const item = lessons.flatMap(l => l.items).find(i => i.id === id);
+  if (!item) throw new Error(`No phrase ${id}`);
+  return item.t;
+}
+
+/** What the traveller says first in a scene: the right answer of its first turn. */
+export function firstAnswer(scenes: readonly Scene[], id: string): string {
+  const turn = scenes.find(s => s.id === id)?.lines.find(l => l.who === 'you');
+  if (!turn || turn.who !== 'you') throw new Error(`No first answer in scene ${id}`);
+  return turn.options[0]!;
+}
 
 export const joinList = (items: string[], and: string) =>
   items.length < 2 ? (items[0] ?? '') : `${items.slice(0, -1).join(', ')} ${and} ${items.at(-1)}`;

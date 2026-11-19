@@ -12,6 +12,7 @@ import { go, isTab, route, type Tab } from './router';
 import { Activity } from './screens/Activity';
 import { CardScreen } from './screens/Card';
 import { Home } from './screens/Home';
+import { Landing } from './screens/Landing';
 import { Onboarding } from './screens/Onboarding';
 import { Phrases } from './screens/Phrases';
 import { Practice } from './screens/Practice';
@@ -125,6 +126,7 @@ function Screen() {
   }
   if (r.name === 'scene') return <SceneScreen id={r.id} />;
   if (r.name === 'activity') return <Activity kind={r.kind} />;
+  if (r.name === 'landing') return <Landing />;
 
   const tab = isTab(r) ? r.name : null;
   return (

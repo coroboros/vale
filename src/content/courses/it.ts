@@ -1,4 +1,4 @@
-import { capitalize, confusableNumbers, FIRST_WORDS, genderAO, joinList } from '../shared';
+import { capitalize, confusableNumbers, FIRST_WORDS, firstAnswer, genderAO, joinList, phrase } from '../shared';
 import type { Course } from '../types';
 import { card, extras, gloss, lessons, regions, scenes, sounds, tips } from './it.data';
 
@@ -100,6 +100,12 @@ export const it: Course = {
   regions,
   packs: [],
   card,
+  arrival: {
+    coffee: { place: 'cafe', say: () => firstAnswer(scenes, 'bar') },
+    lunch: { place: 'terrace', say: () => phrase(lessons, 'il-menu') },
+    commute: { place: 'station', say: () => phrase(lessons, 'a-che-ora-parte') },
+    evening: { place: 'hotel', say: name => `Ho una prenotazione a nome di ${name}.` },
+  },
   say: {
     toHotel: hotel => `All’hotel ${hotel}, per favore.`,
     allergy: (allergens, g) =>

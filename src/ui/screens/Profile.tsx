@@ -11,13 +11,15 @@ import {
   switchProfile,
 } from '../../actions';
 import { courseById, regionOf } from '../../content';
+import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
 import { dayKey, stamps, streak } from '../../engine/progress';
 import { exportBackup, readBackup } from '../../platform/backup';
 import { offlineReady } from '../../platform/pwa';
 import { canHear } from '../../platform/recognition';
-import { CUES, GOALS, PROFILE_COLORS, type Settings, type Profile as Traveller, tripOf } from '../../state/schema';
+import { GOALS, PROFILE_COLORS, type Settings, type Profile as Traveller, tripOf } from '../../state/schema';
 import { course, db, isQuiet, pdata, profile, settings, update } from '../../state/store';
+import { andList, theLanguage } from '../french';
 import { InstallButton } from '../Install';
 import { ChoiceGroup, Sheet, showToast, Toggle } from '../kit';
 import { Stamp } from '../Stamp';
@@ -33,13 +35,10 @@ const VOICE: { key: Exclude<Flag, 'quiet'>; label: string; sub: string }[] = [
   { key: 'sfx', label: 'Sons', sub: 'Petits sons de réussite' },
 ];
 
-const withArticle = (language: string) => (/^[aeiouyéè]/i.test(language) ? `l’${language}` : `le ${language}`);
-const andList = new Intl.ListFormat('fr-FR', { type: 'conjunction' });
-
 /** « Apprend l’espagnol et le portugais pour 2 voyages », « Apprend l’italien pour un voyage à Rome ». */
 function learning(p: Traveller): string {
   const languages = [...new Set([tripOf(p), ...p.trips].map(t => t.course))];
-  const names = andList.format(languages.map(id => withArticle(courseById(id).name.toLowerCase())));
+  const names = andList(languages.map(id => theLanguage(courseById(id).name)));
   if (p.trips.length > 1) return `Apprend ${names} pour ${p.trips.length} voyages`;
   const trip = tripOf(p);
   return `Apprend ${names} pour un voyage ${regionOf(courseById(trip.course), trip.region).at}`;

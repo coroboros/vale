@@ -9,7 +9,8 @@ export type Route =
   | { name: 'session' }
   | { name: 'scene'; id: string }
   | { name: 'sounds' }
-  | { name: 'activity'; kind: Activity };
+  | { name: 'activity'; kind: Activity }
+  | { name: 'landing' };
 
 const TAB_PATHS: Record<Tab, string> = {
   home: '/',
@@ -27,6 +28,7 @@ function parse(hash: string): Route {
   if (tab) return { name: tab };
   if (path === '/session') return { name: 'session' };
   if (path === '/sons') return { name: 'sounds' };
+  if (path === '/arrivee') return { name: 'landing' };
   const scene = path.match(/^\/scene\/([\w-]+)$/);
   if (scene) return { name: 'scene', id: scene[1]! };
   const game = path.match(/^\/jeu\/(\w+)$/);
@@ -40,6 +42,8 @@ function pathOf(r: Route): string {
       return '/session';
     case 'sounds':
       return '/sons';
+    case 'landing':
+      return '/arrivee';
     case 'scene':
       return `/scene/${r.id}`;
     case 'activity':

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COURSES, indexOf } from '../../src/content';
+import { CUES, cueOf, duringCue } from '../../src/content/cues';
 import { build, canBuild, cardOf, GRADED } from '../../src/engine/exercises';
 import { normalize } from '../../src/engine/grade';
 import { seeded } from '../../src/engine/random';
@@ -85,6 +86,25 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
 
   it('uses an existing theme', () => {
     expect(THEMES[course.flag]).toBeDefined();
+  });
+
+  it('says something on landing day for every practice moment, the hotel with the traveller’s name', () => {
+    for (const cue of CUES) expect(course.arrival[cue.id].say('Léa')).toMatch(/\p{L}/u);
+    expect(course.arrival.evening.say('Léa')).toContain('Léa');
+  });
+});
+
+describe('practice moments', () => {
+  it('cover the hours they name, and only those', () => {
+    const at = (id: string, hour: number) => duringCue(cueOf(id)!, hour);
+    expect([at('coffee', 8), at('coffee', 11), at('commute', 8), at('commute', 18), at('commute', 13)]).toEqual([
+      true,
+      false,
+      true,
+      true,
+      false,
+    ]);
+    expect([at('lunch', 12), at('evening', 22), at('evening', 2)]).toEqual([true, true, false]);
   });
 });
 

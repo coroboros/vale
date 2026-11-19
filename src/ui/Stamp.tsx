@@ -1,4 +1,6 @@
+import { dayKey } from '../engine/progress';
 import { hashSeed } from '../engine/random';
+import { frenchDay } from './french';
 
 export function Stamp({
   id,
@@ -16,7 +18,7 @@ export function Stamp({
   size?: number;
 }) {
   const tilt = (hashSeed(id) % 25) - 12;
-  const when = date ? new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '';
+  const when = date ? frenchDay(dayKey(date), 'short') : '';
   const words = label.split(' ');
   const lines =
     label.length > 12 && words.length > 1

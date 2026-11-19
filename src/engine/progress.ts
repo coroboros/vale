@@ -1,5 +1,5 @@
 /** Evidence for these rules: docs/LEARNING.md. */
-import { type CourseIndex, itemKey } from '../content';
+import { type CourseIndex, itemKey, splitKey } from '../content';
 import type { Course, Item, Step } from '../content/types';
 import { blankDay, type DayLog, type ProfileData } from '../state/schema';
 import { recall } from './memory';
@@ -107,6 +107,10 @@ export function dailyQuests(profileId: string, day: string, goal: number): Quest
 export const questValue = (q: Quest, log: DayLog | undefined) => Math.min(q.target, log?.[q.metric] ?? 0);
 
 export const lessonKey = (courseId: string, id: string) => `${courseId}:${id}`;
+
+/** Phrases met so far in one language. */
+export const learntIn = (data: ProfileData, courseId: string) =>
+  Object.keys(data.mem).filter(k => splitKey(k)[0] === courseId).length;
 
 function itemsProgress(data: ProfileData, courseId: string, items: Item[]): number {
   if (!items.length) return 1;
