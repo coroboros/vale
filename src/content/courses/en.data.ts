@@ -741,7 +741,7 @@ export const packs: Pack[] = [
     native: 'American English',
     lang: 'en-US',
     intro:
-      'De l’autre côté de l’Atlantique, les mots du quotidien changent : l’addition, les toilettes, le métro, et même les étages.',
+      'De l’autre côté de l’Atlantique, les mots du quotidien changent : l’addition, les toilettes, le métro, et même les étages. Et le r se prononce, même en fin de mot.',
     items: [
       {
         id: 'us-restroom',
@@ -829,7 +829,7 @@ export const packs: Pack[] = [
     native: 'Irish English',
     lang: 'en-IE',
     intro:
-      'Les Irlandais parlent anglais avec leurs mots à eux, au pub comme au comptoir : « grand » pour dire que tout va bien, « the craic » pour l’ambiance.',
+      'Les Irlandais parlent anglais avec leurs mots à eux, au pub comme au comptoir : « grand » pour dire que tout va bien, « the craic » pour l’ambiance. Le r se prononce, même en fin de mot.',
     items: [
       {
         id: 'ie-grand',
