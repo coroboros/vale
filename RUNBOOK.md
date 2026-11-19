@@ -112,23 +112,25 @@ order:
    - 19 Nov 2026, after your test on the iPhone: the card's picture no longer waits forever in
      Safari (its drawings load from data URLs, without `decode()`), and the sheet says « Carte
      envoyée » or « Image enregistrée » once done.
-5. **Search, a complete pass to the state of the art** (your priority, 19 Nov 2026). *Rules first:
-   AGENTS.md, research in depth.* Analysis first, every finding sourced, then the changes:
-   - How search works now: Google Search Central (ranking systems, helpful content, spam
-     policies, structured data it still shows), AI Overviews and AI Mode and what they do to
-     clicks, Bing and the answer engines; measured studies over opinions.
-   - What French travellers type before a trip: Google Trends, autocomplete, « Autres questions »,
-     the pages that rank today and what they lack; which questions Bagage can answer best.
-   - Address: authority builds on a domain of one's own; github.io and workers.dev are borrowed.
-     The choice and purchase are yours (D4, worth bringing forward for search), then canonical
-     addresses and redirects on it.
-   - Architecture and content: a page per language and per situation where demand exists, links
-     between them and from the app, titles and descriptions, sharing images, structured data,
-     natives' review (TODO.md), who wrote it and from what sources.
-   - Technical: Core Web Vitals on phones, crawlability, `sitemap.xml`, `robots.txt` at the root of
-     the domain, then Search Console (B6).
-   - Measure per page: impressions and clicks (Search Console), arrivals and day-7 return through
-     the `page` link (A4); scale what the numbers back.
+5. ✅ 19 Nov 2026, all that needs no domain. **Search, a complete pass** (your priority). The
+   analysis, its sources and what each is worth are in docs/SEARCH.md: Google's AI answers run on
+   its usual ranking, so the work is SEO; they halve clicks when they answer in a line (Pew), so
+   the pages give more than a line; Bing feeds ChatGPT search, so IndexNow. Built:
+   - Situation pages titled in the words people type (« Commander un café en espagnol : 12
+     phrases avec la prononciation »), with their « Bon à savoir » tips, a trail back to their
+     language with breadcrumb data, and who wrote them.
+   - A page per language (`espagnol/`, `italien/`, `portugais/`, `anglais/`): its six situations,
+     its tips, and « Apprendre l’espagnol » into the app (`#/apprendre/es`).
+   - The app's own title, canonical address, sharing tags and picture (`node brand/og.ts`), and
+     the `WebSite` data that names the site once it has a domain; `sitemap.xml` with the 29
+     addresses, `robots.txt` ready for the domain's root.
+   - The deploy job tells IndexNow which pages changed or went, once the new version is online
+     (`build/indexnow.ts`).
+   - Lighthouse before and after: docs/SEARCH.md, « Measured ».
+
+   Waits for you: the domain (B2, candidates in docs/SEARCH.md), Search Console (B7). Then what
+   French travellers type, read in Search Console (Trends and autocomplete cannot be read from
+   here), and more pages where the numbers back them.
 
 Done at your request, outside this order: ✅ 18 Nov 2026, **several trips at once** (two in a row,
 several languages, two in one language), each with its own hotel and address on the card; home
@@ -166,7 +168,16 @@ previous design (docs/BRAND.md, Photos).
 6. **Check.** Open the address, go to *Phrases*, translate « Je voudrais un late checkout ».
    In the Cloudflare dashboard, the Worker's logs show the model used.
 
-### B2. Make the repository private, then rename it (5 minutes)
+### B2. An address of our own (you, 15 minutes, early: search builds on it)
+
+1. Check the name first (D4): INPI and EUIPO searches for « Bagage » in classes 9 and 41.
+2. Buy the domain where the Worker runs: Cloudflare dashboard → *Domain Registration → Register
+   Domains*. Tell Claude which one; docs/SEARCH.md lists candidates (not checked: domain
+   registries cannot be queried from here).
+3. Claude then moves `BRAND.url`, the canonical addresses and the sitemap to it, and gives the
+   Worker its custom domain.
+
+### B3. Make the repository private, then rename it (5 minutes)
 
 Right after B1 works (GitHub Pages stops serving a private repository on the free plan):
 docs/BUSINESS.md and docs/MARKET.md are public until then.
@@ -176,17 +187,19 @@ docs/BUSINESS.md and docs/MARKET.md are public until then.
 3. *Settings → Pages*: unpublish, then delete the `gh-pages` branch.
 4. On any clone: `git remote set-url origin https://github.com/coroboros/bagage.git`.
 
-### B3. Tidy up after the move (Claude)
+### B4. Tidy up after the move (Claude)
 
 *Rules first: AGENTS.md.*
 
 - Remove the GitHub Pages branch of the *deploy* job in `.github/workflows/ci.yml`.
-- `BRAND.url` (`src/brand.ts`) and the README link: the Cloudflare address. The situation pages'
-  canonical addresses and `sitemap.xml` follow it.
+- `BRAND.url` (`src/brand.ts`) and the README link: the domain from B2, or the Cloudflare address
+  until then. The pages' canonical addresses, `sitemap.xml`, `robots.txt` and IndexNow follow it.
+- Before B3 stops GitHub Pages: leave pages at the github.io addresses that point to the new ones
+  for a few weeks, so search engines move what they have indexed (docs/SEARCH.md).
 - `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: keep only the local dev servers.
 - Delete the `TRANSLATE_URL` variable if it was ever set.
 
-### B4. Pick the Workers AI models with data (you run it, Claude reads it)
+### B5. Pick the Workers AI models with data (you run it, Claude reads it)
 
 The fallback models are chosen from general evidence, not measured on our sentences yet.
 
@@ -199,19 +212,20 @@ CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… npm run eval
 The token needs the *Workers AI* permission (add it to the deploy token or create one just for
 this). Paste the suggested `MODELS` into the `vars` of `worker/wrangler.jsonc`, commit, push.
 
-### B5. Install and test on your iPhones (Claude fixes)
+### B6. Install and test on your iPhones (Claude fixes)
 
 Safari → the Cloudflare address → *Partager → Sur l'écran d'accueil*. Then go through *Test for
 real* in TODO.md and report what fails, with a screenshot.
 
-### B6. Search Console (10 minutes, once Bagage has its address, A5)
+### B7. Search Console (10 minutes, once Bagage has its domain)
 
-Search engines find the pages through links; this makes it sooner and gives the figures A5 reads
-per page. Google Search Console →
-*Add property → URL prefix* → the Cloudflare address → method *HTML file*: send Claude the file's
-name, Claude publishes it, you click *Verify*. Then *Sitemaps* → `sitemap.xml` → *Submit*.
+Search engines find the pages through links and the sitemap; this makes it sooner and gives the
+figures per page (docs/SEARCH.md, « How we will know »). Google Search Console → *Add property →
+Domain* → the domain from B2 → verify through DNS (Search Console walks you through Cloudflare).
+Then *Sitemaps* → `sitemap.xml` → *Submit*, and leave the site in the generative AI features.
+Then Bing Webmaster Tools → *Import* from Google Search Console: Bing also feeds ChatGPT search.
 
-### B7. Keys, when you have them
+### B8. Keys, when you have them
 
 - **Unsplash** for the « Imagine » photos: step C3.
 - **Fish Audio** for the voices: a key with a few dollars of credit as the `FISH_API_KEY` GitHub

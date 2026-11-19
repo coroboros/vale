@@ -714,22 +714,27 @@ export const sounds: Sound[] = [
 export const tips: Tip[] = [
   {
     title: 'Horaires',
+    lesson: 'resto',
     desc: 'Déjeuner de 12 h 30 à 14 h, dîner vers 20 h. Les petits commerces ferment souvent le samedi après-midi et le dimanche.',
   },
   {
     title: 'Le couvert',
+    lesson: 'resto',
     desc: 'Pain, olives et fromage arrivent sans être commandés : ils ne sont dus que si tu y touches. Tu peux les faire reprendre.',
   },
   {
     title: 'Obrigado, obrigada',
+    lesson: 'base',
     desc: 'On remercie selon son propre genre : obrigado pour un homme, obrigada pour une femme.',
   },
   {
     title: 'Transports',
+    lesson: 'ville',
     desc: 'À Lisbonne et à Porto, une carte rechargeable sert pour le métro, le bus et le tram : valide-la à chaque trajet.',
   },
   {
     title: 'Pharmacie',
+    lesson: 'urgences',
     desc: 'Repère la croix verte lumineuse. Le 112 est le numéro d’urgence européen.',
   },
 ];

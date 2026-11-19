@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { TRANSLATE_URL } from '../../playwright.config';
+import { BRAND, INDEXNOW_KEY } from '../../src/brand';
 
 /** Headless browsers have no voices. */
 const FAKE_VOICES = () => {
@@ -741,6 +742,41 @@ test('a situation page’s lesson opens in the traveller’s trip in that langua
   await expect(page.locator('.ex').first()).toContainText('café');
   await page.goto('./#/apprendre/it/bar');
   await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
+  await page.goto('./#/apprendre/es');
+  await expect(page).toHaveURL(/#\/$/);
+  await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
+});
+
+test('a language page leads to its situations and back, and into its course in the app', async ({ page }) => {
+  await page.goto('./portugais/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Portugais : les phrases pour voyager');
+  await expectAccessible(page, 'page de langue');
+  await page.getByRole('link', { name: /^Commander un café/ }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comment commander un café en portugais ?');
+  await page.getByRole('navigation', { name: 'Fil d’Ariane' }).getByRole('link', { name: 'Portugais' }).click();
+  await page.getByRole('link', { name: 'Apprendre le portugais' }).click();
+  await expect(page).toHaveURL(/\/\?utm_source=page#\/apprendre\/pt$/);
+  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await expect(page.getByRole('radio', { name: /^Portugais/ })).toBeChecked();
+});
+
+test('search engines find every page, its picture for shared links, and the proof the pages are ours', async ({
+  page,
+  request,
+}) => {
+  const sitemap = await (await request.get('./sitemap.xml')).text();
+  const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url!.slice(BRAND.url.length));
+  expect(listed).toContain('');
+  expect(listed).toContain('anglais/');
+  expect(listed).toContain('italien/arriver-a-l-hotel/');
+  for (const path of listed.slice(1)) expect((await request.get(`./${path}`)).ok(), path).toBe(true);
+  expect(await (await request.get('./robots.txt')).text()).toContain(`Sitemap: ${BRAND.url}sitemap.xml`);
+  expect(await (await request.get(`./${INDEXNOW_KEY}.txt`)).text()).toBe(INDEXNOW_KEY);
+  expect((await request.get('./og.png')).headers()['content-type']).toBe('image/png');
+  await page.goto('./');
+  await expect(page).toHaveTitle('Bagage : les phrases de survie pour voyager');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', BRAND.url);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `${BRAND.url}og.png`);
 });
 
 test('the app, once installed, leaves the situation pages to the network', async ({ page }) => {
@@ -1180,6 +1216,8 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
   const run = async (size: string) => {
     await page.goto('./anglais/commander-au-restaurant/');
     await audit(`${size}: page de situation`);
+    await page.goto('./espagnol/');
+    await audit(`${size}: page de langue`);
     await page.goto('./');
     // Back to a first launch. The app saves pending changes when the page goes away, so that save
     // is switched off before the data is cleared.

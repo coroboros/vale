@@ -3,9 +3,9 @@ import { fileURLToPath } from 'node:url';
 import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { frenchTypography } from './build/french-spaces.ts';
-import { situationPages } from './build/pages.ts';
-import { BRAND, COLORS } from './src/brand.ts';
+import { frenchText, frenchTypography } from './build/french-spaces.ts';
+import { searchPages } from './build/pages.ts';
+import { appTitle, BRAND, COLORS, description } from './src/brand.ts';
 import { COURSES } from './src/content/index.ts';
 import { languageOf } from './src/content/pages.ts';
 
@@ -16,7 +16,7 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: false,
-    // The situation pages (build/pages.ts) carry their own small entry.
+    // The pages for search engines (build/pages.ts) carry their own small entry.
     rolldownOptions: {
       input: {
         index: fileURLToPath(new URL('./index.html', import.meta.url)),
@@ -29,9 +29,14 @@ export default defineConfig({
     preact(),
     {
       name: 'brand-html',
-      transformIndexHtml: html => html.replaceAll('%BRAND_NAME%', BRAND.name).replaceAll('%BRAND_PAGE%', COLORS.page),
+      transformIndexHtml: html =>
+        html
+          .replaceAll('%BRAND_NAME%', BRAND.name)
+          .replaceAll('%BRAND_TITLE%', frenchText(appTitle()))
+          .replaceAll('%BRAND_DESCRIPTION%', frenchText(description()))
+          .replaceAll('%BRAND_PAGE%', COLORS.page),
     },
-    situationPages(),
+    searchPages(),
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
@@ -48,6 +53,7 @@ export default defineConfig({
           '**/*cyrillic*',
           '**/*greek*',
           'assets/page-*',
+          'og.png',
           ...COURSES.map(c => `${languageOf(c)}/**`),
         ],
       },
@@ -55,8 +61,7 @@ export default defineConfig({
         id: './',
         name: `${BRAND.name} : ${BRAND.tagline}`,
         short_name: BRAND.name,
-        description:
-          'Les phrases de survie pour voyager : espagnol, italien, portugais, anglais. Hors ligne, sans compte, sans pub.',
+        description: frenchText(description()),
         lang: 'fr',
         dir: 'ltr',
         start_url: './',

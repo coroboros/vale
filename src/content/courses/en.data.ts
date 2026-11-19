@@ -779,26 +779,32 @@ export const sounds: Sound[] = [
 export const tips: Tip[] = [
   {
     title: 'Horaires',
+    lesson: 'resto',
     desc: 'Déjeuner vers 12 h 30, dîner vers 19 h. Au pub, la cuisine ferme souvent vers 21 h.',
   },
   {
     title: 'Pourboire',
+    lesson: 'resto',
     desc: 'Au restaurant, 12,5 % de service sont souvent ajoutés ; sinon, on laisse 10 à 15 %. Pas de pourboire au comptoir du pub.',
   },
   {
     title: 'Please et sorry',
+    lesson: 'base',
     desc: 'Les Britanniques les emploient sans cesse : un « please » oublié sonne sec.',
   },
   {
     title: 'On roule à gauche',
+    lesson: 'ville',
     desc: 'Regarde d’abord à droite avant de traverser : à Londres, c’est écrit au sol.',
   },
   {
     title: 'Sans contact',
+    lesson: 'ville',
     desc: 'Métro et bus de Londres : passe ta carte sans contact au portique, et le tarif est plafonné par jour.',
   },
   {
     title: 'Pharmacie',
+    lesson: 'urgences',
     desc: 'Le pharmacien (chemist) est souvent dans une droguerie comme Boots. Urgences : 999 ou 112.',
   },
 ];

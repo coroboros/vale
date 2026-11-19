@@ -5,7 +5,7 @@ Italy, Portugal or an English-speaking country, plus the Cloudflare Worker in `w
 the app and translates sentences.
 
 What to do next, in order: RUNBOOK.md. Backlog and watch list: TODO.md. Why things are the way
-they are: docs/ (learning evidence, brand, business, market, voice).
+they are: docs/ (learning evidence, brand, business, market, voice, search).
 
 ## Rules
 
@@ -51,7 +51,9 @@ The one place for them: read this section before writing code for any step.
 - Colours from the tokens and the trip's theme; red only for wrong answers.
 - App text: plain French, sentence case, « tu » for one traveller and « vous » for a group, the
   same name for an action through a whole flow, French typography (« », ’). Type plain spaces
-  before : ; ? ! % and inside « »: the build makes them non-breaking (`build/french-spaces.ts`).
+  before : ; ? ! % and inside « »: the build makes them non-breaking (`build/french-spaces.ts`),
+  and in the courses keeps a number with its unit (« 21 h 30 »). Tests that compare built text
+  write those spaces as `\u00a0`.
 
 ### Evidence and safety
 
@@ -96,12 +98,13 @@ kit, the screens), and plan the smallest change. Then:
 | `cd worker && npx wrangler dev` | The Worker locally, after `npm run build` at the root |
 | `cd worker && npm run eval` | Compare Workers AI models; needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` |
 | `python3 brand/photos.py fetch render` | Download the destination photos from Wikimedia Commons and render `public/photos/`; needs Pillow and access to Commons |
+| `node brand/og.ts` | Draw the picture shared links show (`public/og.png`); needs Chrome (`CHROME_PATH`) |
 
 ## Map
 
 - `src/content/`: one data file and one rules file per language; `cues.ts`, the practice moments
   that « Imagine » and home bring back; `story.ts`, Bernard's postcards, four per leg; `pages.ts`,
-  the situation pages, one per question and language.
+  the pages for search engines, one per situation and language, one per language.
 - `src/engine/`: FSRS memory model, exercise choice, sessions, progress.
 - `src/platform/`: what the browser offers: the device's voices (`voices.ts`, free of the app's
   settings) and speaking with them, speech recognition, recording, sounds, install, backup, sharing
@@ -120,8 +123,10 @@ kit, the screens), and plan the smallest change. Then:
 - `src/counts-api.ts`: the anonymous counts behind the decision figures, shared with the Worker;
   `src/engine/counts.ts` works out what a traveller adds, `src/counts.ts` sends it.
 - `build/french-spaces.ts`: the build step that keeps French punctuation on its word's line.
-- `build/pages.ts`: writes the situation pages and `sitemap.xml` next to the app; their script
-  and styles are the build's `page` entry, `src/page.tsx` and `styles/page.css`.
+- `build/pages.ts`: writes the pages for search engines next to the app (situations, languages),
+  `sitemap.xml`, `robots.txt`, the IndexNow key file, and the app's canonical and sharing tags;
+  the pages' script and styles are the build's `page` entry, `src/page.tsx` and `styles/page.css`.
+  `build/indexnow.ts`: the deploy job's step that tells IndexNow which pages changed (docs/SEARCH.md).
 - `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget, the counts' daily totals),
   `claude.ts`, `workers-ai.ts`, `prompt.ts`; `worker/figures.sql` reads the decision figures.
 - `tests/unit/` (Vitest) and `tests/e2e/` (Playwright on iPhone and desktop viewports).

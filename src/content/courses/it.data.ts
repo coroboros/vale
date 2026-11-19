@@ -660,22 +660,27 @@ export const sounds: Sound[] = [
 export const tips: Tip[] = [
   {
     title: 'Horaires',
+    lesson: 'resto',
     desc: 'Déjeuner vers 13 h, dîner vers 20 h. Beaucoup de boutiques ferment en début d’après-midi.',
   },
   {
     title: 'Le coperto',
+    lesson: 'resto',
     desc: 'Le couvert (1 à 3 € par personne) figure sur l’addition : c’est normal. Le pourboire reste facultatif.',
   },
   {
     title: 'Le comptoir',
+    lesson: 'bar',
     desc: 'Au bar, on boit son café debout, et c’est moins cher. Souvent, on paie d’abord à la caisse.',
   },
   {
     title: 'Composter',
+    lesson: 'ville',
     desc: 'Billet papier de train régional ou de bus : compostez-le avant de monter.',
   },
   {
     title: 'Pharmacie',
+    lesson: 'urgences',
     desc: 'Repère la croix verte lumineuse. Le 112 est le numéro d’urgence européen.',
   },
 ];

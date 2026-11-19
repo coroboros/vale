@@ -54,6 +54,8 @@ export interface Sound {
 export interface Tip {
   title: string;
   desc: string;
+  /** The lesson whose situation it helps with: its situation page shows it (pages.ts). */
+  lesson?: string;
 }
 
 export interface Extra {

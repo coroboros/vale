@@ -123,13 +123,15 @@ export function startFirstLesson({ replace, lessonId }: { replace?: boolean; les
   if (lesson) startSession({ kind: 'lesson', lessonId: lesson.id }, lesson.title, { replace });
 }
 
-/** A situation page's lesson for a traveller already here: in their trip in that language, if any. */
-export function openLesson(courseId: string, lessonId: string): void {
+/**
+ * A page for search engines sends a traveller already here: to their trip in that language, if any,
+ * and into the lesson when the page named one.
+ */
+export function openLesson(courseId: string, lessonId?: string): void {
   const trip = profile.value?.trips.find(t => t.course === courseId);
-  if (trip) {
-    focusTrip(trip.id);
-    startFirstLesson({ replace: true, lessonId });
-  } else go({ name: 'home' }, { replace: true });
+  if (trip) focusTrip(trip.id);
+  if (trip && lessonId) startFirstLesson({ replace: true, lessonId });
+  else go({ name: 'home' }, { replace: true });
 }
 
 export function submitAnswer(correct: boolean): void {

@@ -9,7 +9,51 @@
   }
 
   .page-top {
+    display: grid;
     padding-top: max(14px, var(--safe-t));
+  }
+
+  /* Links get their full tap size from padding; the list steps back so the text still aligns. */
+  .page-crumbs ol {
+    list-style: none;
+    margin: 0 0 0 -8px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .page-crumbs li {
+    display: flex;
+    align-items: center;
+  }
+
+  .page-crumbs li:not(:last-child)::after {
+    content: "›";
+  }
+
+  /* Where alternative text exists, screen readers skip the separator. */
+  @supports (content: "x" / "y") {
+    .page-crumbs li:not(:last-child)::after {
+      content: "›" / "";
+    }
+  }
+
+  .page-crumbs a,
+  .page-crumbs [aria-current] {
+    padding-inline: 8px;
+  }
+
+  .page-crumbs a {
+    min-width: var(--tap);
+    min-height: var(--tap);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    text-underline-offset: 3px;
   }
 
   .page-brand {
@@ -108,6 +152,54 @@
 
   .page-say:empty {
     display: none;
+  }
+
+  .page-cards,
+  .page-tips ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 600px) {
+    .page-cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .page-card {
+    display: grid;
+    gap: 4px;
+    padding: 16px 18px;
+    border: 2px solid var(--line);
+    border-radius: var(--r-l);
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+    --edge: var(--line);
+    --depth: 4px;
+  }
+
+  .page-card-title {
+    font: 700 var(--step-1) / 1.25 var(--font-display);
+  }
+
+  .page-card-eg {
+    color: var(--accent-ink);
+    font-weight: 650;
+  }
+
+  .page-tips {
+    display: grid;
+    gap: 12px;
+  }
+
+  .page-tips li {
+    padding: 14px 16px;
+    border-radius: var(--r-m);
+    background: var(--sunk);
   }
 
   .page-scene,

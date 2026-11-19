@@ -1449,26 +1449,32 @@ export const sounds: Sound[] = [
 export const tips: Tip[] = [
   {
     title: 'Horaires',
+    lesson: 'resto',
     desc: 'Déjeuner vers 14 h, dîner vers 21 h 30.',
   },
   {
     title: 'Vale',
+    lesson: 'base',
     desc: 'OK, d’accord. Tu l’entendras partout.',
   },
   {
     title: '¡Buenas!',
+    lesson: 'base',
     desc: 'Bonjour décontracté, à toute heure.',
   },
   {
     title: 'L’addition',
+    lesson: 'resto',
     desc: 'Elle n’arrive que si tu la demandes.',
   },
   {
     title: 'Pourboire',
+    lesson: 'resto',
     desc: 'Facultatif : on arrondit.',
   },
   {
     title: '112',
+    lesson: 'urgences',
     desc: 'Urgences, gratuit, partout en Espagne.',
   },
 ];

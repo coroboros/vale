@@ -65,6 +65,16 @@ jobs:
         run: npm run build
         env:
           VITE_TRANSLATE_URL: .
+      - name: Build for GitHub Pages
+        if: steps.cloudflare.outputs.connected != 'true'
+        run: npm run build
+        env:
+          VITE_TRANSLATE_URL: ${{ vars.TRANSLATE_URL }}
+      # Search engines are told which pages changed (build/indexnow.ts): the live ones are kept first.
+      - name: Keep the live pages
+        continue-on-error: true
+        run: node build/indexnow.ts snapshot dist "$RUNNER_TEMP/live"
+
       - name: Deploy to Cloudflare
         if: steps.cloudflare.outputs.connected == 'true'
         working-directory: worker
@@ -78,12 +88,6 @@ jobs:
           if [ -n "$ANTHROPIC_API_KEY" ]; then
             printf '%s' "$ANTHROPIC_API_KEY" | npx wrangler secret put ANTHROPIC_API_KEY
           fi
-
-      - name: Build for GitHub Pages
-        if: steps.cloudflare.outputs.connected != 'true'
-        run: npm run build
-        env:
-          VITE_TRANSLATE_URL: ${{ vars.TRANSLATE_URL }}
       - name: Publish to GitHub Pages (gh-pages branch)
         if: steps.cloudflare.outputs.connected != 'true'
         working-directory: dist
@@ -93,3 +97,7 @@ jobs:
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             commit -qm "Publish ${GITHUB_SHA::7}"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages
+
+      - name: Tell search engines what changed (IndexNow)
+        continue-on-error: true
+        run: node build/indexnow.ts ping "$RUNNER_TEMP/live" dist

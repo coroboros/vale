@@ -29,8 +29,9 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Quiet mode on the iPhone, with the ring switch on silent too; the new icon in Safari's tab
   overview and on the home screen.
 - Bernard's eyes following a finger on the iPhone, and his blinking.
-- The « Imagine » photo on an older iPhone: the slow zoom under the frosted card (smoothness), and
-  how fast the photo appears on a slow connection (it loads one step ahead, about 250 KB).
+- « Imagine » on the iPhone: the photo in plain view at the top, nothing to scroll on an iPhone SE,
+  the slow zoom smooth on an older iPhone, and how fast the photo appears on a slow connection (it
+  loads one step ahead, about 250 KB).
 - « Garde ta progression » on the iPhone: shown in Safari once a lesson is done, gone in the
   installed app.
 - Bernard everywhere on the iPhone: his eyes following a finger and blinking in lessons, on the
@@ -38,7 +39,10 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - Sharing the card on the iPhone and on Android: the picture and its link arrive in Messages and
   WhatsApp, and the link opens Bagage.
 - A situation page on the iPhone, in Safari and with the app installed: the phrases speak, and
-  « Apprendre ces phrases » opens the lesson.
+  « Apprendre ces phrases » opens the lesson. A language page (`espagnol/`): its trail back, and
+  « Apprendre l’espagnol » into onboarding.
+- A link to Bagage pasted in Messages and WhatsApp: the preview shows the title and the picture
+  with Bernard (`og.png`).
 - « Mes voyages » on the iPhone: adding a second trip, switching the one in focus from the home
   screen and from *Moi*, the next-trip card once a trip has begun, and *Phrases* switching
   language.
@@ -93,6 +97,8 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **GitHub Actions.** `ubuntu-latest` moves to Ubuntu 26 (warning in the CI logs); action majors
   (checkout and setup-node v7, upload-artifact v7); minutes once the repository is private.
 - **Dependencies.** Monthly `npm outdated` here and in `worker/`, then `npm run check`.
+- **Search.** Google's documentation changelog for structured data and AI features
+  (docs/SEARCH.md); the IndexNow step's answer in the deploy log (200 or 202; a warning otherwise).
 - **Flaky end-to-end tests.** Two only failed on GitHub's runners (the first key of the keyboard
   flow, an accessibility check during an entrance animation). Both are fixed; note any new one
   here with its cause.

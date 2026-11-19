@@ -36,8 +36,9 @@ connected, the app and its translation service are served by one Worker; see RUN
   marks the words it heard and the ones it missed. The browser runs it on the phone when it can,
   otherwise online, so you are asked once first. Without it, you record yourself and compare.
 - **Pages per situation**, readable without the app: « Comment commander un café en espagnol ? »
-  and five more questions in each language, with the phrases, how to say them and the scene that
-  uses them. « Apprendre ces phrases » opens that lesson in the app.
+  and five more questions in each language, with the phrases, how to say them, the tips for that
+  moment and the scene that uses them. « Apprendre ces phrases » opens that lesson in the app. A
+  page per language gathers its six situations and opens its course.
 - **A survival card** to show in a restaurant: allergies and diet, in the local language, and each
   trip's hotel and address. It also goes out as a picture, to send to whoever travels with you.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
@@ -95,8 +96,9 @@ src/
   counts.ts     anonymous counts, sent once the build names a service
   counts-api.ts contract shared with the Worker
   sw.ts         service worker: precache, offline navigation
-  page.tsx      the situation pages' script: the destination's drawing, the voices
-build/          build steps: French spacing, the situation pages and sitemap
+  page.tsx      the script of the pages for search engines: the destination's drawing, the voices
+build/          build steps: French spacing, the pages for search engines and their sitemap,
+                telling IndexNow what a deploy changed
 worker/         Cloudflare Worker: serves the app, translates (/translate), counts (/count)
 tests/          unit/ (Vitest) and e2e/ (Playwright)
 ```
