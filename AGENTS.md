@@ -9,17 +9,68 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 
 ## Rules
 
+The one place for them: read this section before writing code for any step.
+
+### Working with the owner
+
 - Talk to the owner in French. Code, comments, commit messages and docs in English; app text in
   French.
-- Run `npm run check` before calling work done, and keep CI green. A behaviour change comes with
-  a test.
-- One source of truth: no duplicated logic or data, no dead code. Prefer deleting to adding.
+
+### Code
+
+- One source of truth. Each fact, rule or piece of data lives in one module and everything else
+  imports it: lessons and phrases in `src/content/`, colours in `tokens.css` and `themes.ts`,
+  photos in `photos.json`, the choices (`CUES`, `GOALS`) in `schema.ts`. No duplicated logic, no
+  copied data, no dead code; knip finds unused code, not unused data fields, so check those by
+  hand. Prefer deleting to adding.
+- Reuse before writing. Look in `src/ui/kit.tsx` and the screens first; extend a shared component
+  with an optional prop or a slot rather than writing a near copy. A helper needed twice moves to
+  the module that owns its subject.
+- Comments only for a crucial why the code cannot say: evidence, a constraint, a workaround.
+  Never what the code does; a clearer name beats a comment.
+- TypeScript strict, Preact with signals, plain CSS in cascade layers (tokens, base, kit,
+  screens). No CSS framework.
+- Stored data: `sanitize` repairs every stored value on load, so a new field gets its default
+  there, with a test; a migration in `migrate.ts` only when repair cannot do it. Item ids key the
+  learner's progress: never rename them.
+- `src/content/` and `src/translation-api.ts` stay free of browser APIs: the Worker imports them.
+
+### Interface
+
 - Accessibility is part of done: WCAG 2.2 AA contrast, tap targets of 44 px or more, keyboard
-  use, reduced motion, no sideways scrolling on phones.
-- Evidence before claims: cite sources for learning and product claims, measure before saying
-  something works (tests, Lighthouse, `npm run eval`), and say what is not measured.
-- Never commit secrets: they live in GitHub Actions secrets and in Cloudflare.
+  use with visible focus, focus moved to the new content when a view changes, reduced motion, no
+  sideways scrolling on phones, foreign text marked with its `lang`.
+- One motion system: raised controls lift on hover and sink on press, flat controls tint and
+  shrink; hover effects only under `@media (hover: hover)`; durations from the tokens. No one-off
+  animation.
+- Colours from the tokens and the trip's theme; red only for wrong answers.
+- App text: plain French, sentence case, « tu » for one traveller and « vous » for a group, the
+  same name for an action through a whole flow, French typography (« », ’).
+
+### Evidence and safety
+
+- Evidence before claims: cite sources for learning and product claims (docs/LEARNING.md),
+  measure before saying something works (tests, Lighthouse, `npm run eval`), and say what is not
+  measured.
+- Never commit secrets: they live in GitHub Actions secrets and in Cloudflare. The repository is
+  public: no personal or company details in it, and commits never carry the owner's personal
+  address.
 - Ask before adding a production dependency.
+
+### Done means
+
+Before coding: read the step and these rules, search for what already exists (the subject, the
+kit, the screens), and plan the smallest change. Then:
+
+1. A behaviour change comes with a test: unit for logic, end to end for what a traveller does.
+   New screens and sheets join the layout audit (long names, 320 px to desktop) and the
+   accessibility check.
+2. `npm run check` passes.
+3. Looked at on a phone (390 and 320 px wide) and a desktop, from screenshots.
+4. The docs move in the same commit: README for what travellers get, the map below, RUNBOOK.md
+   (tick the step with the date), TODO.md, docs/ for evidence.
+5. Commit (a short imperative summary, then a bulleted body), push, CI green.
+6. When an agent gets something wrong about this repository, fix this file in the same change.
 
 ## Commands
 
@@ -36,29 +87,17 @@ they are: docs/ (learning evidence, brand, business, market, voice).
 
 ## Map
 
-- `src/content/`: one data file and one rules file per language. Item ids key the learner's
-  progress: never rename them.
+- `src/content/`: one data file and one rules file per language.
 - `src/engine/`: FSRS memory model, exercise choice, sessions, progress.
 - `src/platform/`: what the browser offers: voices, speech recognition, recording, sounds,
   install, backup.
-- `src/state/`: stored data. `sanitize` gives a new field its default on every load; a change it
-  cannot repair needs a migration in `migrate.ts`. Either way, with a test. A profile has a list
-  of trips and the one in focus (`tripOf`); progress is keyed by language, so trips in one
-  language share it.
-- `src/ui/`: screens, components, `Porthole.tsx` and `scenery/` (the welcome flight),
-  `themes.ts` (colours per country, from the course's `flag`, contrast checked by a test), `photos.json` (one photo per
-  destination with its credit, written by `brand/photos.py`; files in `public/photos/`).
-- `src/translation-api.ts`: the request and answer shared with the Worker. The Worker also
-  imports `src/content/`, so both stay free of browser APIs.
+- `src/state/`: stored data, repaired by `sanitize`. A profile has a list of trips and the one in
+  focus (`tripOf`); progress is keyed by language, so trips in one language share it.
+- `src/ui/`: screens, components (`kit.tsx`), `Porthole.tsx` and `scenery/` (the welcome flight),
+  `themes.ts` (colours per country, from the course's `flag`, contrast checked by a test),
+  `photos.json` (one photo per destination with its credit, written by `brand/photos.py`; files in
+  `public/photos/`).
+- `src/translation-api.ts`: the request and answer shared with the Worker.
 - `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget), `claude.ts`,
   `workers-ai.ts`, `prompt.ts`.
 - `tests/unit/` (Vitest) and `tests/e2e/` (Playwright on iPhone and desktop viewports).
-
-## Conventions
-
-- TypeScript strict, Preact with signals, plain CSS in cascade layers (tokens, base, kit,
-  screens). No CSS framework.
-- Comments say why (evidence, a constraint, a workaround), never what the code already says;
-  prefer a clearer name to a comment.
-- Commit messages: a short imperative summary, then a bulleted body.
-- When an agent gets something wrong about this repository, fix this file in the same change.

@@ -5,15 +5,18 @@ the watch list live in TODO.md; the reasons behind product choices in docs/.
 
 Owner: **you** (needs your accounts or your phone) or **Claude** (code, in a Claude Code session).
 
+Every step that changes code starts with the rules in AGENTS.md, « Rules » (their one place;
+coding agents read that file on their own): each step below says so.
+
 Rule since the external review of 18 November 2026: **measure before widening**. No new language
 and no live conversation before the numbers below say people come back. Quality work on what
 exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-**First, at your request (19 Nov 2026): « Imagine » for every new trip, and the practice moment
-used everywhere.** The moment (« Mon moment pour pratiquer », editable in *Moi*) is asked once and
-then only sets the time of day in « Imagine ».
+**First, at your request (19 Nov 2026): « Imagine » for every new trip, and the practice moment used
+everywhere.** *Rules first: AGENTS.md.* The moment (« Mon moment pour pratiquer », editable in
+*Moi*) is asked once and then only sets the time of day in « Imagine ».
 
 - **New trip.** The form stays in the sheet, with the cabin window showing the destination while
   it is chosen. « Ajouter ce voyage » lands on onboarding's « Imagine » screen for that trip, full
@@ -26,10 +29,10 @@ then only sets the time of day in « Imagine ».
   the learner's name in the sentence (« Tengo una reserva a nombre de Adrien »). Sentences come
   from the courses' scenes and lessons, not new copies; a test checks every language has one for
   every moment; gender and « vous » for groups as today. Photos per moment stay step C3.
-- **The dream, then the plan.** Under the sentence: « 10 minutes avec ton café du matin, chaque
-  jour jusqu'au 20 décembre » (goal, moment, date), then the first lesson. Positive fantasies
-  alone lower the energy to act ([Kappes & Oettingen, 2011](https://doi.org/10.1016/j.jesp.2011.02.003));
-  an if-then plan helps (docs/LEARNING.md). Add the first to docs/LEARNING.md.
+- **The dream, then the plan.** Under the sentence: « 10 minutes avec ton café du matin, chaque jour
+  jusqu'au 20 décembre » (goal, moment, date), then the first lesson. Positive fantasies alone lower
+  the energy to act ([Kappes & Oettingen, 2011](https://doi.org/10.1016/j.jesp.2011.02.003)); an
+  if-then plan helps (docs/LEARNING.md). Add the first to docs/LEARNING.md.
 - **The moment comes back.** At the chosen time of day, until the goal is met, home says so
   (« C'est l'heure de ton café : 10 minutes d'espagnol ? »); push reminders later (TODO.md).
 - Tests: add a trip, Rome's « Imagine » per moment, back, no photo, home at the moment, the
@@ -38,49 +41,50 @@ then only sets the time of day in « Imagine ».
 **Then, what does not match yet** (checked on 19 Nov 2026 after your iPhone screenshots), in this
 order:
 
-1. **Dublin and New York wear the British flag**: Bernard's shell and the theme come from the
-   course, so Dublin, in Ireland, not the United Kingdom, shows the Union Jack. A destination can
-   set its own flag (Ireland, United States), theme colours contrast-tested like the others;
-   Edinburgh keeps the UK's.
-2. **Destination tips are written and never shown.** Eleven destinations have one (« Aux
-   États-Unis », « En Irlande », « En Écosse »…) and so does every regional pack, but no screen
-   reads them. The trip's tip goes first in *Phrases*, « Bon à savoir », and a pack's tip in its
-   lesson.
-3. **Money per destination.** The English price drills are in pounds everywhere, while Dublin
-   pays in euros and New York in dollars, as their own tips say. A destination sets its currency
-   and the course's `sayPrice` takes it.
-4. **Every destination drawn, animated like the others.** Seventeen use the generic coast
-   (New York in your screenshot): Madrid, Valence, Baléares, Canaries, Pays basque, Galice;
-   Florence, Milan, Naples, Sicile; Porto, Algarve, Madère, Açores; Édimbourg, Dublin, New York.
-   New York first. « Ailleurs » shows the country's emblem through the same map `photos.ts` uses,
-   shared rather than copied. A test fails when a destination has no drawing, as for photos (the
-   old list in TODO.md had missed four).
-5. **American and Irish words, with their voices**, through the regional packs that already
-   teach Catalan in Barcelona: « Les mots de New York » (check, restroom, subway, to go, the tip)
-   with the en-US voice, Dublin's (grand, the craic) with en-IE. A pack's own language already
-   picks its voice: nothing new to build.
-6. **On the iPhone, a sheet opens with a focus ring on its close button** (screenshot). Focus
-   goes to the sheet itself (`autofocus` on the `<dialog>`, to check in Safari), so a tap shows no
-   ring and the keyboard still does.
+1. **Dublin and New York wear the British flag**. *Rules first: AGENTS.md.* Bernard's shell and the
+   theme come from the course, so Dublin, in Ireland, not the United Kingdom, shows the Union Jack.
+   A destination can set its own flag (Ireland, United States), theme colours contrast-tested like
+   the others; Edinburgh keeps the UK's.
+2. **Destination tips are written and never shown.** *Rules first: AGENTS.md.* Eleven destinations
+   have one (« Aux États-Unis », « En Irlande », « En Écosse »…) and so does every regional pack,
+   but no screen reads them. The trip's tip goes first in *Phrases*, « Bon à savoir », and a pack's
+   tip in its lesson.
+3. **Money per destination.** *Rules first: AGENTS.md.* The English price drills are in pounds
+   everywhere, while Dublin pays in euros and New York in dollars, as their own tips say. A
+   destination sets its currency and the course's `sayPrice` takes it.
+4. **Every destination drawn, animated like the others.** *Rules first: AGENTS.md.* Seventeen use
+   the generic coast (New York in your screenshot): Madrid, Valence, Baléares, Canaries, Pays
+   basque, Galice; Florence, Milan, Naples, Sicile; Porto, Algarve, Madère, Açores; Édimbourg,
+   Dublin, New York. New York first. « Ailleurs » shows the country's emblem through the same map
+   `photos.ts` uses, shared rather than copied. A test fails when a destination has no drawing, as
+   for photos (the old list in TODO.md had missed four).
+5. **American and Irish words, with their voices.** *Rules first: AGENTS.md.* Through the regional
+   packs that already teach Catalan in Barcelona: « Les mots de New York » (check, restroom, subway,
+   to go, the tip) with the en-US voice, Dublin's (grand, the craic) with en-IE. A pack's own
+   language already picks its voice: nothing new to build.
+6. **On the iPhone, a sheet opens with a focus ring on its close button** (screenshot). *Rules
+   first: AGENTS.md.* Focus goes to the sheet itself (`autofocus` on the `<dialog>`, to check in
+   Safari), so a tap shows no ring and the keyboard still does.
 
 1. ✅ 18 Nov 2026. **Keep progress on iPhones.** Safari deletes a site's data after seven days of
    Safari use without a visit, while apps on the home screen keep their own counter ([WebKit,
    2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Home now asks
    iPhone users in Safari to install once they have progress to lose; the app already asked the
    browser to keep its data at every start. Export from *Moi* remains the backup.
-2. **Measurement, ready to switch on.** Fix the decision figures first, then build anonymous
-   counts (no identifier, nothing about sentences translated) in the app and the Worker, tested
-   locally, switched on at step C1. The figures:
+2. **Measurement, ready to switch on.** *Rules first: AGENTS.md.* Fix the decision figures first,
+   then build anonymous counts (no identifier, nothing about sentences translated) in the app and
+   the Worker, tested locally, switched on at step C1. The figures:
    - return on day 1 and day 7 (share of new learners active again);
    - share installed on the home screen by day 7;
    - sessions completed before the departure date;
    - later, the pass: offers seen, then taps.
    Check the CNIL's conditions for consent-free audience measurement before switching on.
-3. **The game layer, from the evidence** (TODO.md): Bernard's trip as a story, the first daily
-   goal already started by onboarding, « plus que deux phrases » near the goal, travellers on one
-   phone as a team.
-4. **Acquisition experiments that need no account** (hypotheses, untested): a survival card worth
-   sharing, pages answering « comment commander un café en espagnol » that open the right lesson.
+3. **The game layer, from the evidence** (TODO.md). *Rules first: AGENTS.md.* Bernard's trip as a
+   story, the first daily goal already started by onboarding, « plus que deux phrases » near the
+   goal, travellers on one phone as a team.
+4. **Acquisition experiments that need no account** (hypotheses, untested). *Rules first:
+   AGENTS.md.* a survival card worth sharing, pages answering « comment commander un café en
+   espagnol » that open the right lesson.
 
 Done at your request, outside this order: ✅ 18 Nov 2026, **several trips at once** (two in a row,
 several languages, two in one language), each with its own hotel and address on the card; home
@@ -119,6 +123,8 @@ docs/BUSINESS.md and docs/MARKET.md are public until then.
 
 ### B3. Tidy up after the move (Claude)
 
+*Rules first: AGENTS.md.*
+
 - Remove the GitHub Pages branch of the *deploy* job in `.github/workflows/ci.yml`.
 - `BRAND.url` (`src/brand.ts`) and the README link: the Cloudflare address.
 - `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: keep only the local dev servers.
@@ -150,36 +156,39 @@ real* in TODO.md and report what fails, with a screenshot.
 
 ## C. After going live: measure first (Claude)
 
-1. Switch measurement on (A2). Compare the translation cost with the Console's usage page: about
-   0.3 cent a sentence is an estimate, not a measurement.
+1. Switch measurement on (A2). *Rules first: AGENTS.md.* Compare the translation cost with the
+   Console's usage page: about 0.3 cent a sentence is an estimate, not a measurement.
 2. Two weeks later, read the figures and choose what comes next from them.
-3. Photos from Unsplash for « Imagine ». `brand/photos.py` searches Unsplash per destination and
-   per practice moment (morning coffee: morning light; commute: a lively street; lunch: a sunny
-   terrace; evening: golden hour), picks from contact sheets, triggers each photo's download
-   endpoint once and records the photographer. As the API terms require, the app shows
-   Unsplash's own image URLs (sized and encoded by their CDN, so the 15 MB in `public/photos/`
-   leave the repository) and credits « Photo : name sur Unsplash » with links. README says that
-   this step loads an image from images.unsplash.com, the only request the app makes to another
-   site.
-4. AI voices for every phrase (docs/VOICE.md), with the Fish Audio key.
-5. More drawn destinations; translation the other way (understand a menu or a reply).
+3. Photos from Unsplash for « Imagine ». *Rules first: AGENTS.md.* `brand/photos.py` searches
+   Unsplash per destination and per practice moment (morning coffee: morning light; commute: a
+   lively street; lunch: a sunny terrace; evening: golden hour), picks from contact sheets, triggers
+   each photo's download endpoint once and records the photographer. As the API terms require, the
+   app shows Unsplash's own image URLs (sized and encoded by their CDN, so the 15 MB in
+   `public/photos/` leave the repository) and credits « Photo : name sur Unsplash » with links.
+   README says that this step loads an image from images.unsplash.com, the only request the app
+   makes to another site.
+4. AI voices for every phrase (docs/VOICE.md), with the Fish Audio key. *Rules first: AGENTS.md.*
+5. Translation the other way: understand a menu or a reply. *Rules first: AGENTS.md.*
 
 ## D. Before selling anything (you decide, Claude prepares)
 
 1. **Where the first 100 travellers come from.** One experiment per channel, each with its cost,
    installs and day-7 return: search pages per situation, the shared survival card, short travel
-   videos, the stores. The demand exists: 12.9 million French tourists visited Spain in 2024,
-   10.3 % more than in 2023 ([Turespaña, Frontur](https://www.mintur.gob.es/es-es/gabineteprensa/notasprensa/2025/documents/20250203%20ndp%20frontur%20egatur%20diciembre%20y%20anual.pdf)).
-   A pass paid once per trip brings little per person: acquisition must cost close to nothing,
-   and buying again for the next trip becomes the figure that matters.
+   videos, the stores. The demand exists: 12.9 million French tourists visited Spain in 2024, 10.3 %
+   more than in 2023 ([Turespaña,
+   Frontur](https://www.mintur.gob.es/es-es/gabineteprensa/notasprensa/2025/documents/20250203%20ndp%20frontur%20egatur%20diciembre%20y%20anual.pdf)).
+   A pass paid once per trip brings little per person: acquisition must cost close to nothing, and
+   buying again for the next trip becomes the figure that matters.
 2. **Stores or the web.** In a store app, digital purchases follow the store's rules, which
    rewrites docs/BUSINESS.md's « Stripe on the web ». Checked 18 Nov 2026:
    - Apple, EU, from 1 Oct 2026: 26 % through Apple's in-app purchase, alternatives allowed
-     alongside, and the chosen setup kept 12 months ([Apple](https://developer.apple.com/support/apps-in-the-eu/));
-     secondary sources give 20 % for other processors and 15 % for a link to the web.
+     alongside, and the chosen setup kept 12 months
+     ([Apple](https://developer.apple.com/support/apps-in-the-eu/)); secondary sources give 20 % for
+     other processors and 15 % for a link to the web.
    - Google Play, US, UK and EEA, from 30 Jun 2026: 10 % on the first million dollars a year
-     whatever the billing, plus 5 % only with Google's billing; links to a web checkout
-     allowed ([Android Developers Blog](https://android-developers.googleblog.com/2026/06/play-expanded-billing.html)).
+     whatever the billing, plus 5 % only with Google's billing; links to a web checkout allowed
+     ([Android Developers
+     Blog](https://android-developers.googleblog.com/2026/06/play-expanded-billing.html)).
    - Apple reviews apps that wrap a website against its minimum functionality rule (4.2); check
      inside the wrapper: offline and the service worker, speech recognition and synthesis, the
      microphone, persistent storage.
@@ -196,14 +205,16 @@ real* in TODO.md and report what fails, with a screenshot.
 
 Proposal and open questions: docs/BUSINESS.md. In this order:
 
-1. Accounts (only when buying or syncing; the app stays usable without one).
+1. Accounts (only when buying or syncing; the app stays usable without one). *Rules first:
+   AGENTS.md.*
 2. Payments (the pass, then a subscription), following the D2 decision, and entitlements
-   checked by the Worker.
+   checked by the Worker. *Rules first: AGENTS.md.*
 3. Premium content served by the Worker after purchase (what ships in the app bundle is free by
-   nature), and per-user quotas on translation and AI conversation.
+   nature), and per-user quotas on translation and AI conversation. *Rules first: AGENTS.md.*
 4. Cloud backup and sync, encrypted on the phone, kept on R2: alone or inside the pass and the
-   subscription (docs/BUSINESS.md).
-5. The live conversation partner, light on data (docs/VOICE.md), if the figures justify it.
+   subscription (docs/BUSINESS.md). *Rules first: AGENTS.md.*
+5. The live conversation partner, light on data (docs/VOICE.md), if the figures justify it. *Rules
+   first: AGENTS.md.*
 
 ## Working with Claude Code on your Mac
 
