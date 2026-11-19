@@ -16,6 +16,8 @@ what exists (voices, photos) waits only for its keys.
 ## A. Now: Claude, without you
 
 Nothing left that needs no one: the next steps wait for your accounts (B) or for live figures (C).
+Proposed, waiting for your yes: count answer accuracy per exercise kind, as anonymously as the
+rest, to check the 85 % target (TODO.md).
 
 ## B. You, when you can
 
@@ -150,8 +152,9 @@ benchmarks (an average iOS app keeps 24 % on day 1 and 8 % on day 7, AppsFlyer 2
 finished before the first departure are read alongside, with no threshold yet; the pass (offers
 seen, then taps) comes with the pass. The phone works the counts out from its own day log and
 sends each once (`src/engine/counts.ts`, `src/counts.ts`): a name, the first day, the link that
-brought the traveller and, for a departure, a session range. No identifier, nothing about
-sentences; the Worker adds each to a total per day (`/count`, D1) and keeps no row per request.
+brought the traveller and, for a departure, a session range, for a first step its name. No
+identifier, nothing about sentences; the Worker adds each to a total per day (`/count`, D1) and
+keeps no row per request.
 
 ## D. Before selling anything (you decide, Claude prepares)
 
@@ -202,58 +205,41 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
 
 ## Done
 
-- 18 Nov 2026. **Keep progress on iPhones.** Home asks iPhone users in Safari to install once they
-  have progress to lose: Safari deletes a site's data after seven days of use without a visit,
-  apps on the home screen keep theirs ([WebKit,
-  2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)). Export in
-  *Moi* remains the backup.
-- 18 Nov 2026. **Several trips at once**: two in a row, several languages, two in one language,
-  each with its hotel and address on the card; home follows the trip in focus and offers the next
-  one once a trip has begun; *Phrases* switches between the traveller's languages.
-- 19 Nov 2026. **Measurement, ready to switch on** (C1, « Decision figures »).
-- 19 Nov 2026. **The game layer, from the evidence** (docs/LEARNING.md): onboarding's answers count
-  toward the first goal; « Votre équipe » for travellers sharing a phone; Bernard's postcards,
-  four per leg.
-- 19 Nov 2026. **Acquisition experiments that need no account**: the card sent as a picture
-  (`utm_source=carte`) and pages per situation (`utm_source=page`); the counts say which link
-  brought each traveller (`npm run figures`).
+Details in each day's commits and in docs/.
+
+- 18 Nov 2026. **Progress kept on iPhones**: once there is progress to lose, home asks Safari users
+  to install (docs/BUSINESS.md, « Cloud backup »); export in *Moi* stays the backup.
+- 18 Nov 2026. **Several trips at once**, each with its hotel and address on the card; home follows
+  the trip in focus and offers the next one once a trip has begun.
+- 19 Nov 2026. **Measurement, ready to switch on** (C1, « Decision figures »), with where
+  newcomers stop before the first lesson and its switch on the first screen (docs/UX.md).
+- 19 Nov 2026. **The game layer, from the evidence** (docs/LEARNING.md): onboarding counts toward
+  the first goal, « Votre équipe », Bernard's postcards.
+- 19 Nov 2026. **Acquisition links that need no account**: the card sent as a picture and the
+  pages per situation, each counted by its `utm_source` (docs/BUSINESS.md).
 - 19 Nov 2026. **« Imagine » for every new trip**, the practice moment brought back at its hour,
-  and on phones the photo in plain view, measured against the previous design (docs/BRAND.md,
-  Photos).
-- 19 Nov 2026. **After your iPhone screenshots**: Dublin and New York in their own flags;
-  destination and pack tips shown; money per destination; every destination drawn and animated;
-  American and Irish words with their voices; sheets that open without a ring on their close
-  button; hotel and shopping in every language; French spaces that never break.
-- 19 Nov 2026. **Search, all that needs no domain** (docs/SEARCH.md): pages per situation and per
-  language with their trail, titles in the words people type, a sharing picture, the sitemap,
-  `robots.txt` with your content signals (AI training allowed), `llms.txt`, IndexNow told at each
-  deploy.
-- 19 Nov 2026. **A Content Security Policy** (`build/csp.ts`), tested end to end: only the app's own
-  scripts run; in a `<meta>` tag, since GitHub Pages ignores headers.
-- 19 Nov 2026. **Bernard and a moving drawing on the pages**, and a pause on every moving drawing
-  (docs/BRAND.md, Motion).
-- 19 Nov 2026. **The first screen, measured with a slow phone's network and processor**: the
-  welcome's largest paint comes at 1.6 s, under the 2.5 s of a good page, so nothing changes;
-  real visitors' figures will tell (docs/SEARCH.md, « Measured »).
-- 19 Nov 2026. **The way to the first lesson, measured** (docs/UX.md): seven screens and one
-  required answer from the app; five from a page's link, which now opens at the destination; a
-  first lesson of 18 exercises, about three to four minutes. The return date was studied and waits
-  for the pass.
-- 19 Nov 2026. **Where newcomers stop, counted once measurement is on** (docs/UX.md): each
-  onboarding screen a phone reaches, then its first lesson begun and finished, with no identifier;
-  the switch is on the first screen as well as in *Moi*, as the CNIL asks.
-- 19 Nov 2026. **A page's lesson in a new language**: a traveller with no trip in it gets
-  « Nouveau voyage » in that language, then that lesson (docs/UX.md, « Changed »).
-- 19 Nov 2026. **A pronunciation check that stays on the computer**: where Chrome would hear the
-  voice online, the check offers to download the language once
-  ([`SpeechRecognition.install()`](https://developer.mozilla.org/docs/Web/API/SpeechRecognition/install_static),
-  Chrome 139 and later), then listens on the device; a download that fails or never ends (Brave)
-  leaves the online check on offer.
+  the photo in plain view on phones (docs/BRAND.md, « Photos »).
+- 19 Nov 2026. **After your iPhone screenshots**: Dublin and New York in their flags, tips and
+  money per destination, every destination drawn, American and Irish voices, sheets without a
+  ring, hotel and shopping in every language, French spaces that never break.
+- 19 Nov 2026. **Search, all that needs no domain** (docs/SEARCH.md), a Content Security Policy
+  (`build/csp.ts`), Bernard and a moving drawing on the pages with a pause (docs/BRAND.md,
+  « Motion »), the first screen measured at 1.6 s on a slow phone.
+- 19 Nov 2026. **The way to the first lesson, measured** (docs/UX.md): page links open at the
+  destination, a page's lesson in a new language opens « Nouveau voyage » in it, and the return
+  date waits for the pass.
+- 19 Nov 2026. **A pronunciation check that stays on the computer**: where Chrome would listen
+  online, Bagage offers its language pack first
+  ([`SpeechRecognition.install()`](https://developer.mozilla.org/docs/Web/API/SpeechRecognition/install_static)).
 
 ## Working with Claude Code on your Mac
 
-Clone the repository, open the folder in Claude Code and say which step of this runbook to
-continue. AGENTS.md gives any coding agent the project's rules, commands and map: Codex reads it
-itself, and Claude Code through `CLAUDE.md`, which imports it, whatever its version and settings.
-`npm run check` runs every test. Now and then, run `/doctor prompt-audit` in Claude Code (v2.1.283
-or later): it lists stale paths, stale commands and instructions that contradict each other.
+1. Clone the repository; with Node 22 or later, `npm ci && (cd worker && npm ci)`, then
+   `npx playwright install chromium` once for the end-to-end tests (or set `CHROME_PATH` to your
+   Chrome).
+2. Open the folder in Claude Code and run `/context`: `CLAUDE.md` must appear under « Memory
+   files ». It imports AGENTS.md, the project's rules, commands and map, which Codex reads itself.
+3. Say which step of this runbook to continue. `npm run check` runs every test, about fifteen
+   minutes with the end-to-end ones.
+4. Now and then, `/doctor prompt-audit` (Claude Code v2.1.283 or later) lists stale paths, stale
+   commands and instructions that contradict each other.

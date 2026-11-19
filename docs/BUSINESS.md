@@ -79,7 +79,8 @@ Graded by evidence, strongest first:
 ## Cloud backup: an option to study
 
 Today the only copy of someone's progress is on their phone. Safari deletes it after seven days
-of Safari use without a visit, unless the app is on the home screen (RUNBOOK.md, « Done »); a lost or
+of Safari use without a visit, unless the app is on the home screen ([WebKit,
+2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)); a lost or
 replaced phone loses it, and a second device cannot share it. *Moi* offers a manual export, and
 that stays free.
 
