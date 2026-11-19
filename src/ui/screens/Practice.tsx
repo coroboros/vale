@@ -1,5 +1,6 @@
 import {
   Check,
+  DollarSign,
   Ear,
   Euro,
   Headphones,
@@ -14,6 +15,8 @@ import {
 } from 'lucide-preact';
 import type { ComponentChildren } from 'preact';
 import { clock, setQuiet, startSession } from '../../actions';
+import { currencyOf } from '../../content';
+import type { Currency } from '../../content/types';
 import { isDue } from '../../engine/memory';
 import { arrivalTime, lessonKey, readiness } from '../../engine/progress';
 import { soundFor, voicesFor } from '../../platform/speech';
@@ -45,11 +48,14 @@ function Tile({
   );
 }
 
+const MONEY: Record<Currency, typeof Euro> = { '€': Euro, '£': PoundSterling, $: DollarSign };
+
 export function Practice() {
   const p = profile.value!;
   const c = course.value;
   const data = pdata.value;
   const now = Date.now();
+  const Money = MONEY[currencyOf(c, tripOf(p).region)];
   const quiet = isQuiet(now);
   const audio = soundFor(c.lang);
   const voices = voicesFor(c.lang).length;
@@ -162,7 +168,7 @@ export function Practice() {
         <h2>Jeux</h2>
         <div class="tile-grid">
           <Tile
-            icon={course.value.numbers.currency === '£' ? <PoundSterling size={26} /> : <Euro size={26} />}
+            icon={<Money size={26} />}
             title="Prix à l’oreille"
             sub={audio ? '10 prix à comprendre' : noAudio}
             disabled={!audio}

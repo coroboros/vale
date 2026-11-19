@@ -125,13 +125,16 @@ interface CardPhrases {
   myName(name: string): string;
 }
 
+export type Currency = '€' | '£' | '$';
+
 interface Numbers {
-  /** Shown with prices. */
-  currency: '€' | '£';
   /** Number words up to 100: speech recognisers write "2" where a phrase says "dos". */
   spell(n: number): string;
-  /** Spoken form of a price: "Son cuatro euros con veinte." or, short, "Cuatro con veinte." */
-  sayPrice(euros: number, cents: number, short: boolean): string;
+  /**
+   * Spoken form of a price in the trip's currency (`currencyOf`): "Son cuatro euros con veinte."
+   * or, short, "Cuatro con veinte." A course whose destinations all pay in one currency ignores it.
+   */
+  sayPrice(units: number, cents: number, short: boolean, currency: Currency): string;
   /** Numbers learners confuse with `n` (doce/dos…), used as distractors. */
   confusable(n: number): number[];
 }

@@ -58,7 +58,9 @@ describe.each(COURSES.map(c => [c.id, c] as const))('course %s', (_id, course) =
 
   it('speaks prices and lists confusable numbers', () => {
     for (let e = 1; e < 50; e++) {
-      for (const c of [0, 20, 95]) expect(course.numbers.sayPrice(e, c, e % 2 === 0)).not.toMatch(/undefined/);
+      for (const c of [0, 20, 95])
+        for (const money of ['€', '£', '$'] as const)
+          expect(course.numbers.sayPrice(e, c, e % 2 === 0, money)).not.toMatch(/undefined/);
       expect(course.numbers.confusable(e)).not.toContain(e);
     }
   });

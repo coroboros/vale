@@ -32,9 +32,9 @@ order:
 2. ✅ 19 Nov 2026. **Destination and pack tips are shown.** *Phrases*, « Bon à savoir », opens on
    the tips of the traveller's destinations in that language; a regional pack opens a sheet like a
    lesson's, its tip as the introduction and its words in its own voice.
-3. **Money per destination.** *Rules first: AGENTS.md.* The English price drills are in pounds
-   everywhere, while Dublin pays in euros and New York in dollars, as their own tips say. A
-   destination sets its currency and the course's `sayPrice` takes it.
+3. ✅ 19 Nov 2026. **Money per destination.** The currency follows the trip's country
+   (`currencyOf`): price drills in Dublin are in euro (« four euro twenty », the Irish way), in New
+   York in dollars (« four dollars and twenty cents »), and the game's icon follows.
 4. **Every destination drawn, animated like the others.** *Rules first: AGENTS.md.* Seventeen use
    the generic coast (New York in your screenshot): Madrid, Valence, Baléares, Canaries, Pays
    basque, Galice; Florence, Milan, Naples, Sicile; Porto, Algarve, Madère, Açores; Édimbourg,

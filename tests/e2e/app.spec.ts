@@ -362,6 +362,22 @@ test('a trip wears its destination’s country: Ireland for Dublin, not the Unit
   await expect.poll(accent).toBe('#012169');
 });
 
+test('prices by ear pay in the destination’s money: dollars in New York', async ({ page }) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await page.getByRole('button', { name: /^Mes voyages/ }).click();
+  await page.getByRole('button', { name: 'Ajouter un voyage', exact: true }).click();
+  await page.getByText('Anglais', { exact: true }).click();
+  await page.getByRole('button', { name: 'New York' }).click();
+  await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
+  await page.getByRole('link', { name: 'Entraînement' }).click();
+  await page.getByRole('button', { name: /Prix à l’oreille/ }).click();
+  const prices = page.locator('.price-grid .choice');
+  await expect(prices).toHaveCount(4);
+  for (const price of await prices.allTextContents()) expect(price).toMatch(/^\d+,\d\d \$$/);
+});
+
 test('a regional pack opens with its tip, and the destination’s tip comes first in Phrases', async ({ page }) => {
   await onboard(page);
   await leaveFirstLesson(page);

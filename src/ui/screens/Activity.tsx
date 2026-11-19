@@ -1,12 +1,13 @@
 import { Pause, Play, SkipForward, X } from 'lucide-preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { logActivity } from '../../actions';
-import { itemKey } from '../../content';
+import { currencyOf, itemKey } from '../../content';
 import { build, type Card, cardOf } from '../../engine/exercises';
 import { pricePuzzle } from '../../engine/prices';
 import { seeded, shuffle } from '../../engine/random';
 import { play } from '../../platform/sfx';
 import { canSpeak, say, stopSpeech } from '../../platform/speech';
+import { tripOf } from '../../state/schema';
 import { autoplays, cindex, course, db, pdata, profile } from '../../state/store';
 import { Mascot } from '../Mascot';
 import type { Activity as Kind } from '../router';
@@ -54,7 +55,8 @@ function Prices() {
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
-  const puzzle = useMemo(() => pricePuzzle(c, rng), [round]);
+  const currency = currencyOf(c, tripOf(profile.value!).region);
+  const puzzle = useMemo(() => pricePuzzle(c, currency, rng), [round]);
   const total = 10;
   useEffect(() => {
     if (round < total) void say(puzzle.spoken, { lang: c.lang });

@@ -100,14 +100,20 @@ export const en: Course = {
     myName: name => `My name is ${name}.`,
   },
   numbers: {
-    currency: '£',
     spell: n => (n === 100 ? 'one hundred' : n < 100 ? numberWords(n) : String(n)),
-    sayPrice(pounds, pence, short) {
-      const p = numberWords(pounds);
-      const c = pence ? numberWords(pence) : '';
-      if (pounds === 1) return c ? `One pound ${c}.` : 'One pound.';
-      if (!c) return `That’s ${p} pounds.`;
-      return short ? `${capitalize(p)} ${c}.` : `That’s ${p} pounds ${c}.`;
+    sayPrice(units, cents, short, currency) {
+      const u = numberWords(units);
+      const c = cents ? numberWords(cents) : '';
+      if (currency === '$') {
+        if (short && c && units > 1) return `${capitalize(u)} ${c}.`;
+        const dollars = units === 1 ? 'one dollar' : `${u} dollars`;
+        return `That’s ${dollars}${c ? ` and ${c} cent${cents === 1 ? '' : 's'}` : ''}.`;
+      }
+      // The Irish usually say « five euro », without an s.
+      const unit = currency === '€' ? 'euro' : units === 1 ? 'pound' : 'pounds';
+      if (units === 1) return c ? `One ${unit} ${c}.` : `One ${unit}.`;
+      if (!c) return `That’s ${u} ${unit}.`;
+      return short ? `${capitalize(u)} ${c}.` : `That’s ${u} ${unit} ${c}.`;
     },
     confusable: confusableNumbers,
   },

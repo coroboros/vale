@@ -2,7 +2,7 @@ import { en } from './courses/en';
 import { es } from './courses/es';
 import { it } from './courses/it';
 import { pt } from './courses/pt';
-import type { Course, Flag, Item, Lesson, Pack, Region, Scene } from './types';
+import type { Course, Currency, Flag, Item, Lesson, Pack, Region, Scene } from './types';
 
 export const COURSES: readonly Course[] = [es, it, pt, en];
 
@@ -14,6 +14,11 @@ export const regionOf = (course: Course, id: string): Region =>
 
 /** The country a trip wears: theme colours and Bernard's shell. */
 export const flagOf = (course: Course, regionId: string): Flag => regionOf(course, regionId).flag ?? course.flag;
+
+const CURRENCY: Record<Flag, Currency> = { es: '€', it: '€', pt: '€', gb: '£', ie: '€', us: '$' };
+
+/** The money of the trip's country: Dublin pays in euros, New York in dollars. */
+export const currencyOf = (course: Course, regionId: string): Currency => CURRENCY[flagOf(course, regionId)];
 
 export interface Entry {
   item: Item;

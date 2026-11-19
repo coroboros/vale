@@ -135,7 +135,6 @@ export const es: Course = {
     myName: name => `Me llamo ${name}.`,
   },
   numbers: {
-    currency: '€',
     spell: n => (n === 100 ? 'cien' : n < 100 ? numberWords(n) : String(n)),
     sayPrice(euros, cents, short) {
       const e = numberWords(euros, true);

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { courseById, indexOf, itemKey } from '../../src/content';
+import { courseById, currencyOf, indexOf, itemKey } from '../../src/content';
 import { grade, normalize, tokens } from '../../src/engine/grade';
 import { initMemory, review } from '../../src/engine/memory';
 import { pricePuzzle } from '../../src/engine/prices';
@@ -181,7 +181,7 @@ describe('prices by ear', () => {
   it('offers four distinct prices including the right one', () => {
     const rng = seeded(11);
     for (let i = 0; i < 50; i++) {
-      const p = pricePuzzle(es, rng);
+      const p = pricePuzzle(es, '€', rng);
       expect(p.options).toHaveLength(4);
       expect(new Set(p.options).size).toBe(4);
       expect(p.options).toContain(p.answer);
@@ -192,13 +192,23 @@ describe('prices by ear', () => {
   it('says and shows prices in each country’s way and currency', () => {
     const pt = courseById('pt');
     const en = courseById('en');
-    expect(pt.numbers.sayPrice(4, 20, false)).toBe('São quatro euros e vinte.');
-    expect(pt.numbers.sayPrice(4, 20, true)).toBe('Quatro e vinte.');
+    expect(pt.numbers.sayPrice(4, 20, false, '€')).toBe('São quatro euros e vinte.');
+    expect(pt.numbers.sayPrice(4, 20, true, '€')).toBe('Quatro e vinte.');
     expect(pt.numbers.spell(16)).toBe('dezasseis');
-    expect(en.numbers.sayPrice(4, 20, false)).toBe('That’s four pounds twenty.');
+    expect(en.numbers.sayPrice(4, 20, false, '£')).toBe('That’s four pounds twenty.');
     expect(en.numbers.spell(21)).toBe('twenty-one');
-    expect(pricePuzzle(en, seeded(3)).answer).toMatch(/^\d+,\d\d £$/);
-    expect(pricePuzzle(pt, seeded(3)).answer).toMatch(/^\d+,\d\d €$/);
+    expect(pricePuzzle(en, '£', seeded(3)).answer).toMatch(/^\d+,\d\d £$/);
+    expect(pricePuzzle(pt, '€', seeded(3)).answer).toMatch(/^\d+,\d\d €$/);
+  });
+
+  it('pays in the destination’s money: euro in Dublin, dollars in New York', () => {
+    const en = courseById('en');
+    expect([currencyOf(en, 'londres'), currencyOf(en, 'dublin'), currencyOf(en, 'newyork')]).toEqual(['£', '€', '$']);
+    expect(en.numbers.sayPrice(4, 20, false, '€')).toBe('That’s four euro twenty.');
+    expect(en.numbers.sayPrice(4, 20, false, '$')).toBe('That’s four dollars and twenty cents.');
+    expect(en.numbers.sayPrice(1, 0, false, '$')).toBe('That’s one dollar.');
+    expect(en.numbers.sayPrice(4, 20, true, '$')).toBe('Four twenty.');
+    expect(pricePuzzle(en, '$', seeded(3)).answer).toMatch(/^\d+,\d\d \$$/);
   });
 });
 
