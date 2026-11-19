@@ -15,11 +15,7 @@ what exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-1. **A page's lesson in a new language.** *Rules first: AGENTS.md.* A traveller with no trip in
-   that language now lands on home without a word: open « Nouveau voyage » in that language, then
-   that lesson, and update the end-to-end test that holds today's behaviour (docs/UX.md, « Found,
-   not done »).
-2. **A pronunciation check that stays on the computer.** *Rules first: AGENTS.md.* Chrome on a
+1. **A pronunciation check that stays on the computer.** *Rules first: AGENTS.md.* Chrome on a
    computer recognises speech on the device once its language pack is installed: offer that pack
    (`SpeechRecognition.install()`) where Bagage now falls back on the online service, after
    checking the API's current state (TODO.md, « Pronunciation, the rest »).
@@ -249,6 +245,8 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
 - 19 Nov 2026. **Where newcomers stop, counted once measurement is on** (docs/UX.md): each
   onboarding screen a phone reaches, then its first lesson begun and finished, with no identifier;
   the switch is on the first screen as well as in *Moi*, as the CNIL asks.
+- 19 Nov 2026. **A page's lesson in a new language**: a traveller with no trip in it gets
+  « Nouveau voyage » in that language, then that lesson (docs/UX.md, « Changed »).
 
 ## Working with Claude Code on your Mac
 

@@ -80,6 +80,8 @@ durations are on the phone only: the session ticket shows the minutes and the da
   language and the page introduced Bagage, so the welcome and the language screens asked what was
   known. The back arrow still reaches both, and the dots start at 2 of 6. Five screens instead of
   seven, 140 words instead of 176, six taps instead of eight.
+- A traveller who opens a page's lesson in a language none of their trips speaks gets « Nouveau
+  voyage » in that language, then that lesson; home used to open without a word.
 
 ## The return date (studied 19 November 2026)
 
@@ -100,12 +102,6 @@ Decision: no return date now, and never in onboarding: it would ask everyone, be
 exercise, for a gain that comes after the trip and to a few, which is the information Nielsen
 Norman Group says to gather later. The pass asks for it when bought, where it sets the price and
 the reason is plain (GOV.UK, above). RUNBOOK E2; TODO.md, « Trips, next ».
-
-## Found, not done
-
-- A page's lesson in a language the traveller has no trip in opens home without a word
-  (`openLesson` in `src/actions.ts`; the end-to-end test « … or home without one » holds it).
-  Better: « Nouveau voyage » in that language, then that lesson (RUNBOOK A1).
 
 ## Who stops before the first lesson (decided 19 November 2026)
 

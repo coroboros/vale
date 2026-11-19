@@ -795,7 +795,7 @@ test('a situation page answers in the language, speaks its phrases, and opens it
   await expect.poll(() => [...counted].sort()).toEqual(['new  page', ...steps.map(s => `step ${s} page`)].sort());
 });
 
-test('a situation page’s lesson opens in the traveller’s trip in that language, or home without one', async ({
+test('a situation page’s lesson opens in the traveller’s trip in that language, or in a new trip in it', async ({
   page,
 }) => {
   await onboard(page);
@@ -804,7 +804,13 @@ test('a situation page’s lesson opens in the traveller’s trip in that langua
   await expect(page).toHaveURL(/#\/session$/);
   await expect(page.locator('.ex').first()).toContainText('café');
   await page.goto('./#/apprendre/it/bar');
-  await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
+  const sheet = page.getByRole('dialog', { name: 'Nouveau voyage' });
+  await expect(sheet.getByRole('radio', { name: /^Italien/ })).toBeChecked();
+  await expectAccessible(page, 'nouveau voyage depuis une page');
+  await sheet.getByRole('button', { name: 'Ajouter ce voyage' }).click();
+  await expect(page).toHaveURL(/#\/arrivee\/bar$/);
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  await expect(page.locator('.ex').first()).toContainText(/caffè|expresso/);
   await page.goto('./#/apprendre/es');
   await expect(page).toHaveURL(/#\/$/);
   await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();

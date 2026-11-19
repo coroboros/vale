@@ -10,7 +10,8 @@ export type Route =
   | { name: 'scene'; id: string }
   | { name: 'sounds' }
   | { name: 'activity'; kind: Activity }
-  | { name: 'landing' }
+  /** A trip just added, and the lesson a page asked for, if any. */
+  | { name: 'landing'; lesson?: string }
   /** From a page for search engines (build/pages.ts): a course, and maybe one of its lessons. */
   | { name: 'learn'; course: string; lesson?: string };
 
@@ -30,7 +31,8 @@ function parse(hash: string): Route {
   if (tab) return { name: tab };
   if (path === '/session') return { name: 'session' };
   if (path === '/sons') return { name: 'sounds' };
-  if (path === '/arrivee') return { name: 'landing' };
+  const landing = path.match(/^\/arrivee(?:\/([\w-]+))?$/);
+  if (landing) return { name: 'landing', lesson: landing[1] };
   const scene = path.match(/^\/scene\/([\w-]+)$/);
   if (scene) return { name: 'scene', id: scene[1]! };
   const learn = path.match(/^\/apprendre\/(\w+)(?:\/([\w-]+))?$/);
@@ -47,7 +49,7 @@ function pathOf(r: Route): string {
     case 'sounds':
       return '/sons';
     case 'landing':
-      return '/arrivee';
+      return `/arrivee${r.lesson ? `/${r.lesson}` : ''}`;
     case 'scene':
       return `/scene/${r.id}`;
     case 'activity':

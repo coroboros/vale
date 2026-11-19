@@ -1,6 +1,6 @@
 import { BookOpen, Check, ChevronDown, ChevronRight, Ear, MapPin, MessageCircle, Repeat } from 'lucide-preact';
 import { useState } from 'preact/hooks';
-import { focusTrip, startSession } from '../../actions';
+import { focusTrip, startSession, tripAsked } from '../../actions';
 import { courseById, flagOf, itemKey, pictureOf, regionOf } from '../../content';
 import { cueOf, duringCue } from '../../content/cues';
 import type { Course, Step, Unit } from '../../content/types';
@@ -283,7 +283,15 @@ export function Home() {
       </section>
 
       {sheetStop && <StepSheet stop={sheetStop} region={trip.region} onClose={() => setSheetStop(null)} />}
-      {tripOpen && <TripSheet onClose={() => setTripOpen(false)} />}
+      {(tripOpen || tripAsked.value) && (
+        <TripSheet
+          start={tripAsked.value ? { kind: 'add', ...tripAsked.value } : undefined}
+          onClose={() => {
+            setTripOpen(false);
+            tripAsked.value = null;
+          }}
+        />
+      )}
     </>
   );
 }

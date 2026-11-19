@@ -200,7 +200,10 @@ function RemoveTrip({ trip, onRemoved }: { trip: Trip; onRemoved: () => void }) 
   );
 }
 
-export type TripView = { kind: 'list' } | { kind: 'add' } | { kind: 'edit'; id: string };
+export type TripView =
+  | { kind: 'list' }
+  | { kind: 'add'; course?: string; lesson?: string }
+  | { kind: 'edit'; id: string };
 
 const TITLES: Record<TripView['kind'], string> = {
   list: 'Mes voyages',
@@ -215,7 +218,7 @@ const TITLES: Record<TripView['kind'], string> = {
 export function TripSheet({ start = { kind: 'list' }, onClose }: { start?: TripView; onClose: () => void }) {
   const p = profile.value!;
   const [view, setView] = useState<TripView>(start);
-  const [draft, setDraft] = useState(() => blankTrip(tripOf(p).course));
+  const [draft, setDraft] = useState(() => blankTrip((start.kind === 'add' && start.course) || tripOf(p).course));
   const body = useRef<HTMLDivElement>(null);
   const opened = useRef(false);
   // The landing photo, fetched once the destination stops changing: about 250 KB each.
@@ -265,7 +268,7 @@ export function TripSheet({ start = { kind: 'list' }, onClose }: { start?: TripV
               onClick={() => {
                 addTrip(draft);
                 onClose();
-                go({ name: 'landing' });
+                go({ name: 'landing', lesson: view.kind === 'add' ? view.lesson : undefined });
               }}
             >
               Ajouter ce voyage

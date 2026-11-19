@@ -127,9 +127,13 @@ export function startFirstLesson({ replace, lessonId }: { replace?: boolean; les
  * A page for search engines sends a traveller already here: to their trip in that language, if any,
  * and into the lesson when the page named one.
  */
+/** A page's language that no trip of the traveller's speaks: home opens « Nouveau voyage » in it. */
+export const tripAsked = signal<{ course: string; lesson?: string } | null>(null);
+
 export function openLesson(courseId: string, lessonId?: string): void {
   const trip = profile.value?.trips.find(t => t.course === courseId);
   if (trip) focusTrip(trip.id);
+  else tripAsked.value = { course: courseId, lesson: lessonId };
   if (trip && lessonId) startFirstLesson({ replace: true, lessonId });
   else go({ name: 'home' }, { replace: true });
 }

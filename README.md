@@ -38,8 +38,9 @@ connected, the app and its translation service are served by one Worker; see RUN
 - **Pages per situation**, readable without the app: « Comment commander un café en espagnol ? »
   and five more questions in each language, with the phrases, how to say them, the tips for that
   moment and the scene that uses them. « Apprendre ces phrases » opens that lesson in the app,
-  where a newcomer starts at the destination, the language already chosen. A page per language
-  gathers its six situations and opens its course.
+  where a newcomer starts at the destination, the language already chosen, and a traveller with no
+  trip in that language adds one first. A page per language gathers its six situations and opens
+  its course.
 - **A survival card** to show in a restaurant: allergies and diet, in the local language, and each
   trip's hotel and address. It also goes out as a picture, to send to whoever travels with you.
 - **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and

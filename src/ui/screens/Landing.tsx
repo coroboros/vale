@@ -8,13 +8,15 @@ import { learntIn } from '../../engine/progress';
 import { tripOf } from '../../state/schema';
 import { course, pdata, profile } from '../../state/store';
 import { Imagine } from '../Imagine';
-import { back, go } from '../router';
+import { back, go, route } from '../router';
 
 export function Landing() {
   const p = profile.value!;
   const trip = tripOf(p);
   const c = course.value;
   const fresh = learntIn(pdata.value, c.id) === 0;
+  const r = route.value;
+  const lessonId = r.name === 'landing' ? r.lesson : undefined;
   return (
     <div class="stage">
       <header class="stage-top">
@@ -28,7 +30,11 @@ export function Landing() {
       <footer class="stage-foot">
         {fresh ? (
           <>
-            <button type="button" class="btn btn-primary btn-block" onClick={() => startFirstLesson({ replace: true })}>
+            <button
+              type="button"
+              class="btn btn-primary btn-block"
+              onClick={() => startFirstLesson({ replace: true, lessonId })}
+            >
               Apprendre ma première phrase
             </button>
             <button type="button" class="btn btn-ghost btn-block" onClick={() => back()}>
