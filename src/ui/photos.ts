@@ -3,8 +3,8 @@
  * Files come from Wikimedia Commons under free licenses; brand/photos.py fetches and crops them and
  * copies each author and license from Commons into photos.json, so the credit always matches.
  */
-import { courseById, pictureOf } from '../content';
-import list from './photos.json';
+import { courseById, pictureOf } from '../content/index.ts';
+import list from './photos.json' with { type: 'json' };
 
 export interface Photo {
   id: string;
@@ -27,13 +27,11 @@ export function photoOf(courseId: string, regionId: string): Photo | undefined {
 /** Phones held upright get a 9:16 crop around the landmark instead of a sliver of the wide frame. */
 export const PORTRAIT = '(orientation: portrait)';
 
-const file = (id: string, variant: string) => `${import.meta.env.BASE_URL}photos/${id}-${variant}.webp`;
-
-export const photoFiles = (id: string) => ({
-  portrait: file(id, 'portrait'),
-  fallback: file(id, '1280'),
-  srcset: `${file(id, '1280')} 1280w, ${file(id, '1920')} 1920w`,
-});
+/** `base`: the app's folder; the build passes its own, outside the app. */
+export function photoFiles(id: string, base: string = import.meta.env.BASE_URL) {
+  const file = (variant: string) => `${base}photos/${id}-${variant}.webp`;
+  return { portrait: file('portrait'), fallback: file('1280'), srcset: `${file('1280')} 1280w, ${file('1920')} 1920w` };
+}
 
 /** Starts the download a step ahead, so the photo is already there when the step opens. */
 export function preload(photo: Photo): void {

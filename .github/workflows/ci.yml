@@ -51,6 +51,12 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+    # Who publishes Bagage, for « Mentions légales » and « Confidentialité » (build/legal.ts):
+    # repository variables, so the public repository never holds them (RUNBOOK B0).
+    env:
+      LEGAL_PUBLISHER: ${{ vars.LEGAL_PUBLISHER }}
+      LEGAL_CONTACT: ${{ vars.LEGAL_CONTACT }}
+      LEGAL_DIRECTOR: ${{ vars.LEGAL_DIRECTOR }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -69,6 +75,7 @@ jobs:
         run: npm run build
         env:
           VITE_TRANSLATE_URL: .
+          SITE_HOST: cloudflare
       - name: Build for GitHub Pages
         if: steps.cloudflare.outputs.connected != 'true'
         run: npm run build

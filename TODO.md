@@ -73,6 +73,10 @@ conversation).
   the French-reader pronunciation, the notes), so teaching French needs an interface in another
   language, English first, and content written for its speakers: a project of its own.
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
+- **Lighter postcard photos.** An 800 px version of each photo, rendered by `brand/photos.py` on
+  the Mac with the others, for the welcome page's postcards: Lighthouse estimates 339 KiB saved
+  under slow 4G, where the browser fetches them early though they are lazy (docs/UX.md, « The
+  welcome page »).
 
 ## Watch
 
@@ -90,9 +94,8 @@ conversation).
 - **Content Security Policy.** Unsplash photos (C3) or recorded voices served from elsewhere join
   `build/csp.ts` when they arrive.
 - **First screen speed.** 1.6 s measured with a slow phone's network and processor in Chrome
-  (docs/SEARCH.md, « Measured »). Once real visitors come, Search Console's Core Web Vitals: past
-  2.5 s, write the welcome into the page at build time (loading only the trip's course would
-  not move the first paint: docs/SEARCH.md).
+  (docs/SEARCH.md, « Measured »), before the welcome page was written into the HTML at build time
+  (docs/UX.md, « The welcome page »). Once real visitors come, Search Console's Core Web Vitals.
 - **Search.** Google's documentation changelog for structured data and AI features
   (docs/SEARCH.md); the IndexNow step's answer in the deploy log (200 or 202; a warning otherwise).
 - **Flaky end-to-end tests.** None known; note any here with its cause until it is fixed.

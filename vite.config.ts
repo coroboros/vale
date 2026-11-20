@@ -9,7 +9,7 @@ import { searchPages } from './build/pages.ts';
 import { welcomePage } from './build/welcome.ts';
 import { appTitle, BRAND, COLORS, description } from './src/brand.ts';
 import { COURSES } from './src/content/index.ts';
-import { languageOf } from './src/content/pages.ts';
+import { LEGAL, languageOf } from './src/content/pages.ts';
 
 export default defineConfig({
   // Relative URLs: the same build runs from GitHub Pages (/vale/) and from any other host.
@@ -51,7 +51,7 @@ export default defineConfig({
       includeManifestIcons: false,
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        // Only the Latin subsets are ever used; skip the others. The situation pages are read online.
+        // Only the Latin subsets are ever used; skip the others. The pages beside the app are read online.
         globIgnores: [
           '**/*vietnamese*',
           '**/*cyrillic*',
@@ -59,6 +59,7 @@ export default defineConfig({
           'assets/page-*',
           'og.png',
           ...COURSES.map(c => `${languageOf(c)}/**`),
+          ...Object.values(LEGAL).map(path => `${path}**`),
         ],
       },
       manifest: {

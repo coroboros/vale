@@ -9,17 +9,15 @@ import { appTitle, BRAND, COLORS, description, INDEXNOW_KEY, promiseLine, siteUr
 import { COURSES, pictureOf } from '../src/content/index.ts';
 import { languageOf, pagePath, questionOf, SITUATIONS, type Situation, sceneAfter } from '../src/content/pages.ts';
 import type { Course, Tip } from '../src/content/types.ts';
+import { countsEndpoint } from '../src/counts-api.ts';
 import { ofLanguage, theLanguage } from '../src/ui/french.ts';
-import { THEMES, themeVars } from '../src/ui/themes.ts';
 import { securityPolicy } from './csp.ts';
 import { frenchProse, frenchText } from './french-spaces.ts';
+import { esc, t, themeStyle } from './html.ts';
+import { type Legal, legalLinks, legalOf, legalPages } from './legal.ts';
 
 const SHARE_IMAGE = { path: 'og.png', width: 1200, height: 630 };
 
-const ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
-export const esc = (s: string) => s.replace(/[&<>"]/g, c => ESCAPES[c]!);
-/** The build's French spacing never reaches this file's strings or the content it reads: done here. */
-export const t = (s: string) => esc(frenchProse(s));
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 interface Assets {
@@ -76,19 +74,18 @@ function crumbsNav(crumbs: Crumbs, root: string): string {
   return `<nav class="page-crumbs" aria-label="${t('Fil d’Ariane')}"><ol>${items.join('')}</ol></nav>`;
 }
 
+/** `course`: a page of that language, in its colours and over its drawing; none for the legal pages. */
 function document(
   meta: Meta,
-  { assets, course, crumbs, main }: { assets: Assets; course: Course; crumbs: Crumbs; main: string },
+  { assets, course, crumbs, main }: { assets: Assets; course?: Course; crumbs: Crumbs; main: string },
 ): string {
   const root = '../'.repeat(meta.path.split('/').filter(Boolean).length);
-  const theme = Object.entries(themeVars(THEMES[course.flag]))
-    .map(([name, value]) => `${name}: ${value}`)
-    .join('; ');
+  const flag = (course ?? COURSES[0]!).flag;
   const tags = shareTags(meta)
     .map(([property, content]) => `<meta property="${property}" content="${t(content)}" />`)
     .join('\n    ');
   return `<!doctype html>
-<html lang="fr" style="${theme}">
+<html lang="fr" style="${themeStyle(flag)}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -107,15 +104,24 @@ function document(
   </head>
   <body>
     <header class="page-top">
-      <a class="page-brand" href="${root}"><span class="page-bernard" data-flag="${course.flag}"></span>${esc(BRAND.name.toLowerCase())}</a>
+      <a class="page-brand" href="${root}"><span class="page-bernard" data-flag="${flag}"></span>${esc(BRAND.name.toLowerCase())}</a>
       ${crumbsNav(crumbs, root)}
     </header>
-    <main class="page">
-      <div class="page-view" data-scenery="${pictureOf(course, 'autre')}"></div>${main}
+    <main class="page">${
+      course
+        ? `
+      <div class="page-view" data-scenery="${pictureOf(course, 'autre')}"></div>`
+        : ''
+    }${main}
     </main>
-    <footer class="page-foot">
-      <p>${t(`Les phrases et leur prononciation viennent des leçons de ${BRAND.name}, écrites pour les voyageurs francophones ; une relecture par des locuteurs natifs est prévue.`)}</p>
+    <footer class="page-foot">${
+      course
+        ? `
+      <p>${t(`Les phrases et leur prononciation viennent des leçons de ${BRAND.name}, écrites pour les voyageurs francophones ; une relecture par des locuteurs natifs est prévue.`)}</p>`
+        : ''
+    }
       <p>${t(`${BRAND.name}. ${BRAND.tagline} ${promiseLine()}`)}</p>
+      ${legalLinks(root)}
     </footer>
   </body>
 </html>
@@ -310,11 +316,14 @@ ${sections.join('\n\n')}
 
 export function searchPages(): Plugin {
   let policy = '';
+  let legal: Legal;
   return {
     name: 'search-pages',
     apply: 'build',
     configResolved(config) {
       policy = securityPolicy(config.env);
+      // The publisher's identity and the host come from the deploy, not from this repository.
+      legal = legalOf(process.env, countsEndpoint(config.env.VITE_COUNTS_URL) !== '');
     },
     transformIndexHtml: () => {
       const meta: Meta = { title: appTitle(), description: description(), path: '', type: 'website' };
@@ -358,6 +367,16 @@ export function searchPages(): Plugin {
         emit(`${languageOf(course)}/`, languageHtml(course, assets));
         for (const situation of SITUATIONS) emit(pagePath(course, situation), situationHtml(course, situation, assets));
       }
+      // Not in the sitemap: nobody searches for them.
+      for (const page of legalPages(legal))
+        this.emitFile({
+          type: 'asset',
+          fileName: `${page.path}index.html`,
+          source: document(
+            { title: `${page.title} : ${BRAND.name}`, description: page.description, path: page.path, type: 'website' },
+            { assets, crumbs: [[BRAND.name, ''], [page.title]], main: page.main },
+          ),
+        });
       this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap(paths) });
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots() });
       this.emitFile({ type: 'asset', fileName: 'llms.txt', source: llmsTxt() });

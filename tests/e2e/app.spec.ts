@@ -126,7 +126,7 @@ async function onboard(
   url = './',
 ) {
   await page.goto(url);
-  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await page.getByRole('button', { name: 'C’est parti' }).first().click();
   await check('language');
   await page.getByRole('button', { name: 'Continuer' }).click();
   await check('destination');
@@ -314,12 +314,72 @@ test('a newcomer reads the welcome page; « C’est parti » opens the first que
   const welcome = page.locator('#welcome');
   await expect(welcome.locator('.porthole')).toBeVisible();
   await expect(page.locator('#app')).toBeEmpty();
-  await welcome.getByRole('button', { name: 'C’est parti' }).click();
+  const [top, end] = await welcome.getByRole('button', { name: 'C’est parti' }).all();
+  await top!.click();
   await expect(page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' })).toBeFocused();
   await expect(welcome).toHaveCount(0);
   await page.getByRole('button', { name: 'Retour' }).click();
-  await expect(welcome.getByRole('button', { name: 'C’est parti' })).toBeFocused();
+  await expect(top!).toBeFocused();
   await expect(page.locator('#app')).toBeEmpty();
+  // From the end of the page, « Retour » comes back to the end.
+  await end!.scrollIntoViewIfNeeded();
+  const y = await page.evaluate(() => scrollY);
+  await end!.click();
+  await expect(page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' })).toBeVisible();
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(end!).toBeFocused();
+  expect(await page.evaluate(() => scrollY)).toBe(y);
+});
+
+test('the welcome page sends a postcard from each language: its photo and credit, a café phrase to hear', async ({
+  page,
+}) => {
+  await page.goto('./');
+  const cards = page.locator('.wp-card');
+  await expect(cards).toHaveCount(4);
+  await expect(cards.locator('.postcard-place')).toHaveText(['Barcelone', 'Rome', 'Lisbonne', 'Londres']);
+  for (const card of await cards.all()) {
+    await card.scrollIntoViewIfNeeded();
+    const photo = card.locator('img');
+    await expect(photo).toHaveAttribute('alt', /./);
+    await expect.poll(() => photo.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await expect(card.locator('.photo-credit a').first()).toHaveAttribute(
+      'href',
+      /^https:\/\/commons\.wikimedia\.org\//,
+    );
+  }
+  await cards.first().getByRole('button', { name: 'Écouter' }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __spoken: string[] }).__spoken))
+    .toEqual(['Un café con leche']);
+  await cards.first().getByRole('link', { name: 'Commander un café en espagnol' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comment commander un café en espagnol ?');
+});
+
+test('the legal notice and the privacy page are a tap away: from the welcome page, a page beside the app, « Moi »', async ({
+  page,
+}) => {
+  await page.goto('./');
+  await page.locator('#welcome').getByRole('link', { name: 'Mentions légales' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mentions légales');
+  await expect(page.getByRole('heading', { name: 'Hébergeur' })).toBeVisible();
+  await expectAccessible(page, 'mentions légales');
+  await page
+    .getByRole('navigation', { name: 'Informations légales' })
+    .getByRole('link', { name: 'Confidentialité' })
+    .click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Confidentialité');
+  await expect(page.getByText('Les statistiques anonymes.')).toBeVisible();
+  await expectAccessible(page, 'confidentialité');
+  await page.goto('./espagnol/');
+  await page.getByRole('link', { name: 'Mentions légales' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mentions légales');
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await page.goto('./#/moi');
+  await page.getByRole('link', { name: 'Confidentialité' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Confidentialité');
 });
 
 test('the installed app opens on its own short welcome, without the page', async ({ page }) => {
@@ -850,7 +910,7 @@ test('opens without network once visited', async ({ page, context }) => {
   await page.reload();
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole('button', { name: 'C’est parti' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'C’est parti' }).first()).toBeVisible();
   await context.setOffline(false);
 });
 
@@ -983,7 +1043,7 @@ test('the app and its pages run their own scripts only', async ({ page }) => {
 
 test('offers to install the app, with the browser dialog when available', async ({ page }) => {
   await page.goto('./');
-  const install = page.getByRole('button', { name: 'Installer l’app' });
+  const install = page.getByRole('button', { name: 'Installer l’app' }).first();
   await expect(install).toBeVisible();
   await install.click();
   await expect(page.getByRole('dialog', { name: 'Installer l’app' })).toBeVisible();
@@ -1060,7 +1120,7 @@ test('the first goal starts with the answers of onboarding, and its last shells 
 
 test('two travellers on one phone play as a team', async ({ page }) => {
   await page.goto('./');
-  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await page.getByRole('button', { name: 'C’est parti' }).first().click();
   await page.getByRole('button', { name: 'Continuer' }).click();
   await page.getByRole('button', { name: 'Barcelone' }).click();
   await page.getByRole('button', { name: 'Continuer' }).click();
@@ -1561,11 +1621,23 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     });
     expect(problems, where).toEqual([]);
   };
+  /** Screen after screen, for the pages that go on below their first one. */
+  const auditAll = async (where: string) => {
+    const [height, screen] = await page.evaluate(() => [document.documentElement.scrollHeight, innerHeight]);
+    for (let y = 0; y < height!; y += screen!) {
+      await page.evaluate(top => scrollTo(0, top), y);
+      await audit(y ? `${where} at ${y}px` : where);
+    }
+  };
   const run = async (size: string) => {
     await page.goto('./anglais/commander-au-restaurant/');
     await audit(`${size}: page de situation`);
     await page.goto('./espagnol/');
     await audit(`${size}: page de langue`);
+    for (const legal of ['mentions-legales', 'confidentialite']) {
+      await page.goto(`./${legal}/`);
+      await auditAll(`${size}: ${legal}`);
+    }
     await page.goto('./');
     // Back to a first launch. The app saves pending changes when the page goes away, so that save
     // is switched off before the data is cleared.
@@ -1574,7 +1646,8 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
       localStorage.clear();
     });
     await page.goto('./');
-    await audit(`${size}: welcome`);
+    await auditAll(`${size}: welcome`);
+    await page.evaluate(() => scrollTo(0, 0));
     await page.getByRole('button', { name: 'Statistiques anonymes' }).click();
     await expect(page.locator('.sheet')).toBeVisible();
     await audit(`${size}: statistiques anonymes`);

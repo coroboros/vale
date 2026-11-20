@@ -11,9 +11,11 @@ connected, the app and its translation service are served by one Worker; see RUN
 
 - **A flight to begin.** A newcomer in a browser lands on the welcome page: what Bagage is, and a
   cabin window flying to Barcelona, Rome, Lisbon, London, Andalusia and Venice. The view follows
-  your finger or your mouse, a tap flies on, and Bernard says hello in the local language. The
-  installed app opens on its own short welcome, and once you have set off, on your trip. Every
-  destination has its own drawing, from the Puerta de Alcalá to the Brooklyn Bridge.
+  your finger or your mouse, a tap flies on, and Bernard says hello in the local language. Further
+  down, a postcard from each language, with a real photo of the place and the first phrase to say
+  at the café, to hear and with its pronunciation, then how it works. The installed app opens on
+  its own short welcome, and once you have set off, on your trip. Every destination has its own
+  drawing, from the Puerta de Alcalá to the Brooklyn Bridge.
 - **Trips, not a course.** You pick a destination and a departure date. Plan as many trips as you
   like, two in a row or several languages at once, even two in the same language: the home screen
   follows the one you are preparing, and offers the next one once a trip has begun. The welcome
@@ -52,6 +54,9 @@ connected, the app and its translation service are served by one Worker; see RUN
   last few points are counted in phrases. Travellers sharing a phone play as a team: a weekly goal
   together, and who brought what. Mistakes never block a lesson.
 - **Shared phone friendly.** Several profiles on one device, backup export and import.
+- **Plain about data.** « Confidentialité » says what stays on the phone and what leaves it, and
+  « Mentions légales » who publishes and hosts Bagage; both are linked from the welcome page,
+  every page beside the app and « Moi ».
 
 Why each choice, with its sources: how it teaches, [docs/LEARNING.md](docs/LEARNING.md); the way
 to the first lesson, [docs/UX.md](docs/UX.md); name and identity, [docs/BRAND.md](docs/BRAND.md);

@@ -9,6 +9,7 @@ export function Stamp({
   locked,
   fresh,
   size = 104,
+  decorative,
 }: {
   id: string;
   label: string;
@@ -16,6 +17,8 @@ export function Stamp({
   locked?: boolean;
   fresh?: boolean;
   size?: number;
+  /** When the text next to it already says everything. */
+  decorative?: boolean;
 }) {
   const tilt = (hashSeed(id) % 25) - 12;
   const when = date ? frenchDay(dayKey(date), 'short') : '';
@@ -30,8 +33,11 @@ export function Stamp({
       width={size}
       height={size}
       viewBox="0 0 120 120"
-      role="img"
-      aria-label={locked ? `${label} : à gagner` : `${label}${when ? `, obtenu le ${when}` : ''}`}
+      role={decorative ? undefined : 'img'}
+      aria-hidden={decorative ? 'true' : undefined}
+      aria-label={
+        decorative ? undefined : locked ? `${label} : à gagner` : `${label}${when ? `, obtenu le ${when}` : ''}`
+      }
     >
       <g transform={`rotate(${tilt} 60 60)`} fill="none" stroke="currentColor">
         <circle cx="60" cy="60" r="54" stroke-width="3.5" stroke-dasharray={locked ? '6 7' : undefined} />

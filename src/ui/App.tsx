@@ -23,7 +23,7 @@ import { SessionScreen } from './screens/Session';
 import { Sounds } from './screens/Sounds';
 import { applyTheme } from './themes';
 
-const TABS: { tab: Tab; label: string; href: string; Icon: LucideIcon }[] = [
+export const TABS: { tab: Tab; label: string; href: string; Icon: LucideIcon }[] = [
   { tab: 'home', label: 'Itinéraire', href: '#/', Icon: TreasureMap },
   { tab: 'practice', label: 'Entraînement', href: '#/entrainement', Icon: Dumbbell },
   { tab: 'phrases', label: 'Phrases', href: '#/phrases', Icon: MessageCircle },

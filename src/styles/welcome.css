@@ -28,6 +28,225 @@
     color: var(--ink-soft);
   }
 
+  /* The page below the first screen: the postcards, the way it works, the boarding call. */
+  .wp-section {
+    display: grid;
+    gap: 14px;
+    width: min(100%, 1120px);
+    margin-inline: auto;
+    padding: 64px 20px 0;
+  }
+
+  .wp-section > h2,
+  .wp-section > .wp-lead {
+    text-align: center;
+  }
+
+  .wp-section > h2 {
+    font-size: var(--step-3);
+  }
+
+  .wp-lead {
+    max-width: 44ch;
+    margin: 0 auto;
+    color: var(--ink-soft);
+  }
+
+  .wp-cards,
+  .wp-steps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* The app's postcard (Home), with a real photo of the place on top whatever the width. */
+  .wp-card {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 12px;
+    padding: 12px 12px 16px;
+  }
+
+  .wp-photo {
+    position: relative;
+    margin: 0;
+  }
+
+  .wp-frame {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    border-radius: calc(var(--r-l) - 10px);
+    overflow: hidden;
+    background: var(--sunk);
+  }
+
+  .wp-frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--focus) 50%;
+  }
+
+  /* Under the photo, not over it as in « Imagine »: over a card's photo it would hide a fifth of it. */
+  .wp-photo .photo-credit {
+    position: static;
+    max-width: none;
+    margin-top: 4px;
+    padding: 0 6px;
+    background: none;
+    color: var(--ink-soft);
+  }
+
+  /* A postmark: ink would vanish on a busy photo, so it is white with a shadow. */
+  .wp-stamp {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: #fff;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.55));
+  }
+
+  .wp-stamp .stamp {
+    color: inherit;
+  }
+
+  .wp-card .postcard-text {
+    gap: 4px;
+    padding: 0 6px;
+  }
+
+  .wp-card .phrase {
+    padding: 4px 0 0;
+  }
+
+  .wp-card [data-island="say"]:empty {
+    display: none;
+  }
+
+  .wp-more {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 700;
+  }
+
+  /* Three stops on the itinerary's dotted path. */
+  .wp-steps {
+    gap: 0;
+    width: min(100%, 560px);
+    margin-inline: auto;
+  }
+
+  .wp-steps li {
+    position: relative;
+    display: grid;
+    align-content: start;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 16px;
+    row-gap: 2px;
+    padding-bottom: 28px;
+  }
+
+  .wp-steps li:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: 56px;
+    bottom: 4px;
+    left: 27px;
+    border-left: 3px dotted var(--line-strong);
+  }
+
+  .wp-icon {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+
+  .wp-steps h3 {
+    align-self: end;
+    font-size: var(--step-1);
+  }
+
+  .wp-steps p {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  .wp-go {
+    justify-items: center;
+    text-align: center;
+    padding-bottom: 64px;
+  }
+
+  .wp-bernard:empty {
+    width: 132px;
+    aspect-ratio: 120 / 102;
+  }
+
+  .wp-go-actions {
+    display: grid;
+    gap: 12px;
+    width: min(100%, 420px);
+    margin-top: 8px;
+  }
+
+  .wp-note {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 640px) {
+    .wp-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .wp-steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+      width: 100%;
+    }
+
+    .wp-steps li {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      text-align: center;
+      padding-bottom: 0;
+    }
+
+    .wp-icon {
+      grid-row: auto;
+      margin-bottom: 8px;
+    }
+
+    .wp-steps li:not(:last-child)::before {
+      top: 27px;
+      bottom: auto;
+      left: calc(50% + 40px);
+      right: calc(-50% + 26px);
+      border-left: 0;
+      border-top: 3px dotted var(--line-strong);
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .wp-cards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
   .wp-foot {
     display: grid;
     gap: 14px;
@@ -37,6 +256,10 @@
     border-top: 1.5px solid var(--line);
     color: var(--ink-soft);
     text-align: center;
+  }
+
+  .wp-foot .legal-links {
+    justify-content: center;
   }
 
   .wp-links .chip {
@@ -56,8 +279,10 @@
   }
 
   @media (min-width: 900px) {
+    /* The next title shows at the foot of the first screen, so the page reads as going on. */
     .wp-hero {
       width: min(100%, 1120px);
+      min-height: calc(100dvh - 104px);
       padding-inline: 48px;
     }
   }

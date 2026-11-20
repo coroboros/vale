@@ -268,4 +268,26 @@
   .page-foot {
     padding-bottom: max(28px, var(--safe-b));
   }
+
+  .page-foot .legal-links {
+    margin-inline: -8px;
+  }
+
+  /* The legal pages. */
+  .page-section {
+    display: grid;
+    gap: 10px;
+  }
+
+  .page-list {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding-left: 1.2em;
+  }
+
+  /* Vertical padding on inline links grows the tap target to 44 px without changing the line. */
+  .page-section a {
+    padding-block: 12px;
+  }
 }

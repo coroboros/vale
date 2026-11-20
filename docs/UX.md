@@ -240,15 +240,57 @@ machine; before is the app's own welcome (4aa67e0):
 | Build | Performance | Accessibility | Best practices | SEO | Largest paint | Layout shift | Blocking time |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Before | 98 | 100 | 100 | 100 | 0.91 s | 0.002 | 153 ms |
-| The welcome page | 100 | 100 | 100 | 100 | 0.91 s | 0.004 | 44 ms |
+| The welcome page, first screen only | 100 | 100 | 100 | 100 | 0.91 s | 0.004 | 44 ms |
+| The welcome page, whole | 100 | 100 | 100 | 100 | 0.90 s | 0.004 | 69 ms |
 
 The first build shifted by 0.031: the install button and the statistics link arrived with the
 script and pushed the window up 34 px. Their places are held now (`styles/welcome.css`, only where
 the build counts for the link); what is left is the fonts replacing the fallback on one line. A
-newcomer's first load no longer builds onboarding, hence the shorter blocking time. Not measured:
-real phones.
+newcomer's first load no longer builds onboarding, hence the shorter blocking time. The whole page
+weighs 694 KiB: under slow 4G the browser fetches the four photos early, though lazy, and Lighthouse
+estimates 339 KiB saved with a smaller version of each (TODO.md). Not measured: real phones.
 
-## How we will know
+Below the first screen, the page goes on with what the app already has, nothing drawn for it alone.
+A postcard from each language's first destination of the welcome flight, so the drawing of the
+first screen becomes a photo: the app's postcard (Home) in that country's colours, the photo with
+its credit, a passport stamp, the first phrase of the café lesson with its pronunciation and a
+voice of the device, and a link to its situation page. Then how it works, three stops on the
+itinerary's dotted path, each with the icon of the tab that keeps it in the app. Then the boarding
+call: Bernard, « C’est parti » again and the install button, now that the page has said what Bagage
+is worth (web.dev, above). The motion stays the app's: the window's flight, Bernard's eyes, the
+buttons' lift; no section fades in, as the motion rule in AGENTS.md asks. The Bernard of the
+boarding call neither bobs nor blinks, only follows the pointer: moving on for more than five
+seconds, he would need a pause button (WCAG 2.2.2), and the first check counted his blinks with the
+window's. As an overlay, as in « Imagine », a credit covered 7 to 18 % of a photo on a 390 px phone
+and 24 % on each of the four desktop cards: it goes under the photo. The photos load only near the
+screen, and their frames are sized before they arrive. On a computer, the first screen ends on the
+next title, so the page reads as going on.
+
+## The legal pages (20 November 2026)
+
+The owner asked for the legal pages in the welcome page's footer. Not legal advice: a lawyer reads
+them before anything is sold (RUNBOOK D4).
+
+| Finding | Source | Strength |
+| --- | --- | --- |
+| A professional site names its publisher and its host: the host's name, address and telephone; a service of online communication also names its director of publication. | Entreprendre Service Public, [Mentions obligatoires sur le site internet d'une entreprise](https://entreprendre.service-public.gouv.fr/vosdroits/F37351) (checked 13 October 2026) | Strong: the administration's guide |
+| Since the SREN law of 21 May 2024, these duties are in article 1-1 of the LCEN (formerly 6, III), the anonymity of a non-professional publisher in 1-1, II, the penalty in 1-2. | Simonnet avocat, [Mentions légales d'un site internet](https://www.simonnetavocat.fr/mentions-legales-dun-site-internet-obligations-sanctions-et-modele/) (22 April 2026) | Medium: a lawyer's reading of Légifrance |
+| Audience measurement without consent must still be told to people, in the privacy policy for instance. | CNIL (above, « Who stops before the first lesson ») | Strong |
+| Cloudflare, Inc.: 101 Townsend St, San Francisco, CA 94107; +1 (650) 319-8930. | [Cloudflare](https://www.cloudflare.com/fr-gender-equality-index) | Strong: its own page |
+| GitHub, Inc.: 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107; GitHub publishes no telephone, +1 877 448 4820 is its sales line. | GitHub's privacy statement; [datarequests.org](https://datarequests.org/company/github) | Medium for the telephone |
+
+Decision: the build writes « Mentions légales » and « Confidentialité » beside the app
+(`build/legal.ts`), linked from the welcome page, every page beside the app and « Moi ». Bagage is
+meant to be sold, so its publisher is professional and named: the name, contact and director come
+from repository variables at deploy (RUNBOOK B0), never from this public repository; until they are
+set, the notice says the publisher is named before launch. The host follows the deploy (GitHub
+Pages, or Cloudflare once connected). The privacy page says what the code does, checked in it:
+everything stays in the browser; a sentence to translate goes to the Worker, which asks Claude or
+Workers AI and keeps the answer 90 days in KV without anything about who asked, and uses the IP
+address only to limit requests per minute; without the Worker, the DeepL link carries the sentence;
+the anonymous counts appear only in a build that sends them; speech and voices may go through the
+browser's own online services; no cookie. Not checked here: the processors' own terms on
+retention and transfers, for the lawyer (D4).
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).
 - Once measurement is on (RUNBOOK C1): the screen where most newcomers stop, per link

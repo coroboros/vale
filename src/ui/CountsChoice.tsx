@@ -6,6 +6,7 @@
 import { useState } from 'preact/hooks';
 import { setShareCounts } from '../actions';
 import { countsOn } from '../counts';
+import { COUNTED } from '../counts-api';
 import { settings } from '../state/store';
 import { Sheet, Toggle } from './kit';
 
@@ -14,11 +15,7 @@ export function CountsRow() {
     <div class="row">
       <div class="row-main">
         <p class="row-title">Statistiques anonymes</p>
-        <p class="row-sub">
-          Combien de voyageurs passent chaque étape jusqu’à la première leçon, reviennent ou partagent leur carte de
-          survie, par quel lien ils sont arrivés et combien de réponses sont justes par type d’exercice, sans savoir qui
-          tu es ni ce que tu traduis
-        </p>
+        <p class="row-sub">{COUNTED}</p>
       </div>
       <Toggle checked={settings.value.shareCounts} onChange={setShareCounts} label="Statistiques anonymes" />
     </div>

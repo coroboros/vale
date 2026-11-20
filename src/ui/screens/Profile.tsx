@@ -12,6 +12,7 @@ import {
 } from '../../actions';
 import { courseById, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
+import { LEGAL } from '../../content/pages';
 import type { Gender } from '../../content/types';
 import { countsOn } from '../../counts';
 import { dayKey, shells, shellWord, stamps, streak } from '../../engine/progress';
@@ -263,6 +264,10 @@ export function Profile() {
             }
           }}
         />
+        <nav class="legal-links" aria-label="Informations légales">
+          <a href={LEGAL.notice}>Mentions légales</a>
+          <a href={LEGAL.privacy}>Confidentialité</a>
+        </nav>
       </section>
 
       <section class="section card" aria-label="Voyageurs">

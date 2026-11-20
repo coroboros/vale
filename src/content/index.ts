@@ -21,6 +21,19 @@ export function pictureOf(course: Course, regionId: string): string {
 /** The country a trip wears: theme colours and Bernard's shell. */
 export const flagOf = (course: Course, regionId: string): Flag => regionOf(course, regionId).flag ?? course.flag;
 
+/**
+ * The welcome's destinations, each language first: its window flies over them, and the welcome
+ * page sends a postcard from each language's first one.
+ */
+export const WELCOME_TRIP = [
+  ['es', 'barcelone'],
+  ['it', 'roma'],
+  ['pt', 'lisbonne'],
+  ['en', 'londres'],
+  ['es', 'andalousie'],
+  ['it', 'venezia'],
+] as const;
+
 const CURRENCY: Record<Flag, Currency> = { es: '€', it: '€', pt: '€', gb: '£', ie: '€', us: '$' };
 
 /** The money of the trip's country: Dublin pays in euros, New York in dollars. */

@@ -6,7 +6,7 @@ const WIDTHS = [390, 320, 1280];
 async function toHome(page: Page) {
   await page.route('https://translate.test/count', route => route.fulfill({ status: 204 }));
   await page.goto('./');
-  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await page.getByRole('button', { name: 'C’est parti' }).first().click();
   await page.getByRole('button', { name: 'Continuer' }).click();
   await page.getByRole('button', { name: 'Andalousie' }).click();
   for (let i = 0; i < 2; i++) await page.getByRole('button', { name: 'Continuer' }).click();

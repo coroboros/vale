@@ -262,6 +262,22 @@
     gap: 10px;
   }
 
+  /* The legal pages, linked from the welcome page and from every page beside the app (build/legal.ts). */
+  .legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 8px;
+  }
+
+  .legal-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-inline: 8px;
+    color: inherit;
+    text-underline-offset: 3px;
+  }
+
   .chip {
     min-height: var(--tap);
     display: inline-flex;

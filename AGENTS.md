@@ -114,7 +114,8 @@ kit, the screens), and plan the smallest change. Then:
 
 - `src/content/`: one data file and one rules file per language; `cues.ts`, the practice moments
   that « Imagine » and home bring back; `story.ts`, Bernard's postcards, four per leg; `pages.ts`,
-  the pages for search engines, one per situation and language, one per language.
+  the pages for search engines, one per situation and language, one per language, and the legal
+  pages' addresses; `WELCOME_TRIP` in `index.ts`, the welcome's destinations.
 - `src/engine/`: FSRS memory model, exercise choice, sessions, progress.
 - `src/platform/`: what the browser offers: the device's voices (`voices.ts`, free of the app's
   settings) and speaking with them, speech recognition, recording, sounds, install, backup, sharing
@@ -145,6 +146,9 @@ kit, the screens), and plan the smallest change. Then:
 - `build/welcome.ts`: the welcome page, written into `index.html` for newcomers in a browser and
   for crawlers that run no script; `build/boot.ts`, its inline first lines, which send the installed
   app, a traveller who has set off and links into the app to the app before the first paint.
+- `build/legal.ts`: « Mentions légales » and « Confidentialité », with the publisher from the
+  deploy's variables, never from this repository; `build/html.ts`, escaping, French spacing and a
+  country's colours for all the static HTML.
 - `build/pages.ts`: writes the pages for search engines next to the app (situations, languages),
   `sitemap.xml`, `robots.txt` with the owner's content signals, `llms.txt`, the IndexNow key file,
   and the app's canonical and sharing tags;

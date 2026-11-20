@@ -29,6 +29,10 @@ export const FIRST_STEPS = [
 ] as const;
 export type FirstStep = (typeof FIRST_STEPS)[number];
 
+/** What is counted, as travellers read it in the switch and in the privacy notice (build/legal.ts). */
+export const COUNTED =
+  'Combien de voyageurs passent chaque étape jusqu’à la première leçon, reviennent ou partagent leur carte de survie, par quel lien ils sont arrivés et combien de réponses sont justes par type d’exercice, sans savoir qui tu es ni ce que tu traduis';
+
 /** The count service the build names (VITE_COUNTS_URL); none leaves counting off. */
 export const countsEndpoint = (url: unknown) => (typeof url === 'string' ? url.replace(/\/$/, '') : '');
 

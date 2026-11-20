@@ -51,6 +51,9 @@ export const SITUATIONS: readonly Situation[] = [
 
 export const languageOf = (course: Course) => course.name.toLowerCase();
 
+/** The legal pages (build/legal.ts), relative to the app's folder like every address here. */
+export const LEGAL = { notice: 'mentions-legales/', privacy: 'confidentialite/' } as const;
+
 /** Relative to the app's folder, like every address in the build. */
 export const pagePath = (course: Course, situation: Situation) => `${languageOf(course)}/${situation.slug}/`;
 

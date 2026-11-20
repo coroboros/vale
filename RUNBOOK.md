@@ -51,10 +51,17 @@ figures (C).
 
 ## B. You, when you can
 
-### B0. Now, in two minutes
+### B0. Now, in five minutes
 
-Delete the `photos-fetch` branch: repository → *Branches* → the bin next to `photos-fetch`. It
-only ran the photo download; the photos are in `main`.
+1. Delete the `photos-fetch` branch: repository → *Branches* → the bin next to `photos-fetch`. It
+   only ran the photo download; the photos are in `main`.
+2. Name the publisher for « Mentions légales » and « Confidentialité »: repository → *Settings →
+   Secrets and variables → Actions → Variables → New repository variable*, three of them:
+   `LEGAL_PUBLISHER` (the name or company, its legal form and registration, and its address, on
+   one line), `LEGAL_CONTACT` (an email address anyone may write to) and `LEGAL_DIRECTOR` (the
+   director of publication). They appear on the site, never in this public repository; the next
+   deploy writes them in. Until then the notice says the publisher is named before launch
+   (docs/UX.md, « The legal pages »).
 
 ### B1. Connect Cloudflare and the Claude credits (about 15 minutes)
 

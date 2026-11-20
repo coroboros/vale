@@ -8,22 +8,33 @@ import { type ComponentChildren, render } from 'preact';
 import { reachStep } from '../actions';
 import { arrivedFrom } from '../counts';
 import { db } from '../state/store';
-import { App } from './App';
+import { App, TABS } from './App';
 import { CountsLink } from './CountsChoice';
 import { InstallButton } from './Install';
+import { Say } from './kit';
+import { Mascot } from './Mascot';
 import { JOURNEY, Porthole } from './Porthole';
+import { Stamp } from './Stamp';
 import { fromWelcomePage } from './screens/Onboarding';
 
 const root = document.documentElement;
 
-function islands(page: HTMLElement, name: string, content: () => ComponentChildren) {
-  for (const slot of page.querySelectorAll<HTMLElement>(`[data-island="${name}"]`)) render(content(), slot);
+function islands(page: HTMLElement, name: string, content: (data: DOMStringMap) => ComponentChildren) {
+  for (const slot of page.querySelectorAll<HTMLElement>(`[data-island="${name}"]`)) render(content(slot.dataset), slot);
 }
 
 function welcome(page: HTMLElement, app: HTMLElement) {
   islands(page, 'journey', () => <Porthole stops={JOURNEY} />);
   islands(page, 'install', () => <InstallButton block secondary />);
   islands(page, 'counts', () => <CountsLink />);
+  islands(page, 'say', ({ say = '', lang = '' }) => <Say text={say} lang={lang} small />);
+  islands(page, 'stamp', ({ id = '', label = '' }) => <Stamp id={id} label={label} size={80} decorative />);
+  islands(page, 'icon', ({ tab }) => {
+    const Icon = TABS.find(t => t.tab === tab)?.Icon;
+    return Icon && <Icon size={28} aria-hidden="true" />;
+  });
+  // Only his eyes move, after the pointer: a bob or a blink would move on with nothing to pause it (WCAG 2.2.2).
+  islands(page, 'bernard', () => <Mascot size={132} mood="happy" blinks={false} decorative />);
   reachStep('welcome', arrivedFrom());
 
   // The page leaves the document while the app shows, so only one of them is ever there to read.
