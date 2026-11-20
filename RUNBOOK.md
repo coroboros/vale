@@ -15,9 +15,15 @@ what exists (voices, photos) waits only for its keys.
 
 ## A. Now: Claude, without you
 
-Nothing left that needs no one: the next steps wait for your accounts (B) or for live figures (C).
-Proposed, waiting for your yes: count answer accuracy per exercise kind, as anonymously as the
-rest, to check the 85 % target (TODO.md).
+1. **California and Florida, on the Mac.** *Rules first: AGENTS.md.* Two destinations of the
+   English course, as decided in docs/MARKET.md (« Where French travellers go »): « Californie »
+   and « Floride », each with its drawing (looping like the others), tip and photo. The photos
+   need Wikimedia Commons, which this cloud workspace cannot reach: `python3 brand/photos.py
+   fetch render` on the Mac. The US flag, pack and dollar already exist.
+
+Then nothing left that needs no one: the next steps wait for your accounts (B) or for live
+figures (C). Proposed, waiting for your yes: count answer accuracy per exercise kind, as
+anonymously as the rest, to check the 85 % target (TODO.md).
 
 ## B. You, when you can
 

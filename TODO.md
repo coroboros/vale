@@ -80,6 +80,8 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
 - More languages: Brazilian Portuguese (its own pronunciation and words), Greek, German; one
   flag per country (theme colours and Bernard's shell).
+- Latin America for Spanish, after Brazil, country by country: a pack of each country's words and
+  « Prices by ear » in its currency, where a coffee can cost thousands (docs/MARKET.md).
 - **French as a language to learn.** Everything is written for French speakers (the interface,
   the French-reader pronunciation, the notes), so teaching French needs an interface in another
   language, English first, and content written for its speakers: a project of its own.
