@@ -149,7 +149,7 @@ export const IT: Record<string, Art> = {
     mid: (
       <>
         <path
-          d="M0 173 V156 H20 V150 H44 V156 H80 V160 H206 V154 H232 V160 H270 V152 H330 V158 H360 V173 Z"
+          d="M0 173 V156 H20 V150 H44 V156 H80 V160 H206 V154 H232 V160 H270 V152 H330 V156 H360 V173 Z"
           fill="#E8C38E"
         />
         <path

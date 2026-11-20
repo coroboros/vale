@@ -246,6 +246,9 @@ Details in each day's commits and in docs/.
 - 20 Nov 2026. **After your screenshots**: the porthole flies the way its wing points, at speeds
   measured against a real window; « Ma carte de survie », « Survie » in the tab bar, under the
   same name in « Phrases », and Bernard's postcards called so (docs/UX.md).
+- 20 Nov 2026. **How Claude looks and measures, kept for the Mac**: the look-and-measure skill
+  (screenshots, contact sheets, frames, the loop's seams, the design measures), and the last four
+  small steps in the loop closed.
 
 ## Working with Claude Code on your Mac
 
@@ -255,6 +258,7 @@ Details in each day's commits and in docs/.
 2. Open the folder in Claude Code and run `/context`: `CLAUDE.md` must appear under « Memory
    files ». It imports AGENTS.md, the project's rules, commands and map, which Codex reads itself.
 3. Say which step of this runbook to continue. `npm run check` runs every test, about fifteen
-   minutes with the end-to-end ones.
+   minutes with the end-to-end ones. How screenshots and measures were made in the cloud
+   sessions is in the look-and-measure skill (`.claude/skills/`), so nothing is lost on the Mac.
 4. Now and then, `/doctor prompt-audit` (Claude Code v2.1.283 or later) lists stale paths, stale
    commands and instructions that contradict each other.

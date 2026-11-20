@@ -5,7 +5,9 @@ Italy, Portugal or an English-speaking country, plus the Cloudflare Worker in `w
 the app and translates sentences.
 
 What to do next, in order: RUNBOOK.md. Backlog and watch list: TODO.md. Why things are the way
-they are: docs/ (learning evidence, brand, business, market, voice, search, user experience).
+they are: docs/ (learning evidence, brand, business, market, voice, search, user experience). How
+to look at and measure the app (screenshots, contact sheets, frames of the moving drawings, design
+measures): the skill in `.claude/skills/look-and-measure/`, which Claude Code loads when needed.
 `CLAUDE.md` only imports this file, so Claude Code reads the same rules.
 
 ## Rules
@@ -82,10 +84,13 @@ kit, the screens), and plan the smallest change. Then:
    New screens and sheets join the layout audit (long names, 320 px to desktop) and the
    accessibility check.
 2. `npm run check` passes.
-3. Looked at on a phone (390 and 320 px wide) and a desktop, from screenshots.
+3. Looked at on a phone (390 and 320 px wide) and a desktop, from screenshots (the
+   look-and-measure skill).
 4. The docs move in the same commit: README for what travellers get, the map below, RUNBOOK.md
    (the step moves to « Done », with the date), TODO.md, docs/ for evidence.
-5. Commit (a short imperative summary, then a bulleted body), push, CI green.
+5. Commit (a short imperative summary, then a bulleted body) as `Claude <noreply@anthropic.com>`
+   (`git -c user.name=Claude -c user.email=noreply@anthropic.com commit`), never with the
+   machine's own git identity; push, CI green.
 6. When an agent gets something wrong about this repository, fix this file in the same change.
 
 ## Commands
@@ -140,3 +145,5 @@ kit, the screens), and plan the smallest change. Then:
 - `worker/src/`: `index.ts` (routing, cache, rate limit, Claude budget, the counts' daily totals),
   `claude.ts`, `workers-ai.ts`, `prompt.ts`; `worker/figures.sql` reads the decision figures.
 - `tests/unit/` (Vitest) and `tests/e2e/` (Playwright on iPhone and desktop viewports).
+- `.claude/skills/look-and-measure/`: recipes and scripts for screenshots, contact sheets and the
+  design measures; its temporary specs (`tests/e2e/zz-*`) and shots (`tests/shots/`) stay out of git.
