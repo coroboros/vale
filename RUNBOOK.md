@@ -47,8 +47,7 @@ anything else:
    « Imagine », then `npm run check` and merge the branch into `main`.
 
 Then nothing left that needs no one: the next steps wait for your accounts (B) or for live
-figures (C). Proposed, waiting for your yes: count answer accuracy per exercise kind, as
-anonymously as the rest, to check the 85 % target (TODO.md).
+figures (C).
 
 ## B. You, when you can
 
@@ -189,9 +188,11 @@ benchmarks (an average iOS app keeps 24 % on day 1 and 8 % on day 7, AppsFlyer 2
 finished before the first departure are read alongside, with no threshold yet; the pass (offers
 seen, then taps) comes with the pass. The phone works the counts out from its own day log and
 sends each once (`src/engine/counts.ts`, `src/counts.ts`): a name, the first day, the link that
-brought the traveller and, for a departure, a session range, for a first step its name. No
-identifier, nothing about sentences; the Worker adds each to a total per day (`/count`, D1) and
-keeps no row per request.
+brought the traveller and, for a departure, a session range, for a first step its name. Beside
+them go the answers per exercise kind, summed for the phone's travellers: how many, how many
+right, how many the session expected right. No identifier, nothing about phrases or sentences;
+the Worker adds each to a total per day (`/count`, D1) and keeps no row per request. The last
+query of `npm run figures` reads the answers against the 85 % aim (docs/LEARNING.md).
 
 ## D. Before selling anything (you decide, Claude prepares)
 

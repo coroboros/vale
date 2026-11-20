@@ -352,7 +352,7 @@ describe('saved data', () => {
     const db = sanitize({
       onboarded: true,
       profiles: [{ id: 'x', name: 'Léa', goal: 999, trip: 'demain' }],
-      data: { x: { jokers: 9 } },
+      data: { x: { jokers: 9, counts: { answers: { reco: [3, 2, 2.5], guess: [1, 1, 1], speak: [1, 4, 1] } } } },
     });
     expect(db.profiles[0]).toMatchObject({
       goal: 40,
@@ -362,6 +362,9 @@ describe('saved data', () => {
     });
     expect(db.data.x!.jokers).toBe(2);
     expect(db.data.x!.mem).toEqual({});
+    // Answers waiting to be counted keep the graded kinds with sound numbers only.
+    expect(db.data.x!.counts.answers).toEqual({ reco: [3, 2, 2.5] });
+    expect(sanitize({ profiles: [{ id: 'y', name: 'Sam' }] }).data.y!.counts.answers).toEqual({});
     // The streak shows unless switched off, and a damaged choice reads as on.
     expect(db.settings.showStreak).toBe(true);
     expect(sanitize({ settings: { showStreak: 'non' } }).settings.showStreak).toBe(true);
@@ -438,8 +441,8 @@ describe('saved data', () => {
       data: { x: { counts: { sent: ['new', 'oops'], installed: 'yes', shared: true, source: 'carte' } } },
     });
     expect(db.profiles.map(p => p.since)).toEqual(['2026-12-01', '']);
-    expect(db.data.x!.counts).toEqual({ sent: ['new'], installed: false, shared: true, source: 'carte' });
-    expect(db.data.y!.counts).toEqual({ sent: [], installed: false, shared: false, source: '' });
+    expect(db.data.x!.counts).toEqual({ sent: ['new'], installed: false, shared: true, source: 'carte', answers: {} });
+    expect(db.data.y!.counts).toEqual({ sent: [], installed: false, shared: false, source: '', answers: {} });
     expect(
       sanitize({ profiles: [{ id: 'z', name: 'Zoé' }], data: { z: { counts: { source: 'spam' } } } }).data.z!.counts
         .source,

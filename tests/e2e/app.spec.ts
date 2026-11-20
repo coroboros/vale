@@ -271,8 +271,11 @@ test('from a page, the first exercise comes 5 screens after its link', async ({ 
 
 test('first launch to first lesson, progress kept after reload', async ({ page }) => {
   const steps: string[] = [];
+  const answers: Record<string, [number, number, number]>[] = [];
   await page.route(`${TRANSLATE_URL}/count`, async route => {
-    for (const c of route.request().postDataJSON().counts) if (c.name === 'step') steps.push(c.value);
+    const report = route.request().postDataJSON();
+    for (const c of report.counts) if (c.name === 'step') steps.push(c.value);
+    if (Object.keys(report.answers ?? {}).length) answers.push(report.answers);
     await route.fulfill({ status: 204 });
   });
   await onboard(page);
@@ -280,6 +283,13 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await playSession(page);
   await expect(page.locator('.ticket')).toContainText('coquillages');
   await expect.poll(() => steps.at(-1)).toBe('lesson-done');
+  // The lesson's answers leave as totals per exercise kind, with nothing about its phrases.
+  await expect.poll(() => answers.length).toBe(1);
+  for (const [kind, [n, ok, expected]] of Object.entries(answers[0]!)) {
+    expect(['reco', 'listen', 'pick', 'tilesFr', 'tilesTarget', 'dictation', 'speak']).toContain(kind);
+    expect(ok).toBeLessThanOrEqual(n);
+    expect(expected).toBeLessThanOrEqual(n);
+  }
   const card = page.locator('.from-bernard');
   await expect(card).toContainText('Une carte postale de Bernard');
   await expect(card).toContainText('« Me voilà à Barcelone !');
@@ -1279,12 +1289,22 @@ test('Bernard’s eyes follow the mouse and a finger', async ({ page }, info) =>
 test('Bernard blinks while the journey plays, and not once it is paused', async ({ page }) => {
   await page.clock.install();
   await page.goto('./');
+  const porthole = page.locator('.porthole');
+  await expect(porthole).toHaveAttribute('data-playing', 'true');
   await countBlinks(page);
-  // Bernard comes back at each place, every 7.1 s, and blinks within 6 s of coming: 16 s always
-  // hold a blink, however late the run starts.
-  await page.clock.runFor(16_000);
-  expect(await blinks(page)).toBeGreaterThan(0);
+  // Time moves in steps so the page renders and runs its effects between them, as it would live.
+  await expect
+    .poll(
+      async () => {
+        await page.clock.runFor(2000);
+        return blinks(page);
+      },
+      { timeout: 15_000 },
+    )
+    .toBeGreaterThan(0);
   await page.getByRole('button', { name: 'Mettre le voyage en pause' }).click();
+  await expect(porthole).toHaveAttribute('data-playing', 'false');
+  await page.clock.runFor(100);
   await countBlinks(page);
   await page.clock.runFor(8000);
   expect(await blinks(page)).toBe(0);

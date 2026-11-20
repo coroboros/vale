@@ -1,4 +1,12 @@
-import { COUNT_NAMES, type Count, type CountName, FIRST_STEPS, sessionRange } from '../counts-api';
+import {
+  COUNT_NAMES,
+  type Count,
+  type CountName,
+  FIRST_STEPS,
+  MAX_ANSWERS,
+  sessionRange,
+  type Tally,
+} from '../counts-api';
 import type { DB, Profile, ProfileData } from '../state/schema';
 import { daysBetween, shiftDay } from './progress';
 
@@ -34,6 +42,28 @@ export function dueCounts(p: Profile, data: ProfileData, today: string): Count[]
 /** Switched off: nothing this traveller has done so far will ever be counted. */
 export function closeCounts(data: ProfileData): void {
   data.counts.sent = [...COUNT_NAMES];
+  data.counts.answers = {};
+}
+
+const entries = (tally: Tally) => Object.entries(tally) as [keyof Tally, [number, number, number]][];
+
+/** Adds answers to a tally, unless a kind would pass what one report may carry: they wait. */
+export function addTally(into: Tally, from: Tally): boolean {
+  if (entries(from).some(([kind, [n]]) => (into[kind]?.[0] ?? 0) + n > MAX_ANSWERS)) return false;
+  for (const [kind, [n, ok, expected]] of entries(from)) {
+    const [n0, ok0, expected0] = into[kind] ?? [0, 0, 0];
+    into[kind] = [n0 + n, ok0 + ok, expected0 + expected];
+  }
+  return true;
+}
+
+/** Takes off what a report carried, keeping the answers given while it travelled. */
+export function takeTally(from: Tally, sent: Tally): void {
+  for (const [kind, [n, ok, expected]] of entries(sent)) {
+    const [n0, ok0, expected0] = from[kind] ?? [0, 0, 0];
+    if (n0 - n <= 0) delete from[kind];
+    else from[kind] = [n0 - n, Math.max(0, ok0 - ok), Math.max(0, expected0 - expected)];
+  }
 }
 
 /** The first steps this phone reached and has not counted yet. */

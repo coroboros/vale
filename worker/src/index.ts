@@ -6,7 +6,7 @@
  */
 import { COURSES } from '../../src/content';
 import type { Course } from '../../src/content/types';
-import { asCounts } from '../../src/counts-api';
+import { asCounts, asTally } from '../../src/counts-api';
 import { asTranslated, MAX_TRANSLATE_CHARS, sentenceKey, type Translated } from '../../src/translation-api';
 import { CLAUDE_DEFAULTS, translateWithClaude } from './claude';
 import { PROMPT_VERSION, UpstreamError } from './prompt';
@@ -20,7 +20,7 @@ interface Limiter {
   limit(options: { key: string }): Promise<{ success: boolean }>;
 }
 interface Statement {
-  bind(...values: string[]): Statement;
+  bind(...values: (string | number)[]): Statement;
 }
 interface Database {
   prepare(sql: string): Statement;
@@ -118,8 +118,15 @@ const COUNTS_TABLE =
   'CREATE TABLE IF NOT EXISTS counts (day TEXT NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL, source TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, name, value, source))';
 const ADD_COUNT =
   'INSERT INTO counts (day, name, value, source, n) VALUES (?1, ?2, ?3, ?4, 1) ON CONFLICT (day, name, value, source) DO UPDATE SET n = n + 1';
+const ANSWERS_TABLE =
+  'CREATE TABLE IF NOT EXISTS answers (day TEXT NOT NULL, kind TEXT NOT NULL, n INTEGER NOT NULL, ok INTEGER NOT NULL, expected REAL NOT NULL, PRIMARY KEY (day, kind))';
+const ADD_ANSWERS =
+  'INSERT INTO answers (day, kind, n, ok, expected) VALUES (?1, ?2, ?3, ?4, ?5) ON CONFLICT (day, kind) DO UPDATE SET n = n + excluded.n, ok = ok + excluded.ok, expected = expected + excluded.expected';
 
-/** Each count adds one to its day's total: nothing is kept per request, so nothing points back to a phone. */
+/**
+ * Each count adds one to its day's total, and answers to the day's totals per exercise kind: nothing
+ * is kept per request, so nothing points back to a phone.
+ */
 async function count(request: Request, env: Env, cors: Headers): Promise<Response> {
   const db = env.COUNTS;
   if (!db) {
@@ -129,11 +136,17 @@ async function count(request: Request, env: Env, cors: Headers): Promise<Respons
   if (await overLimit(request, env)) return json({ error: 'rate_limited' }, 429, { ...cors, 'retry-after': '60' });
   const read = await readJson(request);
   if ('error' in read) return json(read, 400, cors);
-  const counts = asCounts(read.body, new Date().toISOString().slice(0, 10));
-  if (!counts) return json({ error: 'invalid_counts' }, 400, cors);
+  const today = new Date().toISOString().slice(0, 10);
+  const counts = asCounts(read.body, today);
+  const answers = Object.entries(asTally((read.body as { answers?: unknown } | null)?.answers));
+  if (!counts || (!counts.length && !answers.length)) return json({ error: 'invalid_counts' }, 400, cors);
   await db.batch([
     db.prepare(COUNTS_TABLE),
+    db.prepare(ANSWERS_TABLE),
     ...counts.map(c => db.prepare(ADD_COUNT).bind(c.day, c.name, c.value, c.source)),
+    ...answers.map(([kind, [n, ok, expected]]) =>
+      db.prepare(ADD_ANSWERS).bind(today, kind, n, ok, Math.round(expected * 100) / 100),
+    ),
   ]);
   return new Response(null, { status: 204, headers: cors });
 }

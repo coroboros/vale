@@ -6,6 +6,8 @@
  * ergonomics, and people are told and can easily say no (cnil.fr, « Cookies : solutions pour les
  * outils de mesure d’audience », 4 July 2025; « Questions-réponses », 29 April 2026).
  */
+import { GRADED, type Kind } from './engine/exercises';
+
 export const COUNT_NAMES = ['new', 'day1', 'day7', 'installed', 'shared', 'departure', 'step'] as const;
 export type CountName = (typeof COUNT_NAMES)[number];
 
@@ -56,10 +58,11 @@ const MAX_COUNTS = 4 * COUNT_NAMES.length + FIRST_STEPS.length;
 const MAX_AGE_DAYS = 400;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
-/** The counts in a request body, or null when anything in it is not one. */
+/** The counts in a request body, none when it only carries answers, or null when anything in it is not one. */
 export function asCounts(body: unknown, today: string): Count[] | null {
-  const list = (body as { counts?: unknown } | null)?.counts;
-  if (!Array.isArray(list) || list.length === 0 || list.length > MAX_COUNTS) return null;
+  if (!body || typeof body !== 'object') return null;
+  const list = (body as { counts?: unknown }).counts ?? [];
+  if (!Array.isArray(list) || list.length > MAX_COUNTS) return null;
   const counts: Count[] = [];
   for (const raw of list) {
     const { name, day, value, source } = (raw ?? {}) as Record<string, unknown>;
@@ -73,4 +76,39 @@ export function asCounts(body: unknown, today: string): Count[] | null {
     counts.push({ name: name as CountName, day, value: value as string, source: source as Source });
   }
   return counts;
+}
+
+/**
+ * Answers per exercise kind since the last report: how many, how many right, and how many the
+ * session expected right (each kind's ease times the phrase's predicted recall, engine/session.ts).
+ * Summed on the phone, never per phrase or sentence, they check the 85 % aim and each kind's ease
+ * (docs/LEARNING.md).
+ */
+export type Tally = Partial<Record<Kind, [answered: number, right: number, expected: number]>>;
+
+/** Far more than a traveller answers between two reports: past it, a tally waits or is not one. */
+export const MAX_ANSWERS = 8000;
+
+const whole = (x: unknown, max: number): x is number =>
+  Number.isInteger(x) && (x as number) >= 0 && (x as number) <= max;
+
+/** The tally in a stored value or a report, without what is not one. */
+export function asTally(value: unknown): Tally {
+  const tally: Tally = {};
+  if (!value || typeof value !== 'object') return tally;
+  for (const kind of GRADED) {
+    const entry: unknown = (value as Record<string, unknown>)[kind];
+    if (!Array.isArray(entry) || entry.length !== 3) continue;
+    const [n, ok, expected] = entry as [unknown, unknown, unknown];
+    if (
+      whole(n, MAX_ANSWERS) &&
+      n >= 1 &&
+      whole(ok, n) &&
+      typeof expected === 'number' &&
+      expected >= 0 &&
+      expected <= n
+    )
+      tally[kind] = [n, ok, expected];
+  }
+  return tally;
 }

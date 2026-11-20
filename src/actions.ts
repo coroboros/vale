@@ -1,7 +1,8 @@
 import { signal } from '@preact/signals';
 import { type CourseIndex, courseById, itemKey } from './content';
+import { countsOn } from './counts';
 import type { FirstStep, Source } from './counts-api';
-import { closeCounts, closeSteps } from './engine/counts';
+import { addTally, closeCounts, closeSteps } from './engine/counts';
 import { review } from './engine/memory';
 import { buildPool } from './engine/pool';
 import {
@@ -217,8 +218,9 @@ function finish(r: Running, now: number): Summary {
   let earned: string[] = [];
   let days = 0;
   const before = postcards();
-  updateData(data => {
+  updateData((data, draft) => {
     for (const { key, grade } of result.reviews) data.mem[key] = review(data.mem[key], grade, now, key);
+    if (countsOn && draft.settings.shareCounts) addTally(data.counts.answers, result.answers);
     for (const [key, n] of Object.entries(r.misses)) data.mistakes[key] = (data.mistakes[key] ?? 0) + n;
     for (const { key } of result.reviews.filter(x => x.grade === 'good' && !r.misses[x.key])) delete data.mistakes[key];
     const lessonId =

@@ -16,7 +16,8 @@ export function CountsRow() {
         <p class="row-title">Statistiques anonymes</p>
         <p class="row-sub">
           Combien de voyageurs passent chaque étape jusqu’à la première leçon, reviennent ou partagent leur carte de
-          survie, et par quel lien ils sont arrivés, sans savoir qui tu es ni ce que tu traduis
+          survie, par quel lien ils sont arrivés et combien de réponses sont justes par type d’exercice, sans savoir qui
+          tu es ni ce que tu traduis
         </p>
       </div>
       <Toggle checked={settings.value.shareCounts} onChange={setShareCounts} label="Statistiques anonymes" />

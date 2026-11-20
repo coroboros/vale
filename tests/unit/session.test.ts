@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { courseById, indexOf } from '../../src/content';
-import { cardOf, TIER } from '../../src/engine/exercises';
+import { cardOf, GRADED, TIER } from '../../src/engine/exercises';
 import { initMemory } from '../../src/engine/memory';
 import { seeded } from '../../src/engine/random';
 import { answer, createSession, next, outcome, type PoolCard, setAudio, targetSuccess } from '../../src/engine/session';
@@ -32,6 +32,24 @@ describe('adaptive difficulty', () => {
     expect(targetSuccess(Array(8).fill(true))).toBeLessThan(0.85);
     expect(targetSuccess(Array(8).fill(false))).toBeGreaterThan(0.85);
     expect(targetSuccess(Array(8).fill(false))).toBeLessThanOrEqual(0.95);
+  });
+});
+
+describe('answers per exercise kind', () => {
+  it('tally each graded answer by kind, with how likely the session made it right', () => {
+    const session = createSession({ kind: 'review', unitId: 'first' }, known(5, 0.7), { audio: true });
+    play(session, step => step % 3 !== 0);
+    const { answers, correct, total } = outcome(session);
+    const rows = Object.entries(answers) as [string, [number, number, number]][];
+    expect(rows.length).toBeGreaterThan(0);
+    for (const [kind, [n, ok, expected]] of rows) {
+      expect(GRADED).toContain(kind);
+      expect(ok).toBeLessThanOrEqual(n);
+      expect(expected).toBeGreaterThan(0);
+      expect(expected).toBeLessThan(n);
+    }
+    expect(rows.reduce((sum, [, [n]]) => sum + n, 0)).toBe(total);
+    expect(rows.reduce((sum, [, [, ok]]) => sum + ok, 0)).toBe(correct);
   });
 });
 

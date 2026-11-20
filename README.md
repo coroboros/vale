@@ -157,9 +157,11 @@ counts below, nothing else about the learner leaves the phone.
 **Anonymous counts.** `/count` adds what the app reports (each onboarding screen a phone reaches
 and its first lesson begun and finished, a new traveller, a return on day 1 or day 7, an install on
 the home screen, a shared card, the sessions before a first departure as a range, each with the
-link that brought the traveller) to totals per day in D1, for the decision figures (RUNBOOK.md),
-where newcomers stop (docs/UX.md) and the links that bring travellers. No identifier and nothing
-about sentences; a traveller can switch them off from the first screen or in *Moi*. They stay off
+link that brought the traveller; and, summed for a phone's travellers, the answers per exercise
+kind, how many were right and how many the session expected right) to totals per day in D1, for
+the decision figures (RUNBOOK.md), where newcomers stop (docs/UX.md), the links that bring
+travellers and whether exercises hit their 85 % aim (docs/LEARNING.md). No identifier and nothing
+about phrases or sentences; a traveller can switch them off from the first screen or in *Moi*. They stay off
 until RUNBOOK C1 (`VITE_COUNTS_URL` and the `d1_databases` binding); `npm run figures` in `worker/`
 reads them.
 

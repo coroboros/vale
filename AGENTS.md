@@ -131,8 +131,9 @@ kit, the screens), and plan the smallest change. Then:
   contrast checked by a test), `photos.json` (one photo per destination with its credit, written by
   `brand/photos.py`; files in `public/photos/`).
 - `src/translation-api.ts`: the request and answer shared with the Worker.
-- `src/counts-api.ts`: the anonymous counts behind the decision figures and a newcomer's first
-  steps (`FIRST_STEPS`, which also orders onboarding's screens), shared with the Worker;
+- `src/counts-api.ts`: the anonymous counts behind the decision figures, a newcomer's first
+  steps (`FIRST_STEPS`, which also orders onboarding's screens) and the answers per exercise kind
+  (`Tally`, against the 85 % aim), shared with the Worker;
   `src/engine/counts.ts` works out what is due, `src/counts.ts` sends it, `ui/CountsChoice.tsx`
   is their switch, on the first screen and in « Moi ».
 - `build/french-spaces.ts`: the build step that keeps French punctuation on its word's line.

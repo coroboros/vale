@@ -65,8 +65,6 @@ conversation).
 - **« Imagine », the sound of the place.** Once recorded voices exist (RUNBOOK, C4), the phrase
   plays by itself as the photo appears, over a soft sound of the place (a café, a tram bell);
   silent in quiet mode.
-- **Answer accuracy per exercise kind**, as anonymous as the counts (RUNBOOK.md, C), to check the
-  hypotheses in docs/LEARNING.md.
 - More languages: Brazilian Portuguese (its own pronunciation and words), Greek, German; one
   flag per country (theme colours and Bernard's shell).
 - Latin America for Spanish, after Brazil, country by country: a pack of each country's words and

@@ -269,6 +269,15 @@ describe('anonymous counts', () => {
     expect(Object.fromEntries(totals)).toEqual({ [`${today}|new||carte`]: 2, [`${today}|departure|2-4|`]: 1 });
   });
 
+  it('add answers to the day’s totals per exercise kind, alone or beside counts', async () => {
+    const { totals, sql, send } = counting();
+    expect((await send({ counts: [], answers: { reco: [5, 4, 4.237], speak: [2, 1, 1.5] } })).status).toBe(204);
+    expect(sql.some(text => text.startsWith('CREATE TABLE IF NOT EXISTS answers'))).toBe(true);
+    expect(Object.fromEntries(totals)).toEqual({ [`${today}|reco|5|4|4.24`]: 1, [`${today}|speak|2|1|1.5`]: 1 });
+    expect((await send({ counts: [], answers: {} })).status).toBe(400);
+    expect((await send({ answers: { guess: [1, 1, 1] } })).status).toBe(400);
+  });
+
   it('refuse what is not a count, and strangers', async () => {
     const { totals, send } = counting();
     expect((await send({ counts: [{ name: 'user', day: today, value: 'Léa', source: '' }] })).status).toBe(400);
