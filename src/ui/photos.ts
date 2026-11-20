@@ -27,10 +27,17 @@ export function photoOf(courseId: string, regionId: string): Photo | undefined {
 /** Phones held upright get a 9:16 crop around the landmark instead of a sliver of the wide frame. */
 export const PORTRAIT = '(orientation: portrait)';
 
+/** The widths brand/photos.py renders: the small ones for the welcome page's postcards. */
+export const WIDTHS = [480, 800, 1280, 1920] as const;
+
 /** `base`: the app's folder; the build passes its own, outside the app. */
 export function photoFiles(id: string, base: string = import.meta.env.BASE_URL) {
   const file = (variant: string) => `${base}photos/${id}-${variant}.webp`;
-  return { portrait: file('portrait'), fallback: file('1280'), srcset: `${file('1280')} 1280w, ${file('1920')} 1920w` };
+  return {
+    portrait: file('portrait'),
+    fallback: file('1280'),
+    srcset: WIDTHS.map(width => `${file(String(width))} ${width}w`).join(', '),
+  };
 }
 
 /** Starts the download a step ahead, so the photo is already there when the step opens. */

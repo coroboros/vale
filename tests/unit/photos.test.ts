@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { COURSES } from '../../src/content';
-import { photoOf } from '../../src/ui/photos';
+import { photoOf, WIDTHS } from '../../src/ui/photos';
 import list from '../../src/ui/photos.json';
 
-const VARIANTS = ['portrait', '1280', '1920'];
+const VARIANTS = ['portrait', ...WIDTHS.map(String)];
 
 describe('destination photos', () => {
   it('picture every destination, « Ailleurs » included', () => {

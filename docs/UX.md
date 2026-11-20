@@ -247,8 +247,31 @@ The first build shifted by 0.031: the install button and the statistics link arr
 script and pushed the window up 34 px. Their places are held now (`styles/welcome.css`, only where
 the build counts for the link); what is left is the fonts replacing the fallback on one line. A
 newcomer's first load no longer builds onboarding, hence the shorter blocking time. The whole page
-weighs 694 KiB: under slow 4G the browser fetches the four photos early, though lazy, and Lighthouse
-estimates 339 KiB saved with a smaller version of each (TODO.md). Not measured: real phones.
+weighed 694 KiB: under slow 4G the browser fetches the four photos early, though lazy, and
+Lighthouse estimated 339 KiB to save on them. Not measured: real phones.
+
+The photos' weight, measured on the four postcard photos, each resized from its 1920 px file and
+compared by structural similarity with the same resize kept lossless:
+
+| Width | WebP, quality 56 (as rendered) | AVIF at the same similarity |
+| --- | --- | --- |
+| 480 px | 77 KiB | 65 KiB (16 % less) |
+| 800 px | 187 KiB | 162 KiB (14 % less) |
+| 1280 px (served until now) | 430 KiB | 374 KiB (13 % less) |
+
+The width does most of it: 800 px weighs 57 % less than 1280 px, AVIF 13 to 16 % less on top (the
+references are already WebP, which flatters WebP; with the originals AVIF may gain more). The
+photos now come in 480, 800, 1280 and 1920 px, rendered with the rest by `brand/photos.py`, and
+the browser picks with `srcset`. Measured after (Lighthouse 13.6, median of three): the page weighs
+439 KiB instead of 694, the four photos 189 KiB instead of 443; LCP 0.92 s, blocking time 54 ms,
+CLS 0.004, all four scores 100. Lighthouse still sees 69 KiB: the 800 px files against the 609
+device pixels a postcard covers on its emulated phone, the price of fixed widths. Cloudflare Images would give any width and AVIF on the fly:
+5,000 unique transformations a month free, then $0.50 per 1,000
+([pricing](https://developers.cloudflare.com/images/pricing/)), through a Worker on any zone,
+workers.dev included ([Transform via Workers](https://developers.cloudflare.com/images/worker)).
+For 23 photos the gain over fixed widths is AVIF's share, at the cost of a Worker route, of the
+GitHub Pages preview and of a vendor between the page and its photos: worth it once photos
+multiply, such as with Unsplash (RUNBOOK C3).
 
 Below the first screen, the page goes on with what the app already has, nothing drawn for it alone.
 A postcard from each language's first destination of the welcome flight, so the drawing of the

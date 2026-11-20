@@ -73,10 +73,9 @@ conversation).
   the French-reader pronunciation, the notes), so teaching French needs an interface in another
   language, English first, and content written for its speakers: a project of its own.
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
-- **Lighter postcard photos.** An 800 px version of each photo, rendered by `brand/photos.py` on
-  the Mac with the others, for the welcome page's postcards: Lighthouse estimates 339 KiB saved
-  under slow 4G, where the browser fetches them early though they are lazy (docs/UX.md, « The
-  welcome page »).
+- **AVIF photos.** 13 to 16 % lighter than the WebP files at the same similarity, measured from
+  the WebP files themselves; rendered from the originals by `brand/photos.py` on the Mac, the
+  gain may be larger. Or Cloudflare Images once photos multiply (docs/UX.md, « The welcome page »).
 
 ## Watch
 

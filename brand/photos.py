@@ -31,7 +31,9 @@ AGENT = "BagagePhotos/1.0 (https://github.com/coroboros/vale)"
 FREE = re.compile(r"^(CC0|Public domain|CC BY(-SA)? \d\.\d)", re.IGNORECASE)
 # 3840 px is one of the thumbnail widths Commons serves; the portrait crop needs the height.
 SOURCE_WIDTH = 3840
-WIDTHS = (1280, 1920)
+# The smaller widths serve the welcome page's postcards: at 800 px a photo weighs 57 % less than
+# at 1280 (docs/UX.md, « The welcome page »).
+WIDTHS = (480, 800, 1280, 1920)
 PORTRAIT_HEIGHT = 1920
 # Low enough to keep each file near 200 KB; the frosted card and scrim hide what compression costs.
 QUALITY = 56
