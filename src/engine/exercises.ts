@@ -1,7 +1,7 @@
-import { type CourseIndex, itemKey } from '../content';
+import { type CourseIndex, itemKey } from '../content/index.ts';
 import type { Item } from '../content/types';
-import { tokens } from './grade';
-import { type Rng, shuffle } from './random';
+import { tokens } from './grade.ts';
+import { type Rng, shuffle } from './random.ts';
 
 export type Kind = 'guess' | 'learn' | 'reco' | 'listen' | 'pick' | 'tilesFr' | 'tilesTarget' | 'dictation' | 'speak';
 

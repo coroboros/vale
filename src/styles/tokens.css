@@ -39,6 +39,7 @@
     --r-pill: 999px;
 
     --tap: 48px;
+    --btn-h: 52px;
     --safe-t: env(safe-area-inset-top, 0px);
     --safe-b: env(safe-area-inset-bottom, 0px);
     --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);

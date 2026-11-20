@@ -1,7 +1,11 @@
 @layer kit {
   /* --lx and --ly (-1…1) come from the pointer (ui/Porthole.tsx). */
-  .porthole {
+  .porthole,
+  .porthole-slot {
     --pw: clamp(150px, min(64vw, calc((100dvh - 440px) * 0.8)), 290px);
+  }
+
+  .porthole {
     --lx: 0;
     --ly: 0;
     position: relative;
@@ -10,9 +14,16 @@
   }
 
   @media (min-width: 900px) {
-    .porthole {
+    .porthole,
+    .porthole-slot {
       --pw: clamp(280px, min(30vw, calc((100dvh - 200px) * 0.8)), 410px);
     }
+  }
+
+  /* Holds the window's place until the script draws it, so nothing moves when it does. */
+  .porthole-slot:empty {
+    width: var(--pw);
+    aspect-ratio: 4 / 5;
   }
 
   .porthole-window {

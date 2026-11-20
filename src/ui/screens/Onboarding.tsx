@@ -2,11 +2,12 @@
  * The last step pictures the learner there, saying a first sentence: imagining one's future self
  * using the language feeds the motivation to learn it (the « ideal L2 self », docs/LEARNING.md).
  */
+import { signal } from '@preact/signals';
 import { ArrowLeft } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createProfiles, reachStep, startFirstLesson } from '../../actions';
 import { BRAND } from '../../brand';
-import { COURSES, courseById, flagOf, regionOf } from '../../content';
+import { COURSES, flagOf, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
 import { arrivedFrom } from '../../counts';
@@ -16,26 +17,14 @@ import { CountsLink } from '../CountsChoice';
 import { Imagine } from '../Imagine';
 import { InstallButton } from '../Install';
 import { ChoiceGroup } from '../kit';
-import { Porthole, type Stop, stopOf } from '../Porthole';
+import { JOURNEY, Porthole } from '../Porthole';
 import { photoOf, preload } from '../photos';
 import { route } from '../router';
 import { DateField, LanguageChoice, PlaceChoice } from '../Trip';
 import { THEMES, themeVars } from '../themes';
 
-/** The welcome flight: a short loop over the four languages, rather than every destination. */
-const JOURNEY: Stop[] = (
-  [
-    ['es', 'barcelone'],
-    ['it', 'roma'],
-    ['pt', 'lisbonne'],
-    ['en', 'londres'],
-    ['es', 'andalousie'],
-    ['it', 'venezia'],
-  ] as const
-).map(([courseId, regionId]) => {
-  const c = courseById(courseId);
-  return stopOf(c, regionOf(c, regionId));
-});
+/** Set when the welcome page opened onboarding: its first question comes first, « Retour » goes back to the page. */
+export const fromWelcomePage = signal<{ back: () => void } | null>(null);
 
 interface Traveller {
   name: string;
@@ -45,8 +34,10 @@ interface Traveller {
 export function Onboarding() {
   const r = route.value;
   const asked = r.name === 'learn' && COURSES.some(c => c.id === r.course) ? r : null;
-  // From a page, its link chose the language and the page introduced Bagage (docs/UX.md).
-  const first = asked ? FIRST_STEPS.indexOf('destination') : 0;
+  // From a page, its link chose the language and the page introduced Bagage; the welcome page
+  // introduced it too (docs/UX.md).
+  const welcomePage = fromWelcomePage.value;
+  const first = asked ? FIRST_STEPS.indexOf('destination') : welcomePage ? FIRST_STEPS.indexOf('language') : 0;
   const [step, setStep] = useState(first);
   const screen = FIRST_STEPS[step]!;
   const [courseId, setCourseId] = useState(asked?.course ?? COURSES[0]!.id);
@@ -90,7 +81,12 @@ export function Onboarding() {
     <div class={`stage onboarding${screen === 'welcome' ? ' is-welcome' : ''}`} style={themeVars(theme)}>
       {step > 0 && (
         <header class="stage-top">
-          <button type="button" class="icon-btn" aria-label="Retour" onClick={() => setStep(step - 1)}>
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Retour"
+            onClick={() => (welcomePage && step === first ? welcomePage.back() : setStep(step - 1))}
+          >
             <ArrowLeft size={24} />
           </button>
           <ol class="ob-dots" aria-label={`Étape ${step} sur ${last}`}>
@@ -261,7 +257,7 @@ export function Onboarding() {
               Apprendre ma première phrase
             </button>
           )}
-          {step === first && <CountsLink />}
+          {step === first && asked && <CountsLink />}
         </footer>
       )}
     </div>

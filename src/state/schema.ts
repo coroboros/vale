@@ -10,9 +10,9 @@ import {
   type Source,
   sourceOf,
   type Tally,
-} from '../counts-api';
+} from '../counts-api.ts';
 import type { Memory } from '../engine/memory';
-import { HOUR_MS } from '../engine/time';
+import { HOUR_MS } from '../engine/time.ts';
 
 const DB_VERSION = 4;
 export const STORAGE_KEY = 'db-v4';

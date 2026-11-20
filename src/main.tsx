@@ -5,7 +5,7 @@ import './styles/base.css';
 import './styles/kit.css';
 import './styles/journey.css';
 import './styles/screens.css';
-import { render } from 'preact';
+import './styles/welcome.css';
 import { settleDay } from './actions';
 import { initCounts } from './counts';
 import { initMemory } from './engine/memory';
@@ -14,9 +14,9 @@ import { initInstall } from './platform/install';
 import { initPWA } from './platform/pwa';
 import { initVoices } from './platform/voices';
 import { loadDB, theme, watchStorage } from './state/store';
-import { App } from './ui/App';
 import { initRouter } from './ui/router';
 import { applyTheme } from './ui/themes';
+import { renderApp } from './ui/welcome-page';
 
 async function boot() {
   // The memory model must exist before loading: migrating v3 data rebuilds FSRS states.
@@ -31,7 +31,7 @@ async function boot() {
   initCounts();
   void requestPersistence();
   applyTheme(theme.value);
-  render(<App />, document.getElementById('app')!);
+  renderApp(document.getElementById('app')!);
 }
 
 void boot();

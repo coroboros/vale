@@ -6,6 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { contentSecurity } from './build/csp.ts';
 import { frenchText, frenchTypography } from './build/french-spaces.ts';
 import { searchPages } from './build/pages.ts';
+import { welcomePage } from './build/welcome.ts';
 import { appTitle, BRAND, COLORS, description } from './src/brand.ts';
 import { COURSES } from './src/content/index.ts';
 import { languageOf } from './src/content/pages.ts';
@@ -37,6 +38,7 @@ export default defineConfig({
           .replaceAll('%BRAND_DESCRIPTION%', frenchText(description()))
           .replaceAll('%BRAND_PAGE%', COLORS.page),
     },
+    welcomePage(),
     searchPages(),
     contentSecurity(),
     VitePWA({

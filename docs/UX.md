@@ -208,6 +208,46 @@ millions of daily reminders, and choosing their wording alone, with a bandit alg
 figures (RUNBOOK, C0): asked for by the traveller, at the practice moment they chose, one a day at
 most, without guilt, and off in « Moi ». Not measured: how many travellers ask for them.
 
+## The welcome page (20 November 2026)
+
+The owner asked for a page that presents Bagage before the app, in the app's own voice and
+drawings, while the installed app keeps opening on the app.
+
+| Finding | Source | Strength |
+| --- | --- | --- |
+| An installed app's `start_url` should open the app itself, not a product landing page; the manifest's `id` keeps the app's identity if `start_url` changes. | web.dev, [Add a web app manifest](https://web.dev/articles/add-manifest) | Strong: the platform's guidance |
+| On a landing page, say what the site is worth first, then what installing brings; offer to install only once the browser allows it (`beforeinstallprompt`). | web.dev, [Patterns for promoting PWA installation](https://web.dev/articles/promote-install) | Medium: guidance, no figures |
+| The `display-mode` media query tells the installed app from a tab; on iOS and iPadOS each icon added to the home screen has its own storage, apart from Safari's. | web.dev, [Detection](https://web.dev/learn/pwa/detection) | Strong |
+| Pre-rendering is still worth it: it is faster, and not every bot runs JavaScript. | Google Search Central, [JavaScript SEO basics](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics) | Strong |
+| None of the major AI crawlers (GPTBot, ChatGPT-User, ClaudeBot, Meta's, ByteDance's) rendered JavaScript on Vercel's network. | Vercel and MERJ, [The rise of the AI crawler](https://vercel.com/blog/the-rise-of-the-ai-crawler) (December 2024) | Medium: one vendor's network |
+| A home page says at a glance who you are and what you do, with a one-sentence tagline; failing to, it loses visitors. | Nielsen Norman Group, [Top 10 guidelines for homepage usability](https://www.nngroup.com/articles/top-ten-guidelines-for-homepage-usability/) and [Homepage design principles](https://www.nngroup.com/articles/homepage-design-principles/) | Medium: expert guidance |
+
+Decision: one address, two doors. The build writes the welcome page into `index.html`
+(`build/welcome.ts`), so crawlers that run no script read it, in a newcomer's colours from the
+first paint; then the app's own pieces settle on it: the flying window, the install button, the
+statistics link (`ui/welcome-page.tsx`). Before anything is painted, a few inline lines
+(`build/boot.ts`, allowed by their hash in the Content Security Policy) send to the app the
+installed app, a traveller who has already set off and any link into the app (`#/…`); `start_url`
+stays the app. The installed app's first launch keeps the short welcome: on an iPhone, its storage
+starts empty even for someone who set off in Safari. « C’est parti » opens onboarding at its first
+question, since the page already says what the welcome said: the first exercise stays seven
+screens away, the page counted as the first. « Retour » there brings the page back where it was
+left; the page leaves the document while the app shows, so there is only ever one to read.
+
+Measured with Lighthouse 13.6, mobile settings, the median of three runs alternating on an idle
+machine; before is the app's own welcome (4aa67e0):
+
+| Build | Performance | Accessibility | Best practices | SEO | Largest paint | Layout shift | Blocking time |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Before | 98 | 100 | 100 | 100 | 0.91 s | 0.002 | 153 ms |
+| The welcome page | 100 | 100 | 100 | 100 | 0.91 s | 0.004 | 44 ms |
+
+The first build shifted by 0.031: the install button and the statistics link arrived with the
+script and pushed the window up 34 px. Their places are held now (`styles/welcome.css`, only where
+the build counts for the link); what is left is the fonts replacing the fallback on one line. A
+newcomer's first load no longer builds onboarding, hence the shorter blocking time. Not measured:
+real phones.
+
 ## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).

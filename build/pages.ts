@@ -17,9 +17,9 @@ import { frenchProse, frenchText } from './french-spaces.ts';
 const SHARE_IMAGE = { path: 'og.png', width: 1200, height: 630 };
 
 const ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
-const esc = (s: string) => s.replace(/[&<>"]/g, c => ESCAPES[c]!);
+export const esc = (s: string) => s.replace(/[&<>"]/g, c => ESCAPES[c]!);
 /** The build's French spacing never reaches this file's strings or the content it reads: done here. */
-const t = (s: string) => esc(frenchProse(s));
+export const t = (s: string) => esc(frenchProse(s));
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 interface Assets {

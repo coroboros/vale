@@ -4,7 +4,7 @@
  */
 import type { RefObject } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { flagOf, pictureOf } from '../content';
+import { courseById, flagOf, pictureOf, regionOf } from '../content';
 import type { Course, Region } from '../content/types';
 import { reducedMotion } from '../platform/env';
 import { say } from '../platform/speech';
@@ -168,6 +168,21 @@ export const stopOf = (course: Course, region: Region): Stop => ({
   greeting: course.greet(region.native),
   lang: course.lang,
   theme: THEMES[flagOf(course, region.id)],
+});
+
+/** The welcome flight: a short loop over the four languages, rather than every destination. */
+export const JOURNEY: Stop[] = (
+  [
+    ['es', 'barcelone'],
+    ['it', 'roma'],
+    ['pt', 'lisbonne'],
+    ['en', 'londres'],
+    ['es', 'andalousie'],
+    ['it', 'venezia'],
+  ] as const
+).map(([courseId, regionId]) => {
+  const c = courseById(courseId);
+  return stopOf(c, regionOf(c, regionId));
 });
 
 /**

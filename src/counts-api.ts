@@ -6,7 +6,7 @@
  * ergonomics, and people are told and can easily say no (cnil.fr, « Cookies : solutions pour les
  * outils de mesure d’audience », 4 July 2025; « Questions-réponses », 29 April 2026).
  */
-import { GRADED, type Kind } from './engine/exercises';
+import { GRADED, type Kind } from './engine/exercises.ts';
 
 export const COUNT_NAMES = ['new', 'day1', 'day7', 'installed', 'shared', 'departure', 'step'] as const;
 export type CountName = (typeof COUNT_NAMES)[number];
@@ -28,6 +28,9 @@ export const FIRST_STEPS = [
   'lesson-done',
 ] as const;
 export type FirstStep = (typeof FIRST_STEPS)[number];
+
+/** The count service the build names (VITE_COUNTS_URL); none leaves counting off. */
+export const countsEndpoint = (url: unknown) => (typeof url === 'string' ? url.replace(/\/$/, '') : '');
 
 /**
  * The link a traveller first came through, from its `utm_source`: '' when typed or found

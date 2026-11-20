@@ -301,6 +301,50 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await page.reload();
   await expect(page.getByRole('heading', { name: '¡Hola, Adrien!' })).toBeVisible();
   await expect(page.locator('.stop.started, .stop.done').first()).toBeVisible();
+  await expect(page.locator('#welcome')).toHaveCount(0);
+});
+
+test('a newcomer reads the welcome page; « C’est parti » opens the first question, « Retour » comes back', async ({
+  page,
+}) => {
+  // In the HTML itself, for search engines that run no script.
+  const html = await (await page.request.get('./')).text();
+  expect(html).toContain('<h1 class="wordmark big-mark">bagage</h1>');
+  await page.goto('./');
+  const welcome = page.locator('#welcome');
+  await expect(welcome.locator('.porthole')).toBeVisible();
+  await expect(page.locator('#app')).toBeEmpty();
+  await welcome.getByRole('button', { name: 'C’est parti' }).click();
+  await expect(page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' })).toBeFocused();
+  await expect(welcome).toHaveCount(0);
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await expect(welcome.getByRole('button', { name: 'C’est parti' })).toBeFocused();
+  await expect(page.locator('#app')).toBeEmpty();
+});
+
+test('the installed app opens on its own short welcome, without the page', async ({ page }) => {
+  await page.addInitScript(() => {
+    const matchMedia = window.matchMedia.bind(window);
+    window.matchMedia = query =>
+      query === '(display-mode: standalone)'
+        ? ({
+            matches: true,
+            media: query,
+            onchange: null,
+            addEventListener() {},
+            removeEventListener() {},
+            addListener() {},
+            removeListener() {},
+            dispatchEvent: () => false,
+          } as MediaQueryList)
+        : matchMedia(query);
+  });
+  await page.goto('./');
+  await expect(page.locator('#welcome')).toHaveCount(0);
+  await expect(page.locator('.onboarding.is-welcome .porthole')).toBeVisible();
+  await expectAccessible(page, 'accueil de l’app installée');
+  await page.getByRole('button', { name: 'C’est parti' }).click();
+  await expect(page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' })).toBeVisible();
 });
 
 test('« Imagine » shows the destination photo with its credit, and the mascot without it', async ({ page }, info) => {
@@ -777,7 +821,8 @@ test('the update notice fits the screen, and « Plus tard » sets it aside', asy
   const sw = resolve('.e2e-dist/sw.js');
   const original = await readFile(sw, 'utf8');
   try {
-    await page.goto('./');
+    // In the app: a newcomer still on the welcome page meets the new version when it opens.
+    await page.goto('./#/');
     await page.evaluate(() => navigator.serviceWorker.ready);
     await page.reload();
     await writeFile(sw, `${original}\n// next version`);
@@ -921,7 +966,7 @@ test('the app and its pages run their own scripts only', async ({ page }) => {
     await page.goto(path);
     await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute(
       'content',
-      new RegExp(`script-src 'self';.*connect-src 'self' ${TRANSLATE_URL}`),
+      new RegExp(`script-src 'self' 'sha256-[\\w+/=]+';.*connect-src 'self' ${TRANSLATE_URL}`),
     );
     const ran = await page.evaluate(async () => {
       const script = document.createElement('script');

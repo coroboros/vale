@@ -6,6 +6,7 @@
  * stays allowed, as the app expects when a preview frames it.
  */
 import type { Plugin } from 'vite';
+import { BOOT_HASH } from './boot.ts';
 
 /** A service's origin; none when the build serves it from the app's own ('.'). */
 const originOf = (address: unknown) =>
@@ -17,7 +18,8 @@ export function securityPolicy(env: Record<string, unknown>): string {
   );
   return [
     "default-src 'self'",
-    "script-src 'self'",
+    // The welcome page's first lines (build/boot.ts) run inline, allowed by their hash alone.
+    `script-src 'self' ${BOOT_HASH}`,
     // The pages carry their trip's colours in a style attribute.
     "style-src 'self' 'unsafe-inline'",
     // The card's picture is drawn from data URLs and shown from a blob; recordings play from blobs.

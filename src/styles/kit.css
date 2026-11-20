@@ -116,7 +116,7 @@
   .btn {
     --edge: var(--line-strong);
     --depth: 4px;
-    min-height: 52px;
+    min-height: var(--btn-h);
     display: inline-flex;
     align-items: center;
     justify-content: center;

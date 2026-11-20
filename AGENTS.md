@@ -41,7 +41,9 @@ The one place for them: read this section before writing code for any step.
   there, with a test; a migration in `migrate.ts` only when repair cannot do it. Item ids key the
   learner's progress: never rename them.
 - `src/content/`, `src/translation-api.ts` and `src/counts-api.ts` stay free of browser APIs: the
-  Worker imports them.
+  Worker imports them. The build imports some modules too (`build/`), and Node runs them as they
+  are: their relative imports, type-only ones aside, end in `.ts`, and so do those of every module
+  they import.
 
 ### Interface
 
@@ -121,7 +123,8 @@ kit, the screens), and plan the smallest change. Then:
   focus (`tripOf`); progress is keyed by language, so trips in one language share it.
 - `src/ui/`: screens, components (`kit.tsx`), `icons.tsx` (Bernard's beach drawn on Lucide's grid), `Mascot.tsx` (Bernard; the app gives him the screen's
   flag through `ScreenFlag`, so the pages can show him without the app's data), `MotionToggle.tsx`
-  (the pause of every moving drawing), `Imagine.tsx` (closes onboarding and lands every new
+  (the pause of every moving drawing), `welcome-page.tsx` (the welcome page's pieces and its way
+  into onboarding; styles in `styles/welcome.css`), `Imagine.tsx` (closes onboarding and lands every new
   trip, `screens/Landing.tsx`), `Team.tsx` (travellers sharing a phone), `FromBernard.tsx` (his
   latest postcard), `card-image.ts` (the survival card as a picture to send), `Porthole.tsx` (the
   welcome flight and the trip being chosen), `scenery/` (a drawing per destination, one module per
@@ -139,6 +142,9 @@ kit, the screens), and plan the smallest change. Then:
 - `build/french-spaces.ts`: the build step that keeps French punctuation on its word's line.
 - `build/csp.ts`: the Content Security Policy of the app and its pages, as a `<meta>` tag; a new
   service or image host goes there, or the end-to-end tests fail.
+- `build/welcome.ts`: the welcome page, written into `index.html` for newcomers in a browser and
+  for crawlers that run no script; `build/boot.ts`, its inline first lines, which send the installed
+  app, a traveller who has set off and links into the app to the app before the first paint.
 - `build/pages.ts`: writes the pages for search engines next to the app (situations, languages),
   `sitemap.xml`, `robots.txt` with the owner's content signals, `llms.txt`, the IndexNow key file,
   and the app's canonical and sharing tags;

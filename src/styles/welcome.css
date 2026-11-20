@@ -1,0 +1,64 @@
+/* The welcome page (build/welcome.ts): the welcome screen grown into a page, for newcomers in a browser. */
+@layer screens {
+  html[data-view="app"] #welcome,
+  #welcome + #app:empty {
+    display: none;
+  }
+
+  /* The first screen is the welcome as the app always showed it; the page goes on below. */
+  .wp-hero {
+    width: min(100%, 560px);
+    min-height: 100dvh;
+    margin-inline: auto;
+    padding: calc(var(--safe-t) + 8px) 20px calc(var(--safe-b) + 20px);
+  }
+
+  /* The places of what the script draws, so nothing moves when it does: the install button, and the
+     statistics link, whose tap target reaches 8 px over the lines around it. */
+  .welcome-page [data-island="install"]:empty {
+    min-height: var(--btn-h);
+  }
+
+  .welcome-page [data-island="counts"]:empty {
+    min-height: calc(var(--tap) - 16px);
+  }
+
+  .wp-what {
+    max-width: 34ch;
+    color: var(--ink-soft);
+  }
+
+  .wp-foot {
+    display: grid;
+    gap: 14px;
+    width: min(100%, 720px);
+    margin-inline: auto;
+    padding: 28px 20px calc(var(--safe-b) + 28px);
+    border-top: 1.5px solid var(--line);
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .wp-links .chip {
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .wp-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 900px) {
+    .wp-hero {
+      width: min(100%, 1120px);
+      padding-inline: 48px;
+    }
+  }
+}

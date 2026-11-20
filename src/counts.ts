@@ -4,13 +4,13 @@
  * any change, when the app goes to the background, or at the next start if it could not leave.
  */
 import { effect } from '@preact/signals';
-import { type FirstStep, type Source, sourceOf, type Tally } from './counts-api';
+import { countsEndpoint, type FirstStep, type Source, sourceOf, type Tally } from './counts-api';
 import { addTally, dueCounts, dueSteps, inFirstWeek, takeTally } from './engine/counts';
 import { dayKey } from './engine/progress';
 import { isStandalone } from './platform/env';
 import { db, update } from './state/store';
 
-const ENDPOINT = ((import.meta.env.VITE_COUNTS_URL as string | undefined) ?? '').replace(/\/$/, '');
+const ENDPOINT = countsEndpoint(import.meta.env.VITE_COUNTS_URL);
 
 export const countsOn = ENDPOINT !== '';
 
