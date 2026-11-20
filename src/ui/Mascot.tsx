@@ -58,6 +58,7 @@ function useAliveEyes(
     const el = svg.current;
     if (!el || !blinks || reducedMotion()) return;
     let timer = 0;
+    let again = 0;
     const once = () => {
       el.classList.remove('blink');
       void el.getBoundingClientRect(); // restarts the animation if the class was still there
@@ -67,7 +68,7 @@ function useAliveEyes(
       timer = window.setTimeout(
         () => {
           once();
-          if (Math.random() < 0.2) window.setTimeout(once, 280); // sometimes twice, as people do
+          if (Math.random() < 0.2) again = window.setTimeout(once, 280); // sometimes twice, as people do
           schedule();
         },
         2200 + Math.random() * 3800,
@@ -80,6 +81,7 @@ function useAliveEyes(
     schedule();
     return () => {
       clearTimeout(timer);
+      clearTimeout(again);
       el.removeEventListener('animationend', end);
       el.classList.remove('blink');
     };

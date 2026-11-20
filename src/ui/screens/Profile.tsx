@@ -35,6 +35,7 @@ const VOICE: { key: Exclude<Flag, 'quiet'>; label: string; sub: string }[] = [
   { key: 'variedVoices', label: 'Voix variées', sub: 'Les exercices d’écoute changent de voix' },
   { key: 'phonetics', label: 'Prononciation écrite', sub: 'Les aides « à la française »' },
   { key: 'sfx', label: 'Sons', sub: 'Petits sons de réussite' },
+  { key: 'showStreak', label: 'Série de jours', sub: 'La flamme, les jokers et le rattrapage' },
 ];
 
 /** « Apprend l’espagnol et le portugais pour 2 voyages », « Apprend l’italien pour un voyage à Rome ». */
@@ -130,10 +131,12 @@ export function Profile() {
       </header>
 
       <section class="stats" aria-label="Statistiques">
-        <div class="stat">
-          <strong class="num">{streak(data, today).days}</strong>
-          <span>jours de série</span>
-        </div>
+        {s.showStreak && (
+          <div class="stat">
+            <strong class="num">{streak(data, today).days}</strong>
+            <span>jours de série</span>
+          </div>
+        )}
         <div class="stat">
           <strong class="num">{xp}</strong>
           <span>{shellWord(xp)} au total</span>

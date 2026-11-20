@@ -10,7 +10,9 @@ export default defineConfig({
   timeout: 90_000,
   expect: { timeout: 8_000 },
   fullyParallel: false,
-  workers: 1,
+  // The iPhone and desktop projects run side by side: 13.7 min with one worker, 9.5 min with two
+  // on a 2-CPU machine (20 November 2026).
+  workers: 2,
   reporter: [['list']],
   use: {
     baseURL: 'http://localhost:4174/',

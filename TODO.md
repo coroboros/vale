@@ -2,32 +2,6 @@
 
 The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 
-## To discuss (adversarial review, 20 November 2026)
-
-Each point is measured here or sourced; nothing is decided. Already covered elsewhere, so not
-repeated: the competitors (docs/MARKET.md), the native review (below), reminders as an idea (« Improve »).
-
-- **Decision figures without reminders.** C measures day-1 and day-7 returns before Bagage can
-  remind anyone. Duolingo sends millions of daily reminders, and optimising their content alone
-  added 2 % to new-user retention ([Yancey & Settles, KDD 2020](https://research.duolingo.com/papers/yancey.kdd20.pdf));
-  installed web apps receive Web Push on iOS since 16.4 ([WebKit](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)).
-  Either reminders ship before C, or C's figures say « without reminders ».
-- **A switch for the streak.** The Digital Fairness Act proposal (European Commission,
-  11 November 2026) would let every user turn off streaks, and bans dark patterns. Bagage has a
-  streak, a joker and a repair offer, and no switch. A proposal, not law yet.
-- **Only the trip's course in the first load.** Lighthouse 13.6, mobile, on the production
-  build: performance 90, accessibility, best practices and SEO 100, but a total blocking time of
-  420 ms ([good is under 200 ms](https://web.dev/articles/tbt)) and 46 KiB of unused JavaScript:
-  all four courses (155 KB of data) ship to everyone.
-- **Ask the browser to keep the data.** No `navigator.storage.persist()` call; since Safari 17
-  the Storage API is supported and a persistent origin is exempt from eviction
-  ([WebKit, Updates to Storage Policy](https://webkit.org/blog/14403/updates-to-storage-policy/)).
-  Safari's 7-day cap without installing stays (docs/BUSINESS.md).
-- **Faster checks.** Playwright runs one worker, with no reason given: 13.7 min. Two workers:
-  9.4 min, the same 93 tests passed.
-- **Build-tool advisories.** 4 moderate, all in vite-plugin-pwa's build chain (glob,
-  minimatch); none in the app's or the Worker's runtime dependencies. An update fixes them.
-
 ## Before launch
 
 - **Native speakers or teachers check every course.** Each phrase, its French-reader
@@ -85,6 +59,10 @@ repeated: the competitors (docs/MARKET.md), the native review (below), reminders
 
 What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 
+- **The daily challenges on phones.** Below 1120 px wide, home shows only the compact daily card:
+  the three challenges, the chest they open and the jokers line sit in the side panel of wide
+  screens, so phones and tablets never show them (`<Daily compact />` since the rebuild; read in
+  the code on 20 November 2026). To decide: give them a place on phones, or drop the chest.
 - **AI voices for every phrase.** Fish Audio, a female or a male voice chosen in *Moi*, generated
   once in CI and cached for offline use, the phone's voices as the fallback: docs/VOICE.md.
 - **Live conversation partner.** Talk with Bernard by voice in the course's situations, audio only
@@ -101,8 +79,6 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   French), from typed text first, then from a photo of a menu or a sign.
 - **Answer accuracy per exercise kind**, as anonymous as the counts (RUNBOOK.md, C), to check the
   hypotheses in docs/LEARNING.md.
-- **Reminders.** Web Push at the practice moment the learner chose (iOS 16.4+ for installed apps),
-  sent by the Worker with VAPID keys.
 - **Business model.** Accounts, the « Pass voyage », a subscription, quotas: docs/BUSINESS.md.
 - More languages: Brazilian Portuguese (its own pronunciation and words), Greek, German; one
   flag per country (theme colours and Bernard's shell).
@@ -120,6 +96,11 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 
 ## Watch
 
+- **The build tools' advisories.** glob ([GHSA-3g3m-2fjr-6pw4](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4))
+  and minimatch ([GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)) under
+  workbox-build, build time only, on our own files; none in what the app or the Worker runs.
+  npm's only fix downgrades vite-plugin-pwa to 1.1.0. Update once workbox-build takes glob
+  14.0.2 and minimatch 11.0.1 or later.
 - **Anthropic.** Monthly credit use in the Console; prices in `worker/src/claude.ts` (they feed
   the budget); API version 2026-10-21; Claude Sonnet 5.5 retires no sooner than September 2027.
 - **Cloudflare.** Workers AI catalogue (DeepSeek V4.1 Flash and Gemma 4 ids can change), Neuron

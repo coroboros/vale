@@ -156,6 +156,16 @@ icon would match « Survie », but it made the tabs more alike (0.49 against 0.4
 « Icons »), so the luggage tag stays. At 390 px the longer title puts « Modifier » under it, and
 at 320 px it takes two lines. Not measured: whether travellers now find the card sooner.
 
+## A switch for the streak (20 November 2026)
+
+The Digital Fairness Act the European Commission proposed on 11 November 2026 would ban dark
+patterns and let every user turn off addictive features such as streaks and autoplay ([ghacks](https://www.ghacks.net/2026/11/11/eu-proposes-digital-fairness-act-to-ban-dark-patterns-and-let-users-turn-off-streaks-and-autoplay/),
+[Euronews](https://www.euronews.com/2026/11/11/eu-targets-subscription-traps-addictive-design-and-hidden-fees-with-new-digital-rules)).
+A proposal, not law yet, but cheap to meet now. « Série de jours », in « Moi », is on by default;
+off, the flame, the jokers, the catch-up offer and the streak in « Moi » and in a session's
+summary all go. The days keep being counted underneath, so switching back shows the true streak.
+Not measured: how many travellers switch it off.
+
 ## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).

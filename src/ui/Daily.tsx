@@ -1,7 +1,7 @@
 import { CircleCheck, Flame, Shield } from 'lucide-preact';
 import { openChest } from '../actions';
 import { dailyQuests, dayKey, goalTitle, questValue, repairOffer, shells, streak } from '../engine/progress';
-import { pdata, profile } from '../state/store';
+import { pdata, profile, settings } from '../state/store';
 import { InstallButton } from './Install';
 import { TreasureChest } from './icons';
 import { Bar, Ring } from './kit';
@@ -18,6 +18,7 @@ export function Daily({ compact }: { compact?: boolean }) {
   const quests = dailyQuests(p.id, today, p.goal);
   const done = quests.filter(q => questValue(q, log) >= q.target).length;
   const offer = repairOffer(data, today, p.goal);
+  const { showStreak } = settings.value;
 
   return (
     <div class="daily">
@@ -29,17 +30,19 @@ export function Daily({ compact }: { compact?: boolean }) {
           <p class="daily-title">{goalTitle(xp, p.goal)}</p>
           <p class="muted">Objectif : {shells(p.goal)}</p>
         </div>
-        <div
-          class={`streak${s.today ? ' lit' : ''}`}
-          role="img"
-          aria-label={`Série de ${s.days} jour${s.days > 1 ? 's' : ''}`}
-        >
-          <Flame size={26} aria-hidden="true" />
-          <strong class="num">{s.days}</strong>
-        </div>
+        {showStreak && (
+          <div
+            class={`streak${s.today ? ' lit' : ''}`}
+            role="img"
+            aria-label={`Série de ${s.days} jour${s.days > 1 ? 's' : ''}`}
+          >
+            <Flame size={26} aria-hidden="true" />
+            <strong class="num">{s.days}</strong>
+          </div>
+        )}
       </section>
 
-      {offer && (
+      {showStreak && offer && (
         <p class="card note-card">
           Ta série de {offer.streak} jours peut encore être sauvée : ramasse {shells(p.goal * 2)} aujourd’hui.
         </p>
@@ -78,12 +81,14 @@ export function Daily({ compact }: { compact?: boolean }) {
               Ouvrir le coffre
             </button>
           )}
-          <p class="muted jokers">
-            <Shield size={18} aria-hidden="true" />
-            {data.jokers
-              ? `${data.jokers} joker${data.jokers > 1 ? 's' : ''} : ta série survit à un jour sans pratique.`
-              : 'Un joker de série tous les 7 jours d’affilée.'}
-          </p>
+          {showStreak && (
+            <p class="muted jokers">
+              <Shield size={18} aria-hidden="true" />
+              {data.jokers
+                ? `${data.jokers} joker${data.jokers > 1 ? 's' : ''} : ta série survit à un jour sans pratique.`
+                : 'Un joker de série tous les 7 jours d’affilée.'}
+            </p>
+          )}
         </section>
       )}
 

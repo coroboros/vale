@@ -708,11 +708,13 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
             <strong class="num">{minutes} min</strong>
             <span>pratique</span>
           </div>
-          <div>
-            <Flame size={20} aria-hidden="true" />
-            <strong class="num">{summary.streak}</strong>
-            <span>jour{summary.streak > 1 ? 's' : ''} de série</span>
-          </div>
+          {settings.value.showStreak && (
+            <div>
+              <Flame size={20} aria-hidden="true" />
+              <strong class="num">{summary.streak}</strong>
+              <span>jour{summary.streak > 1 ? 's' : ''} de série</span>
+            </div>
+          )}
         </div>
         {o.learned.length > 0 && (
           <p class="ticket-foot">

@@ -52,6 +52,8 @@ export interface Settings {
   speechCheck: SpeechCheckChoice;
   /** Anonymous counts of who comes back (counts-api.ts): on unless switched off in « Moi ». */
   shareCounts: boolean;
+  /** The streak, its jokers and its catch-up offer; anyone can switch them off (docs/UX.md, « A switch for the streak »). */
+  showStreak: boolean;
 }
 
 const SPEECH_CHECK = ['ask', 'on', 'off'] as const;
@@ -250,6 +252,7 @@ const defaultSettings = (): Settings => ({
   quietUntil: 0,
   speechCheck: 'ask',
   shareCounts: true,
+  showStreak: true,
 });
 
 export const blankDB = (): DB => ({

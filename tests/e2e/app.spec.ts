@@ -988,6 +988,7 @@ test('the first goal starts with the answers of onboarding, and its last shells 
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await playSession(page);
   await expect(page.locator('.ticket-goal')).toContainText('Dont 8 coquillages pour tes réponses à l’accueil.');
+  await expect(page.locator('.ticket')).toContainText('jour de série');
   await page.getByRole('button', { name: 'Continuer' }).click();
 
   // Three shells short of today's goal. The app's own pending save must not overwrite this one.
@@ -1203,13 +1204,19 @@ const pupils = (page: Page) =>
     return { x: Number(style.getPropertyValue('--px')), y: Number(style.getPropertyValue('--py')) };
   });
 
+/** Counts each time a « blink » class is added, even on a Bernard gone by the time it is read. */
 const countBlinks = (page: Page) =>
   page.evaluate(() => {
     const w = window as unknown as { __blinks: number };
     w.__blinks = 0;
+    const blinking = (c: string | null) => (c ?? '').split(' ').includes('blink');
     new MutationObserver(records => {
-      for (const r of records) if ((r.target as Element).classList.contains('blink')) w.__blinks++;
-    }).observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
+      records.forEach((r, i) => {
+        const next = records.slice(i + 1).find(n => n.target === r.target);
+        const now = next ? next.oldValue : (r.target as Element).getAttribute('class');
+        if (blinking(now) && !blinking(r.oldValue)) w.__blinks++;
+      });
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'], attributeOldValue: true, subtree: true });
   });
 const blinks = (page: Page) => page.evaluate(() => (window as unknown as { __blinks: number }).__blinks);
 
@@ -1247,16 +1254,25 @@ test('Bernard’s eyes follow the mouse and a finger', async ({ page }, info) =>
   const box = (await page.locator('.porthole-bernard .mascot').boundingBox())!;
   const { width, height } = page.viewportSize()!;
   const eyes = { x: box.x + box.width * 0.33, y: box.y + box.height * 0.31 };
-  await page.mouse.move(2, eyes.y);
-  await expect.poll(async () => (await pupils(page)).x).toBeLessThan(-2);
-  await page.mouse.move(width - 2, eyes.y);
-  await expect.poll(async () => (await pupils(page)).x).toBeGreaterThan(2);
-  await page.mouse.move(eyes.x, height - 2);
-  await expect.poll(async () => (await pupils(page)).y).toBeGreaterThan(2);
+  // Each check points again: Bernard is mounted anew at every place of the journey and looks
+  // ahead until the pointer moves, which a slow run can hit between one move and its check.
+  let jiggle = 0;
+  const pointAt = async (x: number, y: number) => {
+    jiggle = 1 - jiggle;
+    await page.mouse.move(x + jiggle, y);
+    return pupils(page);
+  };
+  await expect.poll(async () => (await pointAt(2, eyes.y)).x).toBeLessThan(-2);
+  await expect.poll(async () => (await pointAt(width - 3, eyes.y)).x).toBeGreaterThan(2);
+  await expect.poll(async () => (await pointAt(eyes.x, height - 2)).y).toBeGreaterThan(2);
   if (info.project.name === 'iphone') {
     // A tap above and to the left of him, away from any button.
-    await page.touchscreen.tap(4, 4);
-    await expect.poll(async () => (await pupils(page)).y).toBeLessThan(-1);
+    await expect
+      .poll(async () => {
+        await page.touchscreen.tap(4, 4);
+        return (await pupils(page)).y;
+      })
+      .toBeLessThan(-1);
   }
 });
 
@@ -1264,12 +1280,56 @@ test('Bernard blinks while the journey plays, and not once it is paused', async 
   await page.clock.install();
   await page.goto('./');
   await countBlinks(page);
-  await page.clock.runFor(8000);
+  // Bernard comes back at each place, every 7.1 s, and blinks within 6 s of coming: 16 s always
+  // hold a blink, however late the run starts.
+  await page.clock.runFor(16_000);
   expect(await blinks(page)).toBeGreaterThan(0);
   await page.getByRole('button', { name: 'Mettre le voyage en pause' }).click();
   await countBlinks(page);
   await page.clock.runFor(8000);
   expect(await blinks(page)).toBe(0);
+});
+
+test('the streak can be switched off: no flame, joker, catch-up or summary line', async ({ page }, info) => {
+  await onboard(page);
+  await leaveFirstLesson(page);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('db-v4') !== null)).toBe(true);
+  // Three days in a row, then a day missed: the flame and the catch-up offer show. The app's own
+  // pending save must not overwrite this one.
+  await page.evaluate(() => {
+    const save = Storage.prototype.setItem;
+    Storage.prototype.setItem = () => {};
+    const db = JSON.parse(localStorage.getItem('db-v4')!);
+    // Repaired into a full record on load.
+    db.data[db.active] ??= { days: {} };
+    for (const n of [2, 3, 4]) {
+      const day = new Date();
+      day.setHours(12, 0, 0, 0);
+      day.setDate(day.getDate() - n);
+      db.data[db.active].days[day.toLocaleDateString('sv')] = { xp: 20, sessions: 1 };
+    }
+    save.call(localStorage, 'db-v4', JSON.stringify(db));
+  });
+  await page.reload();
+  // Phones show the compact card; wide screens the side panel, where the jokers sit with the challenges.
+  await expect(page.locator('.daily .streak:visible')).toHaveCount(1);
+  await expect(page.locator('.daily .note-card:visible')).toContainText('Ta série de 3 jours peut encore être sauvée');
+  if (info.project.name === 'desktop') await expect(page.locator('.daily .jokers:visible')).toHaveCount(1);
+  await page.getByRole('link', { name: 'Moi' }).click();
+  await expect(page.locator('.stats')).toContainText('jours de série');
+  await page.getByRole('switch', { name: 'Série de jours' }).click();
+  await expect(page.locator('.stats')).not.toContainText('jours de série');
+
+  await page.getByRole('link', { name: 'Itinéraire' }).click();
+  await expect(page.locator('.daily-goal').first()).toBeAttached();
+  await expect(page.locator('.daily .streak')).toHaveCount(0);
+  await expect(page.locator('.daily .jokers')).toHaveCount(0);
+  await expect(page.getByText('peut encore être sauvée')).toHaveCount(0);
+  await page.locator('.stop-btn', { hasText: 'Les essentiels' }).click();
+  await page.locator('.sheet').getByRole('button', { name: 'Commencer' }).click();
+  await playSession(page);
+  await expect(page.locator('.ticket')).toContainText('pratique');
+  await expect(page.locator('.ticket')).not.toContainText('de série');
 });
 
 test('the window flies over each place: its land slides past in a loop until paused', async ({ page }) => {

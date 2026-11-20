@@ -22,8 +22,10 @@ anything else:
    differences and writes down what to change. What the cloud showed (20 November 2026):
    - Network: npm, PyPI and GitHub only. No Wikimedia Commons (the photos), no github.io (the live
      site, so no Lighthouse on it), no GitHub Actions variables or secrets through the API.
-   - Machine: 2 CPUs. `npm run check` took 13.7 min with one Playwright worker; two workers ran
-     the same 93 tests in 9.4 min, none failed. Measure the Mac with more.
+   - Machine: 2 CPUs. The end-to-end tests took 13.7 min with one Playwright worker and 9.5 min
+     with two, the setting since then (the two projects run side by side); the extra load showed
+     three tests that leaned on timing, now fixed. More workers only help with `fullyParallel`:
+     measure it on the Mac.
    - Browsers: a headless Chromium only; no Safari and no iPhone (B7).
    - Accounts: no Cloudflare login, no GitHub Actions settings; commits signed as Claude
      (AGENTS.md, « Done means »).
@@ -31,8 +33,8 @@ anything else:
      MCP servers, model and effort, how context is kept; compared with the cloud's.
 2. **Decide** the changes together (settings, workers, tools), apply them, and note them in
    AGENTS.md or the skill.
-3. **Discuss** the review of 20 November 2026 (TODO.md, « To discuss »).
-4. **Unblock B**, in order: B0, then B1 (Cloudflare and the Claude credits), and on.
+3. **Unblock B**, in order: B0, then B1 (Cloudflare and the Claude credits), and on. The
+   review of 20 November 2026 is decided (« Done »); its steps are A2 and C0.
 
 ## A. Now: Claude, without you
 
@@ -41,6 +43,13 @@ anything else:
    and « Floride », each with its drawing (looping like the others), tip and photo. The photos
    need Wikimedia Commons, which this cloud workspace cannot reach: `python3 brand/photos.py
    fetch render` on the Mac. The US flag, pack and dollar already exist.
+2. **Only the trip's course in the first load.** *Rules first: AGENTS.md.* Decided on
+   20 November 2026. Lighthouse 13.6 on the production build, mobile: total blocking time 420 ms
+   ([good is under 200 ms](https://web.dev/articles/tbt)) and 46 KiB of unused JavaScript, as all
+   four courses (155 KB of data) ship to everyone. Split each course into a light catalogue
+   (names, flags, destinations: what onboarding and « Nouveau voyage » list) and its lessons,
+   loaded on demand for the trip's language; the Worker keeps importing all of it. Lighthouse
+   before and after, numbers in docs/.
 
 Then nothing left that needs no one: the next steps wait for your accounts (B) or for live
 figures (C). Proposed, waiting for your yes: count answer accuracy per exercise kind, as
@@ -138,6 +147,15 @@ real* in TODO.md and report what fails, with a screenshot.
 
 ## C. After going live: measure first (Claude)
 
+0. **Reminders before the first figures.** *Rules first: AGENTS.md.* Decided on 20 November
+   2026: measured without reminders, a « no » could be false, as Duolingo's own returns lean on
+   them (millions a day; tuning their wording alone added 2 % to new-user retention, [Yancey &
+   Settles, KDD 2020](https://research.duolingo.com/papers/yancey.kdd20.pdf)). Opt-in Web Push at
+   the practice moment the traveller chose, sent by the Worker with VAPID keys kept as Worker
+   secrets, subscriptions in D1, a daily cron; on iPhone, only once Bagage is on the Home Screen
+   ([iOS 16.4+](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)). One a
+   day at most, no guilt, off in « Moi » like the streak; the privacy notice names it (D4). Needs
+   B1.
 1. **Switch measurement on.** *Rules first: AGENTS.md.* Uncomment `d1_databases` in
    `worker/wrangler.jsonc` and set `VITE_COUNTS_URL: .` in the Cloudflare build of
    `.github/workflows/ci.yml` (the token may edit D1 since B1); the next deploy creates the
@@ -267,6 +285,11 @@ Details in each day's commits and in docs/.
 - 20 Nov 2026. **After your screenshots**: the porthole flies the way its wing points, at speeds
   measured against a real window; « Ma carte de survie », « Survie » in the tab bar, under the
   same name in « Phrases », and Bernard's postcards called so (docs/UX.md).
+- 20 Nov 2026. **The review's six points decided**: the streak can be switched off in « Moi »;
+  the two test projects run side by side (13.7 to 9.5 min), three tests made sturdy; persistence
+  was already asked at every launch, so that point was a mistake of the review; the build tools'
+  advisories have no safe fix yet (TODO.md, « Watch »); reminders (C0) and the trip's course
+  alone (A2) are steps; the daily challenges never show on phones, to decide (TODO.md).
 - 20 Nov 2026. **How Claude looks and measures, kept for the Mac**: the look-and-measure skill
   (screenshots, contact sheets, frames, the loop's seams, the design measures), and the last four
   small steps in the loop closed.

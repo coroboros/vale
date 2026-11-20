@@ -362,6 +362,10 @@ describe('saved data', () => {
     });
     expect(db.data.x!.jokers).toBe(2);
     expect(db.data.x!.mem).toEqual({});
+    // The streak shows unless switched off, and a damaged choice reads as on.
+    expect(db.settings.showStreak).toBe(true);
+    expect(sanitize({ settings: { showStreak: 'non' } }).settings.showStreak).toBe(true);
+    expect(sanitize({ settings: { showStreak: false } }).settings.showStreak).toBe(false);
     // The first steps keep the known ones only, in their order, and a first day that is a day.
     expect(
       sanitize({ funnel: { day: 'hier', source: 'tv', reached: ['date', 'welcome', 'date', 'menu'], sent: 7 } }).funnel,

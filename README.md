@@ -45,7 +45,7 @@ connected, the app and its translation service are served by one Worker; see RUN
   its course.
 - **A survival card** (« Survie » in the tab bar) to show in a restaurant: allergies and diet, in the local language, and each
   trip's hotel and address. It also goes out as a picture, to send to whoever travels with you.
-- **Light game layer.** Daily goal, streak with jokers, three daily challenges, passport stamps, and
+- **Light game layer.** Daily goal, streak with jokers (it can be switched off), three daily challenges, passport stamps, and
   Bernard, a hermit crab whose shell wears the country's flag and who sends a postcard from the trip
   as each leg advances. The answers of onboarding already count towards the first goal, and its
   last few points are counted in phrases. Travellers sharing a phone play as a team: a weekly goal
