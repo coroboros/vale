@@ -317,7 +317,9 @@ peripheral, together under a tenth of the screen against the draft's third; tran
 only, off the main thread; still for reduced motion and in browsers without scroll timelines.
 2026's platform does the rest: view timelines with named ranges, `atan2()` over container units
 so the plane keeps to its curve at any width, an oklch dawn, a scroll trigger for Bernard's one
-jump (Chrome; elsewhere he simply stays put), and a view transition from the page into the app.
+jump (Chrome; elsewhere he simply stays put), and a view transition from the page into the app
+(not back: inside one, Chrome 159 left the page at its foot instead of where the traveller was,
+seen in CI).
 Set aside: parallax backgrounds and full-screen layers (vestibular triggers, and a full-screen
 layer costs a phone about 12 MB of graphics memory at three pixels per point, our arithmetic),
 content that slides in (it hides and rushes content), loops on the clock (they would need a pause),

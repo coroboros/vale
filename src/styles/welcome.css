@@ -703,7 +703,7 @@
     }
   }
 
-  /* From the page into the app and back: the new view rises as the old one fades. */
+  /* From the page into the app: the app rises as the page fades. */
   ::view-transition-old(root) {
     animation: fade-in var(--t-view) var(--ease-out) reverse both;
   }

@@ -25,12 +25,6 @@ function islands(page: HTMLElement, name: string, content: (data: DOMStringMap) 
   for (const slot of page.querySelectorAll<HTMLElement>(`[data-island="${name}"]`)) render(content(slot.dataset), slot);
 }
 
-/** The page fades into the app and back (styles/welcome.css), where the browser can and motion is welcome. */
-function swap(update: () => void) {
-  if (document.startViewTransition && !reducedMotion()) document.startViewTransition(update);
-  else update();
-}
-
 function welcome(page: HTMLElement, app: HTMLElement) {
   islands(page, 'journey', () => <Porthole stops={JOURNEY} />);
   islands(page, 'install', () => <InstallButton block secondary />);
@@ -52,18 +46,21 @@ function welcome(page: HTMLElement, app: HTMLElement) {
   for (const button of page.querySelectorAll<HTMLElement>('[data-start]'))
     button.addEventListener('click', () => {
       const y = scrollY;
+      // Back comes at once, the way out finished first: inside a view transition, Chrome 159 left the
+      // page at its foot rather than where the traveller had scrolled (seen in CI).
+      let flight: ViewTransition | undefined;
       fromWelcomePage.value = {
-        back: () =>
-          swap(() => {
-            fromWelcomePage.value = null;
-            render(null, app);
-            app.before(page);
-            delete root.dataset.view;
-            scrollTo(0, y);
-            button.focus();
-          }),
+        back: () => {
+          flight?.skipTransition();
+          fromWelcomePage.value = null;
+          render(null, app);
+          app.before(page);
+          delete root.dataset.view;
+          scrollTo(0, y);
+          button.focus();
+        },
       };
-      swap(() => {
+      const board = () => {
         page.remove();
         root.dataset.view = 'app';
         render(<App />, app);
@@ -73,7 +70,10 @@ function welcome(page: HTMLElement, app: HTMLElement) {
           question.tabIndex = -1;
           question.focus();
         }
-      });
+      };
+      // The page fades into the app (styles/welcome.css), where the browser can and motion is welcome.
+      if (document.startViewTransition && !reducedMotion()) flight = document.startViewTransition(board);
+      else board();
     });
 }
 
