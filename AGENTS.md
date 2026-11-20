@@ -63,7 +63,8 @@ The one place for them: read this section before writing code for any step.
 - Evidence before claims: cite sources for learning and product claims (docs/LEARNING.md),
   measure before saying something works (tests, Lighthouse, `npm run eval`), and say what is not
   measured. Measure with a tool's current version (`npx lighthouse@latest`): an older Lighthouse
-  once called a valid `robots.txt` line an error.
+  once called a valid `robots.txt` line an error. Take the median of three runs on an idle
+  machine: one run beside the tests once read 420 ms of blocking time for a true 92.
 - Research in depth before deciding, never from a skim: read each source itself, in full where it
   is open (say so when only the abstract is), look for the studies that disagree, and weigh them
   with what the leading practitioners publish: learning science, cognitive psychology, game design,
@@ -87,7 +88,7 @@ kit, the screens), and plan the smallest change. Then:
 3. Looked at on a phone (390 and 320 px wide) and a desktop, from screenshots (the
    look-and-measure skill).
 4. The docs move in the same commit: README for what travellers get, the map below, RUNBOOK.md
-   (the step moves to « Done », with the date), TODO.md, docs/ for evidence.
+   (a step done leaves it), TODO.md, docs/ for evidence.
 5. Commit (a short imperative summary, then a bulleted body) as `Claude <noreply@anthropic.com>`
    (`git -c user.name=Claude -c user.email=noreply@anthropic.com commit`), never with the
    machine's own git identity; push, CI green.

@@ -199,6 +199,15 @@ aloud helps memory over reading them silently, though between learners the gain 
 shows in recognition, not recall ([Fawcett and colleagues' updated meta-analysis](https://doi.org/10.1037/cep0000302),
 abstract read). Not measured: whether travellers open the line, or practise more for it.
 
+## Reminders (decided 20 November 2026)
+
+Measured without reminders, a « no » from the decision figures could be false. Duolingo optimises
+millions of daily reminders, and choosing their wording alone, with a bandit algorithm, added
+0.5 % to daily active users and 2 % to new-user retention ([Yancey and Settles, KDD
+2020](https://research.duolingo.com/papers/yancey.kdd20.pdf)). So reminders come before the first
+figures (RUNBOOK, C0): asked for by the traveller, at the practice moment they chose, one a day at
+most, without guilt, and off in « Moi ». Not measured: how many travellers ask for them.
+
 ## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).

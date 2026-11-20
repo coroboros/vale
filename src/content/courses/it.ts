@@ -1,6 +1,6 @@
-import { capitalize, confusableNumbers, FIRST_WORDS, firstAnswer, genderAO, joinList, phrase } from '../shared';
+import { capitalize, confusableNumbers, FIRST_WORDS, firstAnswer, genderAO, joinList, phrase } from '../shared.ts';
 import type { Course } from '../types';
-import { card, extras, gloss, lessons, regions, scenes, sounds, tips } from './it.data';
+import { card, extras, gloss, lessons, regions, scenes, sounds, tips } from './it.data.ts';
 
 const UNITS = [
   'zero',

@@ -1,17 +1,17 @@
 # Runbook
 
-What to do next, in order, and how. A step done moves to « Done » at the end, with its date; its
-details stay in that day's commit and in docs/. The backlog and the watch list live in TODO.md,
-the reasons behind product choices in docs/.
+What to do next, in order, and how. A step done leaves this file: its commit and docs/ keep the
+details. The backlog and the watch list live in TODO.md, the reasons behind product choices in
+docs/.
 
 Owner: **you** (needs your accounts or your phone) or **Claude** (code, in a Claude Code session).
 
 Every step that changes code starts with the rules in AGENTS.md, « Rules » (their one place;
 coding agents read that file on their own): each step below says so.
 
-Rule since the external review of 18 November 2026: **measure before widening**. No new language
-and no live conversation before the decision figures (C) say people come back. Quality work on
-what exists (voices, photos) waits only for its keys.
+Rule: **measure before widening**. No new language and no live conversation before the decision
+figures (C) say people come back. Quality work on what exists (voices, photos) waits only for its
+keys.
 
 ## First, on the Mac: the cloud and the Mac compared (you and Claude, about 30 minutes)
 
@@ -22,10 +22,8 @@ anything else:
    differences and writes down what to change. What the cloud showed (20 November 2026):
    - Network: npm, PyPI and GitHub only. No Wikimedia Commons (the photos), no github.io (the live
      site, so no Lighthouse on it), no GitHub Actions variables or secrets through the API.
-   - Machine: 2 CPUs. The end-to-end tests took 13.7 min with one Playwright worker and 9.5 min
-     with two, the setting since then (the two projects run side by side); the extra load showed
-     three tests that leaned on timing, now fixed. More workers only help with `fullyParallel`:
-     measure it on the Mac.
+   - Machine: 2 CPUs. The end-to-end tests take 9.5 min with two Playwright workers (13.7 with
+     one); more only help with `fullyParallel`: measure it on the Mac.
    - Browsers: a headless Chromium only; no Safari and no iPhone (B7).
    - Accounts: no Cloudflare login, no GitHub Actions settings; commits signed as Claude
      (AGENTS.md, « Done means »).
@@ -33,8 +31,7 @@ anything else:
      MCP servers, model and effort, how context is kept; compared with the cloud's.
 2. **Decide** the changes together (settings, workers, tools), apply them, and note them in
    AGENTS.md or the skill.
-3. **Unblock B**, in order: B0, then B1 (Cloudflare and the Claude credits), and on. The
-   review of 20 November 2026 is decided (« Done »); its step left is C0.
+3. **Unblock B**, in order: B0, then B1 (Cloudflare and the Claude credits), and on.
 
 ## A. Now: Claude, without you
 
@@ -140,15 +137,12 @@ real* in TODO.md and report what fails, with a screenshot.
 
 ## C. After going live: measure first (Claude)
 
-0. **Reminders before the first figures.** *Rules first: AGENTS.md.* Decided on 20 November
-   2026: measured without reminders, a « no » could be false, as Duolingo's own returns lean on
-   them (millions a day; tuning their wording alone added 2 % to new-user retention, [Yancey &
-   Settles, KDD 2020](https://research.duolingo.com/papers/yancey.kdd20.pdf)). Opt-in Web Push at
-   the practice moment the traveller chose, sent by the Worker with VAPID keys kept as Worker
-   secrets, subscriptions in D1, a daily cron; on iPhone, only once Bagage is on the Home Screen
-   ([iOS 16.4+](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)). One a
-   day at most, no guilt, off in « Moi » like the streak; the privacy notice names it (D4). Needs
-   B1.
+0. **Reminders before the first figures** (why: docs/UX.md, « Reminders »). *Rules first:
+   AGENTS.md.* Opt-in Web Push at the practice moment the traveller chose, sent by the Worker
+   with VAPID keys kept as Worker secrets, subscriptions in D1, a daily cron; on iPhone, only once
+   Bagage is on the Home Screen ([iOS 16.4+](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)).
+   One a day at most, no guilt, off in « Moi » like the streak; the privacy notice names it (D4).
+   Needs B1.
 1. **Switch measurement on.** *Rules first: AGENTS.md.* Uncomment `d1_databases` in
    `worker/wrangler.jsonc` and set `VITE_COUNTS_URL: .` in the Cloudflare build of
    `.github/workflows/ci.yml` (the token may edit D1 since B1); the next deploy creates the
@@ -178,7 +172,7 @@ real* in TODO.md and report what fails, with a screenshot.
 
 ### Decision figures
 
-Set by you on 19 Nov 2026. Widen (a new language, live conversation) only when, over weeks of
+Set by you. Widen (a new language, live conversation) only when, over weeks of
 first use whose travellers have all passed day 7:
 
 - day-1 return reaches 30 %, day-7 return 15 %, and installs on the home screen by day 7 20 %;
@@ -241,60 +235,6 @@ Proposal and open questions: docs/BUSINESS.md. In this order:
 5. The live conversation partner, light on data (docs/VOICE.md), if the figures justify it. *Rules
    first: AGENTS.md.*
 
-## Done
-
-Details in each day's commits and in docs/.
-
-- 18 Nov 2026. **Progress kept on iPhones**: once there is progress to lose, home asks Safari users
-  to install (docs/BUSINESS.md, « Cloud backup »); export in *Moi* stays the backup.
-- 18 Nov 2026. **Several trips at once**, each with its hotel and address on the card; home follows
-  the trip in focus and offers the next one once a trip has begun.
-- 19 Nov 2026. **Measurement, ready to switch on** (C1, « Decision figures »), with where
-  newcomers stop before the first lesson and its switch on the first screen (docs/UX.md).
-- 19 Nov 2026. **The game layer, from the evidence** (docs/LEARNING.md): onboarding counts toward
-  the first goal, « Votre équipe », Bernard's postcards.
-- 19 Nov 2026. **Acquisition links that need no account**: the card sent as a picture and the
-  pages per situation, each counted by its `utm_source` (docs/BUSINESS.md).
-- 19 Nov 2026. **« Imagine » for every new trip**, the practice moment brought back at its hour,
-  the photo in plain view on phones (docs/BRAND.md, « Photos »).
-- 19 Nov 2026. **After your iPhone screenshots**: Dublin and New York in their flags, tips and
-  money per destination, every destination drawn, American and Irish voices, sheets without a
-  ring, hotel and shopping in every language, French spaces that never break.
-- 19 Nov 2026. **Search, all that needs no domain** (docs/SEARCH.md), a Content Security Policy
-  (`build/csp.ts`), Bernard and a moving drawing on the pages with a pause (docs/BRAND.md,
-  « Motion »), the first screen measured at 1.6 s on a slow phone.
-- 19 Nov 2026. **The way to the first lesson, measured** (docs/UX.md): page links open at the
-  destination, a page's lesson in a new language opens « Nouveau voyage » in it, and the return
-  date waits for the pass.
-- 19 Nov 2026. **A pronunciation check that stays on the computer**: where Chrome would listen
-  online, Bagage offers its language pack first
-  ([`SpeechRecognition.install()`](https://developer.mozilla.org/docs/Web/API/SpeechRecognition/install_static)).
-- 20 Nov 2026. **Bernard's beach**: XP become shells, home's top lighter, themed icons where they
-  stay as distinct as before (docs/BRAND.md, docs/UX.md); rewards beyond the app studied
-  (docs/BUSINESS.md).
-- 20 Nov 2026. **The porthole flies**: each place's land slides past in a loop, seven kinds of sky
-  traveller instead of birds everywhere, New York with its statue, the weak scenes strengthened
-  (docs/BRAND.md, « Motion »).
-- 20 Nov 2026. **After your screenshots**: the porthole flies the way its wing points, at speeds
-  measured against a real window; « Ma carte de survie », « Survie » in the tab bar, under the
-  same name in « Phrases », and Bernard's postcards called so (docs/UX.md).
-- 20 Nov 2026. **How Claude looks and measures, kept for the Mac**: the look-and-measure skill
-  (screenshots, contact sheets, frames, the loop's seams, the design measures), and the last four
-  small steps in the loop closed.
-- 20 Nov 2026. **The review's six points decided**: the streak can be switched off in « Moi »;
-  the two test projects run side by side (13.7 to 9.5 min), three tests made sturdy; persistence
-  was already asked at every launch, so that point was a mistake of the review; the build tools'
-  advisories have no safe fix yet (TODO.md, « Watch »); reminders (C0) and the trip's course
-  alone (A2) are steps; the daily challenges never show on phones, to decide (TODO.md).
-- 20 Nov 2026. **The daily challenges on phones**: one line at the foot of the goal card opens the
-  challenges, the chest and the jokers line in a sheet, below 1120 px; the full card would have
-  pushed the itinerary down by 352 px on a 390 px phone (docs/UX.md).
-- 20 Nov 2026. **A2 measured, then dropped**: the review's 420 ms of blocking time was a single run,
-  probably on a busy machine. Six runs on an idle one: 76 to 198 ms, Performance 97 to 100. A build
-  with one course instead of four sends 27 KB less (gzip) on a first visit and is ready about
-  100 ms sooner, with the same first paint; the unused 46 KiB is code, not the courses
-  (docs/SEARCH.md, « Measured »). Not worth an app that waits for its course.
-
 ## Working with Claude Code on your Mac
 
 1. Clone the repository; with Node 22 or later, `npm ci && (cd worker && npm ci)`, then
@@ -302,7 +242,7 @@ Details in each day's commits and in docs/.
    Chrome).
 2. Open the folder in Claude Code and run `/context`: `CLAUDE.md` must appear under « Memory
    files ». It imports AGENTS.md, the project's rules, commands and map, which Codex reads itself.
-3. Say which step of this runbook to continue. `npm run check` runs every test, about fifteen
+3. Say which step of this runbook to continue. `npm run check` runs every test, about ten
    minutes with the end-to-end ones. How screenshots and measures were made in the cloud
    sessions is in the look-and-measure skill (`.claude/skills/`), so nothing is lost on the Mac.
 4. Now and then, `/doctor prompt-audit` (Claude Code v2.1.283 or later) lists stale paths, stale

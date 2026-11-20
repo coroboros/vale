@@ -1,7 +1,7 @@
-import { en } from './courses/en';
-import { es } from './courses/es';
-import { it } from './courses/it';
-import { pt } from './courses/pt';
+import { en } from './courses/en.ts';
+import { es } from './courses/es.ts';
+import { it } from './courses/it.ts';
+import { pt } from './courses/pt.ts';
 import type { Course, Currency, Flag, Item, Lesson, Pack, Region, Scene } from './types';
 
 export const COURSES: readonly Course[] = [es, it, pt, en];

@@ -111,7 +111,7 @@ under Lighthouse 12.8, first measured:
 ### The courses in the first load (20 November 2026)
 
 The review of 20 November 2026 read a blocking time of 420 ms on the app and blamed the four
-courses that every visitor loads (RUNBOOK, A2). To check, the same Lighthouse 13.6 mobile settings
+courses that every visitor loads, proposing to load only the trip's course. To check, the same Lighthouse 13.6 mobile settings
 ran on the production build as it is and on a throwaway build with only the Spanish course, the
 largest, alternating, on an idle machine.
 
