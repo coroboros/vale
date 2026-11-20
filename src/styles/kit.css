@@ -165,14 +165,14 @@
   }
 
   /* Flat controls tint under the pointer and give a little when pressed. */
-  :is(.icon-btn, .chip, .nav-item, .btn-ghost) {
+  :is(.icon-btn, .chip, .nav-item, .btn-ghost, button.row) {
     transition:
       background-color var(--t-hover) ease,
       transform var(--t-press) ease;
   }
 
   @media (hover: hover) {
-    :is(.icon-btn, .chip, .nav-item, .btn-ghost):hover:not(
+    :is(.icon-btn, .chip, .nav-item, .btn-ghost, button.row):hover:not(
         :disabled,
         [aria-pressed="true"],
         [aria-checked="true"],
@@ -182,7 +182,7 @@
     }
   }
 
-  :is(.icon-btn, .chip, .nav-item, .btn-ghost):active:not(:disabled) {
+  :is(.icon-btn, .chip, .nav-item, .btn-ghost, button.row):active:not(:disabled) {
     transform: scale(0.96);
   }
 
@@ -478,6 +478,7 @@
   button.row {
     width: 100%;
     text-align: left;
+    border-radius: var(--r-m);
   }
 
   .bar {

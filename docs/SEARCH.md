@@ -108,6 +108,25 @@ under Lighthouse 12.8, first measured:
   is quicker than many phones': real visitors' Core Web Vitals settle it once there is traffic
   (Search Console).
 
+### The courses in the first load (20 November 2026)
+
+The review of 20 November 2026 read a blocking time of 420 ms on the app and blamed the four
+courses that every visitor loads (RUNBOOK, A2). To check, the same Lighthouse 13.6 mobile settings
+ran on the production build as it is and on a throwaway build with only the Spanish course, the
+largest, alternating, on an idle machine.
+
+| Build | Main script (gzip) | Performance | Blocking time | First paint | Ready (TTI) | Unused JavaScript |
+| --- | --- | --- | --- | --- | --- | --- |
+| Four courses, six runs | 106 KB | 97 to 100 | 76 to 198 ms | 0.91 s | 2.72 s | 45.8 KiB |
+| One course, three runs | 80 KB | 97 to 98 | 156 to 210 ms | 0.92 s | 2.62 s | 45.7 KiB |
+
+Paint and TTI are medians. The 420 ms was a single run, probably taken while the machine was busy.
+The courses count as used code, since their data is built when the script starts: the unused
+46 KiB is screens and features the welcome does not run. Splitting the courses would save 27 KB
+on a first visit (the service worker then stores every file anyway) and about 100 ms before the
+app answers, nothing on the first paint: not worth an app that waits for its course. Not
+measured: a slow phone's own processor (B7), and visitors' Core Web Vitals once there is traffic.
+
 ## Agents: Cloudflare's Agent Readiness score
 
 [isitagentready.com](https://blog.cloudflare.com/agent-readiness/) (Cloudflare, April 2026) scores

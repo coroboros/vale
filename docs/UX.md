@@ -166,6 +166,39 @@ off, the flame, the jokers, the catch-up offer and the streak in « Moi » and i
 summary all go. The days keep being counted underneath, so switching back shows the true streak.
 Not measured: how many travellers switch it off.
 
+## The daily challenges on phones (20 November 2026)
+
+Since the rebuild, the three daily challenges, the chest they open and the jokers line lived only
+in the side panel of screens 1120 px wide or more: phones and tablets never showed them. So the
+chest, one of the two ways to earn a joker, was out of reach there, and a phone's streak was
+easier to lose than a computer's (`openChest` gives a joker half the time).
+
+Measured on the home screen (Playwright, 20 November 2026): where the itinerary starts.
+
+| Phone | Today | Full challenges card | One line in the goal card |
+| --- | --- | --- | --- |
+| 390 × 844 | 718 px | 1070 px (+352) | 776 px (+58) |
+| 375 × 667 | 736 px | 1087 px (+351) | 794 px (+58) |
+| 320 × 568 | 758 px | 1155 px (+397) | 816 px (+58) |
+
+The full card would cost 42 % of a 390 × 844 screen and 70 % of a 320 × 568 one, undoing the
+lighter home of « Home's top ». Keeping them out of sight, or dropping them, goes against what the
+products that ship them do. Duolingo built its Quests tab after A/B testing every part of it,
+the difficulty and type of each quest included, to give "a variable set of recommended tasks"
+([Q2 2022 shareholder letter](https://www.sec.gov/Archives/edgar/data/1562088/000156208822000133/duolingo_q2-2022xshareho.htm));
+it publishes no effect size. On phones they get a tab of their own ([Duolingo](https://blog.duolingo.com/new-duolingo-home-screen-design));
+daily.dev shows them in the sidebar of large screens and behind one button on mobile
+([daily.dev](https://docs.daily.dev/quests/)), the split Bagage now has. Bagage's bar already
+has five tabs, so no sixth.
+
+Decided: one line, « Défis du jour » with the count, at the foot of the goal card on screens
+narrower than 1120 px; it opens the same challenges, chest and jokers line in a sheet, and says
+when the chest is ready. Five of the eight challenges ask for something the daily goal does not
+(saying phrases aloud, a scene, reviews, new phrases, a session without a mistake). Saying words
+aloud helps memory over reading them silently, though between learners the gain is small and
+shows in recognition, not recall ([Fawcett and colleagues' updated meta-analysis](https://doi.org/10.1037/cep0000302),
+abstract read). Not measured: whether travellers open the line, or practise more for it.
+
 ## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).

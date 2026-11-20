@@ -34,7 +34,7 @@ anything else:
 2. **Decide** the changes together (settings, workers, tools), apply them, and note them in
    AGENTS.md or the skill.
 3. **Unblock B**, in order: B0, then B1 (Cloudflare and the Claude credits), and on. The
-   review of 20 November 2026 is decided (« Done »); its steps are A2 and C0.
+   review of 20 November 2026 is decided (« Done »); its step left is C0.
 
 ## A. Now: Claude, without you
 
@@ -43,13 +43,6 @@ anything else:
    and « Floride », each with its drawing (looping like the others), tip and photo. The photos
    need Wikimedia Commons, which this cloud workspace cannot reach: `python3 brand/photos.py
    fetch render` on the Mac. The US flag, pack and dollar already exist.
-2. **Only the trip's course in the first load.** *Rules first: AGENTS.md.* Decided on
-   20 November 2026. Lighthouse 13.6 on the production build, mobile: total blocking time 420 ms
-   ([good is under 200 ms](https://web.dev/articles/tbt)) and 46 KiB of unused JavaScript, as all
-   four courses (155 KB of data) ship to everyone. Split each course into a light catalogue
-   (names, flags, destinations: what onboarding and « Nouveau voyage » list) and its lessons,
-   loaded on demand for the trip's language; the Worker keeps importing all of it. Lighthouse
-   before and after, numbers in docs/.
 
 Then nothing left that needs no one: the next steps wait for your accounts (B) or for live
 figures (C). Proposed, waiting for your yes: count answer accuracy per exercise kind, as
@@ -285,14 +278,22 @@ Details in each day's commits and in docs/.
 - 20 Nov 2026. **After your screenshots**: the porthole flies the way its wing points, at speeds
   measured against a real window; « Ma carte de survie », « Survie » in the tab bar, under the
   same name in « Phrases », and Bernard's postcards called so (docs/UX.md).
+- 20 Nov 2026. **How Claude looks and measures, kept for the Mac**: the look-and-measure skill
+  (screenshots, contact sheets, frames, the loop's seams, the design measures), and the last four
+  small steps in the loop closed.
 - 20 Nov 2026. **The review's six points decided**: the streak can be switched off in « Moi »;
   the two test projects run side by side (13.7 to 9.5 min), three tests made sturdy; persistence
   was already asked at every launch, so that point was a mistake of the review; the build tools'
   advisories have no safe fix yet (TODO.md, « Watch »); reminders (C0) and the trip's course
   alone (A2) are steps; the daily challenges never show on phones, to decide (TODO.md).
-- 20 Nov 2026. **How Claude looks and measures, kept for the Mac**: the look-and-measure skill
-  (screenshots, contact sheets, frames, the loop's seams, the design measures), and the last four
-  small steps in the loop closed.
+- 20 Nov 2026. **The daily challenges on phones**: one line at the foot of the goal card opens the
+  challenges, the chest and the jokers line in a sheet, below 1120 px; the full card would have
+  pushed the itinerary down by 352 px on a 390 px phone (docs/UX.md).
+- 20 Nov 2026. **A2 measured, then dropped**: the review's 420 ms of blocking time was a single run,
+  probably on a busy machine. Six runs on an idle one: 76 to 198 ms, Performance 97 to 100. A build
+  with one course instead of four sends 27 KB less (gzip) on a first visit and is ready about
+  100 ms sooner, with the same first paint; the unused 46 KiB is code, not the courses
+  (docs/SEARCH.md, « Measured »). Not worth an app that waits for its course.
 
 ## Working with Claude Code on your Mac
 

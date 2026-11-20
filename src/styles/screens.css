@@ -149,8 +149,17 @@
 
   .daily-goal {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 14px;
+    gap: 10px 14px;
+  }
+
+  .daily-quests {
+    flex-basis: 100%;
+    min-height: 48px;
+    padding: 8px 4px 0;
+    border-top: 1.5px solid var(--line);
+    border-radius: 0;
   }
 
   .daily-goal strong {

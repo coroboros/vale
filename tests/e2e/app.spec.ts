@@ -1290,6 +1290,45 @@ test('Bernard blinks while the journey plays, and not once it is paused', async 
   expect(await blinks(page)).toBe(0);
 });
 
+test('phones open the daily challenges from the goal card, chest included', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'wide screens show them beside the itinerary');
+  await onboard(page);
+  await leaveFirstLesson(page);
+  const open = page.getByRole('button', { name: 'Défis du jour : 0 sur 3' });
+  await open.click();
+  const sheet = page.locator('.sheet');
+  await expect(sheet.getByRole('heading', { name: 'Défis du jour' })).toBeVisible();
+  await expect(sheet.locator('.quests li')).toHaveCount(3);
+  await expect(sheet.locator('.jokers')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(sheet).toBeHidden();
+  await expect(open).toBeFocused();
+
+  // A day where every challenge is met: the chest waits on the line and opens in the sheet.
+  await page.evaluate(() => {
+    const save = Storage.prototype.setItem;
+    Storage.prototype.setItem = () => {};
+    const db = JSON.parse(localStorage.getItem('db-v4')!);
+    db.data[db.active] ??= { days: {} };
+    db.data[db.active].days[new Date().toLocaleDateString('sv')] = {
+      xp: 999,
+      ms: 3_600_000,
+      sessions: 9,
+      spoken: 9,
+      learned: 9,
+      perfect: 9,
+      scenes: 9,
+      reviews: 99,
+    };
+    save.call(localStorage, 'db-v4', JSON.stringify(db));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: 'Défis du jour : 3 sur 3, le coffre est prêt' }).click();
+  await sheet.getByRole('button', { name: 'Ouvrir le coffre' }).click();
+  await expect(page.getByText(/^Coffre ouvert/)).toBeVisible();
+  await expect(sheet.getByRole('button', { name: 'Ouvrir le coffre' })).toHaveCount(0);
+});
+
 test('the streak can be switched off: no flame, joker, catch-up or summary line', async ({ page }, info) => {
   await onboard(page);
   await leaveFirstLesson(page);
@@ -1508,6 +1547,12 @@ test('nothing is too small to tap, too close, cut, or wider than the screen', as
     await page.getByRole('button', { name: 'Partager ma carte' }).click();
     await expect(page.locator('.share-preview')).toBeVisible();
     await audit(`${size}: partager ma carte`);
+    if (page.viewportSize()!.width < 1120) {
+      await page.goto('./');
+      await page.getByRole('button', { name: /^Défis du jour/ }).click();
+      await expect(page.locator('.sheet')).toBeVisible();
+      await audit(`${size}: défis du jour`);
+    }
   };
   await run(`${page.viewportSize()!.width}px`);
   // The phone run also covers a small phone (iPhone SE, first model) and a tablet.
@@ -1534,5 +1579,11 @@ test('no serious accessibility issue on the main screens', async ({ page }) => {
   for (const hash of SCREENS) {
     await page.goto(`./${hash}`);
     await check(hash);
+  }
+  if (page.viewportSize()!.width < 1120) {
+    await page.goto('./');
+    await page.getByRole('button', { name: /^Défis du jour/ }).click();
+    await expect(page.locator('.sheet')).toBeVisible();
+    await check('défis du jour');
   }
 });

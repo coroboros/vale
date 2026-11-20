@@ -59,10 +59,6 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 
 What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
 
-- **The daily challenges on phones.** Below 1120 px wide, home shows only the compact daily card:
-  the three challenges, the chest they open and the jokers line sit in the side panel of wide
-  screens, so phones and tablets never show them (`<Daily compact />` since the rebuild; read in
-  the code on 20 November 2026). To decide: give them a place on phones, or drop the chest.
 - **AI voices for every phrase.** Fish Audio, a female or a male voice chosen in *Moi*, generated
   once in CI and cached for offline use, the phone's voices as the fallback: docs/VOICE.md.
 - **Live conversation partner.** Talk with Bernard by voice in the course's situations, audio only
