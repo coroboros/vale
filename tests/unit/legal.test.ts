@@ -1,36 +1,49 @@
 import { describe, expect, it } from 'vitest';
 import { legalOf, legalPages } from '../../build/legal';
+import { PUBLISHER } from '../../src/brand';
 
-const DEPLOY = {
-  LEGAL_PUBLISHER: 'Exemple LLP, 1 rue de l’Exemple, Londres',
-  LEGAL_CONTACT: 'bonjour@example.com',
-  LEGAL_DIRECTOR: 'Jeanne Exemple',
+const LLP = {
+  ...PUBLISHER,
+  name: 'Exemple LLP',
+  registration: 'limited liability partnership immatriculée en Angleterre et au pays de Galles sous le n° OC000000',
+  address: '1 Example Street, Londres',
+  email: 'bonjour@example.com',
+  phone: '+44 20 0000 0000',
+  director: 'Jeanne Exemple',
 };
 
-const page = (env: Record<string, string>, counts: boolean, path: string) =>
-  legalPages(legalOf(env, counts)).find(p => p.path === path)!.main;
+const page = (legal: ReturnType<typeof legalOf>, path: string) => legalPages(legal).find(p => p.path === path)!.main;
 const text = (html: string) => html.replace(/<[^>]+>/g, '');
 
 describe('the legal pages', () => {
-  it('name the publisher the deploy gives, and the host the build is served from', () => {
-    const notice = page({ ...DEPLOY, SITE_HOST: 'cloudflare' }, false, 'mentions-legales/');
-    expect(notice).toContain('Exemple LLP');
+  it('name the publisher of the central configuration, and the host the deploy serves from', () => {
+    const notice = page(legalOf({}, false, LLP), 'mentions-legales/');
+    for (const part of ['Exemple LLP', 'OC000000', 'Example Street', '+44 20 0000 0000', 'Jeanne Exemple'])
+      expect(notice).toContain(part);
     expect(notice).toContain('mailto:bonjour@example.com');
-    expect(notice).toContain('Jeanne Exemple');
     expect(notice).toContain('Cloudflare, Inc.');
-    expect(page(DEPLOY, false, 'mentions-legales/')).toContain('GitHub, Inc.');
+    expect(page(legalOf({ SITE_HOST: 'github-pages' }, false, LLP), 'mentions-legales/')).toContain('GitHub, Inc.');
+    const privacy = text(page(legalOf({}, false, LLP), 'confidentialite/'));
+    expect(privacy).toContain('Le responsable du traitement est l’éditeur de Bagage\u00a0: Exemple LLP');
+    expect(privacy).toContain('Pour exercer ces droits\u00a0: bonjour@example.com');
   });
 
-  it('say the publisher comes before launch when the deploy does not name all of it', () => {
-    const notice = page({ LEGAL_PUBLISHER: 'Exemple LLP' }, false, 'mentions-legales/');
-    expect(notice).not.toContain('Exemple LLP');
-    expect(notice).toContain('avant le lancement');
-    expect(text(page({}, false, 'confidentialite/'))).toContain('Tu peux adresser une réclamation à la CNIL');
-    expect(text(page(DEPLOY, false, 'confidentialite/'))).toContain('Tu peux aussi adresser une réclamation');
+  it('say the publisher is named before launch while its name is empty', () => {
+    const legal = legalOf({}, false, { ...LLP, name: ' ' });
+    expect(page(legal, 'mentions-legales/')).not.toContain('Exemple LLP');
+    expect(page(legal, 'mentions-legales/')).toContain('avant le lancement');
+    expect(text(page(legal, 'confidentialite/'))).toContain('adresser une réclamation à la CNIL');
+  });
+
+  it('name an EU representative only when there is one', () => {
+    expect(page(legalOf({}, false, LLP), 'confidentialite/')).not.toContain('représentant');
+    expect(page(legalOf({}, false, { ...LLP, representative: 'Exemple SAS, Paris' }), 'confidentialite/')).toContain(
+      'représentant dans l’Union européenne\u00a0: Exemple SAS, Paris',
+    );
   });
 
   it('describe the anonymous statistics only in a build that sends them', () => {
-    expect(page(DEPLOY, true, 'confidentialite/')).toContain('Les statistiques anonymes.');
-    expect(page(DEPLOY, false, 'confidentialite/')).not.toContain('statistiques');
+    expect(page(legalOf({}, true, LLP), 'confidentialite/')).toContain('Les statistiques anonymes.');
+    expect(page(legalOf({}, false, LLP), 'confidentialite/')).not.toContain('statistiques');
   });
 });

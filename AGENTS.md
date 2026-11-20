@@ -74,8 +74,9 @@ The one place for them: read this section before writing code for any step.
   and what is our inference. To choose between designs, measure them (screenshots, tests) and keep
   the numbers in docs/.
 - Never commit secrets: they live in GitHub Actions secrets and in Cloudflare. The repository is
-  public: no personal or company details in it, and commits never carry the owner's personal
-  address.
+  public: no personal or company details in it, apart from the publisher's identity in
+  `src/brand.ts`, which the law makes public on the site anyway; commits never carry the owner's
+  personal address.
 - Ask before adding a production dependency.
 
 ### Done means
@@ -146,8 +147,8 @@ kit, the screens), and plan the smallest change. Then:
 - `build/welcome.ts`: the welcome page, written into `index.html` for newcomers in a browser and
   for crawlers that run no script; `build/boot.ts`, its inline first lines, which send the installed
   app, a traveller who has set off and links into the app to the app before the first paint.
-- `build/legal.ts`: « Mentions légales » and « Confidentialité », with the publisher from the
-  deploy's variables, never from this repository; `build/html.ts`, escaping, French spacing and a
+- `build/legal.ts`: « Mentions légales » and « Confidentialité », from the publisher and the hosts
+  in `src/brand.ts`, the central configuration; `build/html.ts`, escaping, French spacing and a
   country's colours for all the static HTML.
 - `build/pages.ts`: writes the pages for search engines next to the app (situations, languages),
   `sitemap.xml`, `robots.txt` with the owner's content signals, `llms.txt`, the IndexNow key file,

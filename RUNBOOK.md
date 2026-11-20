@@ -55,13 +55,12 @@ figures (C).
 
 1. Delete the `photos-fetch` branch: repository → *Branches* → the bin next to `photos-fetch`. It
    only ran the photo download; the photos are in `main`.
-2. Name the publisher for « Mentions légales » and « Confidentialité »: repository → *Settings →
-   Secrets and variables → Actions → Variables → New repository variable*, three of them:
-   `LEGAL_PUBLISHER` (the name or company, its legal form and registration, and its address, on
-   one line), `LEGAL_CONTACT` (an email address anyone may write to) and `LEGAL_DIRECTOR` (the
-   director of publication). They appear on the site, never in this public repository; the next
-   deploy writes them in. Until then the notice says the publisher is named before launch
-   (docs/UX.md, « The legal pages »).
+2. Name the publisher for « Mentions légales » and « Confidentialité »: fill `PUBLISHER` in
+   `src/brand.ts`, or send Claude the values: the registered name; the legal form, register and
+   number; the registered office; a telephone number (the LCEN asks for one); an email address
+   that someone reads; the VAT number if there is one; the director of publication, a person.
+   They are public on the site by law. Until then the pages say the publisher is named before
+   launch (docs/UX.md, « The legal pages »).
 
 ### B1. Connect Cloudflare and the Claude credits (about 15 minutes)
 
@@ -226,9 +225,11 @@ query of `npm run figures` reads the answers against the 85 % aim (docs/LEARNING
    Put the commission in the price, and decide where the pass sells: app, web, or both.
 3. **Test willingness to pay with the simplest thing** (a payment link for the pass, offered to
    real travellers) before building accounts, D1, passkeys and entitlements.
-4. **Legal and the name.** Terms of sale, privacy policy (GDPR), the company that invoices,
-   Anthropic's terms for serving paying customers; the name checked at INPI and EUIPO (classes 9
-   and 41), the domain and the store names.
+4. **Legal and the name.** Terms of sale, the company that invoices, Anthropic's terms for serving
+   paying customers; the name checked at INPI and EUIPO (classes 9 and 41), the domain and the
+   store names. A lawyer reads « Mentions légales » and « Confidentialité » and settles what
+   docs/UX.md, « The legal pages », leaves open: a representative in the EU if the publisher is
+   outside it (GDPR, article 27), and the UK data protection fee if it is a UK company.
 
 ## E. The business model (Claude, once D says go)
 

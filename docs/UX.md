@@ -268,29 +268,38 @@ next title, so the page reads as going on.
 
 ## The legal pages (20 November 2026)
 
-The owner asked for the legal pages in the welcome page's footer. Not legal advice: a lawyer reads
-them before anything is sold (RUNBOOK D4).
+The owner asked for the legal pages in the welcome page's footer, as right as the current official
+texts allow. They are not legal advice: a lawyer reads them before anything is sold (RUNBOOK D4).
 
 | Finding | Source | Strength |
 | --- | --- | --- |
-| A professional site names its publisher and its host: the host's name, address and telephone; a service of online communication also names its director of publication. | Entreprendre Service Public, [Mentions obligatoires sur le site internet d'une entreprise](https://entreprendre.service-public.gouv.fr/vosdroits/F37351) (checked 13 October 2026) | Strong: the administration's guide |
-| Since the SREN law of 21 May 2024, these duties are in article 1-1 of the LCEN (formerly 6, III), the anonymity of a non-professional publisher in 1-1, II, the penalty in 1-2. | Simonnet avocat, [Mentions légales d'un site internet](https://www.simonnetavocat.fr/mentions-legales-dun-site-internet-obligations-sanctions-et-modele/) (22 April 2026) | Medium: a lawyer's reading of Légifrance |
-| Audience measurement without consent must still be told to people, in the privacy policy for instance. | CNIL (above, « Who stops before the first lesson ») | Strong |
-| Cloudflare, Inc.: 101 Townsend St, San Francisco, CA 94107; +1 (650) 319-8930. | [Cloudflare](https://www.cloudflare.com/fr-gender-equality-index) | Strong: its own page |
-| GitHub, Inc.: 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107; GitHub publishes no telephone, +1 877 448 4820 is its sales line. | GitHub's privacy statement; [datarequests.org](https://datarequests.org/company/github) | Medium for the telephone |
+| A publisher that is a legal person shows its name, registered office and telephone, and if registered in France its RCS number and share capital; a person shows name, address and telephone; every site names its director of publication and its host's name, address and telephone. | LCEN, article 1-1, as written by the SREN law: [Légifrance, loi n° 2024-449, article 48](https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000049563632) | Strong: the law |
+| The same duties as the administration explains them; formerly article 6, III, now 1-1 (anonymity of a non-professional publisher in 1-1, II; penalty in 1-2). | [Entreprendre Service Public](https://entreprendre.service-public.gouv.fr/vosdroits/F37351) (checked 13 October 2026); [Simonnet avocat](https://www.simonnetavocat.fr/mentions-legales-dun-site-internet-obligations-sanctions-et-modele/) (22 April 2026) | Strong; medium |
+| A UK company or LLP shows on its website the part of the UK where it is registered, its registered number and its registered office address. | [SI 2015/17, regulation 25](https://www.legislation.gov.uk/uksi/2015/17/regulation/25), applied to LLPs by [SI 2009/1804, regulation 14](https://www.legislation.gov.uk/uksi/2009/1804/regulation/14) | Strong: the law |
+| An online service established in the UK shows its name, geographic address, an email address to reach it quickly, its register and number, and its VAT number if it charges VAT. | [Electronic Commerce Regulations 2002, regulation 6](https://www.legislation.gov.uk/uksi/2002/2013/regulation/6) | Strong: the law |
+| A privacy notice gives the controller's identity and contact, the purposes and legal bases, the recipients, transfers outside and their safeguards, retention, the rights, and the right to complain to a supervisory authority. | GDPR, article 13; [ICO checklist](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/individual-rights/the-right-to-be-informed/checklists) | Strong |
+| A controller outside the EU whose service targets people in it names a representative in the EU, unless its processing is occasional and unlikely to put people at risk. | [GDPR, article 27](https://www.legislation.gov.uk/eur/2016/679/article/27/2020-01-31) | Strong |
+| Anthropic's data processing terms bring in the Commission's standard contractual clauses (modules two and three), the UK addendum and the Swiss one; Cloudflare's bring in the clauses and the UK addendum, and Cloudflare is certified to the EU–US Data Privacy Framework. A privacy notice says where the safeguards can be read, hence the link to [Decision 2021/914](https://eur-lex.europa.eu/eli/dec_impl/2021/914/oj?locale=fr). | [Anthropic DPA](https://www.anthropic.com/legal/data-processing-addendum); [Cloudflare DPA](https://www.cloudflare.com/cloudflare-customer-dpa/), clauses 6.2 and 6.4; GDPR, article 13(1)(f) | Strong: their own terms |
+| A UK controller pays the ICO a yearly data protection fee unless exempt (tier 1, £52 since 2025). | [ICO fee checker](https://ico.org.uk/fee-checker); [GOV.UK](https://www.gov.uk/government/consultations/data-protection-fee-regime-proposed-changes/outcome/data-protection-fee-regime-government-response) | Strong |
+| Cloudflare, Inc.: 101 Townsend St, San Francisco, CA 94107; +1 (650) 319-8930. GitHub, Inc.: 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107; GitHub publishes no telephone, +1 877 448 4820 is its sales line. | [Cloudflare](https://www.cloudflare.com/fr-gender-equality-index); [datarequests.org](https://datarequests.org/company/github) | Strong; medium for GitHub's telephone |
 
 Decision: the build writes « Mentions légales » and « Confidentialité » beside the app
-(`build/legal.ts`), linked from the welcome page, every page beside the app and « Moi ». Bagage is
-meant to be sold, so its publisher is professional and named: the name, contact and director come
-from repository variables at deploy (RUNBOOK B0), never from this public repository; until they are
-set, the notice says the publisher is named before launch. The host follows the deploy (GitHub
-Pages, or Cloudflare once connected). The privacy page says what the code does, checked in it:
-everything stays in the browser; a sentence to translate goes to the Worker, which asks Claude or
-Workers AI and keeps the answer 90 days in KV without anything about who asked, and uses the IP
-address only to limit requests per minute; without the Worker, the DeepL link carries the sentence;
-the anonymous counts appear only in a build that sends them; speech and voices may go through the
-browser's own online services; no cookie. Not checked here: the processors' own terms on
-retention and transfers, for the lawyer (D4).
+(`build/legal.ts`), linked from the welcome page, every page beside the app and « Moi ». The
+publisher and the hosts live in the central configuration, `src/brand.ts`, as the owner asked:
+the identity is the same on every deploy and public by law, so a variable per deploy hid nothing
+and only scattered it. `PUBLISHER` holds what both laws ask, for a French or a UK publisher; while
+its name is empty, the pages say the publisher is named before launch. The host is Cloudflare, the
+target, unless the GitHub Pages build says otherwise. The privacy page says what the code does,
+checked in it: everything stays in the browser; a sentence to translate goes to the Worker, which
+asks Claude or Workers AI and keeps the answer 90 days in KV without anything about who asked, and
+counts requests per IP address for a minute (`worker/wrangler.jsonc`); without the Worker, the
+DeepL link carries the sentence; the anonymous counts appear only in a build that sends them, with
+their legal basis and the switch to object; speech and voices may go through the browser's own
+services; no cookie. Left to the lawyer and the owner (D4): whether the publisher, if it is the UK
+LLP, needs a representative in the EU (the translation service processes IP addresses and
+sentences every day, which is hardly occasional) and pays the ICO fee.
+
+## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).
 - Once measurement is on (RUNBOOK C1): the screen where most newcomers stop, per link
