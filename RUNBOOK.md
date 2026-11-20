@@ -35,11 +35,16 @@ anything else:
 
 ## A. Now: Claude, without you
 
-1. **California and Florida, on the Mac.** *Rules first: AGENTS.md.* Two destinations of the
-   English course, as decided in docs/MARKET.md (« Where French travellers go »): « Californie »
-   and « Floride », each with its drawing (looping like the others), tip and photo. The photos
-   need Wikimedia Commons, which this cloud workspace cannot reach: `python3 brand/photos.py
-   fetch render` on the Mac. The US flag, pack and dollar already exist.
+1. **California and Florida: their photos, on the Mac.** *Rules first: AGENTS.md.* The branch
+   `california-florida` adds both destinations to the English course, drawn and with their tips
+   (docs/MARKET.md, « Where French travellers go »); every test passes but the one that asks for
+   their photos, which come from Wikimedia Commons, out of the cloud's reach. Choose one per
+   destination from a contact sheet, as for the others (docs/BRAND.md, « Photos »). Candidates
+   seen from here, not looked at: Commons' featured « Golden Gate Bridge as seen from Battery
+   East.jpg » and « Golden Gate Bridge as seen from Marshall’s Beach, October 2017.jpg », and
+   « Ocean Drive - Art Deco buildings in Miami (5410502514).jpg » (CC BY 2.0). Add the file, focus
+   and alt to `src/ui/photos.json`, run `python3 brand/photos.py fetch render`, look at
+   « Imagine », then `npm run check` and merge the branch into `main`.
 
 Then nothing left that needs no one: the next steps wait for your accounts (B) or for live
 figures (C). Proposed, waiting for your yes: count answer accuracy per exercise kind, as
