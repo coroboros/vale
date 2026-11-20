@@ -45,7 +45,7 @@ export const PT: Record<string, Art> = {
       [170, 22, 0.65],
       [262, 46, 0.5],
     ],
-    birds: [130, 80],
+    flyer: ['gulls', 130, 80],
     far: (
       <>
         <path d="M150 173 C190 152 232 146 272 152 C302 156 330 148 360 144 V173 Z" fill="#D9CDB4" />
@@ -54,7 +54,7 @@ export const PT: Record<string, Art> = {
           <path d="M194 164 V110 H200 V164 Z M298 164 V110 H304 V164 Z" />
         </g>
         <g fill="none" stroke="#C8513A" stroke-width="1.5">
-          <path d="M150 152 Q172 138 197 111 Q249 196 301 111 Q328 136 360 148" />
+          <path d="M150 152 Q172 138 197 111 Q249 196 301 111 Q328 136 360 160" />
           {Array.from({ length: 9 }, (_, i) => {
             const t = (i + 1) / 10;
             return <path key={t} d={`M${197 + 104 * t} ${111 + 170 * t * (1 - t)} V161`} stroke-width="0.7" />;
@@ -70,7 +70,10 @@ export const PT: Record<string, Art> = {
     ),
     mid: (
       <>
-        <path d="M0 173 V126 C22 108 52 96 86 94 C114 92 140 104 162 122 C174 132 182 150 188 173 Z" fill="#EAD5B4" />
+        <path
+          d="M-40 173 C-28 152 -14 134 0 126 C22 108 52 96 86 94 C114 92 140 104 162 122 C174 132 182 150 188 173 Z"
+          fill="#EAD5B4"
+        />
         <path
           d="M44 104 V94 H48 V98 H54 V94 H58 V98 H64 V94 H68 V98 H74 V94 H78 V98 H84 V94 H88 V98 H94 V94 H98 V104 Z M62 94 V84 H66 V88 H70 V84 H74 V94 Z"
           fill="#CDB997"
@@ -105,15 +108,15 @@ export const PT: Record<string, Art> = {
     ),
     near: (
       <>
-        <path d="M0 150 C120 147 240 147 360 144" fill="none" stroke="#3E4A63" stroke-width="0.8" opacity="0.6" />
-        <path d="M0 208 C100 202 220 204 360 198 V330 H0 Z" fill="#E4D8C3" />
+        <path d="M0 150 C120 147 240 147 360 150" fill="none" stroke="#3E4A63" stroke-width="0.8" opacity="0.6" />
+        <path d="M0 208 C100 202 220 204 360 208 V330 H0 Z" fill="#E4D8C3" />
         <g fill="none" stroke="#F7F1E6" stroke-width="5" opacity="0.9">
-          <path d="M0 256 C40 248 80 264 120 256 S200 248 240 256 S320 264 360 254" />
-          <path d="M0 286 C40 278 80 294 120 286 S200 278 240 286 S320 294 360 284" />
+          <path d="M0 256 C40 248 80 264 120 256 S200 248 240 256 S320 264 360 256" />
+          <path d="M0 286 C40 278 80 294 120 286 S200 278 240 286 S320 294 360 286" />
         </g>
         <g fill="none" stroke="#A89A82" stroke-width="2">
-          <path d="M0 232 C120 226 240 228 360 222" />
-          <path d="M0 240 C120 234 240 236 360 230" />
+          <path d="M0 232 C120 226 240 228 360 232" />
+          <path d="M0 240 C120 234 240 236 360 240" />
         </g>
         <Tram x={150} y={234} />
         <Lamp x={56} base={232} />
@@ -142,14 +145,14 @@ export const PT: Record<string, Art> = {
       [270, 44, 0.55],
       [12, 96, 0.45],
     ],
-    birds: [232, 72],
+    flyer: ['gulls', 232, 72],
     far: (
       <>
         <path d="M0 132 C30 124 60 126 90 136 L110 173 H0 Z" fill="#B7A27F" />
         <path d="M28 130 V114 C28 104 52 104 52 114 V130 Z" fill="#EFE6D6" />
         <path d="M30 114 C30 106 50 106 50 114 Z" fill="#D9CDB6" />
         <path d="M40 106 V100" stroke="#B7A27F" stroke-width="1.6" />
-        <path d="M222 173 C240 140 280 122 360 116 V173 Z" fill="#C9B08B" />
+        <path d="M222 173 C240 140 280 126 360 132 V173 Z" fill="#C9B08B" />
       </>
     ),
     mid: (
@@ -210,14 +213,17 @@ export const PT: Record<string, Art> = {
       [150, 22, 0.6],
       [226, 72, 0.45],
     ],
-    birds: [126, 74],
+    flyer: ['plane', 126, 74],
     far: <path d="M200 173 C220 160 260 156 300 160 C330 162 350 166 360 168 V173 Z" fill="#E2B07A" />,
     mid: (
       <>
-        <path d="M0 116 C40 112 80 116 110 126 C130 132 146 146 152 173 H0 Z" fill="#E7A35E" />
-        <path d="M0 116 C40 112 80 116 110 126 C80 122 40 120 0 124 Z" fill="#8FA65A" />
+        <path d="M-40 173 C-30 150 -16 122 0 116 C40 112 80 116 110 126 C130 132 146 146 152 173 Z" fill="#E7A35E" />
+        <path
+          d="M-10 120 C-6 117 -3 116 0 116 C40 112 80 116 110 126 C80 122 40 120 0 124 C-4 124 -7 122 -10 120 Z"
+          fill="#8FA65A"
+        />
         <g fill="none" stroke="#CF8A47" stroke-width="2">
-          <path d="M0 138 C40 136 80 140 118 150 M0 152 C36 150 76 154 128 164" />
+          <path d="M-22 138 C10 135 80 140 118 150 M-28 152 C8 149 76 154 128 164" />
         </g>
         <path
           d="M56 173 V160 C56 148 76 148 76 160 V173 Z M94 173 V158 C94 146 112 146 112 158 V173 Z"
@@ -231,9 +237,9 @@ export const PT: Record<string, Art> = {
       <>
         <Sailboat x={262} y={198} />
         <Boat x={212} y={212} hull="#fff" band="#E9A23B" />
-        <path d="M0 226 C60 216 140 218 200 232 C232 262 262 300 286 330 H0 Z" fill="#F6DDB0" />
+        <path d="M-70 330 C-46 300 -24 250 0 226 C60 216 140 218 200 232 C232 262 262 300 286 330 Z" fill="#F6DDB0" />
         <path
-          d="M0 226 C60 216 140 218 200 232 C232 262 262 300 286 330"
+          d="M-70 330 C-46 300 -24 250 0 226 C60 216 140 218 200 232 C232 262 262 300 286 330"
           fill="none"
           stroke="#9FE6DF"
           stroke-width="4"
@@ -251,7 +257,7 @@ export const PT: Record<string, Art> = {
       [270, 58, 0.6],
       [8, 100, 0.4],
     ],
-    birds: [210, 82],
+    flyer: ['paraglider', 210, 82],
     far: (
       <>
         <path d="M216 173 C236 164 268 160 300 162 L322 173 Z" fill="#B97C58" />
@@ -260,13 +266,27 @@ export const PT: Record<string, Art> = {
     ),
     mid: (
       <>
-        <path d="M0 98 C40 94 90 104 130 122 C160 136 184 156 196 173 H0 Z" fill="#B5704B" />
+        <path d="M-44 173 C-30 140 -16 104 0 98 C40 94 90 104 130 122 C160 136 184 156 196 173 Z" fill="#B5704B" />
         <g fill="none" stroke-width="3">
-          <path d="M0 122 C40 120 90 128 132 142" stroke="#9C5B3B" />
-          <path d="M0 140 C46 138 100 146 150 160" stroke="#C98A5E" />
-          <path d="M0 156 C50 154 110 160 168 170" stroke="#9C5B3B" />
+          <path d="M-22 122 C10 119 90 128 132 142" stroke="#9C5B3B" />
+          <path d="M-32 140 C16 137 100 146 150 160" stroke="#C98A5E" />
+          <path d="M-38 156 C20 153 110 160 168 170" stroke="#9C5B3B" />
         </g>
-        <path d="M0 98 C40 94 90 104 130 122 C104 114 60 106 0 110 Z" fill="#7FA05A" />
+        <path
+          d="M-14 106 C-8 100 -4 98 0 98 C40 94 90 104 130 122 C104 114 60 106 0 110 C-6 110 -10 108 -14 106 Z"
+          fill="#7FA05A"
+        />
+        {[
+          [72, 106],
+          [94, 112],
+        ].map(([x, base]) => (
+          <g key={x} transform={`translate(${x} ${base})`}>
+            <path d="M0 0 L9 -20 L18 0 Z" fill="#8B6A3E" />
+            <path d="M3.5 0 L9 -12 L14.5 0 Z" fill="#FFFFFF" />
+            <path d="M7 0 V-5 H11 V0 Z" fill="#C8352E" />
+            <path d="M3.5 0 L9 -12 L14.5 0" fill="none" stroke="#2E5FA8" stroke-width="1.2" />
+          </g>
+        ))}
         <path d="M150 173 C152 162 158 156 164 158 C170 160 172 166 172 173 Z" fill="#A5653F" />
       </>
     ),
@@ -294,11 +314,11 @@ export const PT: Record<string, Art> = {
       [130, 26, 0.7],
       [226, 60, 0.55],
     ],
-    birds: [170, 78],
+    flyer: ['birds', 170, 78],
     far: (
       <>
-        <path d="M0 150 C40 132 100 128 160 134 C220 126 300 128 360 142 V173 H0 Z" fill="#6E9D5E" />
-        <path d="M0 162 C60 152 120 150 180 154 C240 148 300 150 360 158 V173 H0 Z" fill="#5F8E52" />
+        <path d="M0 150 C40 132 100 128 160 134 C220 126 300 130 360 150 V173 H0 Z" fill="#6E9D5E" />
+        <path d="M0 162 C60 152 120 150 180 154 C240 148 300 152 360 162 V173 H0 Z" fill="#5F8E52" />
       </>
     ),
     mid: (
@@ -313,7 +333,7 @@ export const PT: Record<string, Art> = {
     ),
     near: (
       <>
-        <path d="M0 214 C100 206 220 210 360 204 V330 H0 Z" fill="#6C9F58" />
+        <path d="M0 214 C100 206 220 210 360 214 V330 H0 Z" fill="#6C9F58" />
         {(
           [
             [24, 222, '#6D8FE0'],

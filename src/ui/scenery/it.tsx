@@ -12,10 +12,10 @@ export const IT: Record<string, Art> = {
       [206, 26, 0.75],
       [300, 62, 0.55],
     ],
-    birds: [244, 92],
+    flyer: ['gulls', 244, 92],
     far: (
       <>
-        <path d="M0 166 C60 160 120 162 180 164 C240 160 300 162 360 158 V173 H0 Z" fill="#E7A796" />
+        <path d="M0 166 C60 160 120 162 180 164 C240 160 300 162 360 166 V173 H0 Z" fill="#E7A796" />
         <path d="M28 165 C28 153 48 153 48 165 Z M37 155 V150 H39 V155 Z" fill="#DC9886" />
       </>
     ),
@@ -89,10 +89,10 @@ export const IT: Record<string, Art> = {
       [150, 24, 0.7],
       [240, 54, 0.5],
     ],
-    birds: [190, 70],
+    flyer: ['birds', 190, 70],
     far: (
       <>
-        <path d="M0 160 C50 150 110 156 160 150 C210 146 280 152 360 146 V173 H0 Z" fill="#E8C4A0" />
+        <path d="M0 160 C50 150 110 156 160 150 C210 146 280 152 360 160 V173 H0 Z" fill="#E8C4A0" />
         <path d="M66 160 V152 H94 V160 Z M64 152 C64 132 96 132 96 152 Z M78 134 V128 H82 V134 Z" fill="#DCC2AB" />
         <circle cx="80" cy="127" r="1.5" fill="#DCC2AB" />
       </>
@@ -120,7 +120,7 @@ export const IT: Record<string, Art> = {
     ),
     near: (
       <>
-        <path d="M0 214 C90 206 200 212 360 206 V330 H0 Z" fill="#C49460" />
+        <path d="M0 214 C90 206 200 212 360 214 V330 H0 Z" fill="#C49460" />
         <StonePine x={92} y={230} h={60} w={76} />
         <Cypress x={268} y={232} h={50} />
         <Cypress x={279} y={234} h={40} />
@@ -137,10 +137,10 @@ export const IT: Record<string, Art> = {
       [140, 24, 0.65],
       [236, 50, 0.5],
     ],
-    birds: [210, 70],
+    flyer: ['balloon', 210, 70],
     far: (
       <>
-        <path d="M0 152 C60 138 120 142 180 150 C240 136 300 140 360 148 V173 H0 Z" fill="#B9A37A" />
+        <path d="M0 152 C60 138 120 142 180 150 C240 136 300 140 360 152 V173 H0 Z" fill="#B9A37A" />
         <Cypress x={36} y={150} h={18} />
         <Cypress x={250} y={144} h={16} />
         <Cypress x={262} y={145} h={13} />
@@ -153,7 +153,7 @@ export const IT: Record<string, Art> = {
           fill="#E8C38E"
         />
         <path
-          d="M0 156 H20 L32 152 L44 156 H80 L92 156 M206 154 L219 150 L232 154 M270 152 L300 148 L330 152"
+          d="M0 156 H20 L32 152 L44 156 H80 L92 156 M206 154 L219 150 L232 154 M270 152 L300 148 L330 152 L360 156"
           fill="none"
           stroke="#D07D50"
           stroke-width="2.4"
@@ -225,7 +225,7 @@ export const IT: Record<string, Art> = {
   },
 
   milano: {
-    sky: ['#9EC6EB', '#F6F1E8'],
+    sky: ['#7FB4E6', '#E6EDF4'],
     sun: { x: 64, y: 60, r: 17, color: '#FFD86B' },
     land: ['#BFB4A3', '#DDD3C3'],
     clouds: [
@@ -233,17 +233,17 @@ export const IT: Record<string, Art> = {
       [270, 48, 0.6],
       [8, 94, 0.45],
     ],
-    birds: [96, 84],
+    flyer: ['birds', 96, 84],
     far: (
       <>
-        <path d="M0 173 V156 H40 V148 H70 V156 H290 V150 H320 V158 H360 V173 Z" fill="#D9D0C2" />
-        <g fill="#EDE4DD">
+        <path d="M0 173 V156 H40 V148 H70 V156 H290 V150 H320 V156 H360 V173 Z" fill="#D9D0C2" />
+        <g fill="#E0D3CA">
           {[126, 142, 158, 202, 218, 234].map((x, i) => (
             <path key={x} d={`M${x - 3} 128 L${x} ${96 - (i % 3) * 6} L${x + 3} 128 Z`} />
           ))}
         </g>
-        <path d="M176 128 L180 46 L184 128 Z" fill="#E9DFD8" />
-        <path d="M178 46 h4 l-2 -7 z" fill="#E2B53C" />
+        <path d="M176 128 L180 46 L184 128 Z" fill="#DCCEC5" />
+        <path d="M177 47 h6 l-3 -10 z" fill="#E2B53C" />
       </>
     ),
     mid: (
@@ -253,8 +253,8 @@ export const IT: Record<string, Art> = {
           const top = [124, 116, 110, 110, 116, 124][i]!;
           return (
             <g key={x}>
-              <rect x={x} y={top} width="6" height={173 - top} fill="#E9DED6" />
-              <path d={`M${x} ${top} L${x + 3} ${top - 18} L${x + 6} ${top} Z`} fill="#E9DED6" />
+              <rect x={x} y={top} width="6" height={173 - top} fill="#DED1C8" />
+              <path d={`M${x} ${top} L${x + 3} ${top - 18} L${x + 6} ${top} Z`} fill="#DED1C8" />
               <circle cx={x + 3} cy={top - 19} r="1.4" fill="#D9CBC0" />
             </g>
           );
@@ -295,7 +295,7 @@ export const IT: Record<string, Art> = {
       [262, 22, 0.55],
       [8, 96, 0.45],
     ],
-    birds: [200, 78],
+    flyer: ['gulls', 200, 78],
     far: (
       <>
         <path
@@ -310,7 +310,7 @@ export const IT: Record<string, Art> = {
     ),
     mid: (
       <>
-        <path d="M214 173 C222 150 238 124 262 108 C290 92 330 90 360 96 V173 Z" fill="#B98E68" />
+        <path d="M214 173 C222 150 238 124 262 108 C290 92 330 90 360 96 C380 100 396 130 404 173 Z" fill="#B98E68" />
         {(
           [
             [232, 158, 16, 15, '#F4B6A6'],
@@ -342,7 +342,7 @@ export const IT: Record<string, Art> = {
       <>
         <Boat x={108} y={204} hull="#fff" band="#2E86C1" />
         <Boat x={168} y={214} s={0.8} hull="#2E86C1" band="#fff" />
-        <path d="M200 330 C220 250 300 230 360 226 V330 Z" fill="#C9B9A2" />
+        <path d="M200 330 C220 250 300 230 360 226 H420 C440 226 450 262 456 330 Z" fill="#C9B9A2" />
         <StonePine x={30} y={236} h={62} w={72} />
       </>
     ),
@@ -356,7 +356,7 @@ export const IT: Record<string, Art> = {
       [130, 22, 0.55],
       [216, 52, 0.5],
     ],
-    birds: [176, 84],
+    flyer: ['birds', 176, 84],
     far: (
       <>
         <path d="M0 173 L62 116 C66 112 72 112 76 116 L150 173 Z" fill="#9A8C8C" />
@@ -390,7 +390,7 @@ export const IT: Record<string, Art> = {
     near: (
       <>
         <Boat x={128} y={200} hull="#F2C230" band="#2E86C1" />
-        <path d="M0 222 C80 212 200 216 360 208 V330 H0 Z" fill="#F2D9A8" />
+        <path d="M0 222 C80 212 200 216 360 222 V330 H0 Z" fill="#F2D9A8" />
         {[90, 140].map((x, i) => (
           <g key={x}>
             <path d={`M${x} 234 V210`} stroke="#8B5E3C" stroke-width="1.6" />

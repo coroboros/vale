@@ -180,7 +180,7 @@ export function Porthole({ stops }: { stops: Stop[] }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>(still ? 'stay' : 'arrive');
   const [playing, setPlaying] = useState(!still && !single);
-  // One trip's window does not fly on, but its clouds drift and its boats rock until paused.
+  // One trip's window does not fly on to another place, but it flies over this one until paused.
   const [calm, setCalm] = useState(false);
   const alive = single ? !still && !calm : playing;
   const [hop, setHop] = useState(0);
@@ -257,7 +257,7 @@ export function Porthole({ stops }: { stops: Stop[] }) {
       >
         <span class="porthole-view">
           <span key={`${index}-${stop.place}-${stop.lang}`} class="porthole-land">
-            <Scenery place={stop.scene} tall />
+            <Scenery place={stop.scene} tall fly />
           </span>
           <Wing />
           <CloudBank />

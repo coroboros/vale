@@ -103,6 +103,23 @@ all of it stops for people who ask for less motion. Drawings that keep moving, t
 journey, a trip's window in « Mes voyages » and the pages' drawing, carry the same pause button
 (`MotionToggle`): anything that moves for more than five seconds must offer one (WCAG 2.2.2).
 
+The porthole flies (20 November 2026). Its clouds, land and boats are drawn three times, one width
+apart, and slide by that width in a loop, the nearer the faster (a turn takes 140 s for the
+clouds, 120 s far off, 72 s in the middle, 44 s up close), as from a plane window: the place's
+landmarks come round one after the other, New York's statue included. So a scene's continuous
+lines end at x = 360 where they start at x = 0: all 23 scenes were checked on their unrolled
+strips, and the cliffs, quays and beaches that met an edge now slope into the sea past it. The
+sky carries one traveller per scene, from seven kinds in `scenery/parts.tsx` sharing three
+movements: birds, gulls or storks fly past, a balloon or a paraglider drifts, a plane with its
+banner or a helicopter crosses the whole window. Pausing stops all of it on the composed picture,
+and reduced motion never starts it.
+
+New York is its statue, on her island with the skyline behind and the orange ferry in front;
+Brooklyn Bridge went, as its deck could not loop. Weak scenes got a landmark or contrast: Palma's
+cathedral across the Balearic bay, the statue on Monte Urgull and a larger Santa Clara in La
+Concha, Santana houses on Madeira's cliff, warmer stone for Madrid's gate, a bluer sky and a
+golden Madonnina for Milan.
+
 ## Photos
 
 The last step of onboarding (« Imagine ») shows the chosen destination in a photo: the landmark

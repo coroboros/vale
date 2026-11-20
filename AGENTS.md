@@ -119,7 +119,8 @@ kit, the screens), and plan the smallest change. Then:
   trip, `screens/Landing.tsx`), `Team.tsx` (travellers sharing a phone), `FromBernard.tsx` (his
   latest postcard), `card-image.ts` (the survival card as a picture to send), `Porthole.tsx` (the
   welcome flight and the trip being chosen), `scenery/` (a drawing per destination, one module per
-  country, shared pieces in `parts.tsx`; `pictureOf` in `content/` picks a trip's drawing and photo,
+  country, shared pieces and the sky's travellers in `parts.tsx`; a flying porthole loops each
+  layer, so continuous lines end at x = 360 where they start; `pictureOf` in `content/` picks a trip's drawing and photo,
   « Ailleurs » its country's emblem), `themes.ts` (colours per country, from the trip's `flagOf`,
   contrast checked by a test), `photos.json` (one photo per destination with its credit, written by
   `brand/photos.py`; files in `public/photos/`).

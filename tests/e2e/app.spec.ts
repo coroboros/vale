@@ -1272,6 +1272,16 @@ test('Bernard blinks while the journey plays, and not once it is paused', async 
   expect(await blinks(page)).toBe(0);
 });
 
+test('the window flies over each place: its land slides past in a loop until paused', async ({ page }) => {
+  await page.goto('./');
+  const land = page.locator('.porthole .scn-mid > .scn-pan');
+  await expect(land.locator(':scope > g')).toHaveCount(3);
+  const moving = () => land.evaluate(el => el.getAnimations().length);
+  await expect.poll(moving).toBe(1);
+  await page.getByRole('button', { name: 'Mettre le voyage en pause' }).click();
+  await expect.poll(moving).toBe(0);
+});
+
 test('the welcome window stays still for people who ask for less motion', async ({ page }) => {
   await page.clock.install();
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -1284,6 +1294,7 @@ test('the welcome window stays still for people who ask for less motion', async 
   expect(await pupils(page)).toEqual(rest);
   expect(await blinks(page)).toBe(0);
   await expect(page.locator('.porthole')).toHaveAttribute('data-playing', 'false');
+  expect(await page.locator('.porthole .scn-mid > .scn-pan').evaluate(el => el.getAnimations().length)).toBe(0);
   await expect(page.getByRole('button', { name: 'Mettre le voyage en pause' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Voler vers la destination suivante' }).click();
   await expect(page.locator('.porthole-bubble')).toHaveText('Ciao, Roma!');

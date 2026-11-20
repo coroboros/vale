@@ -234,6 +234,9 @@ Details in each day's commits and in docs/.
 - 20 Nov 2026. **Bernard's beach**: XP become shells, home's top lighter, themed icons where they
   stay as distinct as before (docs/BRAND.md, docs/UX.md); rewards beyond the app studied
   (docs/BUSINESS.md).
+- 20 Nov 2026. **The porthole flies**: each place's land slides past in a loop, seven kinds of sky
+  traveller instead of birds everywhere, New York with its statue, the weak scenes strengthened
+  (docs/BRAND.md, « Motion »).
 
 ## Working with Claude Code on your Mac
 

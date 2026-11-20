@@ -8,7 +8,8 @@ export interface Art {
   land?: [near: string, horizon: string];
   clouds: [x: number, y: number, scale: number][];
   cloudColor?: string;
-  birds?: [x: number, y: number];
+  /** What crosses the sky; at (x, y) when the scene stands still. */
+  flyer?: [kind: Flyer, x: number, y: number];
   far: ComponentChildren;
   mid: ComponentChildren;
   near: ComponentChildren;
@@ -215,6 +216,109 @@ export function Tram({
         <circle cx="18" cy="-3" r="4.5" />
         <circle cx="66" cy="-3" r="4.5" />
       </g>
+    </g>
+  );
+}
+
+/**
+ * What crosses a scene's sky, one per scene. Each kind keeps one animation of the porthole's three:
+ * birds fly past, floaters drift, engines cross the whole window.
+ */
+const FLYERS = {
+  birds: {
+    move: 'scn-birds',
+    draw: (
+      <g fill="none" stroke="#3B4A6B" stroke-width="1.3" stroke-linecap="round" opacity="0.7">
+        <path d="M0 0 q3.5 -3.5 7 0 q3.5 -3.5 7 0" />
+        <path d="M16 -8 q3 -3 6 0 q3 -3 6 0" />
+        <path d="M8 -15 q2.5 -2.5 5 0 q2.5 -2.5 5 0" />
+      </g>
+    ),
+  },
+  gulls: {
+    move: 'scn-birds',
+    draw: (
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+        {['#5B6B85', '#FFFFFF'].map((color, i) => (
+          <g key={color} stroke={color} stroke-width={i ? 1.6 : 3}>
+            <path d="M0 0 q4 -5 8 -1 q4 -4 9 1" />
+            <path d="M20 -10 q3 -4 7 -1 q3 -3 7 1" />
+          </g>
+        ))}
+      </g>
+    ),
+  },
+  storks: {
+    move: 'scn-birds',
+    draw: (
+      <g stroke-linecap="round">
+        {[
+          [0, 0],
+          [22, -12],
+        ].map(([x, y]) => (
+          <g key={x} transform={`translate(${x} ${y})`}>
+            <path d="M1 1.4 L8 0.4 M27 -1.4 L31 -0.8" stroke="#E2553F" stroke-width="1.1" />
+            <path d="M19 -0.5 L27 -1.5" stroke="#FFFFFF" stroke-width="1.6" />
+            <ellipse cx="14" cy="0" rx="6" ry="2.2" fill="#FFFFFF" />
+            <path d="M10 -1 L14 -11 L19 -10 L16 -1 Z" fill="#FFFFFF" />
+            <path d="M14 -11 L19 -10 L18 -7.5 L15 -8 Z" fill="#26303F" />
+          </g>
+        ))}
+      </g>
+    ),
+  },
+  balloon: {
+    move: 'scn-float',
+    draw: (
+      <g>
+        <path d="M-9 -12 a9 9.5 0 1 1 18 0 c0 5 -5 8 -7 11 h-4 c-2 -3 -7 -6 -7 -11 z" fill="#E2553F" />
+        <path d="M-3 -21 C-6 -14 -5 -6 -2 -1 M3 -21 C6 -14 5 -6 2 -1" fill="none" stroke="#FFD15C" stroke-width="1.6" />
+        <path d="M-2 -1 V2 M2 -1 V2" stroke="#6B4A2E" stroke-width="0.6" />
+        <rect x="-2.5" y="2" width="5" height="4" rx="0.8" fill="#8B5E3C" />
+      </g>
+    ),
+  },
+  paraglider: {
+    move: 'scn-float',
+    draw: (
+      <g>
+        <path d="M-14 -10 Q0 -18 14 -10 Q0 -14 -14 -10 Z" fill="#F2B33D" />
+        <path d="M-13 -10 L0 4 M13 -10 L0 4" stroke="#3B4A6B" stroke-width="0.5" />
+        <circle cx="0" cy="5.5" r="1.8" fill="#3B4A6B" />
+      </g>
+    ),
+  },
+  plane: {
+    move: 'scn-cross',
+    draw: (
+      <g>
+        <path d="M18 -2 H22" stroke="#3B4A6B" stroke-width="0.6" />
+        <rect x="22" y="-5.5" width="30" height="7" rx="1" fill="#FFF6E0" stroke="#D9C9A8" stroke-width="0.6" />
+        <path d="M0 0 L3 -2.5 H14 L17 -6 H19 L18 -2 V0 Z" fill="#FFFFFF" stroke="#3B4A6B" stroke-width="0.6" />
+        <path d="M7 -1.5 L10 3 H12 L11 -1.5 Z" fill="#C9D4E2" />
+      </g>
+    ),
+  },
+  helicopter: {
+    move: 'scn-cross',
+    draw: (
+      <g stroke="#3B4A6B" stroke-linecap="round">
+        <path d="M-4 -6.5 H18 M7 -6.5 V-4 M12 -1 H24 M24 -3.5 V1.5" stroke-width="1.2" />
+        <ellipse cx="7" cy="0" rx="6.5" ry="4" fill="#F2F4F7" stroke-width="0.8" />
+        <path d="M2.5 -1.5 A4.5 3 0 0 1 8 -3.4 V0 H2.6 Z" fill="#8FC3EE" stroke="none" />
+        <path d="M2 5 H12" stroke-width="1" />
+      </g>
+    ),
+  },
+} satisfies Record<string, { move: string; draw: ComponentChildren }>;
+
+export type Flyer = keyof typeof FLYERS;
+
+export function FlyerAt({ kind, x, y }: { kind: Flyer; x: number; y: number }) {
+  const { move, draw } = FLYERS[kind];
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <g class={move}>{draw}</g>
     </g>
   );
 }

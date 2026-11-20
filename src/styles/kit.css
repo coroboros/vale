@@ -721,6 +721,35 @@
     animation: scn-birds 13s linear infinite;
   }
 
+  /* A flying porthole (Scenery's `fly`): the nearer the layer, the faster it passes. */
+  [data-playing="true"] .scn-pan {
+    animation: scn-pan var(--pan) linear infinite;
+  }
+
+  .scn-clouds {
+    --pan: 140s;
+  }
+
+  .scn-far {
+    --pan: 120s;
+  }
+
+  .scn-mid {
+    --pan: 72s;
+  }
+
+  .scn-near {
+    --pan: 44s;
+  }
+
+  [data-playing="true"] .scn-float {
+    animation: scn-float 9s ease-in-out infinite alternate;
+  }
+
+  [data-playing="true"] .scn-cross {
+    animation: scn-cross 30s linear infinite;
+  }
+
   @keyframes scn-drift {
     to {
       translate: 16px 0;
@@ -738,6 +767,27 @@
     to {
       translate: 0 1.6px;
       rotate: 1.5deg;
+    }
+  }
+
+  @keyframes scn-pan {
+    to {
+      translate: -360px 0;
+    }
+  }
+
+  @keyframes scn-float {
+    to {
+      translate: -18px -8px;
+    }
+  }
+
+  @keyframes scn-cross {
+    from {
+      translate: 260px 0;
+    }
+    to {
+      translate: -460px 0;
     }
   }
 

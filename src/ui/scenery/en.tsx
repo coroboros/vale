@@ -52,7 +52,7 @@ export const EN: Record<string, Art> = {
       [214, 44, 0.6],
       [296, 26, 0.5],
     ],
-    birds: [178, 76],
+    flyer: ['birds', 178, 76],
     far: (
       <>
         <path d="M0 173 V160 H16 V150 H30 V156 H44 V146 H58 V154 H100 V150 H116 V158 H132 V173 Z" fill="#C5D2DE" />
@@ -97,8 +97,8 @@ export const EN: Record<string, Art> = {
     ),
     near: (
       <>
-        <path d="M0 214 C120 208 240 210 360 206 V330 H0 Z" fill="#B7B0A3" />
-        <path d="M0 214 C120 208 240 210 360 206" fill="none" stroke="#DCD6CB" stroke-width="4" />
+        <path d="M0 214 C120 208 240 210 360 214 V330 H0 Z" fill="#B7B0A3" />
+        <path d="M0 214 C120 208 240 210 360 214" fill="none" stroke="#DCD6CB" stroke-width="4" />
         <Lamp x={40} base={214} />
         <Lamp x={318} base={208} />
         <Bus x={136} y={246} />
@@ -115,7 +115,7 @@ export const EN: Record<string, Art> = {
       [214, 52, 0.6],
       [296, 84, 0.5],
     ],
-    birds: [170, 68],
+    flyer: ['gulls', 170, 68],
     far: (
       <path
         d="M226 173 C246 150 268 128 294 120 C310 116 326 124 336 136 C346 146 352 160 360 168 V173 Z"
@@ -172,7 +172,7 @@ export const EN: Record<string, Art> = {
     ),
     near: (
       <>
-        <path d="M0 212 C120 204 240 208 360 202 V330 H0 Z" fill="#7FA36A" />
+        <path d="M0 212 C120 204 240 208 360 212 V330 H0 Z" fill="#7FA36A" />
         <RoundTree x={38} y={230} r={18} />
         <RoundTree x={292} y={228} r={16} color="#5A8E5E" />
         <Lamp x={332} base={206} />
@@ -189,7 +189,7 @@ export const EN: Record<string, Art> = {
       [258, 46, 0.7],
       [18, 94, 0.5],
     ],
-    birds: [214, 72],
+    flyer: ['gulls', 214, 72],
     far: (
       <>
         <path d="M200 173 V40 L201 40 L202 173 Z" fill="#C9CFD4" />
@@ -278,51 +278,51 @@ export const EN: Record<string, Art> = {
       [130, 20, 0.65],
       [220, 62, 0.5],
     ],
-    birds: [170, 72],
+    flyer: ['helicopter', 170, 72],
     far: (
       <>
         <path
-          d="M90 173 V140 H100 V128 H112 V146 H140 V122 H152 V138 H162 V150 H196 V130 H210 V142 H228 V118 H240 V136 H256 V146 H278 V132 H290 V150 H330 V140 H344 V156 H360 V173 Z"
+          d="M168 173 V150 H180 V138 H192 V152 H206 V132 H218 V146 H252 V136 H262 V150 H290 V128 H300 V144 H336 V140 H346 V156 H352 V173 Z"
           fill="#B6C3D2"
         />
-        <rect x="104" y="118" width="28" height="55" fill="#A4B3C4" />
-        <rect x="110" y="104" width="16" height="14" fill="#A4B3C4" />
-        <rect x="114" y="92" width="8" height="12" fill="#A4B3C4" />
-        <path d="M117.4 92 V62 H118.6 V92 Z" fill="#8E9DB0" />
-        <rect x="168" y="110" width="16" height="63" fill="#A9B7C7" />
+        <g fill="#A4B3C4">
+          <rect x="222" y="118" width="24" height="55" />
+          <rect x="227" y="104" width="14" height="14" />
+          <rect x="230" y="94" width="8" height="10" />
+        </g>
+        <path d="M233.4 94 V66 H234.6 V94 Z" fill="#8E9DB0" />
+        <rect x="266" y="112" width="14" height="61" fill="#A9B7C7" />
         <g fill="#D9DEE4">
-          <path d="M168 110 C168 102 184 102 184 110 Z" />
-          <path d="M170 102 C170 96 182 96 182 102 Z" />
-          <path d="M172 96 C172 91 180 91 180 96 Z" />
+          <path d="M266 112 C266 104 280 104 280 112 Z" />
+          <path d="M268 105 C268 99 278 99 278 105 Z" />
+          <path d="M270 99 C270 94 276 94 276 99 Z" />
         </g>
-        <path d="M175.4 91 L176 70 L176.6 91 Z" fill="#C3CAD3" />
-        <path d="M292 173 L296 76 H304 L308 173 Z" fill="#AEBFD2" />
-        <path d="M299.6 76 V60 H300.4 V76 Z" fill="#8E9DB0" />
-        <g fill="#5FA894">
-          <rect x="336" y="160" width="6" height="12" />
-          <path d="M339 160 V150 M339 152 L344 145" stroke="#5FA894" stroke-width="2" />
-        </g>
+        <path d="M272.4 94 L273 74 L273.6 94 Z" fill="#C3CAD3" />
+        <path d="M306 173 L310 80 H318 L322 173 Z" fill="#AEBFD2" />
+        <path d="M313.6 80 V62 H314.4 V80 Z" fill="#8E9DB0" />
       </>
     ),
     mid: (
       <>
-        <path d="M0 196 C80 190 200 194 360 186" fill="none" stroke="#5F6B7A" stroke-width="3" />
-        <path d="M66 112 C120 186 200 196 360 140" fill="none" stroke="#5F6B7A" stroke-width="1.6" />
-        <path d="M66 112 C40 150 20 170 0 176" fill="none" stroke="#5F6B7A" stroke-width="1.6" />
-        <g stroke="#5F6B7A" stroke-width="0.8">
-          {Array.from({ length: 14 }, (_, i) => {
-            const x = 100 + i * 18;
-            const t = (x - 66) / 294;
-            const cable = (1 - t) ** 3 * 112 + 3 * (1 - t) ** 2 * t * 186 + 3 * (1 - t) * t * t * 196 + t ** 3 * 140;
-            return <path key={x} d={`M${x} ${cable} V${196 - (x / 360) * 10}`} />;
-          })}
+        <path d="M58 196 Q118 180 178 196 Z" fill="#7DAA76" />
+        <path d="M92 190 L98 182 H138 L144 190 Z" fill="#C9B79A" />
+        <path d="M104 182 V150 H132 V182 Z" fill="#C9B79A" />
+        <path d="M106 150 V146 H130 V150 Z M102 153 H134 V156 H102 Z" fill="#B5A386" />
+        <g fill="#5FA894">
+          <path d="M109 146 L113 106 Q118 98 123 106 L127 146 Z" />
+          <circle cx="118" cy="94" r="4.5" />
         </g>
-        <path d="M52 200 V108 L58 100 H74 L80 108 V200 Z" fill="#C9B79A" />
-        <g fill="#7F8FA3">
-          <path d="M56 160 V128 C56 120 62 118 64 116 C66 118 66 124 66 128 V160 Z" />
-          <path d="M68 160 V128 C68 124 68 118 70 116 C72 118 76 120 76 128 V160 Z" />
+        <path d="M118 108 L117 146" stroke="#7CC0A9" stroke-width="1.2" />
+        <g stroke="#5FA894" stroke-linecap="round">
+          <path
+            d="M114.5 91 L111.5 87 M116 90 L114.5 85.5 M118 89.5 V84.5 M120 90 L121.5 85.5 M121.5 91 L124.5 87"
+            stroke-width="1.6"
+          />
+          <path d="M114 104 L106.5 77" stroke-width="4.5" />
         </g>
-        <path d="M50 108 H82" stroke="#B5A386" stroke-width="2" />
+        <path d="M106 77 L105 71" stroke="#4E8E7B" stroke-width="3" stroke-linecap="round" />
+        <path d="M105 72 C102 68 103.5 64 105 61 C106.5 64 108 68 105 72 Z" fill="#F2B33D" />
+        <path d="M122 110 L129 112 L127 126 L120 124 Z" fill="#7CC0A9" />
       </>
     ),
     near: <Ferry x={244} y={226} />,
