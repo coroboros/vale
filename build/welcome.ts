@@ -20,6 +20,7 @@ const SLOT = '<!--welcome-->';
 function hero(counts: boolean): string {
   return `
       <section class="wp-hero ob-welcome" aria-label="${t(BRAND.name)}">
+        <div class="wp-clouds" data-island="clouds" aria-hidden="true"></div>
         <div class="welcome-art">
           <div class="porthole-slot" data-island="journey"></div>
           <p class="porthole-hint">
@@ -82,7 +83,7 @@ function postcards(): string {
     return postcard(course, regionId);
   }).join('');
   return `
-      <section class="wp-section" aria-labelledby="wp-cafe">
+      <section class="wp-section wp-postcards" aria-labelledby="wp-cafe">
         <h2 id="wp-cafe">${t('Ta première phrase au café')}</h2>
         <p class="wp-lead">${t('Écoute-la, et lis sa prononciation écrite à la française.')}</p>
         <ul class="wp-cards">${cards}
@@ -102,7 +103,8 @@ const STEPS: [tab: string, title: string, text: string][] = [
 ];
 
 const steps = () => `
-      <section class="wp-section" aria-labelledby="wp-how">
+      <section class="wp-section wp-how" aria-labelledby="wp-how">
+        <div class="wp-route" data-island="route" aria-hidden="true"></div>
         <h2 id="wp-how">${t('Comment ça marche')}</h2>
         <ol class="wp-steps">${STEPS.map(
           ([tab, title, text]) => `
@@ -143,7 +145,8 @@ export const welcomeHtml = ({
   counts: boolean;
 }) => `<div id="welcome" class="welcome-page" style="${themeStyle(COURSES[0]!.flag)}">
       <main class="wp-main">${hero(counts)}${postcards()}${steps()}${boarding()}
-      </main>${footer()}
+      </main>
+      <div class="wp-shore" data-island="shore" aria-hidden="true"></div>${footer()}
     </div>`;
 
 export function welcomePage(): Plugin {

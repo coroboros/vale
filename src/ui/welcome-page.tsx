@@ -7,6 +7,7 @@
 import { type ComponentChildren, render } from 'preact';
 import { reachStep } from '../actions';
 import { arrivedFrom } from '../counts';
+import { reducedMotion } from '../platform/env';
 import { db } from '../state/store';
 import { App, TABS } from './App';
 import { CountsLink } from './CountsChoice';
@@ -15,12 +16,19 @@ import { Say } from './kit';
 import { Mascot } from './Mascot';
 import { JOURNEY, Porthole } from './Porthole';
 import { Stamp } from './Stamp';
+import { Clouds, Route, Shore } from './scenery/WelcomeScenes';
 import { fromWelcomePage } from './screens/Onboarding';
 
 const root = document.documentElement;
 
 function islands(page: HTMLElement, name: string, content: (data: DOMStringMap) => ComponentChildren) {
   for (const slot of page.querySelectorAll<HTMLElement>(`[data-island="${name}"]`)) render(content(slot.dataset), slot);
+}
+
+/** The page fades into the app and back (styles/welcome.css), where the browser can and motion is welcome. */
+function swap(update: () => void) {
+  if (document.startViewTransition && !reducedMotion()) document.startViewTransition(update);
+  else update();
 }
 
 function welcome(page: HTMLElement, app: HTMLElement) {
@@ -35,6 +43,9 @@ function welcome(page: HTMLElement, app: HTMLElement) {
   });
   // Only his eyes move, after the pointer: a bob or a blink would move on with nothing to pause it (WCAG 2.2.2).
   islands(page, 'bernard', () => <Mascot size={132} mood="happy" blinks={false} decorative />);
+  islands(page, 'clouds', () => <Clouds />);
+  islands(page, 'route', () => <Route />);
+  islands(page, 'shore', () => <Shore />);
   reachStep('welcome', arrivedFrom());
 
   // The page leaves the document while the app shows, so only one of them is ever there to read.
@@ -42,24 +53,27 @@ function welcome(page: HTMLElement, app: HTMLElement) {
     button.addEventListener('click', () => {
       const y = scrollY;
       fromWelcomePage.value = {
-        back: () => {
-          fromWelcomePage.value = null;
-          render(null, app);
-          app.before(page);
-          delete root.dataset.view;
-          scrollTo(0, y);
-          button.focus();
-        },
+        back: () =>
+          swap(() => {
+            fromWelcomePage.value = null;
+            render(null, app);
+            app.before(page);
+            delete root.dataset.view;
+            scrollTo(0, y);
+            button.focus();
+          }),
       };
-      page.remove();
-      root.dataset.view = 'app';
-      render(<App />, app);
-      scrollTo(0, 0);
-      const question = app.querySelector<HTMLElement>('h1');
-      if (question) {
-        question.tabIndex = -1;
-        question.focus();
-      }
+      swap(() => {
+        page.remove();
+        root.dataset.view = 'app';
+        render(<App />, app);
+        scrollTo(0, 0);
+        const question = app.querySelector<HTMLElement>('h1');
+        if (question) {
+          question.tabIndex = -1;
+          question.focus();
+        }
+      });
     });
 }
 

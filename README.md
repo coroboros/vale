@@ -13,9 +13,11 @@ connected, the app and its translation service are served by one Worker; see RUN
   cabin window flying to Barcelona, Rome, Lisbon, London, Andalusia and Venice. The view follows
   your finger or your mouse, a tap flies on, and Bernard says hello in the local language. Further
   down, a postcard from each language, with a real photo of the place and the first phrase to say
-  at the café, to hear and with its pronunciation, then how it works. The installed app opens on
-  its own short welcome, and once you have set off, on your trip. Every destination has its own
-  drawing, from the Puerta de Alcalá to the Brooklyn Bridge.
+  at the café, to hear and with its pronunciation, then how it works. The page is a day of travel
+  as you scroll: dawn round the window, a plane along its route, sunset on Bernard's beach where
+  the suitcase rolls up to the parasol, all still for people who ask for less motion. The
+  installed app opens on its own short welcome, and once you have set off, on your trip. Every
+  destination has its own drawing, from the Puerta de Alcalá to the Statue of Liberty.
 - **Trips, not a course.** You pick a destination and a departure date. Plan as many trips as you
   like, two in a row or several languages at once, even two in the same language: the home screen
   follows the one you are preparing, and offers the next one once a trip has begun. The welcome

@@ -10,19 +10,8 @@ import { useId } from 'preact/hooks';
 import { EN } from './en';
 import { ES } from './es';
 import { IT } from './it';
-import { type Art, FlyerAt, Shimmer } from './parts';
+import { type Art, Cloud, FlyerAt, Shimmer } from './parts';
 import { PT } from './pt';
-
-const Cloud = ({ x, y, s }: { x: number; y: number; s: number }) => (
-  <g transform={`translate(${x} ${y}) scale(${s})`}>
-    <g class="scn-drift">
-      <circle cx="14" cy="15" r="10" />
-      <circle cx="31" cy="10" r="13" />
-      <circle cx="49" cy="15" r="10" />
-      <rect x="4" y="14" width="56" height="11" rx="5.5" />
-    </g>
-  </g>
-);
 
 const strip = (layer: ComponentChildren) => (
   <g class="scn-pan">

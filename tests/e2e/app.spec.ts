@@ -152,10 +152,17 @@ async function onboard(
   );
 }
 
-/** Looping animations excepted, so checks see the final look. */
+/** Looping animations and those tied to the scroll excepted, so checks see the final look. */
 async function settle(page: Page) {
   await page.waitForFunction(() =>
-    document.getAnimations().every(a => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity),
+    document
+      .getAnimations()
+      .every(
+        a =>
+          a.playState !== 'running' ||
+          a.timeline !== document.timeline ||
+          a.effect?.getTiming().iterations === Infinity,
+      ),
   );
 }
 
@@ -355,6 +362,44 @@ test('the welcome page sends a postcard from each language: its photo and credit
     .toEqual(['Un café con leche']);
   await cards.first().getByRole('link', { name: 'Commander un café en espagnol' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comment commander un café en espagnol ?');
+});
+
+test('the welcome page’s day follows the scroll, away from the words, and holds still for reduced motion', async ({
+  page,
+}) => {
+  const scrollDriven = () =>
+    page.evaluate(() => document.getAnimations().filter(a => a.timeline && a.timeline !== document.timeline).length);
+  /** How far above the horizon the sun's centre is, in suns. */
+  const sunHeight = () =>
+    page.evaluate(() => {
+      const sun = document.querySelector('.shore-sun')!.getBoundingClientRect();
+      const sky = document.querySelector('.shore-sky')!.getBoundingClientRect();
+      return Math.round(((sky.bottom - (sun.top + sun.height / 2)) / sun.height) * 10) / 10;
+    });
+  const toShore = (above: number) =>
+    page.evaluate(px => {
+      const shore = document.querySelector('.wp-shore')!.getBoundingClientRect();
+      scrollTo(0, scrollY + shore.top - innerHeight + px);
+    }, above);
+
+  await page.goto('./');
+  // Drawings only: hidden from screen readers, and the clouds let taps through to the window.
+  for (const scene of await page.locator('.wp-clouds, .wp-route, .wp-shore').all())
+    await expect(scene).toHaveAttribute('aria-hidden', 'true');
+  await expect(page.locator('.wp-clouds')).toHaveCSS('pointer-events', 'none');
+  expect(await scrollDriven()).toBeGreaterThan(0);
+  // The sun sets as the beach comes into view, and is on the horizon at the foot of the page.
+  await toShore(10);
+  await expect.poll(sunHeight).toBeGreaterThan(1);
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  await expect.poll(sunHeight).toBe(0);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.reload();
+  expect(await scrollDriven()).toBe(0);
+  expect(await page.locator('.wp-bernard').evaluate(el => el.getAnimations().length)).toBe(0);
+  await toShore(40);
+  await expect.poll(sunHeight).toBe(0);
 });
 
 test('the legal notice and the privacy page are a tap away: from the welcome page, a page beside the app, « Moi »', async ({

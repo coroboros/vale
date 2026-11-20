@@ -5,12 +5,11 @@
     display: none;
   }
 
-  /* The first screen is the welcome as the app always showed it; the page goes on below. */
+  /* The first screen is the welcome as the app always showed it; the page goes on below. Its box spans
+     the screen, so its sky and clouds do, and its padding keeps the content to the app's width. */
   .wp-hero {
-    width: min(100%, 560px);
     min-height: 100dvh;
-    margin-inline: auto;
-    padding: calc(var(--safe-t) + 8px) 20px calc(var(--safe-b) + 20px);
+    padding: calc(var(--safe-t) + 8px) max(20px, calc((100% - 560px) / 2 + 20px)) calc(var(--safe-b) + 20px);
   }
 
   /* The places of what the script draws, so nothing moves when it does: the install button, and the
@@ -252,8 +251,7 @@
     gap: 14px;
     width: min(100%, 720px);
     margin-inline: auto;
-    padding: 28px 20px calc(var(--safe-b) + 28px);
-    border-top: 1.5px solid var(--line);
+    padding: 20px 20px calc(var(--safe-b) + 28px);
     color: var(--ink-soft);
     text-align: center;
   }
@@ -281,9 +279,436 @@
   @media (min-width: 900px) {
     /* The next title shows at the foot of the first screen, so the page reads as going on. */
     .wp-hero {
-      width: min(100%, 1120px);
       min-height: calc(100dvh - 104px);
-      padding-inline: 48px;
+      padding-inline: max(48px, calc((100% - 1120px) / 2 + 48px));
     }
+  }
+
+  /*
+   * The day the page tells (docs/UX.md, « The welcome page's day »): dawn round the window, daylight
+   * on the postcards, golden hour at the boarding call, sunset on the beach. Each block paints its
+   * sky across the whole width with a border image, which takes no room and pans nothing sideways.
+   */
+  .wp-hero {
+    position: relative;
+    background: linear-gradient(in oklch, var(--sky-high) 10%, var(--sky-dawn) 90%);
+  }
+
+  /* On a phone the buttons stay in reach, over the sky's own foot rather than the app's paper. */
+  @media (max-width: 899px) {
+    .wp-hero .welcome-actions {
+      background: linear-gradient(to bottom, transparent, var(--sky-dawn) 12px);
+    }
+  }
+
+  .wp-postcards {
+    border-image: linear-gradient(var(--sky-dawn), var(--page) 22%) fill 0 / / 0 100vw;
+  }
+
+  .wp-go {
+    border-image: linear-gradient(var(--page) 30%, var(--sky-golden)) fill 0 / / 0 100vw;
+  }
+
+  .wp-foot {
+    border-image: linear-gradient(var(--sand), var(--sand)) fill 0 / / 0 100vw;
+  }
+
+  /* Behind the window and the words, which come after them in the page; a negative z-index would
+     keep Chrome from moving them off the main thread (measured, docs/UX.md). Lighter than the sky,
+     so text over them only gains contrast. */
+  .wp-clouds {
+    position: absolute;
+    inset: 0;
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .wp-hero > .welcome-art,
+  .wp-hero > .welcome-text {
+    position: relative;
+  }
+
+  .wp-cloud {
+    position: absolute;
+    fill: var(--surface);
+  }
+
+  /* Clear of the words: by the window's top corners and behind its side. */
+  /* Faded by mixing with the sky: opacity on an SVG would keep its motion on the main thread. */
+  .wp-cloud-1 {
+    --drift: 24px;
+    top: 3%;
+    left: 4%;
+    width: clamp(56px, 4vw + 40px, 104px);
+    fill: color-mix(in oklab, var(--surface) 65%, var(--sky-high));
+  }
+
+  .wp-cloud-2 {
+    --drift: 48px;
+    top: 11%;
+    right: 2%;
+    width: clamp(76px, 6vw + 54px, 150px);
+    fill: color-mix(in oklab, var(--surface) 82%, var(--sky-high));
+  }
+
+  .wp-cloud-3 {
+    --drift: 80px;
+    top: 27%;
+    left: -7%;
+    width: clamp(120px, 9vw + 86px, 230px);
+  }
+
+  /* The route a plane flies above « Comment ça marche », in the dots of the steps' own path. */
+  .wp-route {
+    --route-h: 96px;
+    position: relative;
+    height: var(--route-h);
+    margin-top: -40px;
+    overflow: clip;
+    container-type: inline-size;
+    view-timeline: --route block;
+  }
+
+  .wp-route-line {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .wp-route-line path {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 0 9;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /*
+   * The band's size, so translate moves the plane in hundredths of it and rotate turns it about its
+   * centre, set on the corner. The tangent of the route y = 80 − 240u(1 − u) is
+   * atan2(−2.4 (1 − 2u) × height, width): the plane keeps to it at any width.
+   */
+  .wp-plane {
+    position: absolute;
+    inset: 0;
+    transform-origin: 0 0;
+    translate: 35% 25.4%;
+    rotate: atan2(calc(var(--route-h) * -0.72), 100cqw);
+  }
+
+  .wp-plane svg {
+    position: absolute;
+    width: clamp(44px, 2vw + 36px, 64px);
+    aspect-ratio: 48 / 22;
+    translate: -50% -50%;
+  }
+
+  /* The beach the page ends on, which the footer stands on. */
+  .wp-shore {
+    --horizon: 46%;
+    --waterline: 72%;
+    --sun-x: 70%;
+    --sun-size: clamp(46px, 3vw + 34px, 76px);
+    position: relative;
+    height: clamp(230px, 14vw + 175px, 340px);
+    overflow: clip;
+    container-type: inline-size;
+    view-timeline: --shore block;
+    background: linear-gradient(
+      var(--sky-golden),
+      var(--sky-sunset) var(--horizon),
+      var(--sea-far) var(--horizon),
+      var(--sea-near) var(--waterline),
+      var(--sand-wet) var(--waterline),
+      var(--sand) 90%
+    );
+  }
+
+  .wp-shore > * {
+    position: absolute;
+  }
+
+  /* The sky ends at the horizon, so the sun sinks behind the sea. */
+  .shore-sky {
+    inset: 0 0 calc(100% - var(--horizon));
+    overflow: clip;
+  }
+
+  .shore-sun,
+  .shore-glow {
+    position: absolute;
+    bottom: 0;
+    left: var(--sun-x);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    translate: -50% 50%;
+  }
+
+  .shore-sun {
+    width: var(--sun-size);
+    background: radial-gradient(circle at 50% 30%, var(--sun) 45%, var(--sun-low));
+  }
+
+  .shore-glow {
+    width: calc(var(--sun-size) * 4.5);
+    background: radial-gradient(closest-side, rgb(255 222 150 / 0.8), rgb(255 222 150 / 0));
+  }
+
+  .shore-glint {
+    top: var(--horizon);
+    left: var(--sun-x);
+    width: calc(var(--sun-size) * 1.3);
+    height: calc(var(--waterline) - var(--horizon) - 4%);
+    translate: -50% 0;
+    transform-origin: top;
+    background: repeating-linear-gradient(rgb(255 228 165 / 0.85) 0 3px, transparent 3px 8px);
+    clip-path: polygon(8% 0, 92% 0, 60% 100%, 40% 100%);
+  }
+
+  .shore-shimmer {
+    top: var(--horizon);
+    left: 0;
+    width: 100%;
+    height: calc(var(--waterline) - var(--horizon));
+  }
+
+  .shore-shimmer path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .shore-boat {
+    --drift: 28px;
+    bottom: calc(100% - var(--horizon) - 13%);
+    left: 32%;
+    width: clamp(30px, 1.5vw + 24px, 46px);
+  }
+
+  .shore-gulls {
+    --drift: 56px;
+    top: 12%;
+    left: 46%;
+    width: clamp(34px, 2vw + 26px, 54px);
+  }
+
+  /* Its line sits on the waterline; the sand under it hides the straight edge of the sea. */
+  .shore-foam {
+    top: calc(var(--waterline) - 8px);
+    left: -32px;
+    width: calc(100% + 64px);
+    height: 14px;
+  }
+
+  .shore-parasol {
+    bottom: 6%;
+    left: 7%;
+    width: clamp(70px, 4vw + 54px, 112px);
+  }
+
+  .shore-case {
+    bottom: 4%;
+    left: calc(7% + clamp(64px, 4vw + 48px, 104px));
+    width: clamp(40px, 2.5vw + 30px, 64px);
+    transform-origin: 50% 100%;
+  }
+
+  .shore-shells {
+    bottom: 10%;
+    left: 60%;
+    width: clamp(44px, 2vw + 36px, 64px);
+  }
+
+  /*
+   * The world moves with the scroll, never the words, and only where it costs the page nothing:
+   * transform and opacity, which the browser runs off the main thread. Reduced motion and browsers
+   * without scroll timelines keep the composed picture above.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .wp-cloud {
+        animation: wp-drift linear both;
+        animation-timeline: --hero;
+        animation-range: exit 0% exit 100%;
+      }
+
+      .wp-hero {
+        view-timeline: --hero block;
+      }
+
+      .wp-plane {
+        animation: wp-flight linear both;
+        animation-timeline: --route;
+        animation-range: cover 12% cover 88%;
+      }
+
+      .shore-sun {
+        animation: wp-sunset linear both;
+        animation-timeline: --shore;
+        animation-range: entry 0% contain 15%;
+      }
+
+      .shore-glow {
+        animation: wp-glow linear both;
+        animation-timeline: --shore;
+        animation-range: entry 0% contain 15%;
+      }
+
+      .shore-glint {
+        animation: wp-glint linear both;
+        animation-timeline: --shore;
+        animation-range: entry 0% contain 15%;
+      }
+
+      .shore-boat,
+      .shore-gulls {
+        animation: wp-drift-across linear both;
+        animation-timeline: --shore;
+        animation-range: entry 0% contain 15%;
+      }
+
+      .shore-foam {
+        animation: wp-tide linear both;
+        animation-timeline: --shore;
+        animation-range: entry 0% contain 15%;
+      }
+
+      .shore-case {
+        animation: wp-roll linear both;
+        animation-timeline: --shore;
+        animation-range: entry 40% contain 15%;
+      }
+    }
+
+    /* Bernard jumps once the boarding call is in view: a scroll-triggered animation, where supported. */
+    /* biome-ignore lint/correctness/noUnknownProperty: scroll-triggered animations (Chrome 145) are newer than Biome's list */
+    @supports (timeline-trigger-name: --a) {
+      .wp-go {
+        /* biome-ignore lint/correctness/noUnknownProperty: as above */
+        timeline-trigger: --boarding view() entry 100% exit 0%;
+      }
+
+      .wp-bernard {
+        animation: jump 0.6s var(--spring) both;
+        /* biome-ignore lint/correctness/noUnknownProperty: as above */
+        animation-trigger: --boarding play-forwards;
+      }
+    }
+  }
+
+  @keyframes wp-drift {
+    to {
+      translate: var(--drift) 0;
+    }
+  }
+
+  @keyframes wp-drift-across {
+    from {
+      translate: calc(var(--drift) * -1) 0;
+    }
+    to {
+      translate: var(--drift) 0;
+    }
+  }
+
+  /* The route sampled every tenth: translate in hundredths of the band, the tangent as above. */
+  @keyframes wp-flight {
+    0% {
+      translate: 0% 80%;
+      rotate: atan2(calc(var(--route-h) * -2.4), 100cqw);
+    }
+    10% {
+      translate: 10% 58.4%;
+      rotate: atan2(calc(var(--route-h) * -1.92), 100cqw);
+    }
+    20% {
+      translate: 20% 41.6%;
+      rotate: atan2(calc(var(--route-h) * -1.44), 100cqw);
+    }
+    30% {
+      translate: 30% 29.6%;
+      rotate: atan2(calc(var(--route-h) * -0.96), 100cqw);
+    }
+    40% {
+      translate: 40% 22.4%;
+      rotate: atan2(calc(var(--route-h) * -0.48), 100cqw);
+    }
+    50% {
+      translate: 50% 20%;
+      rotate: 0deg;
+    }
+    60% {
+      translate: 60% 22.4%;
+      rotate: atan2(calc(var(--route-h) * 0.48), 100cqw);
+    }
+    70% {
+      translate: 70% 29.6%;
+      rotate: atan2(calc(var(--route-h) * 0.96), 100cqw);
+    }
+    80% {
+      translate: 80% 41.6%;
+      rotate: atan2(calc(var(--route-h) * 1.44), 100cqw);
+    }
+    90% {
+      translate: 90% 58.4%;
+      rotate: atan2(calc(var(--route-h) * 1.92), 100cqw);
+    }
+    100% {
+      translate: 100% 80%;
+      rotate: atan2(calc(var(--route-h) * 2.4), 100cqw);
+    }
+  }
+
+  @keyframes wp-sunset {
+    from {
+      translate: -50% -70%;
+    }
+  }
+
+  @keyframes wp-glow {
+    from {
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes wp-glint {
+    from {
+      scale: 1 0.3;
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes wp-tide {
+    from {
+      translate: -32px 0;
+    }
+  }
+
+  @keyframes wp-roll {
+    from {
+      translate: 75cqw 0;
+    }
+    30% {
+      rotate: -3deg;
+    }
+    55% {
+      rotate: 2deg;
+    }
+    80% {
+      rotate: -1deg;
+    }
+    to {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+  }
+
+  /* From the page into the app and back: the new view rises as the old one fades. */
+  ::view-transition-old(root) {
+    animation: fade-in var(--t-view) var(--ease-out) reverse both;
+  }
+
+  ::view-transition-new(root) {
+    animation: rise var(--t-view) var(--ease-out) both;
   }
 }

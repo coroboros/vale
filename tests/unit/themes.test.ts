@@ -43,6 +43,31 @@ describe('core palette', () => {
   });
 });
 
+/** sRGB halfway and beyond, as a gradient blends: a mix can be darker than both ends. */
+const mix = (a: string, b: string, t: number) =>
+  `#${[1, 3, 5]
+    .map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t))
+    .map(v => v.toString(16).padStart(2, '0'))
+    .join('')}`;
+
+describe("the welcome page's day", () => {
+  // The skies text sits on, in the page's order; the sunset glow and the sea carry no text.
+  const skies = ['sky-high', 'sky-dawn', 'page', 'sky-golden', 'sand'];
+  it.each(skies)('soft ink and every accent ink reach AA on %s', sky => {
+    expect(contrast(token('ink-soft'), token(sky))).toBeGreaterThanOrEqual(AA);
+    for (const t of Object.values(THEMES)) expect(contrast(t.accentInk, token(sky))).toBeGreaterThanOrEqual(AA);
+  });
+  it('soft ink stays readable all along each gradient between them', () => {
+    for (const [a, b] of [
+      ['sky-high', 'sky-dawn'],
+      ['sky-dawn', 'page'],
+      ['page', 'sky-golden'],
+    ] as const)
+      for (let i = 0; i <= 20; i++)
+        expect(contrast(token('ink-soft'), mix(token(a), token(b), i / 20))).toBeGreaterThanOrEqual(AA);
+  });
+});
+
 describe.each(Object.values(THEMES).map(t => [t.id, t] as const))('theme %s', (_id, t) => {
   it('text on primary buttons reaches AA', () => expect(contrast(t.onAccent, t.accent)).toBeGreaterThanOrEqual(AA));
   it('accent text reaches AA on white, tint and page', () => {

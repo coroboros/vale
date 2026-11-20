@@ -52,7 +52,10 @@ The one place for them: read this section before writing code for any step.
   sideways scrolling on phones, foreign text marked with its `lang`.
 - One motion system: raised controls lift on hover and sink on press, flat controls tint and
   shrink; hover effects only under `@media (hover: hover)`; durations from the tokens. No one-off
-  animation.
+  animation. Drawings that follow the scroll (the welcome page's day) move by transform and
+  opacity only, never the words, behind `@supports (animation-timeline: view())` and
+  `prefers-reduced-motion: no-preference`; check that Chrome runs them off the main thread (the
+  look-and-measure skill): a negative z-index or opacity on an SVG kept clouds on it.
 - Colours from the tokens and the trip's theme; red only for wrong answers.
 - App text: plain French, sentence case, « tu » for one traveller and « vous » for a group, the
   same name for an action through a whole flow, French typography (« », ’). Type plain spaces
@@ -126,13 +129,15 @@ kit, the screens), and plan the smallest change. Then:
 - `src/ui/`: screens, components (`kit.tsx`), `icons.tsx` (Bernard's beach drawn on Lucide's grid), `Mascot.tsx` (Bernard; the app gives him the screen's
   flag through `ScreenFlag`, so the pages can show him without the app's data), `MotionToggle.tsx`
   (the pause of every moving drawing), `welcome-page.tsx` (the welcome page's pieces and its way
-  into onboarding; styles in `styles/welcome.css`), `Imagine.tsx` (closes onboarding and lands every new
+  into onboarding; styles in `styles/welcome.css`; each piece is a Preact root of its own, where
+  `useId` starts again, so a drawing there names its ids itself), `Imagine.tsx` (closes onboarding and lands every new
   trip, `screens/Landing.tsx`), `Team.tsx` (travellers sharing a phone), `FromBernard.tsx` (his
   latest postcard), `card-image.ts` (the survival card as a picture to send), `Porthole.tsx` (the
   welcome flight and the trip being chosen), `scenery/` (a drawing per destination, one module per
   country, shared pieces and the sky's travellers in `parts.tsx`; a flying porthole loops each
   layer, so continuous lines end at x = 360 where they start; `pictureOf` in `content/` picks a trip's drawing and photo,
-  « Ailleurs » its country's emblem), `themes.ts` (colours per country, from the trip's `flagOf`,
+  « Ailleurs » its country's emblem; `WelcomeScenes.tsx`, the welcome page's clouds, route and
+  beach), `themes.ts` (colours per country, from the trip's `flagOf`,
   contrast checked by a test), `photos.json` (one photo per destination with its credit, written by
   `brand/photos.py`; files in `public/photos/`).
 - `src/translation-api.ts`: the request and answer shared with the Worker.

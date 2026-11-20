@@ -48,6 +48,24 @@ Good to know:
   the boxes of `.porthole-view` and `.porthole .scenery`, scale = max(width / 360, height / 340));
   the speeds and their reasons are in docs/BRAND.md, « Motion ».
 
+## Motion that follows the scroll
+
+The welcome page's scenes move with the scroll (docs/UX.md, « The welcome page's day »). Copy
+`motion.spec.ts` to `tests/e2e/zz-motion.spec.ts` and run it with `--project=desktop`:
+
+- **Compositor layers** (`compositor layers`): Chrome's layer tree, through the DevTools protocol.
+  Every drawing that follows the scroll should have a layer with an `Active…Animation` reason; one
+  that does not runs on the main thread. A negative z-index on its container, or `opacity` on an
+  SVG, did that to the clouds.
+- **Main thread while scrolling** (`main thread while scrolling`): the page scrolled top to bottom
+  by the wheel, CPU slowed four times, with the scenes and without them; median of three.
+- **Share of the screen in motion** (`share of the screen in motion`): the boxes of the moving
+  drawings, and the pixels that change between two positions once the scroll itself is taken out,
+  with and without reduced motion. The bar: a third of the screen (the WCAG draft in docs/UX.md).
+
+Headless Chrome draws without a graphics card, so its frame counts say nothing about smoothness;
+that needs a real phone.
+
 ## Measures
 
 - **Visual weight** of a block: `python3 .claude/skills/look-and-measure/measure.py ink a.png b.png`

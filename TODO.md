@@ -18,6 +18,9 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
   Chromium only), the American and Irish voices (en-US, en-IE) in their packs.
 - The welcome flight on an older iPhone (smoothness, battery), with *Réduire les animations* on,
   and in Safari with its toolbars (short screen).
+- The welcome page's day in Safari 26 and Firefox 159, on phones: its scenes follow the scroll
+  smoothly (only Chromium runs here), and without Chrome's scroll triggers Bernard simply stays
+  put at the boarding call (docs/UX.md, « The welcome page's day »).
 - Translation: one sentence per language once deployed, a cache hit, a 429 after 20 calls a
   minute, the Claude spend counted in KV against the Console usage page.
 - Translation quality: the eval grades, then a native speaker on twenty phrases per language,

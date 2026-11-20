@@ -127,6 +127,19 @@ cathedral across the Balearic bay, the statue on Monte Urgull and a larger Santa
 Concha, Santana houses on Madeira's cliff, warmer stone for Madrid's gate, a bluer sky and a
 golden Madonnina for Milan.
 
+The welcome page is a day of travel (20 November 2026), told by the scroll rather than the clock.
+Each block wears the sky of its hour, painted, not moving: dawn round the window, daylight on the
+postcards, golden hour at the boarding call, sunset on the beach where the page ends and the
+footer stands on the sand. What moves follows the scroll, so the traveller drives it and nothing
+moves while they read: clouds drift past the window, a white airliner with the trip's colour on
+its tail flies the dotted route above « Comment ça marche » and lands at its end, and on the beach
+the sun sinks into the sea, its glint lengthening, while a sailboat and gulls drift and Bernard's
+orange suitcase rolls up to a parasol striped in the trip's colour, next to two of his shells.
+Bernard jumps once when the boarding call comes fully into view, where the browser offers scroll
+triggers (Chrome). The page fades into the app and back. The world moves, never the words; all of
+it is still for people who ask for less motion. Why and what was measured: docs/UX.md, « The
+welcome page's day ».
+
 ## Photos
 
 The last step of onboarding (« Imagine ») shows the chosen destination in a photo: the landmark

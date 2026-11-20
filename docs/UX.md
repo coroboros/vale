@@ -289,6 +289,61 @@ and 24 % on each of the four desktop cards: it goes under the photo. The photos 
 screen, and their frames are sized before they arrive. On a computer, the first screen ends on the
 next title, so the page reads as going on.
 
+## The welcome page's day (20 November 2026)
+
+The owner asked for life on the welcome page (sun, travel, luggage, sea, sand), worlds that change
+as one scrolls, and effects of 2026 rather than 2016, the amount and the style decided by
+measures. AGENTS.md had ruled out one-off animation.
+
+| Finding | Source | Strength |
+| --- | --- | --- |
+| Parallax raised engagement through two routes: seeming cool and vivid, and the natural mapping of scrolling to motion, which felt easy to use; engagement went with better attitudes and intentions. 2 × 2 online experiment, N = 295, product sites. | Wang & Sundar, [How does parallax scrolling influence user experience?](https://doi.org/10.1080/10447318.2017.1373457), IJHCI 34(6), 2018 | Medium; read from the abstract |
+| The parallax site was judged more fun and more professionally designed, but usability, satisfaction and the overall experience did not improve; two of 86 participants got motion sickness. | Frederick, Mohler, Vorvoreanu & Glotzbach, [The effects of parallax scrolling on user experience in web design](https://uxpajournal.org/wp-content/uploads/sites/7/pdf/JUS_Frederick_Feb2015.pdf), JUS 10(2), 2015 | Medium; abstract and summary |
+| A shop telling its story with parallax beat the same shop in text on explicit and implicit experience, attractiveness, brand attitudes and the price people would pay; N = 266. | [Storytelling in online shops](https://doi.org/10.1108/INTR-09-2019-0377), Internet Research 32(7), 2022 | Medium; abstract |
+| Parallax raised attractiveness on a storytelling site (N = 40); on text-heavy pages some readers scroll faster and stop more sharply, others never notice it (N = 25). | Mahardika et al., [IJASEIT 8(4)](https://core.ac.uk/download/325990502.pdf), 2018; Wu, [Purdue thesis](https://docs.lib.purdue.edu/open_access_theses/1616) | Weak: small samples |
+| Most testers were indifferent; moving text hurt reading and could make people dizzy. Keep it subtle and peripheral, never body text, respect motion preferences, do not hide or rush content, weigh the cost. | Sherwin, [What Parallax Lacks](https://www.nngroup.com/articles/parallax-usability/), NN/g, 2019 | Medium: usability testing by practitioners |
+| Parallax is a common trigger of vestibular disorders; motion set off by interaction should be possible to turn off (AAA, technique C39: reduced motion), while 2.2.2 covers motion that starts by itself. The working group's draft once counted as significant an animation tied to a user action and covering more than a third of the viewport. | W3C, [Understanding 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html); [draft](https://www.w3.org/wai/gl/wiki/animation_caused_by_user_interaction) | Strong; the third is a draft, our bar by inference |
+| Scroll-driven animations are Baseline since Firefox 159 (Chrome 115, Safari 26) and use few main-thread resources; scroll-triggered animations arrived in Chrome 145. | web.dev, [New to the web platform in October 2026](https://web.dev/blog/web-platform-10-2026); Chrome, [performance case study](https://developer.chrome.com/blog/scroll-animation-performance-case-study), [scroll-triggered animations](https://developer.chrome.com/blog/scroll-triggered-animations) | Strong: the browser makers |
+
+Decision: the page tells one story, a day of travel, and the scroll is its clock. Each block wears
+its hour's sky, painted rather than animated, so the world changes as one scrolls at no cost:
+dawn round the window, daylight on the postcards, golden hour at boarding, sunset on the beach the
+footer stands on. Then what moves, and only with the scroll: clouds round the window, a plane
+flying the route above « Comment ça marche », and on the beach the sun setting, a boat, gulls, the
+foam, and Bernard's suitcase rolling up to the parasol (docs/BRAND.md, « Motion »). The rules
+come from the table: the words never move; motion follows the scroll, which gives the natural
+mapping and starts nothing by itself, so nothing needs a pause; each drawing is small and
+peripheral, together under a tenth of the screen against the draft's third; transform and opacity
+only, off the main thread; still for reduced motion and in browsers without scroll timelines.
+2026's platform does the rest: view timelines with named ranges, `atan2()` over container units
+so the plane keeps to its curve at any width, an oklch dawn, a scroll trigger for Bernard's one
+jump (Chrome; elsewhere he simply stays put), and a view transition from the page into the app.
+Set aside: parallax backgrounds and full-screen layers (vestibular triggers, and a full-screen
+layer costs a phone about 12 MB of graphics memory at three pixels per point, our arithmetic),
+content that slides in (it hides and rushes content), loops on the clock (they would need a pause),
+canvas or WebGL (weight).
+
+Measured, Chrome 153 on a phone-size and a desktop screen:
+
+- **Off the main thread.** Chrome's layer tree gives each of the eleven moving drawings a layer of
+  its own for its animation. Two traps, found that way and fixed: a negative z-index, and opacity
+  on an SVG, each kept the clouds on the main thread.
+- **Main thread while scrolling the whole page**, CPU slowed four times, the window's flight held,
+  median of three: 4,376 ms before the day, 4,602 ms after (+5 %), style 838 ms then 850 ms.
+- **Screen in motion.** The moving drawings cover at most 8.7 % of a phone's screen and 4.9 % of a
+  desktop's; between two positions 48 px apart, at most 2.9 % and 1.4 % of the pixels change, none
+  with reduced motion (the window hidden and the phone's buttons unstuck for the count).
+- **Contrast.** Soft ink and every accent ink reach AA on each sky and on the sand (unit test); on
+  the page as drawn, outside the beach, soft ink's lowest contrast is 5.53:1, on the sand.
+- **Lighthouse 13.6**, median of three: 100, 100, 100, 100; LCP 0.91 s, CLS 0.004, blocking time
+  58 ms; 442 KiB, 3 more.
+- **Bernard's jump** plays once, when the boarding call is fully in view, and not again on the
+  way back up.
+
+Not measured: smoothness on a real phone (headless Chrome draws without a graphics card, so its
+frame counts say nothing), Safari 26 and Firefox 159, which this machine cannot run (TODO.md), and
+what travellers make of it.
+
 ## The legal pages (20 November 2026)
 
 The owner asked for the legal pages in the welcome page's footer, as right as the current official

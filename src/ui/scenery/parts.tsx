@@ -15,6 +15,18 @@ export interface Art {
   near: ComponentChildren;
 }
 
+/** 64 × 26 at scale 1; its colour comes from what holds it. */
+export const Cloud = ({ x, y, s }: { x: number; y: number; s: number }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <g class="scn-drift">
+      <circle cx="14" cy="15" r="10" />
+      <circle cx="31" cy="10" r="13" />
+      <circle cx="49" cy="15" r="10" />
+      <rect x="4" y="14" width="56" height="11" rx="5.5" />
+    </g>
+  </g>
+);
+
 export const Shimmer = ({ from = 178 }: { from?: number }) => (
   <g class="scn-shimmer" stroke="#fff" stroke-linecap="round" opacity="0.55">
     {[
