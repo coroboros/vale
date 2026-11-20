@@ -13,6 +13,27 @@ Rule since the external review of 18 November 2026: **measure before widening**.
 and no live conversation before the decision figures (C) say people come back. Quality work on
 what exists (voices, photos) waits only for its keys.
 
+## First, on the Mac: the cloud and the Mac compared (you and Claude, about 30 minutes)
+
+Right after `claude --teleport` (« Working with Claude Code on your Mac », at the end), before
+anything else:
+
+1. **Compare.** Claude lists what the cloud sessions had and what the Mac has, measures the
+   differences and writes down what to change. What the cloud showed (20 November 2026):
+   - Network: npm, PyPI and GitHub only. No Wikimedia Commons (the photos), no github.io (the live
+     site, so no Lighthouse on it), no GitHub Actions variables or secrets through the API.
+   - Machine: 2 CPUs. `npm run check` took 13.7 min with one Playwright worker; two workers ran
+     the same 93 tests in 9.4 min, none failed. Measure the Mac with more.
+   - Browsers: a headless Chromium only; no Safari and no iPhone (B7).
+   - Accounts: no Cloudflare login, no GitHub Actions settings; commits signed as Claude
+     (AGENTS.md, « Done means »).
+   - Claude Code: version, settings and permissions, the look-and-measure skill loading, hooks,
+     MCP servers, model and effort, how context is kept; compared with the cloud's.
+2. **Decide** the changes together (settings, workers, tools), apply them, and note them in
+   AGENTS.md or the skill.
+3. **Discuss** the review of 20 November 2026 (TODO.md, « To discuss »).
+4. **Unblock B**, in order: B0, then B1 (Cloudflare and the Claude credits), and on.
+
 ## A. Now: Claude, without you
 
 1. **California and Florida, on the Mac.** *Rules first: AGENTS.md.* Two destinations of the

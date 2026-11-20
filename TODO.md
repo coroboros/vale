@@ -2,6 +2,32 @@
 
 The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 
+## To discuss (adversarial review, 20 November 2026)
+
+Each point is measured here or sourced; nothing is decided. Already covered elsewhere, so not
+repeated: the competitors (docs/MARKET.md), the native review (below), reminders as an idea (« Improve »).
+
+- **Decision figures without reminders.** C measures day-1 and day-7 returns before Bagage can
+  remind anyone. Duolingo sends millions of daily reminders, and optimising their content alone
+  added 2 % to new-user retention ([Yancey & Settles, KDD 2020](https://research.duolingo.com/papers/yancey.kdd20.pdf));
+  installed web apps receive Web Push on iOS since 16.4 ([WebKit](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)).
+  Either reminders ship before C, or C's figures say « without reminders ».
+- **A switch for the streak.** The Digital Fairness Act proposal (European Commission,
+  11 November 2026) would let every user turn off streaks, and bans dark patterns. Bagage has a
+  streak, a joker and a repair offer, and no switch. A proposal, not law yet.
+- **Only the trip's course in the first load.** Lighthouse 13.6, mobile, on the production
+  build: performance 90, accessibility, best practices and SEO 100, but a total blocking time of
+  420 ms ([good is under 200 ms](https://web.dev/articles/tbt)) and 46 KiB of unused JavaScript:
+  all four courses (155 KB of data) ship to everyone.
+- **Ask the browser to keep the data.** No `navigator.storage.persist()` call; since Safari 17
+  the Storage API is supported and a persistent origin is exempt from eviction
+  ([WebKit, Updates to Storage Policy](https://webkit.org/blog/14403/updates-to-storage-policy/)).
+  Safari's 7-day cap without installing stays (docs/BUSINESS.md).
+- **Faster checks.** Playwright runs one worker, with no reason given: 13.7 min. Two workers:
+  9.4 min, the same 93 tests passed.
+- **Build-tool advisories.** 4 moderate, all in vite-plugin-pwa's build chain (glob,
+  minimatch); none in the app's or the Worker's runtime dependencies. An update fixes them.
+
 ## Before launch
 
 - **Native speakers or teachers check every course.** Each phrase, its French-reader
