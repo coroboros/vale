@@ -111,6 +111,11 @@ What Duolingo and the others ship that Bagage lacks: docs/MARKET.md.
   flow, an accessibility check during an entrance animation). Both are fixed; note any new one
   here with its cause.
 
+- **Bernard's next shell.** Each level could give him a new shell from the trip's country, a
+  reward inside the story rather than a prize (docs/BUSINESS.md, « Rewards beyond the app »).
+- **An eSIM offer before departure.** A partner's offer when the trip is near, through an
+  affiliate link: your decision, after a privacy check of the link.
+
 ## Later
 
 - **Infrastructure as code.** `worker/wrangler.jsonc` describes the Worker, its assets, KV and

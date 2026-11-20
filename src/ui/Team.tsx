@@ -1,5 +1,5 @@
 import { Crown } from 'lucide-preact';
-import { dayKey, teamWeek } from '../engine/progress';
+import { dayKey, shells, teamWeek } from '../engine/progress';
 import { db } from '../state/store';
 import { Bar } from './kit';
 
@@ -15,16 +15,18 @@ export function Team() {
       <div class="section-head">
         <h3>Votre équipe</h3>
         <span class="muted num">
-          {xp}/{goal} XP
+          {xp}/{shells(goal)}
         </span>
       </div>
       <Bar
         value={xp / goal}
-        label={`Équipe : ${xp} XP sur ${goal} cette semaine`}
+        label={`Équipe : ${shells(xp)} sur ${goal} cette semaine`}
         tone={xp >= goal ? 'ok' : undefined}
       />
       <p class="small muted">
-        {xp >= goal ? 'Objectif de la semaine atteint, ensemble.' : `Encore ${goal - xp} XP ensemble cette semaine`}
+        {xp >= goal
+          ? 'Objectif de la semaine atteint, ensemble.'
+          : `Encore ${shells(goal - xp)} ensemble cette semaine`}
       </p>
       <ol class="team-list">
         {members.map(m => (
@@ -32,7 +34,7 @@ export function Team() {
             <span class="team-dot" style={{ background: m.color }} aria-hidden="true" />
             <span class="team-name">{m.name}</span>
             {m.id === leader && <Crown size={18} class="team-crown" aria-label="En tête" />}
-            <strong class="num">{m.xp} XP</strong>
+            <strong class="num">{shells(m.xp)}</strong>
           </li>
         ))}
       </ol>

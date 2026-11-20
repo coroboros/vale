@@ -231,6 +231,9 @@ Details in each day's commits and in docs/.
 - 19 Nov 2026. **A pronunciation check that stays on the computer**: where Chrome would listen
   online, Bagage offers its language pack first
   ([`SpeechRecognition.install()`](https://developer.mozilla.org/docs/Web/API/SpeechRecognition/install_static)).
+- 20 Nov 2026. **Bernard's beach**: XP become shells, home's top lighter, themed icons where they
+  stay as distinct as before (docs/BRAND.md, docs/UX.md); rewards beyond the app studied
+  (docs/BUSINESS.md).
 
 ## Working with Claude Code on your Mac
 

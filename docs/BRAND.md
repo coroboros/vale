@@ -31,6 +31,37 @@ sorry face when an answer is wrong, and never scolds. Wherever he appears, his e
 mouse or the finger and he blinks, as on the welcome screen; both stop for people who ask for
 less motion, and the blinking stops when the welcome journey is paused.
 
+## Shells
+
+What the code stores as XP, travellers see as *coquillages*, Bernard's shells: « XP » is
+video-game shorthand that confused the owner, a French traveller like the ones Bagage is for
+(20 November 2026). Only the word changed: a right answer still earns at least one shell, and the
+stored data keeps its `xp` keys. `shells()` in `src/engine/progress.ts` writes the word, singular
+for 0 and 1 as French does; the verb is *ramasser*, what one does with shells on a beach. In the
+session summary the count wears Lucide's spiral shell, the shape of Bernard's own.
+
+## Icons
+
+Lucide everywhere, plus four drawn on its grid in `src/ui/icons.tsx`, where Bernard's beach can
+carry the meaning: the itinerary as a treasure map with its dotted trail, the survival card as a
+luggage tag (the brand's own object), « Moi » as a traveller in a sun hat, and the daily chest as
+a treasure chest (it was a gift box). Every tab keeps its label: people predicted what a labelled
+icon does 88 % of the time, against 60 % unlabelled and 34 % for unlabelled icons unique to one app
+(UserTesting, reported in [Smashing Magazine, 2016](https://www.smashingmagazine.com/2016/10/icons-as-part-of-a-great-user-experience));
+few icons are universal and navigation icons need visible labels
+([NN/g, Icon Usability](https://www.nngroup.com/articles/icon-usability/)); both read from
+excerpts. With labels, a themed icon costs little meaning; what it can cost is telling the tabs
+apart at a glance.
+
+So we measured that: each set of five rendered at 96 px, reduced to 12 × 12 and compared pair by
+pair (cosine similarity, lower is more distinct; a one-off script, the numbers kept here).
+The previous set: 0.44 on average, closest pair 0.56. All five themed, with a beach volleyball for
+« Entraînement » and a scroll for « Phrases »: 0.50, closest 0.69, as a ball and a scroll are both
+full shapes. Keeping the dumbbell, the practice icon learners know from other apps, with a speech
+bubble for the phrases one says: 0.41, closest 0.57, the most distinct of the three, so that is
+the set. A message in a bottle read as a beer bottle at 24 px and was dropped. Not measured:
+whether travellers recognise them. The tabs keep their places.
+
 ## App icon
 
 `brand/icon.svg` is the only source; `sh brand/make-icons.sh` writes the favicon, the iOS and

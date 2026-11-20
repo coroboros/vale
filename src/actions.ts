@@ -11,6 +11,7 @@ import {
   logSession,
   newStamps,
   postcard,
+  shells,
   spendJokers,
   streak,
   welcomeXp,
@@ -316,6 +317,8 @@ export function logActivity(
   return earned;
 }
 
+const CHEST_XP = 15;
+
 /** A small, varied reward: a joker or bonus XP. */
 export function openChest(now = Date.now()): void {
   const p = profile.value;
@@ -330,8 +333,8 @@ export function openChest(now = Date.now()): void {
       data.jokers++;
       text = 'Coffre ouvert : un joker de série en plus.';
     } else {
-      log.xp += 15;
-      text = 'Coffre ouvert : 15 XP en bonus.';
+      log.xp += CHEST_XP;
+      text = `Coffre ouvert : ${shells(CHEST_XP)} en bonus.`;
     }
   });
   if (text) showToast(text);

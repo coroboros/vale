@@ -1,4 +1,4 @@
-import { Dumbbell, IdCard, Languages, MapPinned, User } from 'lucide-preact';
+import { Dumbbell, type LucideIcon, MessageCircle } from 'lucide-preact';
 import { useEffect, useErrorBoundary } from 'preact/hooks';
 import { openLesson, running } from '../actions';
 import { BRAND } from '../brand';
@@ -6,6 +6,7 @@ import { exportBackup } from '../platform/backup';
 import { applyUpdate, updateReady } from '../platform/pwa';
 import { db, profile, theme } from '../state/store';
 import { Daily } from './Daily';
+import { LuggageTag, Traveller, TreasureMap } from './icons';
 import { showToast, ToastHost } from './kit';
 import { Mascot, ScreenFlag } from './Mascot';
 import { go, isTab, route, type Tab } from './router';
@@ -22,12 +23,12 @@ import { SessionScreen } from './screens/Session';
 import { Sounds } from './screens/Sounds';
 import { applyTheme } from './themes';
 
-const TABS: { tab: Tab; label: string; href: string; Icon: typeof MapPinned }[] = [
-  { tab: 'home', label: 'Itinéraire', href: '#/', Icon: MapPinned },
+const TABS: { tab: Tab; label: string; href: string; Icon: LucideIcon }[] = [
+  { tab: 'home', label: 'Itinéraire', href: '#/', Icon: TreasureMap },
   { tab: 'practice', label: 'Entraînement', href: '#/entrainement', Icon: Dumbbell },
-  { tab: 'phrases', label: 'Phrases', href: '#/phrases', Icon: Languages },
-  { tab: 'card', label: 'Carte', href: '#/carte', Icon: IdCard },
-  { tab: 'me', label: 'Moi', href: '#/moi', Icon: User },
+  { tab: 'phrases', label: 'Phrases', href: '#/phrases', Icon: MessageCircle },
+  { tab: 'card', label: 'Carte', href: '#/carte', Icon: LuggageTag },
+  { tab: 'me', label: 'Moi', href: '#/moi', Icon: Traveller },
 ];
 
 function Nav({ current }: { current: Tab | null }) {

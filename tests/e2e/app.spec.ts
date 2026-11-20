@@ -278,7 +278,7 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await onboard(page);
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await playSession(page);
-  await expect(page.locator('.ticket')).toContainText('XP');
+  await expect(page.locator('.ticket')).toContainText('coquillages');
   await expect.poll(() => steps.at(-1)).toBe('lesson-done');
   const card = page.locator('.from-bernard');
   await expect(card).toContainText('Une carte de Bernard');
@@ -983,14 +983,14 @@ test('keeps the progress of the previous version', async ({ page }) => {
   await expect(page.getByText('Hola', { exact: true })).toBeVisible();
 });
 
-test('the first goal starts with the answers of onboarding, and its last XP count in phrases', async ({ page }) => {
+test('the first goal starts with the answers of onboarding, and its last shells count in phrases', async ({ page }) => {
   await onboard(page);
   await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
   await playSession(page);
-  await expect(page.locator('.ticket-goal')).toContainText('Dont 8 XP pour tes réponses à l’accueil.');
+  await expect(page.locator('.ticket-goal')).toContainText('Dont 8 coquillages pour tes réponses à l’accueil.');
   await page.getByRole('button', { name: 'Continuer' }).click();
 
-  // Three XP short of today's goal. The app's own pending save must not overwrite this one.
+  // Three shells short of today's goal. The app's own pending save must not overwrite this one.
   await page.evaluate(() => {
     const save = Storage.prototype.setItem;
     Storage.prototype.setItem = () => {};
@@ -1019,9 +1019,9 @@ test('two travellers on one phone play as a team', async ({ page }) => {
   await page.getByRole('button', { name: 'Continuer' }).click();
   await leaveFirstLesson(page);
   const team = page.getByRole('region', { name: 'Votre équipe' }).first();
-  await expect(team).toContainText('16/400 XP');
+  await expect(team).toContainText('16/400 coquillages');
   await expect(team.locator('.team-name')).toHaveText(['Léa', 'Sam']);
-  await expect(team).toContainText('Encore 384 XP ensemble cette semaine');
+  await expect(team).toContainText('Encore 384 coquillages ensemble cette semaine');
   await expectAccessible(page, 'équipe');
 });
 

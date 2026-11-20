@@ -1,4 +1,4 @@
-import { Check, Clock, Flame, Mic, Play, Square, Target, Volume2, VolumeX, X, Zap } from 'lucide-preact';
+import { Check, Clock, Flame, Mic, Play, Shell, Square, Target, Volume2, VolumeX, X } from 'lucide-preact';
 import { Fragment } from 'preact';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../../actions';
 import type { Card, Exercise } from '../../engine/exercises';
 import { grade, normalize, type Verdict } from '../../engine/grade';
-import { stamps as allStamps, dayKey, goalTitle, NEAR_GOAL } from '../../engine/progress';
+import { stamps as allStamps, dayKey, goalTitle, NEAR_GOAL, shells, shellWord } from '../../engine/progress';
 import { checkSpeech, type SpeechCheck } from '../../engine/pronunciation';
 import { shuffle } from '../../engine/random';
 import { progress } from '../../engine/session';
@@ -694,9 +694,9 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
         <p class="ticket-title">{title}</p>
         <div class="ticket-stats">
           <div>
-            <Zap size={20} aria-hidden="true" />
+            <Shell size={20} aria-hidden="true" />
             <strong class="num">+{o.xp}</strong>
-            <span>XP</span>
+            <span>{shellWord(o.xp)}</span>
           </div>
           <div>
             <Target size={20} aria-hidden="true" />
@@ -724,10 +724,10 @@ function Ticket({ title, summary }: { title: string; summary: Summary }) {
           <p class="ticket-goal-title">{goalTitle(xp, goal)}</p>
           <Bar
             value={xp / goal}
-            label={`Objectif du jour : ${xp} XP sur ${goal}`}
+            label={`Objectif du jour : ${shells(xp)} sur ${goal}`}
             tone={xp >= goal ? 'ok' : undefined}
           />
-          {!!today?.welcome && <p class="small muted">Dont {today.welcome} XP pour tes réponses à l’accueil.</p>}
+          {!!today?.welcome && <p class="small muted">Dont {shells(today.welcome)} pour tes réponses à l’accueil.</p>}
         </div>
       </section>
       {summary.postcard && <FromBernard text={summary.postcard} />}

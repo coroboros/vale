@@ -1,8 +1,9 @@
-import { CircleCheck, Flame, Gift, Shield } from 'lucide-preact';
+import { CircleCheck, Flame, Shield } from 'lucide-preact';
 import { openChest } from '../actions';
-import { dailyQuests, dayKey, goalTitle, questValue, repairOffer, streak } from '../engine/progress';
+import { dailyQuests, dayKey, goalTitle, questValue, repairOffer, shells, streak } from '../engine/progress';
 import { pdata, profile } from '../state/store';
 import { InstallButton } from './Install';
+import { TreasureChest } from './icons';
 import { Bar, Ring } from './kit';
 import { Team } from './Team';
 
@@ -21,12 +22,12 @@ export function Daily({ compact }: { compact?: boolean }) {
   return (
     <div class="daily">
       <section class="card daily-goal" aria-label="Objectif du jour">
-        <Ring value={xp / p.goal} size={68} label={`Objectif du jour : ${xp} XP sur ${p.goal}`}>
+        <Ring value={xp / p.goal} size={68} label={`Objectif du jour : ${shells(xp)} sur ${p.goal}`}>
           <strong class="num">{xp}</strong>
         </Ring>
         <div class="daily-text">
           <p class="daily-title">{goalTitle(xp, p.goal)}</p>
-          <p class="muted">Objectif : {p.goal} XP</p>
+          <p class="muted">Objectif : {shells(p.goal)}</p>
         </div>
         <div
           class={`streak${s.today ? ' lit' : ''}`}
@@ -40,7 +41,7 @@ export function Daily({ compact }: { compact?: boolean }) {
 
       {offer && (
         <p class="card note-card">
-          Ta série de {offer.streak} jours peut encore être sauvée : gagne {p.goal * 2} XP aujourd’hui.
+          Ta série de {offer.streak} jours peut encore être sauvée : ramasse {shells(p.goal * 2)} aujourd’hui.
         </p>
       )}
 
@@ -73,7 +74,7 @@ export function Daily({ compact }: { compact?: boolean }) {
           </ul>
           {done === 3 && !log?.chest && (
             <button type="button" class="btn btn-primary btn-block" onClick={() => openChest()}>
-              <Gift size={20} aria-hidden="true" />
+              <TreasureChest size={20} aria-hidden="true" />
               Ouvrir le coffre
             </button>
           )}

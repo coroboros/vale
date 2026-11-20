@@ -150,7 +150,7 @@ export function Home() {
   return (
     <>
       <header class="home-head">
-        <button type="button" class="trip-pill" aria-haspopup="dialog" onClick={() => setTripOpen(true)}>
+        <button type="button" class="chip trip-pill" aria-haspopup="dialog" onClick={() => setTripOpen(true)}>
           <MapPin size={18} aria-hidden="true" />
           <span>
             <span class="sr-only">Mes voyages : </span>

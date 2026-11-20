@@ -14,7 +14,7 @@ import { courseById, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
 import { countsOn } from '../../counts';
-import { dayKey, stamps, streak } from '../../engine/progress';
+import { dayKey, shells, shellWord, stamps, streak } from '../../engine/progress';
 import { exportBackup, readBackup } from '../../platform/backup';
 import { offlineReady } from '../../platform/pwa';
 import { canHear } from '../../platform/recognition';
@@ -136,7 +136,7 @@ export function Profile() {
         </div>
         <div class="stat">
           <strong class="num">{xp}</strong>
-          <span>XP au total</span>
+          <span>{shellWord(xp)} au total</span>
         </div>
         <div class="stat">
           <strong class="num">{learned}</strong>
@@ -171,7 +171,7 @@ export function Profile() {
           name="goal"
           label="Objectif quotidien"
           value={p.goal}
-          options={GOALS.map(g => ({ value: g.xp, title: g.label, sub: `${g.minutes} min par jour, ${g.xp} XP` }))}
+          options={GOALS.map(g => ({ value: g.xp, title: g.label, sub: `${g.minutes} min par jour, ${shells(g.xp)}` }))}
           onChange={goal => editProfile({ goal })}
         />
         <fieldset class="field">

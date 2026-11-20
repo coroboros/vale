@@ -16,6 +16,7 @@ import {
   postcard,
   readiness,
   repairOffer,
+  shells,
   shiftDay,
   spendJokers,
   streak,
@@ -151,10 +152,14 @@ describe('the daily goal', () => {
     expect([20, 40, 60].map(welcomeXp)).toEqual([4, 8, 12]);
   });
 
+  it('names XP shells, singular up to one as French does', () => {
+    expect([0, 1, 2, 40].map(shells)).toEqual(['0 coquillage', '1 coquillage', '2 coquillages', '40 coquillages']);
+  });
+
   it('counts its last few XP in phrases', () => {
     expect([0, 34, 35, 38, 39, 40, 45].map(xp => goalTitle(xp, 40))).toEqual([
-      'Encore 40 XP aujourd’hui',
-      'Encore 6 XP aujourd’hui',
+      'Encore 40 coquillages aujourd’hui',
+      'Encore 6 coquillages aujourd’hui',
       'Plus que 5 phrases pour ton objectif du jour',
       'Plus que 2 phrases pour ton objectif du jour',
       'Plus qu’une phrase pour ton objectif du jour',

@@ -80,13 +80,17 @@ export const welcomeXp = (goal: number) => Math.round(goal / 5);
 /** From here the rest of the goal is counted in phrases, where effort speeds up (Kivetz, Urminsky & Zheng, 2006). */
 export const NEAR_GOAL = 5;
 
+/** The app's XP as travellers see them: Bernard's shells (docs/BRAND.md, « Shells »). */
+export const shellWord = (n: number) => (n > 1 ? 'coquillages' : 'coquillage');
+export const shells = (n: number) => `${n} ${shellWord(n)}`;
+
 /** A right answer earns at least 1 XP, so the XP left is also the most phrases left. */
 export function goalTitle(xp: number, goal: number): string {
   const left = goal - xp;
   if (left <= 0) return 'Objectif du jour atteint';
   if (left === 1) return 'Plus qu’une phrase pour ton objectif du jour';
   if (left <= NEAR_GOAL) return `Plus que ${left} phrases pour ton objectif du jour`;
-  return `Encore ${left} XP aujourd’hui`;
+  return `Encore ${shells(left)} aujourd’hui`;
 }
 
 /** The Monday of `day`'s week, as French calendars start it. */
@@ -139,7 +143,12 @@ export interface Quest {
 }
 
 const QUESTS: ((goal: number) => Quest)[] = [
-  goal => ({ id: 'xp', label: `Gagne ${Math.round(goal * 1.5)} XP`, metric: 'xp', target: Math.round(goal * 1.5) }),
+  goal => ({
+    id: 'xp',
+    label: `Ramasse ${shells(Math.round(goal * 1.5))}`,
+    metric: 'xp',
+    target: Math.round(goal * 1.5),
+  }),
   () => ({ id: 'sessions', label: 'Termine 2 sessions', metric: 'sessions', target: 2 }),
   () => ({ id: 'spoken', label: 'Prononce 5 phrases à voix haute', metric: 'spoken', target: 5 }),
   () => ({ id: 'learned', label: 'Apprends 4 nouvelles phrases', metric: 'learned', target: 4 }),

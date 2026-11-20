@@ -111,6 +111,29 @@ ciphertext. The hard part is recovery when every device is lost; a key derived f
 traveller's passkey is one route (to check against browser support when building it). Then the
 GDPR side: privacy policy, deletion and export on request.
 
+## Rewards beyond the app (studied 20 November 2026)
+
+The idea: shells unlock real things at set levels, such as a 1 GB eSIM from a partner, a compass,
+binoculars. Not now, for three reasons.
+
+- Expected, tangible rewards for doing an activity lower the wish to do it once they stop. Across
+  128 experiments, rewards for taking part, finishing or reaching a level all reduced free-choice
+  intrinsic motivation (d = −0.40, −0.36 and −0.28), while positive feedback raised it (d = 0.33)
+  ([Deci, Koestner & Ryan, 1999](https://doi.org/10.1037/0033-2909.125.6.627), meta-analysis,
+  abstract read). [Cameron, Banko & Pierce (2001)](https://doi.org/10.1007/BF03392017) disagree:
+  rewards tied to a level of performance did no harm, and rewards for dull tasks helped. Shells
+  pay for practising, the case both sides treat as the riskiest, and practising for one's own trip
+  is not a dull task.
+- A reward needs someone to send it to: an account and an address, which Bagage does not keep,
+  and a guard against shells farmed on easy exercises.
+- It costs money before « The offer to test » has said anything.
+
+What fits instead: an eSIM partner's offer as the trip draws near, a service at the moment of
+need rather than a prize, through an affiliate link that earns instead of costing (your decision,
+after a privacy check of the partner's link); and rewards inside the story. A hermit crab moves to
+a bigger shell as it grows, so a level could give Bernard a new shell from the trip's country
+(TODO.md).
+
 ## Open questions (for you)
 
 - Prices for the pass (per week of trip? flat?) and the subscription.

@@ -125,6 +125,18 @@ seconds after onboarding, while the switch lived only in *Moi*. The first screen
 switched off, nothing more leaves, steps included. A page's link opens at the destination, which
 carries the same link. Like everything counted, it stays off until RUNBOOK C1.
 
+## Home's top (20 November 2026)
+
+The owner found the block from the trip button to the practice moment heavy, with nothing to cut.
+Three bold elements sat 6 px apart: the trip button at weight 750 in a white bordered pill, the
+greeting, and the moment line in bold accent colour. Hierarchy comes from contrast, scale and
+grouping, and one element should lead ([NN/g, Visual Hierarchy in UX](https://www.nngroup.com/articles/visual-hierarchy-ux-definition/),
+read from an excerpt). Now the greeting leads: the trip button is the shared chip (it was a near
+copy of it, without the flat controls' motion) and the moment line is regular weight in ink-soft,
+7.0:1 on the page. Ink in the block, summed against the background on a 390 px screenshot: 12,614
+before, 11,122 after (−12 %). A transparent button saved 2 % more but would have been a copy of
+the chip, and a card around the moment line saved nothing.
+
 ## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).
