@@ -8,6 +8,7 @@
  * - At the end, each item gets one FSRS review graded from its first attempt.
  */
 import type { CourseIndex } from '../content';
+import type { Tally } from '../counts-api';
 import { build, type Card, canBuild, EASE, type Exercise, GRADED, type Kind, NEEDS_AUDIO, TIER } from './exercises';
 import type { Grade } from './memory';
 import type { Rng } from './random';
@@ -49,6 +50,9 @@ export interface Session {
   allowed: readonly Kind[];
   matchPlayed: boolean;
   spoken: number;
+  /** The chance the session gave the current exercise of being answered right. */
+  expected: number;
+  answers: Tally;
 }
 
 export interface Outcome {
@@ -60,6 +64,7 @@ export interface Outcome {
   perfect: boolean;
   passed: boolean;
   xp: number;
+  answers: Tally;
 }
 
 const TARGET = 0.85;
@@ -108,10 +113,23 @@ export function createSession(mode: Mode, pool: PoolCard[], opts: { audio: boole
     allowed: withAudio(formats, opts.audio),
     matchPlayed: false,
     spoken: 0,
+    expected: 0,
+    answers: {},
   };
 }
 
 const open = (s: Slot) => s.stage < 3;
+
+const recallOf = (slot: Slot) => (slot.isNew ? 0.95 : Math.min(1, Math.max(0.3, slot.recall)));
+
+/** Picks the format for the slot and remembers how likely a right answer is. */
+function pick(session: Session, slot: Slot, index: CourseIndex, rng: Rng): Exercise {
+  const kind = chooseKind(session, slot, rng);
+  session.lastKind = kind;
+  session.expected = EASE[kind] * recallOf(slot);
+  session.current = build(kind, slot.card, index, rng);
+  return session.current;
+}
 
 function chooseKind(session: Session, slot: Slot, rng: Rng): Kind {
   if (slot.stage === -2) return 'guess';
@@ -121,7 +139,7 @@ function chooseKind(session: Session, slot: Slot, rng: Rng): Kind {
   let kinds = session.allowed.filter(k => tiers.includes(TIER[k]) && canBuild(k, slot.card));
   if (!kinds.length) kinds = session.allowed.filter(k => TIER[k] <= slot.stage && canBuild(k, slot.card));
   if (!kinds.length) kinds = session.allowed.filter(k => canBuild(k, slot.card));
-  const recall = slot.isNew ? 0.95 : Math.min(1, Math.max(0.3, slot.recall));
+  const recall = recallOf(slot);
   const target = targetSuccess(session.results);
   const score = (k: Kind) => Math.abs(EASE[k] * recall - target) + (k === session.lastKind ? 0.08 : 0) + rng() * 0.04;
   return kinds.reduce((best, k) => (score(k) < score(best) ? k : best), kinds[0] ?? 'speak');
@@ -147,11 +165,8 @@ export function next(session: Session, index: CourseIndex, rng: Rng): Exercise |
   const ready = candidates.filter(s => s.notBefore <= session.step && s.seen !== session.step - 1);
   const pool = ready.length ? ready : candidates;
   const slot = pool.reduce((a, b) => (b.seen < a.seen ? b : a));
-  const kind = chooseKind(session, slot, rng);
   slot.seen = session.step;
-  session.lastKind = kind;
-  session.current = build(kind, slot.card, index, rng);
-  return session.current;
+  return pick(session, slot, index, rng);
 }
 
 const slotOf = (session: Session, key: string) => session.slots.find(s => s.card.key === key);
@@ -163,9 +178,7 @@ export function setAudio(session: Session, audio: boolean, index: CourseIndex, r
   if (audio || !ex || ex.kind === 'match' || !NEEDS_AUDIO.includes(ex.kind)) return;
   const slot = slotOf(session, ex.card.key);
   if (!slot || !session.allowed.length) return;
-  const kind = chooseKind(session, slot, rng);
-  session.lastKind = kind;
-  session.current = build(kind, slot.card, index, rng);
+  pick(session, slot, index, rng);
 }
 
 /** Guess and learn cards are never graded. */
@@ -180,6 +193,8 @@ export function answer(session: Session, correct: boolean): void {
     return;
   }
   session.results.push(correct);
+  const [n, ok, expected] = session.answers[ex.kind] ?? [0, 0, 0];
+  session.answers[ex.kind] = [n + 1, ok + (correct ? 1 : 0), expected + session.expected];
   slot.firstOk ??= correct;
   if (ex.kind === 'speak' && correct) session.spoken++;
   const tier = TIER[ex.kind];
@@ -233,5 +248,6 @@ export function outcome(session: Session): Outcome {
     perfect,
     passed,
     xp: correct + productions + (perfect ? 5 : 0) + (session.matchPlayed ? 3 : 0),
+    answers: session.answers,
   };
 }

@@ -40,3 +40,13 @@ FROM counts
 WHERE name = 'step'
 GROUP BY source, value
 ORDER BY source, phones DESC;
+
+-- Answers per exercise kind (src/engine/exercises.ts), all days together: how often right, against
+-- how often the session expected right (each kind's ease times predicted recall). Far apart, the
+-- kind's ease in exercises.ts is wrong; both far from 85 %, the aim is (docs/LEARNING.md).
+SELECT kind, SUM(n) AS answers,
+  ROUND(100.0 * SUM(ok) / SUM(n), 1) AS right_pct,
+  ROUND(100.0 * SUM(expected) / SUM(n), 1) AS expected_pct
+FROM answers
+GROUP BY kind
+ORDER BY answers DESC;

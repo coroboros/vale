@@ -4,8 +4,8 @@
  * any change, when the app goes to the background, or at the next start if it could not leave.
  */
 import { effect } from '@preact/signals';
-import { type FirstStep, type Source, sourceOf } from './counts-api';
-import { dueCounts, dueSteps, inFirstWeek } from './engine/counts';
+import { type FirstStep, type Source, sourceOf, type Tally } from './counts-api';
+import { addTally, dueCounts, dueSteps, inFirstWeek, takeTally } from './engine/counts';
 import { dayKey } from './engine/progress';
 import { isStandalone } from './platform/env';
 import { db, update } from './state/store';
@@ -34,19 +34,29 @@ async function sendCounts(now = Date.now()): Promise<void> {
     const data = db.value.data[p.id];
     return data ? dueCounts(p, data, today).map(count => ({ id: p.id, count })) : [];
   });
-  if (!steps.length && !due.length) return;
+  // Every traveller's answers go as one sum: nothing tells the travellers of a phone apart.
+  const answers: Tally = {};
+  const tallied = db.value.profiles.flatMap(p => {
+    const tally = db.value.data[p.id]?.counts.answers;
+    return tally && addTally(answers, tally) ? [{ id: p.id, tally: structuredClone(tally) }] : [];
+  });
+  if (!steps.length && !due.length && !Object.keys(answers).length) return;
   sending = true;
   try {
     const response = await fetch(`${ENDPOINT}/count`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ counts: [...steps, ...due.map(d => d.count)] }),
+      body: JSON.stringify({ counts: [...steps, ...due.map(d => d.count)], answers }),
       keepalive: true,
     });
     if (response.ok)
       update(draft => {
         draft.funnel.sent.push(...steps.map(s => s.value as FirstStep));
         for (const { id, count } of due) draft.data[id]?.counts.sent.push(count.name);
+        for (const { id, tally } of tallied) {
+          const data = draft.data[id];
+          if (data) takeTally(data.counts.answers, tally);
+        }
       });
   } catch {
     // Offline or blocked: they leave next time.

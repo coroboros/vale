@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { asCounts, type Count, sessionRange } from '../../src/counts-api';
-import { closeCounts, closeSteps, dueCounts, dueSteps, inFirstWeek } from '../../src/engine/counts';
+import { asCounts, asTally, type Count, MAX_ANSWERS, sessionRange } from '../../src/counts-api';
+import {
+  addTally,
+  closeCounts,
+  closeSteps,
+  dueCounts,
+  dueSteps,
+  inFirstWeek,
+  takeTally,
+} from '../../src/engine/counts';
 import { blankData, blankDay, blankDB, blankTrip, type Profile, type ProfileData } from '../../src/state/schema';
 
 const traveller = (since: string, date = ''): Profile => ({
@@ -127,10 +135,48 @@ describe('anonymous counts', () => {
       [{ name: 'departure', day: today, value: '3', source: '' }],
       [{ name: 'step', day: today, value: 'Léa', source: '' }],
       [{ name: 'step', day: today, value: '', source: '' }],
-      [],
       Array.from({ length: 40 }, () => ({ name: 'new', day: today, value: '', source: '' })),
     ])
       expect(asCounts({ counts }, today), JSON.stringify(counts).slice(0, 60)).toBeNull();
     expect(asCounts('new', today)).toBeNull();
+    // A report may carry answers alone.
+    expect(asCounts({ counts: [], answers: {} }, today)).toEqual([]);
+    expect(asCounts({ answers: {} }, today)).toEqual([]);
+  });
+
+  it('tally answers per exercise kind only, as whole numbers within bounds', () => {
+    expect(asTally({ reco: [5, 4, 4.2], speak: [2, 1, 1.5] })).toEqual({ reco: [5, 4, 4.2], speak: [2, 1, 1.5] });
+    for (const bad of [
+      { guess: [1, 1, 1] },
+      { phrase: [1, 1, 1] },
+      { reco: [0, 0, 0] },
+      { reco: [2, 3, 1] },
+      { reco: [2, 1, 3] },
+      { reco: [1.5, 1, 1] },
+      { reco: ['5', 4, 4] },
+      { reco: [5, 4] },
+      { reco: [MAX_ANSWERS + 1, 1, 1] },
+      'reco',
+      null,
+    ])
+      expect(asTally(bad), JSON.stringify(bad)).toEqual({});
+  });
+
+  it('add answers until a report would be too full, and take off only what a report carried', () => {
+    const pending = {};
+    expect(addTally(pending, { reco: [3, 3, 2.7], dictation: [2, 1, 1.4] })).toBe(true);
+    expect(addTally(pending, { reco: [2, 1, 1.8] })).toBe(true);
+    expect(pending).toEqual({ reco: [5, 4, 4.5], dictation: [2, 1, 1.4] });
+    expect(addTally(pending, { reco: [MAX_ANSWERS, 0, 0] })).toBe(false);
+    expect(pending).toEqual({ reco: [5, 4, 4.5], dictation: [2, 1, 1.4] });
+    // Sent the first two sessions; one more answer came while the report travelled.
+    const sent = structuredClone(pending);
+    addTally(pending, { reco: [1, 1, 0.9] });
+    takeTally(pending, sent);
+    expect(pending).toEqual({ reco: [1, 1, expect.closeTo(0.9)] });
+    const data = blankData();
+    data.counts.answers = { speak: [4, 3, 3.4] };
+    closeCounts(data);
+    expect(data.counts.answers).toEqual({});
   });
 });
