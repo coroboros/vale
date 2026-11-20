@@ -157,7 +157,7 @@ function ShareSheet({ lines, onClose }: { lines: Line[]; onClose: () => void }) 
     );
     return () => URL.revokeObjectURL(link);
   }, []);
-  const text = `Ma carte pour voyager ${place.at}, faite avec ${BRAND.name} : ${BRAND.url}?utm_source=carte`;
+  const text = `Ma carte de survie pour voyager ${place.at}, faite avec ${BRAND.name} : ${BRAND.url}?utm_source=carte`;
   return (
     <Sheet title="Partager ma carte" onClose={onClose}>
       <div class="share-card">
@@ -165,7 +165,7 @@ function ShareSheet({ lines, onClose }: { lines: Line[]; onClose: () => void }) 
           <img
             class="share-preview"
             src={url}
-            alt={`Ta carte pour voyager ${place.at} : le dessin, Bernard et tes phrases`}
+            alt={`Ta carte de survie pour voyager ${place.at} : le dessin, Bernard et tes phrases`}
           />
         ) : (
           <p class="share-wait muted" role="status">
@@ -235,7 +235,7 @@ export function CardScreen() {
     <>
       <header class="page-head">
         <div class="section-head">
-          <h1>Ma carte</h1>
+          <h1>Ma carte de survie</h1>
           <button type="button" class="btn" onClick={() => setEditing(true)}>
             <Pencil size={18} aria-hidden="true" /> Modifier
           </button>

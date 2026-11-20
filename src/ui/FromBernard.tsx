@@ -12,7 +12,7 @@ export function FromBernard({ text }: { text: string }) {
         <Scenery place={pictureOf(course.value, trip.region)} />
       </div>
       <figcaption>
-        <span class="small muted">Une carte de Bernard</span>
+        <span class="small muted">Une carte postale de Bernard</span>
         <span>« {text} »</span>
       </figcaption>
     </figure>

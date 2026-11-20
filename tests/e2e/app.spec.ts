@@ -281,7 +281,7 @@ test('first launch to first lesson, progress kept after reload', async ({ page }
   await expect(page.locator('.ticket')).toContainText('coquillages');
   await expect.poll(() => steps.at(-1)).toBe('lesson-done');
   const card = page.locator('.from-bernard');
-  await expect(card).toContainText('Une carte de Bernard');
+  await expect(card).toContainText('Une carte postale de Bernard');
   await expect(card).toContainText('« Me voilà à Barcelone !');
   await expectAccessible(page, 'bilan de session');
   await page.locator('.ticket-wrap').getByRole('button', { name: 'Continuer' }).click();
@@ -548,7 +548,7 @@ test('each trip keeps its own hotel on the card, and Moi lists and switches trip
   await onboard(page);
   await leaveFirstLesson(page);
   const hotel = page.getByText('À l’hôtel Sol, s’il vous plaît.');
-  await page.getByRole('link', { name: 'Carte' }).click();
+  await page.getByRole('link', { name: 'Survie' }).click();
   await page.getByRole('button', { name: 'Modifier' }).click();
   await page.getByLabel('Mon hôtel à Barcelone').fill('Sol');
   await page.getByRole('button', { name: 'Fermer' }).click();
@@ -561,12 +561,12 @@ test('each trip keeps its own hotel on the card, and Moi lists and switches trip
   await page.getByRole('button', { name: 'Ajouter ce voyage' }).click();
   await page.getByRole('button', { name: 'Fermer' }).click();
   await expect(page.getByText('Apprend le portugais et l’espagnol pour 2 voyages')).toBeVisible();
-  await page.getByRole('link', { name: 'Carte' }).click();
-  await expect(page.getByRole('heading', { name: 'Ma carte' })).toBeVisible();
+  await page.getByRole('link', { name: 'Survie' }).click();
+  await expect(page.getByRole('heading', { name: 'Ma carte de survie' })).toBeVisible();
   await expect(hotel).toHaveCount(0);
   await page.getByRole('link', { name: 'Moi' }).click();
   await page.locator('label').filter({ hasText: 'Espagnol · Barcelone' }).click();
-  await page.getByRole('link', { name: 'Carte' }).click();
+  await page.getByRole('link', { name: 'Survie' }).click();
   await expect(hotel).toBeVisible();
 });
 
@@ -979,7 +979,7 @@ test('keeps the progress of the previous version', async ({ page }) => {
   await page.goto('./');
   await expect(page.getByRole('heading', { name: '¡Hola, Léa!' })).toBeVisible();
   await expect(page.locator('.readiness')).toContainText('2 phrases vues');
-  await page.getByRole('link', { name: 'Carte' }).click();
+  await page.getByRole('link', { name: 'Survie' }).click();
   await expect(page.getByText('Hola', { exact: true })).toBeVisible();
 });
 
@@ -1108,12 +1108,12 @@ test('a traveller sends their card as a picture, and the counts say a card broug
   });
   await onboard(page, 'Adrien', undefined, './?utm_source=carte');
   await leaveFirstLesson(page);
-  await page.getByRole('link', { name: 'Carte' }).click();
+  await page.getByRole('link', { name: 'Survie' }).click();
 
   // Where the browser cannot share a file, the picture is saved instead.
   await page.getByRole('button', { name: 'Partager ma carte' }).click();
   const save = page.getByRole('link', { name: 'Enregistrer l’image' });
-  await expect(save).toHaveAttribute('download', 'bagage-ma-carte.png');
+  await expect(save).toHaveAttribute('download', 'bagage-carte-de-survie.png');
   const preview = page.locator('.share-preview');
   expect(await preview.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1080);
   await expectAccessible(page, 'partager ma carte');
@@ -1136,7 +1136,7 @@ test('a traveller sends their card as a picture, and the counts say a card broug
     {
       type: 'image/png',
       text: expect.stringMatching(
-        /^Ma carte pour voyager à Barcelone, faite avec Bagage\s: https:.+\?utm_source=carte$/,
+        /^Ma carte de survie pour voyager à Barcelone, faite avec Bagage\s: https:.+\?utm_source=carte$/,
       ),
     },
   ]);

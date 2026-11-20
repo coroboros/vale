@@ -106,7 +106,7 @@ export async function cardPicture({
   };
 
   let y = VIEW_H + 64;
-  y = write(['Ma carte de voyage'], font.kicker, v('--ink-soft'), y, 44);
+  y = write(['Ma carte de survie'], font.kicker, v('--ink-soft'), y, 44);
   y = write(wrap(measure, font.title, title, W - 2 * PAD), font.title, v('--ink'), y + 4, 96) + 40;
   phrases.forEach((p, i) => {
     const width = W - 2 * PAD - (p.hero ? 80 : 0);
@@ -158,5 +158,5 @@ export async function cardPicture({
   for (const draw of draws) draw(ctx);
   const blob = await new Promise<Blob | null>(done => canvas.toBlob(done, 'image/png'));
   if (!blob) throw new Error('The card could not be drawn.');
-  return new File([blob], `${BRAND.name.toLowerCase()}-ma-carte.png`, { type: 'image/png' });
+  return new File([blob], `${BRAND.name.toLowerCase()}-carte-de-survie.png`, { type: 'image/png' });
 }

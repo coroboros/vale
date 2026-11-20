@@ -721,25 +721,29 @@
     animation: scn-birds 13s linear infinite;
   }
 
-  /* A flying porthole (Scenery's `fly`): the nearer the layer, the faster it passes. */
+  /*
+   * A flying porthole (Scenery's `fly`). Its wing sweeps back to the right, so the plane flies left
+   * and the land passes to the right; near layers cross the window at an approach's pace, far ones
+   * at a cruise's (docs/BRAND.md, « Motion »).
+   */
   [data-playing="true"] .scn-pan {
     animation: scn-pan var(--pan) linear infinite;
   }
 
   .scn-clouds {
-    --pan: 140s;
+    --pan: 55s;
   }
 
   .scn-far {
-    --pan: 120s;
+    --pan: 47s;
   }
 
   .scn-mid {
-    --pan: 72s;
+    --pan: 28s;
   }
 
   .scn-near {
-    --pan: 44s;
+    --pan: 17s;
   }
 
   [data-playing="true"] .scn-float {
@@ -747,7 +751,7 @@
   }
 
   [data-playing="true"] .scn-cross {
-    animation: scn-cross 30s linear infinite;
+    animation: scn-cross 24s linear infinite;
   }
 
   @keyframes scn-drift {
@@ -772,22 +776,22 @@
 
   @keyframes scn-pan {
     to {
-      translate: -360px 0;
+      translate: 360px 0;
     }
   }
 
   @keyframes scn-float {
     to {
-      translate: -18px -8px;
+      translate: 18px -8px;
     }
   }
 
   @keyframes scn-cross {
     from {
-      translate: 260px 0;
+      translate: -320px 0;
     }
     to {
-      translate: -460px 0;
+      translate: 260px 0;
     }
   }
 

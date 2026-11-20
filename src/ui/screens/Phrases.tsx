@@ -29,7 +29,7 @@ function ItemRow({ courseId, item, lang }: { courseId: string; item: Item; lang:
         type="button"
         class="icon-btn"
         aria-pressed={fav}
-        aria-label={fav ? 'Retirer de ma carte' : 'Ajouter à ma carte'}
+        aria-label={fav ? 'Retirer de ma carte de survie' : 'Ajouter à ma carte de survie'}
         onClick={() => toggleFavorite(key)}
       >
         <Star size={22} fill={fav ? 'currentColor' : 'none'} class={fav ? 'fav-on' : undefined} />
@@ -262,8 +262,8 @@ export function Phrases() {
       ) : (
         <>
           {favorites.length > 0 && (
-            <section class="section" aria-label="Mes favoris">
-              <h2>Mes favoris</h2>
+            <section class="section" aria-label="Sur ma carte de survie">
+              <h2>Sur ma carte de survie</h2>
               <ul class="phrases">
                 {favorites.map(e => (
                   <ItemRow key={e.item.id} courseId={c.id} item={e.item} lang={e.lang} />

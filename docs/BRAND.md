@@ -104,9 +104,16 @@ journey, a trip's window in « Mes voyages » and the pages' drawing, carry the 
 (`MotionToggle`): anything that moves for more than five seconds must offer one (WCAG 2.2.2).
 
 The porthole flies (20 November 2026). Its clouds, land and boats are drawn three times, one width
-apart, and slide by that width in a loop, the nearer the faster (a turn takes 140 s for the
-clouds, 120 s far off, 72 s in the middle, 44 s up close), as from a plane window: the place's
-landmarks come round one after the other, New York's statue included. So a scene's continuous
+apart, and slide by that width in a loop, so the place's landmarks come round one after the
+other, New York's statue included. They slide to the right: the wing sweeps back to the right, so
+the plane flies left, and the cloud bank between two places sweeps the same way (the first
+version flew backwards, the owner saw it). The speeds are measured. The window shows 228 of a
+scene's 360 units at every screen width. From an airliner seat a window spans about 30°: ground
+features cross it in about 11 s on approach (72 m/s, landmarks 1.5 km away) and in 22 to 32 s at
+cruise (250 m/s, 10.7 km below, looking down or at 45°), our arithmetic. So up close crosses the
+window in 11 s (a turn every 17 s), the middle, where the landmarks stand, in 18 s (28 s), far
+off in 30 s (47 s), the clouds in 35 s (55 s). The first version took 46 s for the landmarks,
+slower than a cruise. Not measured: how long travellers watch. So a scene's continuous
 lines end at x = 360 where they start at x = 0: all 23 scenes were checked on their unrolled
 strips, and the cliffs, quays and beaches that met an edge now slope into the sea past it. The
 sky carries one traveller per scene, from seven kinds in `scenery/parts.tsx` sharing three

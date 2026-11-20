@@ -27,7 +27,7 @@ const TABS: { tab: Tab; label: string; href: string; Icon: LucideIcon }[] = [
   { tab: 'home', label: 'Itinéraire', href: '#/', Icon: TreasureMap },
   { tab: 'practice', label: 'Entraînement', href: '#/entrainement', Icon: Dumbbell },
   { tab: 'phrases', label: 'Phrases', href: '#/phrases', Icon: MessageCircle },
-  { tab: 'card', label: 'Carte', href: '#/carte', Icon: LuggageTag },
+  { tab: 'card', label: 'Survie', href: '#/carte', Icon: LuggageTag },
   { tab: 'me', label: 'Moi', href: '#/moi', Icon: Traveller },
 ];
 

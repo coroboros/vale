@@ -243,6 +243,9 @@ Details in each day's commits and in docs/.
 - 20 Nov 2026. **The porthole flies**: each place's land slides past in a loop, seven kinds of sky
   traveller instead of birds everywhere, New York with its statue, the weak scenes strengthened
   (docs/BRAND.md, « Motion »).
+- 20 Nov 2026. **After your screenshots**: the porthole flies the way its wing points, at speeds
+  measured against a real window; « Ma carte de survie », « Survie » in the tab bar, under the
+  same name in « Phrases », and Bernard's postcards called so (docs/UX.md).
 
 ## Working with Claude Code on your Mac
 

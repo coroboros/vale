@@ -137,6 +137,25 @@ copy of it, without the flat controls' motion) and the moment line is regular we
 before, 11,122 after (−12 %). A transparent button saved 2 % more but would have been a copy of
 the chip, and a card around the moment line saved nothing.
 
+## Naming the survival card (20 November 2026)
+
+The owner did not understand the tab « Carte ». Counted in the app's own text, « carte » means
+six things: the menu (« La carte, s'il vous plaît »), a bank card, a transport card, a hotel key
+card, Bernard's postcards and the survival card; a travel app's « Carte » also reads as a map.
+« Survie » appears nowhere else, and it is already the brand's promise, « Les phrases de survie
+pour voyager »; French travel and language sites say « vocabulaire de survie », « guide de survie
+linguistique », « trousse de survie de la conversation » for the same few phrases (Les Sherpas,
+The Wom Travel, Sky-Scribe, read from search excerpts). One thing, one name: so the tab is
+« Survie » and the screen « Ma carte de survie ». The full name appears wherever the card is met
+without its screen around it (the title, the picture sent, its text, the file's name, the star in
+« Phrases », the statistics); inside its screen « ma carte » is enough, so people are not told
+« de survie » five times. The phrases a star adds were listed in « Phrases » as « Mes favoris »:
+the same action under a second name, so a star never told anyone it filled the card. The list is
+now « Sur ma carte de survie ». Bernard's « Une carte » became « Une carte postale ». A lifebuoy
+icon would match « Survie », but it made the tabs more alike (0.49 against 0.41, docs/BRAND.md,
+« Icons »), so the luggage tag stays. At 390 px the longer title puts « Modifier » under it, and
+at 320 px it takes two lines. Not measured: whether travellers now find the card sooner.
+
 ## How we will know
 
 - The owner times the first lesson on an iPhone: the ticket shows its minutes (RUNBOOK B7).

@@ -106,7 +106,7 @@
     z-index: 3;
     width: 160%;
     height: 124%;
-    translate: -115% 0;
+    translate: 115% 0;
     pointer-events: none;
   }
 
@@ -281,7 +281,7 @@
 
   @keyframes porthole-clouds-in {
     from {
-      translate: 115% 0;
+      translate: -115% 0;
     }
     to {
       translate: 0 0;
