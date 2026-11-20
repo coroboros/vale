@@ -1,5 +1,5 @@
 /** The English-speaking destinations. */
-import { Arches, type Art, Boat, Lamp, RoundTree } from './parts';
+import { Arches, type Art, Boat, Lamp, Palm, RoundTree, Sailboat } from './parts';
 
 /** A London double-decker at (x, y), its wheels on the road. */
 function Bus({ x, y }: { x: number; y: number }) {
@@ -37,6 +37,160 @@ const Ferry = ({ x, y }: { x: number; y: number }) => (
         ))}
       </g>
       <path d="M-2 -24 V-32" stroke="#3E4A63" stroke-width="1.4" />
+    </g>
+  </g>
+);
+
+/** The Golden Gate Bridge: towers at x = 118 and 262, the deck at y = 148, both ends on land. */
+function GoldenGate() {
+  const red = '#C4432F';
+  const deck = 148;
+  const top = 74;
+  type Point = [number, number];
+  const start: Point = [28, deck - 1];
+  const spans: [Point, Point, Point][] = [
+    [start, [84, 128], [118, top]],
+    [
+      [118, top],
+      [190, 210],
+      [262, top],
+    ],
+    [
+      [262, top],
+      [300, 128],
+      [334, deck - 1],
+    ],
+  ];
+  const at = ([a, b, c]: [Point, Point, Point], t: number): Point => [
+    (1 - t) ** 2 * a[0] + 2 * (1 - t) * t * b[0] + t ** 2 * c[0],
+    (1 - t) ** 2 * a[1] + 2 * (1 - t) * t * b[1] + t ** 2 * c[1],
+  ];
+  const hangers = spans.flatMap((span, i) => {
+    const n = i === 1 ? 13 : 5;
+    return Array.from({ length: n }, (_, k) => at(span, (k + 1) / (n + 1)));
+  });
+  return (
+    <g>
+      <path
+        d={`M${start.join(' ')} ${spans.map(([, b, c]) => `Q${b.join(' ')} ${c.join(' ')}`).join(' ')}`}
+        fill="none"
+        stroke={red}
+        stroke-width="1.8"
+      />
+      <g stroke={red} stroke-width="0.6" opacity="0.8">
+        {hangers.map(([x, y]) => (
+          <path key={x} d={`M${x.toFixed(1)} ${y.toFixed(1)} V${deck}`} />
+        ))}
+      </g>
+      <rect x="22" y={deck} width="318" height="4" fill={red} />
+      <path d={`M22 ${deck + 6} H340`} stroke="#9C3324" stroke-width="1.2" />
+      {[118, 262].map(x => (
+        <g key={x} fill={red}>
+          <rect x={x - 6} y={top - 2} width="3.4" height={174 - top} />
+          <rect x={x + 2.6} y={top - 2} width="3.4" height={174 - top} />
+          {[top - 2, top + 16, top + 36, top + 58].map(y => (
+            <rect key={y} x={x - 6} y={y} width="12" height="3.2" />
+          ))}
+          <rect x={x - 8} y="166" width="16" height="7" fill="#8E7D6A" />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+/** A wind-shaped Monterey cypress on (x, y), its flat crown pushed inland. */
+const SeaCypress = ({ x, y, s = 1 }: { x: number; y: number; s?: number }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <path
+      d="M0 0 C-1 -12 2 -22 -2 -34 M-1 -24 C-8 -28 -16 -30 -24 -34 M0 -30 C6 -34 12 -38 16 -44"
+      fill="none"
+      stroke="#5A4632"
+      stroke-width="3"
+      stroke-linecap="round"
+    />
+    <path
+      d="M-40 -34 C-34 -42 -18 -44 -8 -40 C-4 -50 14 -54 26 -48 C34 -48 38 -42 32 -38 C20 -34 4 -36 -6 -34 C-16 -30 -32 -29 -40 -34 Z"
+      fill="#3E6B4A"
+    />
+    <path
+      d="M-30 -36 C-22 -40 -12 -40 -6 -37 M2 -44 C10 -48 20 -48 26 -45"
+      fill="none"
+      stroke="#5B8A62"
+      stroke-width="2"
+    />
+  </g>
+);
+
+/** Ocean Drive's pastel hotels, from x along the promenade at y. */
+function DecoHotels({ x, y }: { x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} 0)`}>
+      <rect x="6" y={y - 52} width="40" height="52" fill="#F7E3A1" />
+      <rect x="22" y={y - 66} width="8" height="16" fill="#F7E3A1" />
+      <rect x="48" y={y - 62} width="44" height="62" fill="#F5B8C6" />
+      <path d={`M64 ${y - 62} V${y - 80} H76 V${y - 62} Z`} fill="#F5B8C6" />
+      <path d={`M92 ${y - 46} H108 C112 ${y - 46} 114 ${y - 42} 114 ${y - 38} V${y} H92 Z`} fill="#A9E2D0" />
+      <g fill="none" stroke="#FFFFFF" stroke-width="1.6" opacity="0.9">
+        <path d={`M4 ${y - 36} H48 M4 ${y - 20} H48 M46 ${y - 44} H94 M46 ${y - 28} H94 M46 ${y - 12} H94`} />
+        <path d={`M90 ${y - 30} H116 M90 ${y - 16} H116`} />
+      </g>
+      <g fill="#3E8FA0">
+        {[12, 24, 36].map(x => (
+          <rect key={x} x={x} y={y - 32} width="6" height="8" />
+        ))}
+        {[54, 66, 78].map(x => (
+          <rect key={x} x={x} y={y - 40} width="6" height="9" />
+        ))}
+        {[54, 66, 78].map(x => (
+          <rect key={`b${x}`} x={x} y={y - 24} width="6" height="9" />
+        ))}
+        <rect x="98" y={y - 26} width="10" height="7" />
+      </g>
+      <path d={`M68 ${y - 80} V${y - 88}`} stroke="#F08AA4" stroke-width="1.4" />
+    </g>
+  );
+}
+
+/** A Miami Beach lifeguard tower on stilts, its ramp down to the sand at (x, y). */
+const LifeguardTower = ({ x, y }: { x: number; y: number }) => (
+  <g transform={`translate(${x} ${y})`}>
+    <g stroke="#E9E2D2" stroke-width="2.4">
+      <path d="M-14 0 V-20 M14 0 V-20 M-14 -6 L14 -18 M14 -6 L-14 -18" />
+    </g>
+    <path d="M14 -22 L38 0" stroke="#D9CBA8" stroke-width="4" />
+    <rect x="-20" y="-24" width="40" height="4" fill="#2BB3B1" />
+    <rect x="-17" y="-44" width="34" height="20" rx="2" fill="#FF7BA0" />
+    <rect x="-11" y="-40" width="22" height="9" fill="#FFF6E5" />
+    <path d="M-17 -30 H17" stroke="#FFD15C" stroke-width="3" />
+    <path d="M-22 -44 L0 -56 L22 -44 Z" fill="#2BB3B1" />
+    <path d="M0 -56 V-66" stroke="#59616C" stroke-width="1" />
+    <path d="M0 -66 H9 L7 -63 L9 -60 H0" fill="#E2553F" />
+  </g>
+);
+
+/** A brown pelican on its post at (x, y), the post's foot. */
+const Pelican = ({ x, y }: { x: number; y: number }) => (
+  <g transform={`translate(${x} ${y})`}>
+    <rect x="-3" y="-26" width="6" height="26" fill="#8B5E3C" />
+    <ellipse cx="0" cy="-32" rx="9" ry="6" fill="#8C7F72" />
+    <path d="M6 -36 C10 -44 6 -48 2 -46 C0 -42 2 -38 4 -36 Z" fill="#F4EFE4" />
+    <path d="M5 -46 L20 -40 L6 -42 Z" fill="#E9B44C" />
+    <path d="M-8 -32 C-12 -30 -14 -28 -15 -26" stroke="#6E6257" stroke-width="2" stroke-linecap="round" />
+  </g>
+);
+
+/** A cruise ship far out on the horizon. */
+const CruiseShip = ({ x }: { x: number }) => (
+  <g transform={`translate(${x} 0)`}>
+    <path d="M0 165 H86 L80 172 H6 Z" fill="#F4F3EE" />
+    <rect x="10" y="157" width="64" height="8" fill="#FBFAF6" />
+    <rect x="18" y="151" width="46" height="6" fill="#F4F3EE" />
+    <rect x="52" y="143" width="8" height="8" fill="#5D8FC0" />
+    <path d="M4 168 H82" stroke="#5D8FC0" stroke-width="1.4" />
+    <g fill="#9DB5CC">
+      {[14, 22, 30, 38, 46, 54, 62].map(wx => (
+        <rect key={wx} x={wx} y="159" width="4" height="2" />
+      ))}
     </g>
   </g>
 );
@@ -323,5 +477,104 @@ export const EN: Record<string, Art> = {
       </>
     ),
     near: <Ferry x={244} y={226} />,
+  },
+  californie: {
+    sky: ['#7FC3EE', '#FFE2B8'],
+    sun: { x: 64, y: 54, r: 18, color: '#FFC94D' },
+    water: ['#1D5E8C', '#7DB4D6'],
+    clouds: [
+      [150, 26, 0.6],
+      [250, 46, 0.75],
+      [320, 18, 0.45],
+    ],
+    flyer: ['gulls', 196, 64],
+    far: (
+      <>
+        <path
+          d="M0 150 C30 140 54 120 84 118 C112 116 136 140 168 146 C204 152 230 128 262 126 C298 124 322 142 360 150 V173 H0 Z"
+          fill="#D6B672"
+        />
+        <path
+          d="M0 160 C40 154 80 150 120 154 C170 160 210 150 250 148 C290 146 330 154 360 160 V173 H0 Z"
+          fill="#C29E5C"
+        />
+        <g fill="#FBF8F2" opacity="0.85">
+          <ellipse cx="182" cy="143" rx="26" ry="6" />
+          <ellipse cx="214" cy="138" rx="30" ry="9" />
+          <ellipse cx="250" cy="135" rx="28" ry="8" />
+          <ellipse cx="284" cy="139" rx="22" ry="6" />
+        </g>
+      </>
+    ),
+    mid: (
+      <>
+        <path d="M0 136 C10 134 22 138 30 146 C38 154 42 164 44 173 H0 Z" fill="#B99558" />
+        <path d="M360 136 C350 136 340 140 332 148 C326 156 322 164 320 173 H360 Z" fill="#B99558" />
+        <GoldenGate />
+      </>
+    ),
+    near: (
+      <>
+        <Sailboat x={190} y={196} s={0.9} />
+        <Sailboat x={300} y={206} s={0.7} />
+        <path d="M20 330 C30 290 50 254 84 242 C130 230 190 234 224 250 C240 278 248 304 252 330 Z" fill="#C9A95C" />
+        <path
+          d="M20 330 C30 290 50 254 84 242 C130 230 190 234 224 250"
+          fill="none"
+          stroke="#E7D3A0"
+          stroke-width="3"
+        />
+        <g fill="#F28A1E">
+          {[
+            [70, 262],
+            [96, 252],
+            [128, 258],
+            [150, 270],
+            [178, 256],
+            [108, 280],
+            [60, 290],
+            [196, 282],
+            [140, 296],
+          ].map(([px, py]) => (
+            <circle key={`${px}-${py}`} cx={px} cy={py} r="3" />
+          ))}
+        </g>
+        <path d="M262 330 C266 290 284 266 312 260 C334 258 346 270 350 330 Z" fill="#8E8070" />
+        <SeaCypress x={306} y={262} s={0.9} />
+      </>
+    ),
+  },
+
+  floride: {
+    sky: ['#6EC3F0', '#FFF4DA'],
+    sun: { x: 300, y: 48, r: 20, color: '#FFD045' },
+    water: ['#0E8FA6', '#7FDDD8'],
+    clouds: [
+      [24, 30, 0.8],
+      [140, 16, 0.55],
+      [226, 62, 0.5],
+    ],
+    flyer: ['plane', 196, 58],
+    far: <CruiseShip x={206} />,
+    mid: (
+      <>
+        <path d="M0 132 C60 126 150 126 190 138 C204 146 212 160 214 173 H0 Z" fill="#E9DCB8" />
+        <Palm x={34} y={150} h={46} lean={6} />
+        <DecoHotels x={66} y={134} />
+        <Palm x={194} y={156} h={44} lean={-6} />
+        <path d="M360 132 C330 132 306 140 296 152 C290 160 288 166 288 173 H360 Z" fill="#E9DCB8" />
+        <Palm x={330} y={156} h={52} lean={-8} />
+      </>
+    ),
+    near: (
+      <>
+        <Sailboat x={232} y={194} s={0.7} />
+        <path d="M40 330 C80 254 280 250 320 330 Z" fill="#F6E3B4" />
+        <path d="M40 330 C80 254 280 250 320 330" fill="none" stroke="#B6EEE6" stroke-width="4" />
+        <LifeguardTower x={186} y={284} />
+        <Pelican x={88} y={300} />
+        <Palm x={300} y={318} h={70} lean={-10} />
+      </>
+    ),
   },
 };

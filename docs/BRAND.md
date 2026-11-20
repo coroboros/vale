@@ -83,7 +83,7 @@ actions and progress, the whole flag on Bernard's shell.
 | Portugal | Portuguese | azulejo blue `#1D5FBF` | green and red, the armillary sphere |
 | United Kingdom | English | Union Jack navy `#012169` | the Union Jack |
 | Ireland | English, in Dublin | emerald `#1FA36A`, ink text | green, white and orange |
-| United States | English, in New York | canton blue `#3C3B6E` | stripes and a starred canton |
+| United States | English, in New York, California and Florida | canton blue `#3C3B6E` | stripes and a starred canton |
 
 - Warm paper background `#FFFAF3`, ink `#16213E`.
 - Red is kept for wrong answers, so it appears only inside flags. Portugal's flag is mostly red,
@@ -114,7 +114,7 @@ cruise (250 m/s, 10.7 km below, looking down or at 45°), our arithmetic. So up 
 window in 11 s (a turn every 17 s), the middle, where the landmarks stand, in 18 s (28 s), far
 off in 30 s (47 s), the clouds in 35 s (55 s). The first version took 46 s for the landmarks,
 slower than a cruise. Not measured: how long travellers watch. So a scene's continuous
-lines end at x = 360 where they start at x = 0: all 23 scenes were checked on their unrolled
+lines end at x = 360 where they start at x = 0: all 25 scenes were checked on their unrolled
 strips, and the cliffs, quays and beaches that met an edge now slope into the sea past it. The
 sky carries one traveller per scene, from seven kinds in `scenery/parts.tsx` sharing three
 movements: birds, gulls or storks fly past, a balloon or a paraglider drifts, a plane with its
@@ -126,6 +126,11 @@ Brooklyn Bridge went, as its deck could not loop. Weak scenes got a landmark or 
 cathedral across the Balearic bay, the statue on Monte Urgull and a larger Santa Clara in La
 Concha, Santana houses on Madeira's cliff, warmer stone for Madrid's gate, a bluer sky and a
 golden Madonnina for Milan.
+
+California is the Golden Gate over the bay, golden hills under banks of fog behind it, poppies and
+a Monterey cypress in front; its deck loops because both ends rest on headlands that meet across
+the edge. Florida is Ocean Drive's pastel hotels on the promenade, a lifeguard tower on the sand,
+a pelican on its post, a cruise ship far out and a banner plane.
 
 ## Photos
 

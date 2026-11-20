@@ -874,6 +874,30 @@ export const regions: Region[] = [
       desc: 'Le pourboire (15 à 20 %) est attendu, et les taxes s’ajoutent au prix affiché.',
     },
   },
+  {
+    id: 'californie',
+    name: 'Californie',
+    at: 'en Californie',
+    native: 'California',
+    flag: 'us',
+    pack: 'us',
+    tip: {
+      title: 'En Californie',
+      desc: 'En Californie du Sud, les autoroutes prennent l’article : « take the 405 », « the 101 ». Le pourboire (15 à 20 %) est attendu, comme dans tout le pays.',
+    },
+  },
+  {
+    id: 'floride',
+    name: 'Floride',
+    at: 'en Floride',
+    native: 'Florida',
+    flag: 'us',
+    pack: 'us',
+    tip: {
+      title: 'En Floride',
+      desc: 'À Miami, l’espagnol s’entend partout. Les péages sont presque tous sans guichet : prends l’option péage de ta voiture de location.',
+    },
+  },
   { id: 'autre', name: 'Ailleurs', at: 'au Royaume-Uni', native: 'United Kingdom', emblem: 'londres' },
 ];
 

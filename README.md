@@ -26,8 +26,8 @@ connected, the app and its translation service are served by one Worker; see RUN
   move from recognising to producing as memory strengthens, aiming at about 85 % success.
 - **Real situations.** Café, restaurant, transport, hotel, shopping, pharmacy and emergencies in
   every language, plus role-play scenes, prices said aloud, a sounds lesson and regional packs in
-  their own voice: Catalan, Basque and Galician in Spain, American words in New York, Irish ones in
-  Dublin.
+  their own voice: Catalan, Basque and Galician in Spain, American words in New York, California
+  and Florida, Irish ones in Dublin.
 - **Translate anything, keep it offline.** Type what you want to say; an AI model translates it the
   way a local would say it, with pronunciation written for French readers. Every translation stays
   in a searchable history on the phone and can join your reviews. Lexicons and translation stay at

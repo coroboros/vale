@@ -57,7 +57,12 @@ a list too long to choose from. The chips per language stay at nine at most, as 
   6.7 million ([NTTO, 2024 air travelers](https://www.trade.gov/feature-article/survey-international-air-travelers-results-2024)).
   Regions rather than cities, as for Andalusia: the French say « partir en Californie » for a road
   trip through its cities and parks, and Florida means Miami, Orlando and the Keys (our reading).
-  The course already has the US flag, pack and dollar; the photos need the Mac (RUNBOOK A1).
+  Both are drawn, with their tips; their photos need the Mac (RUNBOOK A1). The tips' facts:
+  Southern Californians put « the » before freeway numbers ([PBS SoCal](https://www.pbssocal.org/shows/lost-la/the-5-the-101-the-405-why-southern-californians-love-saying-the-before-freeway-numbers));
+  75.3 % of Miami-Dade's residents speak a language other than English at home ([Census
+  QuickFacts](https://www.census.gov/quickfacts/fact/table/miamidadecountyflorida/POP815222)),
+  mostly Spanish; Florida's tolls are mostly cashless, and a rental car pays them through the
+  rental company ([SunPass](https://www.sunpass.com/en/tolls/rentalVehicles.shtml)).
 - **Brazil: first in line, not yet.** 293,008 French visitors in 2025 (+24.6 %), Brazil's first
   European market ([TourMaG, from Embratur](https://www.tourmag.com/Le-Bresil-enregistre-une-hausse-de-20-des-touristes-europeens-en-un-an_a131347.html)).
   But Brazilian Portuguese has its own pronunciation and words, and teaching Lisbon's would train
