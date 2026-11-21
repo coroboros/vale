@@ -21,6 +21,14 @@ import { fromWelcomePage } from './screens/Onboarding';
 
 const root = document.documentElement;
 
+declare global {
+  interface Window {
+    /** Set by build/boot.ts: the « C'est parti » tapped before this script was ready. */
+    bagageStart?: HTMLElement;
+    bagageReady?: boolean;
+  }
+}
+
 function islands(page: HTMLElement, name: string, content: (data: DOMStringMap) => ComponentChildren) {
   for (const slot of page.querySelectorAll<HTMLElement>(`[data-island="${name}"]`)) render(content(slot.dataset), slot);
 }
@@ -75,6 +83,8 @@ function welcome(page: HTMLElement, app: HTMLElement) {
         }
       });
     });
+  window.bagageReady = true;
+  window.bagageStart?.click();
 }
 
 /** Renders the app, behind the welcome page for a newcomer in a browser; loaded data can still overrule build/boot.ts. */

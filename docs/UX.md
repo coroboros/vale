@@ -228,7 +228,9 @@ first paint; then the app's own pieces settle on it: the flying window, the inst
 statistics link (`ui/welcome-page.tsx`). Before anything is painted, a few inline lines
 (`build/boot.ts`, allowed by their hash in the Content Security Policy) send to the app the
 installed app, a traveller who has already set off and any link into the app (`#/…`); `start_url`
-stays the app. The installed app's first launch keeps the short welcome: on an iPhone, its storage
+stays the app. The same lines keep a tap on « C’est parti » made before the app's script has
+started, which waits for the memory model, and the script plays it once ready: a test that clicked
+at once once lost it (21 November 2026), and a traveller on a slow phone would have too. The installed app's first launch keeps the short welcome: on an iPhone, its storage
 starts empty even for someone who set off in Safari. « C’est parti » opens onboarding at its first
 question, since the page already says what the welcome said: the first exercise stays seven
 screens away, the page counted as the first. « Retour » there brings the page back where it was

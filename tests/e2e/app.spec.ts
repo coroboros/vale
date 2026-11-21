@@ -355,6 +355,21 @@ test('a newcomer reads the welcome page; « C’est parti » opens the first que
   expect(await page.evaluate(() => scrollY)).toBe(y);
 });
 
+test('a tap on « C’est parti » before the app’s script has started is not lost', async ({ page }) => {
+  let release = () => {};
+  const held = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  await page.route('**/assets/index-*.js', async route => {
+    await held;
+    await route.continue();
+  });
+  await page.goto('./', { waitUntil: 'commit' });
+  await page.getByRole('button', { name: 'C’est parti' }).first().click();
+  release();
+  await expect(page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' })).toBeFocused();
+});
+
 test('the welcome page sends a postcard from each language: its photo and credit, a café phrase to hear', async ({
   page,
 }) => {

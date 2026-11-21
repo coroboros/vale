@@ -151,7 +151,8 @@ kit, the screens), and plan the smallest change. Then:
   service or image host goes there, or the end-to-end tests fail.
 - `build/welcome.ts`: the welcome page, written into `index.html` for newcomers in a browser and
   for crawlers that run no script; `build/boot.ts`, its inline first lines, which send the installed
-  app, a traveller who has set off and links into the app to the app before the first paint.
+  app, a traveller who has set off and links into the app to the app before the first paint, and
+  keep a tap on « C'est parti » made before the app's script is ready.
 - `build/legal.ts`: « Mentions légales » and « Confidentialité », from the publisher and the hosts
   in `src/brand.ts`, the central configuration; `build/html.ts`, escaping, French spacing and a
   country's colours for all the static HTML.

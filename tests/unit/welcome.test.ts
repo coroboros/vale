@@ -7,19 +7,29 @@ import { languageOf } from '../../src/content/pages';
 import { STORAGE_KEY } from '../../src/state/schema';
 import { THEMES } from '../../src/ui/themes';
 
-/** Runs index.html's first lines in a made-up browser and returns the view they chose. */
-function boot({ installed = false, iPhoneIcon = false, saved = null as string | null, hash = '' } = {}) {
+/** Runs index.html's first lines in a made-up browser: the view they chose, and how they take a tap. */
+function run({ installed = false, iPhoneIcon = false, saved = null as string | null, hash = '' } = {}) {
   const documentElement = { dataset: {} as Record<string, string> };
+  const clicks: ((event: { target: { closest: (selector: string) => unknown } }) => void)[] = [];
+  const window: { bagageStart?: unknown; bagageReady?: boolean } = {};
   const browser = {
     matchMedia: (query: string) => ({ matches: installed && query === '(display-mode: standalone)' }),
     navigator: { standalone: iPhoneIcon },
     localStorage: { getItem: (key: string) => (key === STORAGE_KEY ? saved : null) },
     location: { hash },
     document: { documentElement },
+    addEventListener: (type: string, listener: (typeof clicks)[number]) => type === 'click' && clicks.push(listener),
+    window,
   };
   new Function(...Object.keys(browser), BOOT_SCRIPT)(...Object.values(browser));
-  return documentElement.dataset.view;
+  /** A tap on an element that is, or sits in, the one `closest` finds. */
+  const tap = (found: unknown) => {
+    for (const listener of clicks) listener({ target: { closest: () => found } });
+  };
+  return { view: documentElement.dataset.view, tap, window };
 }
+
+const boot = (options?: Parameters<typeof run>[0]) => run(options).view;
 
 describe('the welcome page', () => {
   it('greets a newcomer in a browser', () => {
@@ -36,6 +46,19 @@ describe('the welcome page', () => {
 
   it('still greets when the stored data cannot be read', () => {
     expect(boot({ saved: '{not json' })).toBeUndefined();
+  });
+
+  it('keeps a tap on « C’est parti » until the app is ready to play it, and no tap after', () => {
+    const page = run();
+    const button = { id: 'start' };
+    page.tap(null);
+    expect(page.window.bagageStart).toBeUndefined();
+    page.tap(button);
+    expect(page.window.bagageStart).toBe(button);
+    page.window.bagageStart = undefined;
+    page.window.bagageReady = true;
+    page.tap(button);
+    expect(page.window.bagageStart).toBeUndefined();
   });
 
   it('is written into index.html for search engines, in a newcomer’s colours', () => {
