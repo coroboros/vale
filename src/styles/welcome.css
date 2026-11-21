@@ -703,7 +703,8 @@
     }
   }
 
-  /* From the page into the app: the app rises as the page fades. */
+  /* From the page into the app and back: the new view rises as the old one fades. Chrome sends taps
+     to the root while a view transition runs, so the page takes none during it: keep it short. */
   ::view-transition-old(root) {
     animation: fade-in var(--t-view) var(--ease-out) reverse both;
   }

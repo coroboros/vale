@@ -318,8 +318,8 @@ only, off the main thread; still for reduced motion and in browsers without scro
 2026's platform does the rest: view timelines with named ranges, `atan2()` over container units
 so the plane keeps to its curve at any width, an oklch dawn, a scroll trigger for Bernard's one
 jump (Chrome; elsewhere he simply stays put), and a view transition from the page into the app
-(not back: inside one, Chrome 159 left the page at its foot instead of where the traveller was,
-seen in CI).
+and back. While a document view transition runs, Chrome sends taps to the root, so the page takes
+none for those 0.32 s (measured in Chrome 153 and 159): the fade stays short.
 Set aside: parallax backgrounds and full-screen layers (vestibular triggers, and a full-screen
 layer costs a phone about 12 MB of graphics memory at three pixels per point, our arithmetic),
 content that slides in (it hides and rushes content), loops on the clock (they would need a pause),
@@ -341,6 +341,10 @@ Measured, Chrome 153 on a phone-size and a desktop screen:
   58 ms; 442 KiB, 3 more.
 - **Bernard's jump** plays once, when the boarding call is fully in view, and not again on the
   way back up.
+- **« Retour »** brings the page back where the traveller left it, faded or not, in Chrome 153
+  and 159. A first CI run said otherwise: its test clicked the end button while the previous fade
+  ran, so the tap reached the page only after the test tool had scrolled the button elsewhere, and
+  « Retour » rightly came back there; the test now waits for each fade, as a traveller does.
 
 Not measured: smoothness on a real phone (headless Chrome draws without a graphics card, so its
 frame counts say nothing), Safari 26 and Firefox 159, which this machine cannot run (TODO.md), and

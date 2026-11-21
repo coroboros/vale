@@ -152,6 +152,16 @@ async function onboard(
   );
 }
 
+/** The page fades into the app and back, and takes no tap until the fade is over. */
+async function fadeDone(page: Page) {
+  await page.waitForFunction(
+    () =>
+      !document
+        .getAnimations()
+        .some(a => (a.effect as KeyframeEffect | null)?.pseudoElement?.startsWith('::view-transition')),
+  );
+}
+
 /** Looping animations and those tied to the scroll excepted, so checks see the final look. */
 async function settle(page: Page) {
   await page.waitForFunction(() =>
@@ -322,18 +332,24 @@ test('a newcomer reads the welcome page; « C’est parti » opens the first que
   await expect(welcome.locator('.porthole')).toBeVisible();
   await expect(page.locator('#app')).toBeEmpty();
   const [top, end] = await welcome.getByRole('button', { name: 'C’est parti' }).all();
+  // Each way fades, and the page takes no tap until the fade is over: a traveller waits for it, so
+  // does the test, or its click would land later, after scrolling the button elsewhere.
   await top!.click();
   await expect(page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' })).toBeFocused();
   await expect(welcome).toHaveCount(0);
+  await fadeDone(page);
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(top!).toBeFocused();
   await expect(page.locator('#app')).toBeEmpty();
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await fadeDone(page);
   // From the end of the page, « Retour » comes back to the end.
   await end!.scrollIntoViewIfNeeded();
   const y = await page.evaluate(() => scrollY);
   await end!.click();
   await expect(page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' })).toBeVisible();
   expect(await page.evaluate(() => scrollY)).toBe(0);
+  await fadeDone(page);
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(end!).toBeFocused();
   expect(await page.evaluate(() => scrollY)).toBe(y);
