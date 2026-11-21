@@ -49,15 +49,19 @@ function welcome(page: HTMLElement, app: HTMLElement) {
       // Back comes at once, the way out finished first: inside a view transition, Chrome 159 left the
       // page at its foot rather than where the traveller had scrolled (seen in CI).
       let flight: ViewTransition | undefined;
+      const home = () => {
+        fromWelcomePage.value = null;
+        render(null, app);
+        app.before(page);
+        delete root.dataset.view;
+        scrollTo(0, y);
+        button.focus();
+      };
       fromWelcomePage.value = {
         back: () => {
           flight?.skipTransition();
-          fromWelcomePage.value = null;
-          render(null, app);
-          app.before(page);
-          delete root.dataset.view;
-          scrollTo(0, y);
-          button.focus();
+          if (document.startViewTransition && !reducedMotion()) document.startViewTransition(home);
+          else home();
         },
       };
       const board = () => {
