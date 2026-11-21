@@ -259,6 +259,11 @@ async function playStep(page: Page, keyboard = false) {
 /** Screens a newcomer goes through before the first exercise, answering only what is required. */
 async function screensBeforeFirstExercise(page: Page, url: string) {
   await page.goto(url);
+  return toFirstExercise(page);
+}
+
+/** Through onboarding by its main button, the first name the only answer: how many screens it took. */
+async function toFirstExercise(page: Page) {
   for (let screens = 0; screens < 12; screens++) {
     if (await page.locator('.ex').first().isVisible()) return screens;
     const heading = await page.locator('h1').first().textContent();
@@ -353,6 +358,61 @@ test('a newcomer reads the welcome page; « C’est parti » opens the first que
   await page.getByRole('button', { name: 'Retour' }).click();
   await expect(end!).toBeFocused();
   expect(await page.evaluate(() => scrollY)).toBe(y);
+});
+
+test('the browser’s back brings the welcome page back from onboarding and forward opens it again; the first lesson takes onboarding’s place in the history', async ({
+  page,
+}) => {
+  let entries = 0;
+  await onboard(page, 'Adrien', async step => {
+    if (step !== 'language') return;
+    const question = page.getByRole('heading', { name: 'Quelle langue pour ce voyage ?' });
+    await expect(question).toBeFocused();
+    entries = await page.evaluate(() => history.length);
+    await fadeDone(page);
+    await page.goBack();
+    await expect(page.locator('#welcome').getByRole('button', { name: 'C’est parti' }).first()).toBeFocused();
+    await expect(page.locator('#app')).toBeEmpty();
+    await fadeDone(page);
+    await page.goForward();
+    await expect(question).toBeFocused();
+    await fadeDone(page);
+  });
+  await page.getByRole('button', { name: 'Apprendre ma première phrase' }).click();
+  await expect(page.getByRole('button', { name: 'Quitter la session' })).toBeVisible();
+  expect(await page.evaluate(() => history.length)).toBe(entries);
+});
+
+test('a traveller a card brought, who sets off from a page beside the app, is counted as brought by the card', async ({
+  page,
+}) => {
+  const counted: { name: string; source: string }[] = [];
+  await page.route(`${TRANSLATE_URL}/count`, async route => {
+    counted.push(...route.request().postDataJSON().counts);
+    await route.fulfill({ status: 204 });
+  });
+  await page.goto('./?utm_source=carte');
+  await page.locator('.wp-card').first().getByRole('link', { name: 'Commander un café en espagnol' }).click();
+  await page.getByRole('link', { name: 'Apprendre ces phrases' }).first().click();
+  await expect(page).toHaveURL(/\?utm_source=page#\/apprendre\/es\/bar$/);
+  await toFirstExercise(page);
+  await expect.poll(() => counted.find(c => c.name === 'new')?.source).toBe('carte');
+});
+
+test.describe('without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('the welcome page says JavaScript is needed where its buttons would be, and shows no button that would do nothing', async ({
+    page,
+  }) => {
+    await page.goto('./');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('bagage');
+    await expect(page.getByRole('button')).toHaveCount(0);
+    // Text locators skip <noscript>, so the notes are found by their place.
+    const needed = page.locator('noscript .wp-note');
+    await expect(needed).toHaveText(Array(2).fill(`Active JavaScript pour utiliser ${BRAND.name}.`));
+    await expect(needed.first()).toBeVisible();
+  });
 });
 
 test('a tap on « C’est parti » before the app’s script has started is not lost', async ({ page }) => {

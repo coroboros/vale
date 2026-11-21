@@ -126,20 +126,21 @@ kit, the screens), and plan the smallest change. Then:
   a file.
 - `src/state/`: stored data, repaired by `sanitize`. A profile has a list of trips and the one in
   focus (`tripOf`); progress is keyed by language, so trips in one language share it.
-- `src/ui/`: screens, components (`kit.tsx`), `icons.tsx` (Bernard's beach drawn on Lucide's grid), `Mascot.tsx` (Bernard; the app gives him the screen's
-  flag through `ScreenFlag`, so the pages can show him without the app's data), `MotionToggle.tsx`
-  (the pause of every moving drawing), `welcome-page.tsx` (the welcome page's pieces and its way
-  into onboarding; styles in `styles/welcome.css`; each piece is a Preact root of its own, where
-  `useId` starts again, so a drawing there names its ids itself), `Imagine.tsx` (closes onboarding and lands every new
-  trip, `screens/Landing.tsx`), `Team.tsx` (travellers sharing a phone), `FromBernard.tsx` (his
-  latest postcard), `card-image.ts` (the survival card as a picture to send), `Porthole.tsx` (the
-  welcome flight and the trip being chosen), `scenery/` (a drawing per destination, one module per
-  country, shared pieces and the sky's travellers in `parts.tsx`; a flying porthole loops each
-  layer, so continuous lines end at x = 360 where they start; `pictureOf` in `content/` picks a trip's drawing and photo,
-  « Ailleurs » its country's emblem; `WelcomeScenes.tsx`, the welcome page's clouds, route and
-  beach), `themes.ts` (colours per country, from the trip's `flagOf`,
-  contrast checked by a test), `photos.json` (one photo per destination with its credit, written by
-  `brand/photos.py`; files in `public/photos/`).
+- `src/ui/`: screens, components (`kit.tsx`), `icons.tsx` (Bernard's beach drawn on Lucide's
+  grid), `Mascot.tsx` (Bernard; the app gives him the screen's flag through `ScreenFlag`, so the
+  pages can show him without the app's data), `MotionToggle.tsx` (the pause of every moving
+  drawing), `welcome-page.tsx` (the welcome page's pieces and its way into onboarding and back,
+  through a history entry of its own; styles in `styles/welcome.css`; each piece is a Preact root
+  of its own, where `useId` starts again, so a drawing there names its ids itself), `Imagine.tsx`
+  (closes onboarding and lands every new trip, `screens/Landing.tsx`), `Team.tsx` (travellers
+  sharing a phone), `FromBernard.tsx` (his latest postcard), `card-image.ts` (the survival card as
+  a picture to send), `Porthole.tsx` (the welcome flight and the trip being chosen), `scenery/` (a
+  drawing per destination, one module per country, shared pieces and the sky's travellers in
+  `parts.tsx`; a flying porthole loops each layer, so continuous lines end at x = 360 where they
+  start; `pictureOf` in `content/` picks a trip's drawing and photo, « Ailleurs » its country's
+  emblem; `WelcomeScenes.tsx`, the welcome page's clouds, route and beach), `themes.ts` (colours
+  per country, from the trip's `flagOf`, contrast checked by a test), `photos.json` (one photo per
+  destination with its credit, written by `brand/photos.py`; files in `public/photos/`).
 - `src/translation-api.ts`: the request and answer shared with the Worker.
 - `src/counts-api.ts`: the anonymous counts behind the decision figures, a newcomer's first
   steps (`FIRST_STEPS`, which also orders onboarding's screens) and the answers per exercise kind

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BOOT_SCRIPT } from '../../build/boot';
-import { welcomeHtml } from '../../build/welcome';
+import { credit, welcomeHtml } from '../../build/welcome';
 import { BRAND } from '../../src/brand';
 import { COURSES } from '../../src/content';
 import { languageOf } from '../../src/content/pages';
@@ -69,5 +69,22 @@ describe('the welcome page', () => {
     expect(html).toContain('data-start');
     for (const course of COURSES) expect(html).toContain(`href="${languageOf(course)}/"`);
     expect(html).toContain(`--accent: ${THEMES[COURSES[0]!.flag].accent}`);
+  });
+
+  it('credits a photo whose license has no address in plain text, as « Imagine » does', () => {
+    const photo = {
+      id: 'x',
+      alt: '',
+      focus: 0.5,
+      author: 'Ana',
+      license: 'Public domain',
+      licenseUrl: '',
+      source: 'https://commons.wikimedia.org/wiki/File:X.jpg',
+    };
+    expect(credit(photo)).toContain('</a>, Public domain, recadrée</figcaption>');
+    expect(credit(photo)).not.toContain('href=""');
+    expect(credit({ ...photo, licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0' })).toContain(
+      '<a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noreferrer">Public domain</a>',
+    );
   });
 });

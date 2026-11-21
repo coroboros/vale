@@ -224,17 +224,28 @@ drawings, while the installed app keeps opening on the app.
 
 Decision: one address, two doors. The build writes the welcome page into `index.html`
 (`build/welcome.ts`), so crawlers that run no script read it, in a newcomer's colours from the
-first paint; then the app's own pieces settle on it: the flying window, the install button, the
-statistics link (`ui/welcome-page.tsx`). Before anything is painted, a few inline lines
-(`build/boot.ts`, allowed by their hash in the Content Security Policy) send to the app the
-installed app, a traveller who has already set off and any link into the app (`#/…`); `start_url`
-stays the app. The same lines keep a tap on « C’est parti » made before the app's script has
-started, which waits for the memory model, and the script plays it once ready: a test that clicked
-at once once lost it (21 November 2026), and a traveller on a slow phone would have too. The installed app's first launch keeps the short welcome: on an iPhone, its storage
-starts empty even for someone who set off in Safari. « C’est parti » opens onboarding at its first
+first paint; then the app's own pieces settle on it: the flying window, the voices, the drawings,
+the install button, the statistics link (`ui/welcome-page.tsx`). Before anything is painted, a few
+inline lines (`build/boot.ts`, allowed by their hash in the Content Security Policy) send to the
+app the installed app, a traveller who has already set off and any link into the app (`#/…`);
+`start_url` stays the app. The same lines keep a tap on « C’est parti » made before the app's
+script has started, which waits for the memory model, and the script plays it once ready: a test
+that clicked at once once lost it (21 November 2026), and a traveller on a slow phone would have
+too. The installed app's first launch keeps the short welcome: on an iPhone, its storage starts
+empty even for someone who set off in Safari. « C’est parti » opens onboarding at its first
 question, since the page already says what the welcome said: the first exercise stays seven
-screens away, the page counted as the first. « Retour » there brings the page back where it was
-left; the page leaves the document while the app shows, so there is only ever one to read.
+screens away, the page counted as the first. The page leaves the document while the app shows, so
+there is only ever one to read.
+
+Onboarding opened from the page has a history entry of its own (21 November 2026): the browser's
+back, like « Retour » on the first question, brings the page back where it was left, and forward
+opens onboarding again. Before, a back gesture left Bagage altogether, onboarding's answers with
+it. The first lesson then takes that entry's place, so going back from the lesson does not land
+on an onboarding already done. Where the browser animates a swipe back itself, as Safari does, the
+page does not fade on top of it: browsers say so with `hasUAVisualTransition` (Chrome 118, Safari
+18; [MDN](https://developer.mozilla.org/docs/Web/API/PopStateEvent/hasUAVisualTransition)).
+Without JavaScript, the page reads the same but shows no button that would do nothing: where they
+would be, it says to turn JavaScript on (`@media (scripting: none)`).
 
 Measured with Lighthouse 13.6, mobile settings, the median of three runs alternating on an idle
 machine; before is the app's own welcome (4aa67e0):
@@ -282,11 +293,12 @@ its credit, a passport stamp, the first phrase of the café lesson with its pron
 voice of the device, and a link to its situation page. Then how it works, three stops on the
 itinerary's dotted path, each with the icon of the tab that keeps it in the app. Then the boarding
 call: Bernard, « C’est parti » again and the install button, now that the page has said what Bagage
-is worth (web.dev, above). The motion stays the app's: the window's flight, Bernard's eyes, the
-buttons' lift; no section fades in, as the motion rule in AGENTS.md asks. The Bernard of the
-boarding call neither bobs nor blinks, only follows the pointer: moving on for more than five
-seconds, he would need a pause button (WCAG 2.2.2), and the first check counted his blinks with the
-window's. As an overlay, as in « Imagine », a credit covered 7 to 18 % of a photo on a 390 px phone
+is worth (web.dev, above). The motion of this first page stayed the app's: the window's flight,
+Bernard's eyes, the buttons' lift; no section fades in, as the motion rule in AGENTS.md asks. The
+day below added drawings that follow the scroll, never the words. The Bernard of the boarding call
+neither bobs nor blinks: moving on for more than five seconds, he would need a pause button (WCAG
+2.2.2), and the first check counted his blinks with the window's. He follows the pointer, and
+jumps once when the boarding call comes into view (« The welcome page's day »). As an overlay, as in « Imagine », a credit covered 7 to 18 % of a photo on a 390 px phone
 and 24 % on each of the four desktop cards: it goes under the photo. The photos load only near the
 screen, and their frames are sized before they arrive. On a computer, the first screen ends on the
 next title, so the page reads as going on.
@@ -343,8 +355,8 @@ Measured, Chrome 153 on a phone-size and a desktop screen:
   58 ms; 442 KiB, 3 more.
 - **Bernard's jump** plays once, when the boarding call is fully in view, and not again on the
   way back up.
-- **« Retour »** brings the page back where the traveller left it, faded or not, in Chrome 153
-  and 159. A first CI run said otherwise: its test clicked the end button while the previous fade
+- **« Retour »**, and since 21 November the browser's back, bring the page back where the
+  traveller left it, faded or not, in Chrome 153 and 159. A first CI run said otherwise: its test clicked the end button while the previous fade
   ran, so the tap reached the page only after the test tool had scrolled the button elsewhere, and
   « Retour » rightly came back there; the test now waits for each fade, as a traveller does.
 

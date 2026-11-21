@@ -7,6 +7,7 @@
 import { BRAND, HOSTS, PUBLISHER, type Publisher } from '../src/brand.ts';
 import { LEGAL } from '../src/content/pages.ts';
 import { COUNTED } from '../src/counts-api.ts';
+import { lowerFirst } from '../src/ui/french.ts';
 import { esc, t } from './html.ts';
 
 /** On every page beside the app and on the welcome page, as the law asks the notice to be easy to reach. */
@@ -35,7 +36,6 @@ export interface LegalPage {
 }
 
 const mail = (address: string) => `<a href="mailto:${esc(address)}">${esc(address)}</a>`;
-const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 /** Said wherever the invented publisher appears, so nobody takes it for the real one. */
 const INVENTED = `${BRAND.name} n’est pas encore lancé : cet éditeur est imaginaire, le vrai sera nommé avant le lancement.`;
 

@@ -125,13 +125,13 @@ export function startFirstLesson({ replace, lessonId }: { replace?: boolean; les
   if (lesson) startSession({ kind: 'lesson', lessonId: lesson.id }, lesson.title, { replace });
 }
 
+/** A page's language that no trip of the traveller's speaks: home opens « Nouveau voyage » in it. */
+export const tripAsked = signal<{ course: string; lesson?: string } | null>(null);
+
 /**
  * A page for search engines sends a traveller already here: to their trip in that language, if any,
  * and into the lesson when the page named one.
  */
-/** A page's language that no trip of the traveller's speaks: home opens « Nouveau voyage » in it. */
-export const tripAsked = signal<{ course: string; lesson?: string } | null>(null);
-
 export function openLesson(courseId: string, lessonId?: string): void {
   const trip = profile.value?.trips.find(t => t.course === courseId);
   if (trip) focusTrip(trip.id);

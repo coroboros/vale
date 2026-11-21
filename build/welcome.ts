@@ -5,7 +5,7 @@
  * already set off and a link into the app skip it before the first paint (build/boot.ts).
  */
 import type { Plugin } from 'vite';
-import { BRAND } from '../src/brand.ts';
+import { BRAND, WELCOME } from '../src/brand.ts';
 import { COURSES, flagOf, pictureOf, regionOf, WELCOME_TRIP } from '../src/content/index.ts';
 import { languageOf, pagePath, SITUATIONS } from '../src/content/pages.ts';
 import type { Course } from '../src/content/types';
@@ -24,8 +24,8 @@ function hero(counts: boolean): string {
         <div class="welcome-art">
           <div class="porthole-slot" data-island="journey"></div>
           <p class="porthole-hint">
-            <span class="on-touch">${t('Touche le hublot, ou Bernard.')}</span>
-            <span class="on-mouse">${t('Clique sur le hublot, ou sur Bernard.')}</span>
+            <span class="on-touch">${t(WELCOME.touch)}</span>
+            <span class="on-mouse">${t(WELCOME.mouse)}</span>
           </p>
         </div>
         <div class="welcome-text">
@@ -39,14 +39,18 @@ function hero(counts: boolean): string {
       </section>`;
 }
 
+/** Without a script nothing would answer the button: the page says so in its place (styles/welcome.css). */
 const actions = (kind: string) => `<div class="${kind}">
-          <button type="button" class="btn btn-primary btn-block" data-start>${t('C’est parti')}</button>
+          <button type="button" class="btn btn-primary btn-block" data-start>${t(WELCOME.start)}</button>
           <div data-island="install"></div>
+          <noscript><p class="wp-note">${t(`Active JavaScript pour utiliser ${BRAND.name}.`)}</p></noscript>
         </div>`;
 
+const link = (href: string, text: string) => `<a href="${esc(href)}" target="_blank" rel="noreferrer">${esc(text)}</a>`;
+
 /** The same credit as « Imagine »'s (ui/Imagine.tsx): the licenses ask for the author and the license. */
-const credit = (photo: Photo) =>
-  `<figcaption class="photo-credit">${t('Photo :')} <a href="${esc(photo.source)}" target="_blank" rel="noreferrer">${esc(photo.author)}</a>, <a href="${esc(photo.licenseUrl)}" target="_blank" rel="noreferrer">${esc(photo.license)}</a>${t(', recadrée')}</figcaption>`;
+export const credit = (photo: Photo) =>
+  `<figcaption class="photo-credit">${t('Photo :')} ${link(photo.source, photo.author)}, ${photo.licenseUrl ? link(photo.licenseUrl, photo.license) : esc(photo.license)}${t(', recadrée')}</figcaption>`;
 
 /** A postcard from a language's first destination: its photo, and the first phrase of its café lesson. */
 function postcard(course: Course, regionId: string): string {
@@ -93,7 +97,11 @@ function postcards(): string {
 
 /** Each step wears the icon of the tab where the app keeps it (ui/App.tsx). */
 const STEPS: [tab: string, title: string, text: string][] = [
-  ['home', 'Ton voyage', 'Choisis ta destination et ta date de départ : Bagage prépare les phrases de ce voyage.'],
+  [
+    'home',
+    'Ton voyage',
+    `Choisis ta destination et ta date de départ : ${BRAND.name} prépare les phrases de ce voyage.`,
+  ],
   ['practice', 'Quelques minutes par jour', 'Des exercices courts, qui reviennent juste avant que tu oublies.'],
   [
     'card',

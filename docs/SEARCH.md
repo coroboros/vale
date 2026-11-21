@@ -12,6 +12,12 @@ reports, or a study far from our case), **weak** (opinion). *Inference* marks ou
 - 29 addresses for search engines: the app, a page per language (4) and a page per situation and
   language (24), all in `sitemap.xml`.
 - Not yet: a domain, Search Console, Bing Webmaster Tools (owner, B2 and B4).
+- The welcome page (20 November 2026), in the HTML crawlers read, links each language's page from
+  its footer and each language's café page from its postcards (docs/UX.md, « The welcome page »),
+  below the first screen, where they leave « C’est parti » alone. Such links had been set aside:
+  a traveller a card brought who went on to a page and set off from it would have counted as one a
+  page brought. A new traveller's counts now take the first link the phone came through, the one
+  its first steps count (`firstArrivedFrom`, `src/counts.ts`), so the card keeps them.
 
 ## What the sources say
 
@@ -166,11 +172,6 @@ and nothing about travellers. The first run (19 November 2026) sent 29 addresses
 
 ## Considered, not done
 
-- **Links from the app's welcome screen to the language pages.** Links from the most-linked page
-  would help crawlers find and weigh the pages, but a link there competes with « C’est parti »,
-  and a traveller sent by a card who detoured through a page would come back counted as arriving
-  from a page (the counts by link). Revisit if Search Console reports the pages as « Détectée, actuellement non
-  indexée ».
 - **More pages per wording** (« commander une bière en espagnol »…): scaled content abuse. A page
   is added when it carries something of its own: a lesson and its scene.
 - **Course, practice problem or FAQ markup**: retired or not shown for a site like ours.

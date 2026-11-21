@@ -4,6 +4,9 @@ const and = new Intl.ListFormat('fr-FR', { type: 'conjunction' });
 
 export const andList = (items: readonly string[]) => and.format(items);
 
+/** A title or a sentence carried on inside another: « Commander un café » after « En situation : ». */
+export const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+
 const DAYS = {
   weekday: new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }),
   day: new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' }),

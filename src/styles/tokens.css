@@ -50,6 +50,8 @@
     --t-hover: 0.16s;
     /* From one view to the next, such as the welcome page into the app. */
     --t-view: 0.32s;
+    /* Bernard's jump, wherever he jumps. */
+    --t-jump: 0.6s;
 
     /* The welcome page's day, from dawn over the window to sunset on the beach (styles/welcome.css). */
     --sky-high: #e4effa;
@@ -58,6 +60,8 @@
     --sky-sunset: #ffc89e;
     --sun: #ffc53d;
     --sun-low: #ff9a4d;
+    /* The sun's halo and its glint on the sea. */
+    --sunlight: #ffe19e;
     --sea-far: #a8d2f0;
     --sea-near: #4f93d8;
     --sand-wet: #e5c895;

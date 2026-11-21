@@ -10,15 +10,13 @@ import { COURSES, pictureOf } from '../src/content/index.ts';
 import { languageOf, pagePath, questionOf, SITUATIONS, type Situation, sceneAfter } from '../src/content/pages.ts';
 import type { Course, Tip } from '../src/content/types.ts';
 import { countsEndpoint } from '../src/counts-api.ts';
-import { ofLanguage, theLanguage } from '../src/ui/french.ts';
+import { lowerFirst, ofLanguage, theLanguage } from '../src/ui/french.ts';
 import { securityPolicy } from './csp.ts';
 import { frenchProse, frenchText } from './french-spaces.ts';
 import { esc, t, themeStyle } from './html.ts';
 import { type Legal, legalLinks, legalOf, legalPages } from './legal.ts';
 
 const SHARE_IMAGE = { path: 'og.png', width: 1200, height: 630 };
-
-const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 interface Assets {
   script: string;
@@ -322,7 +320,7 @@ export function searchPages(): Plugin {
     apply: 'build',
     configResolved(config) {
       policy = securityPolicy(config.env);
-      // The publisher's identity and the host come from the deploy, not from this repository.
+      // The publisher comes from src/brand.ts, the host from the deploy (SITE_HOST).
       legal = legalOf(process.env, countsEndpoint(config.env.VITE_COUNTS_URL) !== '');
     },
     transformIndexHtml: () => {

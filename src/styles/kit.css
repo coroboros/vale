@@ -687,7 +687,7 @@
   }
 
   .mascot.jump {
-    animation: jump 0.6s var(--spring) both;
+    animation: jump var(--t-jump) var(--spring) both;
   }
 
   .mascot-pupil {

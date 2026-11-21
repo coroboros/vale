@@ -6,11 +6,11 @@ import { signal } from '@preact/signals';
 import { ArrowLeft } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createProfiles, reachStep, startFirstLesson } from '../../actions';
-import { BRAND } from '../../brand';
+import { BRAND, WELCOME } from '../../brand';
 import { COURSES, flagOf, regionOf } from '../../content';
 import { CUES } from '../../content/cues';
 import type { Gender } from '../../content/types';
-import { arrivedFrom } from '../../counts';
+import { arrivedFrom, firstArrivedFrom } from '../../counts';
 import { FIRST_STEPS } from '../../counts-api';
 import { blankTrip, GOALS, PROFILE_COLORS } from '../../state/schema';
 import { CountsLink } from '../CountsChoice';
@@ -72,9 +72,10 @@ export function Onboarding() {
         goal,
         cue,
       })),
-      { welcome: true, source: arrivedFrom() },
+      { welcome: true, source: firstArrivedFrom() },
     );
-    startFirstLesson({ lessonId: asked?.course === c.id ? asked.lesson : undefined });
+    // The lesson takes the place of onboarding's history entry (ui/welcome-page.tsx).
+    startFirstLesson({ replace: welcomePage !== null, lessonId: asked?.course === c.id ? asked.lesson : undefined });
   };
 
   return (
@@ -103,8 +104,8 @@ export function Onboarding() {
             <div class="welcome-art">
               <Porthole stops={JOURNEY} />
               <p class="porthole-hint">
-                <span class="on-touch">Touche le hublot, ou Bernard.</span>
-                <span class="on-mouse">Clique sur le hublot, ou sur Bernard.</span>
+                <span class="on-touch">{WELCOME.touch}</span>
+                <span class="on-mouse">{WELCOME.mouse}</span>
               </p>
             </div>
             <div class="welcome-text">
@@ -119,7 +120,7 @@ export function Onboarding() {
             </div>
             <div class="welcome-actions">
               <button type="button" class="btn btn-primary btn-block" onClick={() => setStep(1)}>
-                C’est parti
+                {WELCOME.start}
               </button>
               <InstallButton block secondary />
             </div>

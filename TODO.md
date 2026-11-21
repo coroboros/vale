@@ -21,6 +21,8 @@ The backlog and the watch list. What to do next, in order, is in RUNBOOK.md.
 - The welcome page's day in Safari 26 and Firefox 159, on phones: its scenes follow the scroll
   smoothly (only Chromium runs here), and without Chrome's scroll triggers Bernard simply stays
   put at the boarding call (docs/UX.md, « The welcome page's day »).
+- The swipe back from onboarding in Safari on the iPhone: the welcome page comes back where it was
+  left, without a fade on top of Safari's own (docs/UX.md, « The welcome page »).
 - Translation: one sentence per language once deployed, a cache hit, a 429 after 20 calls a
   minute, the Claude spend counted in KV against the Console usage page.
 - Translation quality: the eval grades, then a native speaker on twenty phrases per language,
@@ -76,6 +78,9 @@ conversation).
   the French-reader pronunciation, the notes), so teaching French needs an interface in another
   language, English first, and content written for its speakers: a project of its own.
 - Turnstile on the translation service if abuse ever shows up in the Worker logs.
+- **Onboarding's steps in the history.** The browser's back goes to the welcome page from any
+  step, and Android's back button closes the installed app during onboarding, its answers lost;
+  each step would need a history entry of its own, as « Retour » goes back one step.
 - **AVIF photos.** 13 to 16 % lighter than the WebP files at the same similarity, measured from
   the WebP files themselves; rendered from the originals by `brand/photos.py` on the Mac, the
   gain may be larger. Or Cloudflare Images once photos multiply (docs/UX.md, « The welcome page »).

@@ -17,6 +17,12 @@ export const countsOn = ENDPOINT !== '';
 /** The link this visit came through, so a new traveller's counts say which experiment brought them. */
 export const arrivedFrom = (): Source => sourceOf(new URLSearchParams(location.search).get('utm_source'));
 
+/**
+ * The link this phone first came through, the one its first steps count: a traveller a card brought
+ * who goes on to a page beside the app and sets off from there is still one the card brought.
+ */
+export const firstArrivedFrom = (): Source => (db.value.funnel.reached.length ? db.value.funnel.source : arrivedFrom());
+
 let sending = false;
 
 async function sendCounts(now = Date.now()): Promise<void> {

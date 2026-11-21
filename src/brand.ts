@@ -1,4 +1,6 @@
 /** The one place to configure the product: its name and words, its address, who publishes and hosts it. */
+import { lowerFirst } from './ui/french.ts';
+
 export const BRAND = {
   name: 'Bagage',
   tagline: 'Parle dès l’atterrissage.',
@@ -12,6 +14,16 @@ export const BRAND = {
    * cannot install it.
    */
   url: 'https://coroboros.github.io/vale/',
+} as const;
+
+/**
+ * The welcome's own words, the same in the installed app's welcome (ui/screens/Onboarding.tsx) and
+ * on the welcome page (build/welcome.ts).
+ */
+export const WELCOME = {
+  start: 'C’est parti',
+  touch: 'Touche le hublot, ou Bernard.',
+  mouse: 'Clique sur le hublot, ou sur Bernard.',
 } as const;
 
 /**
@@ -71,12 +83,12 @@ export const HOSTS = {
 } as const;
 
 /** « Hors ligne, sans compte, sans pub. » */
-export const promiseLine = () => `${BRAND.promise.map((p, i) => (i ? p.toLowerCase() : p)).join(', ')}.`;
+export const promiseLine = () => `${BRAND.promise.map((p, i) => (i ? lowerFirst(p) : p)).join(', ')}.`;
 
 export const description = () => `${BRAND.headline} : ${BRAND.languages}. ${promiseLine()}`;
 
 /** « Bagage : les phrases de survie pour voyager », the app's title in search results and shared links. */
-export const appTitle = () => `${BRAND.name} : ${BRAND.headline.charAt(0).toLowerCase()}${BRAND.headline.slice(1)}`;
+export const appTitle = () => `${BRAND.name} : ${lowerFirst(BRAND.headline)}`;
 
 /**
  * Colours needed outside CSS (manifest, browser chrome). Must match --page in styles/tokens.css.
