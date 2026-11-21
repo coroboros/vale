@@ -418,7 +418,8 @@ test('the welcome page’s day follows the scroll, away from the words, and hold
   for (const scene of await page.locator('.wp-clouds, .wp-route, .wp-shore').all())
     await expect(scene).toHaveAttribute('aria-hidden', 'true');
   await expect(page.locator('.wp-clouds')).toHaveCSS('pointer-events', 'none');
-  expect(await scrollDriven()).toBeGreaterThan(0);
+  // The scenes are drawn once the app's script runs.
+  await expect.poll(scrollDriven).toBeGreaterThan(0);
   // The sun sets as the beach comes into view, and is on the horizon at the foot of the page.
   await toShore(10);
   await expect.poll(sunHeight).toBeGreaterThan(1);
@@ -427,6 +428,8 @@ test('the welcome page’s day follows the scroll, away from the words, and hold
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.reload();
+  await expect(page.locator('.shore-sun')).toBeAttached();
+  await expect(page.locator('.wp-bernard svg')).toBeAttached();
   expect(await scrollDriven()).toBe(0);
   expect(await page.locator('.wp-bernard').evaluate(el => el.getAnimations().length)).toBe(0);
   await toShore(40);
