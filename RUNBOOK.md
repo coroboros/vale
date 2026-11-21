@@ -53,14 +53,10 @@ figures (C).
 
 ### B0. Now, in five minutes
 
-1. Delete the `photos-fetch` branch: repository → *Branches* → the bin next to `photos-fetch`. It
-   only ran the photo download; the photos are in `main`.
-2. Name the publisher for « Mentions légales » and « Confidentialité »: fill `PUBLISHER` in
-   `src/brand.ts`, or send Claude the values: the registered name; the legal form, register and
-   number; the registered office; a telephone number (the LCEN asks for one); an email address
-   that someone reads; the VAT number if there is one; the director of publication, a person.
-   They are public on the site by law. Until then the pages say the publisher is named before
-   launch (docs/UX.md, « The legal pages »).
+1. Delete the `photos-fetch`, `diag/back-transition` and `diag/fade-check` branches: repository →
+   *Branches* → the bin next to each (Claude's sessions may push branches but not delete them).
+   The first only ran the photo download, the photos are in `main`; the other two only ran
+   diagnostics in CI's Chrome (docs/UX.md, « The welcome page's day »).
 
 ### B1. Connect Cloudflare and the Claude credits (about 15 minutes)
 
@@ -87,6 +83,12 @@ figures (C).
 2. Buy the domain where the Worker runs: Cloudflare dashboard → *Domain Registration → Register
    Domains*. Tell Claude which one; docs/SEARCH.md lists candidates (not checked: domain
    registries cannot be queried from here).
+3. Name the publisher for « Mentions légales » and « Confidentialité », and send Claude: the
+   registered name; the legal form, register and number; the registered office; a telephone
+   number (the LCEN asks for one); an email address that someone reads; the VAT number if there
+   is one; the director of publication, a person. They are public on the site by law. Until
+   then the pages show an invented publisher from Bernard's beach, and say so (docs/UX.md,
+   « The legal pages »).
 
 ### B3. Move to the address (Claude)
 
@@ -99,6 +101,8 @@ figures (C).
   search engines move what they have indexed; then the *deploy* job loses its GitHub Pages branch.
 - `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: keep only the local dev servers.
 - Delete the `TRANSLATE_URL` variable if it was ever set.
+- `PUBLISHER` in `src/brand.ts`: the publisher from B2 in place of the invented one, and
+  `placeholder` set to false, so the pages stop calling it imaginary.
 
 ### B4. Search Console (10 minutes, once Bagage has its domain)
 

@@ -4,6 +4,7 @@ import { PUBLISHER } from '../../src/brand';
 
 const LLP = {
   ...PUBLISHER,
+  placeholder: false,
   name: 'Exemple LLP',
   registration: 'limited liability partnership immatriculée en Angleterre et au pays de Galles sous le n° OC000000',
   address: '1 Example Street, Londres',
@@ -28,11 +29,17 @@ describe('the legal pages', () => {
     expect(privacy).toContain('Pour exercer ces droits\u00a0: bonjour@example.com');
   });
 
-  it('say the publisher is named before launch while its name is empty', () => {
-    const legal = legalOf({}, false, { ...LLP, name: ' ' });
-    expect(page(legal, 'mentions-legales/')).not.toContain('Exemple LLP');
-    expect(page(legal, 'mentions-legales/')).toContain('avant le lancement');
-    expect(text(page(legal, 'confidentialite/'))).toContain('adresser une réclamation à la CNIL');
+  it('say so on both pages while the publisher is invented, and only then', () => {
+    for (const path of ['mentions-legales/', 'confidentialite/']) {
+      expect(text(page(legalOf({}, false, PUBLISHER), path))).toContain('cet éditeur est imaginaire');
+      expect(text(page(legalOf({}, false, LLP), path))).not.toContain('imaginaire');
+    }
+  });
+
+  it('invent a publisher nobody can be reached at, while it is invented', () => {
+    if (!PUBLISHER.placeholder) return;
+    expect(PUBLISHER.email).toMatch(/\.example$/);
+    expect(PUBLISHER.phone.replace(/\s/g, '')).toMatch(/^\+447700900\d{3}$/);
   });
 
   it('name an EU representative only when there is one', () => {

@@ -25,24 +25,29 @@ export const siteUrl = (path: string) => new URL(path, BRAND.url).href;
 /**
  * Who publishes Bagage, on « Mentions légales » and « Confidentialité » as the law asks: in France,
  * article 1-1 of the LCEN; for a UK company or LLP, its trading disclosures (SI 2015/17, reg. 25)
- * and the E-Commerce Regulations 2002 (reg. 6). Public by law, so kept here with the rest; while
- * `name` is empty the pages say the publisher is named before launch (docs/UX.md, « The legal
- * pages »).
+ * and the E-Commerce Regulations 2002 (reg. 6). Public by law, so kept here with the rest
+ * (docs/UX.md, « The legal pages »).
+ *
+ * Invented until the real one comes in step B3 of RUNBOOK.md, and the pages say so: the address
+ * is under `.example`, a name reserved for examples (RFC 2606), and the number is in a range Ofcom
+ * keeps for drama, so neither reaches anyone.
  */
 export const PUBLISHER = {
+  /** True while the lines below are invented. */
+  placeholder: true,
   /** As registered: « Exemple LLP », or a person's first names and name. */
-  name: '',
+  name: 'Les Coquillages de Bernard',
   /** Legal form, register and number: « limited liability partnership immatriculée en Angleterre et au pays de Galles sous le n° OC000000 ». */
-  registration: '',
+  registration: 'Société imaginaire, inscrite au registre des plages sous le n° BERNARD-0001',
   /** The registered office, or a person's home address. */
-  address: '',
+  address: '1, plage des Hublots, île des Bernard-l’ermite',
   /** Read by the publisher: anyone writes there, requests about data included. */
-  email: '',
-  phone: '',
+  email: 'bernard@bagage.example',
+  phone: '+44 7700 900123',
   /** Only when registered for VAT. */
   vat: '',
   /** The director of publication, a person. */
-  director: '',
+  director: 'Bernard, bernard-l’ermite',
   /** Its representative in the EU (GDPR, article 27), when the publisher is outside it and names one. */
   representative: '',
 };
