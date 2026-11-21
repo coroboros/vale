@@ -1,0 +1,45 @@
+# Bagage
+
+> Les phrases de survie pour voyager : espagnol, italien, portugais, anglais. Hors ligne, sans compte, sans pub.
+
+Phrases de voyage pour francophones, chacune avec sa prononciation écrite à la française, des dialogues pour s’entraîner et l’app qui les fait réviser : https://coroboros.github.io/vale/
+
+## Espagnol
+
+- [Espagnol : les phrases pour voyager](https://coroboros.github.io/vale/espagnol/)
+- [Dire bonjour en espagnol](https://coroboros.github.io/vale/espagnol/dire-bonjour/): 13 phrases (saluer, remercier, s’excuser)
+- [Commander un café en espagnol](https://coroboros.github.io/vale/espagnol/commander-un-cafe/): 12 phrases (commander, payer, trinquer)
+- [Commander au restaurant en espagnol](https://coroboros.github.io/vale/espagnol/commander-au-restaurant/): 11 phrases (tapas, menu du jour, allergies)
+- [Acheter un billet de train en espagnol](https://coroboros.github.io/vale/espagnol/acheter-un-billet-de-train/): 12 phrases (gare, métro, taxi, directions)
+- [Arriver à l’hôtel en espagnol](https://coroboros.github.io/vale/espagnol/arriver-a-l-hotel/): 9 phrases (arriver, s’installer)
+- [Demander de l’aide en espagnol](https://coroboros.github.io/vale/espagnol/demander-de-l-aide/): 8 phrases (au cas où)
+
+## Italien
+
+- [Italien : les phrases pour voyager](https://coroboros.github.io/vale/italien/)
+- [Dire bonjour en italien](https://coroboros.github.io/vale/italien/dire-bonjour/): 14 phrases (saluer, remercier, s’excuser)
+- [Commander un café en italien](https://coroboros.github.io/vale/italien/commander-un-cafe/): 10 phrases (le café à l’italienne)
+- [Commander au restaurant en italien](https://coroboros.github.io/vale/italien/commander-au-restaurant/): 10 phrases (réserver, commander, payer)
+- [Acheter un billet de train en italien](https://coroboros.github.io/vale/italien/acheter-un-billet-de-train/): 10 phrases (train, bus et directions)
+- [Arriver à l’hôtel en italien](https://coroboros.github.io/vale/italien/arriver-a-l-hotel/): 10 phrases (arriver, s’installer)
+- [Demander de l’aide en italien](https://coroboros.github.io/vale/italien/demander-de-l-aide/): 8 phrases (les phrases qu’on espère ne jamais dire)
+
+## Portugais
+
+- [Portugais : les phrases pour voyager](https://coroboros.github.io/vale/portugais/)
+- [Dire bonjour en portugais](https://coroboros.github.io/vale/portugais/dire-bonjour/): 14 phrases (saluer, remercier, s’excuser)
+- [Commander un café en portugais](https://coroboros.github.io/vale/portugais/commander-un-cafe/): 10 phrases (le café à la portugaise)
+- [Commander au restaurant en portugais](https://coroboros.github.io/vale/portugais/commander-au-restaurant/): 10 phrases (réserver, commander, payer)
+- [Acheter un billet de train en portugais](https://coroboros.github.io/vale/portugais/acheter-un-billet-de-train/): 10 phrases (tram, train et directions)
+- [Arriver à l’hôtel en portugais](https://coroboros.github.io/vale/portugais/arriver-a-l-hotel/): 10 phrases (arriver, s’installer)
+- [Demander de l’aide en portugais](https://coroboros.github.io/vale/portugais/demander-de-l-aide/): 8 phrases (les phrases qu’on espère ne jamais dire)
+
+## Anglais
+
+- [Anglais : les phrases pour voyager](https://coroboros.github.io/vale/anglais/)
+- [Dire bonjour en anglais](https://coroboros.github.io/vale/anglais/dire-bonjour/): 14 phrases (saluer, remercier, s’excuser)
+- [Commander un café en anglais](https://coroboros.github.io/vale/anglais/commander-un-cafe/): 10 phrases (commander au comptoir)
+- [Commander au restaurant en anglais](https://coroboros.github.io/vale/anglais/commander-au-restaurant/): 10 phrases (réserver, commander, payer)
+- [Acheter un billet de train en anglais](https://coroboros.github.io/vale/anglais/acheter-un-billet-de-train/): 10 phrases (métro, train et directions)
+- [Arriver à l’hôtel en anglais](https://coroboros.github.io/vale/anglais/arriver-a-l-hotel/): 9 phrases (arriver, s’installer)
+- [Demander de l’aide en anglais](https://coroboros.github.io/vale/anglais/demander-de-l-aide/): 8 phrases (les phrases qu’on espère ne jamais dire)

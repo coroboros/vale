@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!--
+    App icon and favicon: Bernard the hermit crab, filling the frame so he still reads at tab size
+    (32 px on a computer, about 84 px in Safari's tab overview on an iPhone). No scenery and no
+    fine detail: big eyes, a bold spiral, flat colours on the brand blue.
+    The art sits in <g id="art">; brand/make-icons.sh shrinks it into the maskable safe zone.
+  -->
+  <rect width="512" height="512" fill="#1E5FD0"/>
+  <g id="art">
+    <circle cx="316" cy="296" r="170" fill="#FFB21E" stroke="#D98A00" stroke-width="12"/>
+    <path d="M322 296 a20 20 0 1 1 40 0 a44 44 0 1 1 -88 0 a74 74 0 1 1 148 0 a106 106 0 1 1 -212 0" fill="none" stroke="#D98A00" stroke-width="30" stroke-linecap="round"/>
+    <ellipse cx="192" cy="362" rx="108" ry="88" fill="#FF7A3D" stroke="#D9541A" stroke-width="12"/>
+    <g fill="#FF7A3D" stroke="#D9541A" stroke-width="12" stroke-linejoin="round" transform="rotate(-30 96 318)">
+      <path d="M96 318 m-50 0 a50 50 0 1 0 50 -50 l0 34 a16 16 0 0 1 -16 16 z"/>
+    </g>
+    <g stroke="#D9541A" stroke-width="20" stroke-linecap="round"><path d="M168 292 L142 200"/><path d="M222 286 L246 184"/></g>
+    <circle cx="134" cy="156" r="58" fill="#fff" stroke="#D9541A" stroke-width="12"/>
+    <circle cx="252" cy="140" r="58" fill="#fff" stroke="#D9541A" stroke-width="12"/>
+    <circle cx="146" cy="151" r="28" fill="#16213E"/>
+    <circle cx="264" cy="135" r="28" fill="#16213E"/>
+    <circle cx="155" cy="140" r="10" fill="#fff"/>
+    <circle cx="273" cy="124" r="10" fill="#fff"/>
+    <path d="M160 384 Q196 418 232 384" fill="none" stroke="#16213E" stroke-width="14" stroke-linecap="round"/>
+  </g>
+</svg>
