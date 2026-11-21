@@ -17,19 +17,14 @@ type Host = (typeof HOSTS)[keyof typeof HOSTS];
 
 export interface Legal {
   host: Host;
-  /** None while its name is empty in src/brand.ts. */
-  publisher?: Publisher;
+  publisher: Publisher;
   /** Whether this build sends the anonymous counts. */
   counts: boolean;
 }
 
 /** `env`: the deploy's SITE_HOST says when the build goes to GitHub Pages rather than Cloudflare. */
 export function legalOf(env: Record<string, string | undefined>, counts: boolean, publisher = PUBLISHER): Legal {
-  return {
-    host: HOSTS[env.SITE_HOST === 'github-pages' ? 'github-pages' : 'cloudflare'],
-    publisher: publisher.name.trim() ? publisher : undefined,
-    counts,
-  };
+  return { host: HOSTS[env.SITE_HOST === 'github-pages' ? 'github-pages' : 'cloudflare'], publisher, counts };
 }
 
 export interface LegalPage {
@@ -41,7 +36,8 @@ export interface LegalPage {
 
 const mail = (address: string) => `<a href="mailto:${esc(address)}">${esc(address)}</a>`;
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
-const NOT_YET = `L’éditeur de ${BRAND.name} sera nommé ici avant le lancement de l’app.`;
+/** Said wherever the invented publisher appears, so nobody takes it for the real one. */
+const INVENTED = `${BRAND.name} n’est pas encore lancé : cet éditeur est imaginaire, le vrai sera nommé avant le lancement.`;
 
 function section(id: string, title: string, body: string): string {
   return `
@@ -57,17 +53,16 @@ const paragraphs = (...lines: (string | false)[]) =>
     .join('');
 
 function notice({ host, publisher: p }: Legal): LegalPage {
-  const editor = p
-    ? paragraphs(
-        t(p.name),
-        p.registration && t(p.registration),
-        p.address && t(`Siège : ${p.address}`),
-        p.phone && t(`Téléphone : ${p.phone}`),
-        p.email && `${t('E-mail :')} ${mail(p.email)}`,
-        p.vat && t(`Numéro de TVA : ${p.vat}`),
-        p.director && t(`Directeur de la publication : ${p.director}`),
-      )
-    : paragraphs(t(NOT_YET));
+  const editor = paragraphs(
+    p.placeholder && `<strong>${t(INVENTED)}</strong>`,
+    t(p.name),
+    p.registration && t(p.registration),
+    p.address && t(`Siège : ${p.address}`),
+    p.phone && t(`Téléphone : ${p.phone}`),
+    p.email && `${t('E-mail :')} ${mail(p.email)}`,
+    p.vat && t(`Numéro de TVA : ${p.vat}`),
+    p.director && t(`Directeur de la publication : ${p.director}`),
+  );
   return {
     path: LEGAL.notice,
     title: 'Mentions légales',
@@ -93,7 +88,7 @@ function notice({ host, publisher: p }: Legal): LegalPage {
 }
 
 function privacy({ host, publisher: p, counts }: Legal): LegalPage {
-  const contact = p?.email ? mail(p.email) : '';
+  const contact = p.email ? mail(p.email) : '';
   const out = [
     `<strong>${t('Les traductions.')}</strong> ${t(`Une phrase que tu demandes à traduire en ligne part vers le service de traduction de ${BRAND.name}, qui la confie à Anthropic (Claude) ou à Cloudflare (Workers AI). Chaque réponse y est gardée 90 jours, sans rien qui la relie à toi, pour qu’une même phrase ne soit pas traduite deux fois ; ton adresse IP sert une minute à compter tes demandes, pour protéger le service des abus. Le but : te rendre le service que tu demandes, ce qui est l’intérêt légitime de l’éditeur. Quand ce service n’est pas là, le bouton « Traduire dans DeepL » ouvre DeepL avec ta phrase, selon ses propres règles. N’écris pas de données personnelles dans une phrase à traduire.`)}`,
     counts &&
@@ -101,12 +96,11 @@ function privacy({ host, publisher: p, counts }: Legal): LegalPage {
     `<strong>${t('La voix et l’écoute.')}</strong> ${t(`Les phrases sont lues par les voix de ton appareil ; quand il n’en a pas pour une langue, ton navigateur peut en prendre une en ligne. Dans les exercices à l’oral, c’est ton navigateur qui écoute : sur ton appareil quand il le peut, sinon en ligne, par le service de son éditeur (Google pour Chrome, Apple pour Safari), selon ses propres règles ; ${BRAND.name} te le demande avant.`)}`,
     `<strong>${t('L’hébergement.')}</strong> ${t(`${host.name} sert les pages de ${BRAND.name} et garde, comme tout hébergeur, des journaux techniques avec l’adresse IP des visiteurs :`)} <a href="${esc(host.privacy)}">${t('sa politique de confidentialité')}</a>.`,
   ].filter(Boolean);
-  const controller = p
-    ? paragraphs(
-        `${t(`Le responsable du traitement est l’éditeur de ${BRAND.name} : ${p.name}${p.address ? `, ${p.address}` : ''}.`)}${contact ? ` ${t('Pour toute question sur tes données :')} ${contact}.` : ''}`,
-        p.representative && t(`Son représentant dans l’Union européenne : ${p.representative}.`),
-      )
-    : paragraphs(t(`Le responsable du traitement est l’éditeur. ${NOT_YET}`));
+  const controller = paragraphs(
+    p.placeholder && `<strong>${t(INVENTED)}</strong>`,
+    `${t(`Le responsable du traitement est l’éditeur de ${BRAND.name} : ${p.name}${p.address ? `, ${p.address}` : ''}.`)}${contact ? ` ${t('Pour toute question sur tes données :')} ${contact}.` : ''}`,
+    p.representative && t(`Son représentant dans l’Union européenne : ${p.representative}.`),
+  );
   return {
     path: LEGAL.privacy,
     title: 'Confidentialité',

@@ -371,8 +371,12 @@ Decision: the build writes « Mentions légales » and « Confidentialité » be
 (`build/legal.ts`), linked from the welcome page, every page beside the app and « Moi ». The
 publisher and the hosts live in the central configuration, `src/brand.ts`, as the owner asked:
 the identity is the same on every deploy and public by law, so a variable per deploy hid nothing
-and only scattered it. `PUBLISHER` holds what both laws ask, for a French or a UK publisher; while
-its name is empty, the pages say the publisher is named before launch. The host is Cloudflare, the
+and only scattered it. `PUBLISHER` holds what both laws ask, for a French or a UK publisher. Until
+RUNBOOK B3 it holds an invented one from Bernard's beach, as the owner asked while nobody uses
+the app: both pages say in bold that it is imaginary, its address is under `.example`, reserved
+for examples ([RFC 2606](https://www.rfc-editor.org/rfc/rfc2606)), and its number is in the range
+Ofcom keeps for drama ([Numbers for drama](https://www.ofcom.org.uk/phones-and-broadband/phone-numbers/numbers-for-drama)),
+so it reaches no real person. The host is Cloudflare, the
 target, unless the GitHub Pages build says otherwise. The privacy page says what the code does,
 checked in it: everything stays in the browser; a sentence to translate goes to the Worker, which
 asks Claude or Workers AI and keeps the answer 90 days in KV without anything about who asked, and
